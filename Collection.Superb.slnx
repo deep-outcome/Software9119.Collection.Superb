@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/files/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="note.text" />
+    <File Path="SharedProjectConfiguration.props" />
+  </Folder>
+  <Project Path="Collection.Superb/Collection.Superb.csproj" />
+  <Project Path="TestArrangement/TestArrangement.csproj" Id="0c5370b2-870d-404c-a120-abf2ba81802a" />
+</Solution>
