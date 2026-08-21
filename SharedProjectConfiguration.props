@@ -13,7 +13,7 @@
   <PropertyGroup Label="Id">
     <Authors>software9119.technology</Authors>
     <Company>software9119.technology</Company>
-    <Copyright>MIT</Copyright>
+    <Copyright>MIT</Copyright>    
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
@@ -34,6 +34,6 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-  </PropertyGroup>  
+  </PropertyGroup>
 
 </Project>

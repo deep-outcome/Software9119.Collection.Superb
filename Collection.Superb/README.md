@@ -6,5 +6,4 @@ While packages are shipped with symbols, release build can optimize some variabl
 you can use debugging package [Software9119.Collection.Superb.Debug](https://www.nuget.org/packages/Software9119.Collection.Superb.Debug/) instead
 of release build pckg [Software9119.Collection.Superb](https://www.nuget.org/packages/Software9119.Collection.Superb/).
 
-See specific readmes for more:
-- [Software9119.Collection.Superb.Segmentation namespace](./Collection.Superb/Segmentation/readme.md) 
+See [Software9119.Collection.Superb](https://github.com/deep-outcome/Software9119.Collection.Superb) repository for more.

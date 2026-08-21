@@ -5,20 +5,22 @@
   <PropertyGroup>
     <RootNamespace>Software9119.Collection.Superb</RootNamespace>
     <AssemblyName>Software9119.Collection.Superb</AssemblyName>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.0.1</PackageVersion>
+    <PackageReadmeFile>./README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PackageId>$(AssemblyName).$(Configuration)</PackageId>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">    
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PackageId>$(AssemblyName)</PackageId>
     <Optimize>true</Optimize>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageOutputFolder>.\..\packages\</PackageOutputFolder>
+    <PackageOutputFolder>./../packages/</PackageOutputFolder>
   </PropertyGroup>
 
   <Target Name="CopyPackage" AfterTargets="Pack">
@@ -26,12 +28,17 @@
     <Copy SourceFiles="$(OutputPath)..\$(PackageId).$(PackageVersion).snupkg" DestinationFolder="$(PackageOutputFolder)" />
   </Target>
 
+  <ItemGroup Label="Info">
+    <None Include="./../LICENSE.md" Pack="true" PackagePath="\" />
+    <None Include="./README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
   <ItemGroup>
-    <None Include=".\.editorconfig" />
+    <None Include="./.editorconfig" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400" PrivateAssets="All" />
   </ItemGroup>
 
-  <PropertyGroup Label="Debug">    
+  <PropertyGroup Label="Debug">
     <RepositoryUrl>https://github.com/deep-outcome/Software9119.Collection.Superb</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
