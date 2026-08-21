@@ -2,7 +2,8 @@
   <Folder Name="/files/">
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
-    <File Path=".github/workflows/nupkg-pub+test.yml" />
+    <File Path=".github/actions/nupkg-pub+test/action.yml" />
+    <File Path=".github/workflows/nupkg-pub_debug_release.yml" />
     <File Path=".gitignore" />
     <File Path="note.text" />
     <File Path="README.md" />
