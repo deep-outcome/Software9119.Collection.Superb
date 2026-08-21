@@ -1,0 +1,47 @@
+name: Pack, Test & Publish NuGet
+
+on:
+  push:
+    branches: [ "prong" ]
+  workflow_dispatch:            # lets you trigger it manually too
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  pack-and-publish:
+    runs-on: windows-latest     # ubuntu-latest works too unless you need Windows-specific targets
+
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore
+      run: dotnet restore
+
+    - name: Test
+      run: dotnet test --configuration ${{ matrix.configuration }} --no-restore
+
+    # 1. CREATE the package
+    - name: Pack
+      run: dotnet pack ./Collection.Superb/Collection.Superb.csproj --configuration ${{ matrix.configuration }} --no-restore --output ${{ github.workspace }}/nupkgs
+
+    - name: NuGet login (Trusted Publishing)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: that-deepfelt
+
+    # 2. PUBLISH the package
+    #- name: Push
+    #  run: dotnet nuget push "${{ github.workspace }}/nupkgs/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
