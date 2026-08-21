@@ -1,0 +1,66 @@
+name: nupkg-publication
+
+on:
+  push:
+    branches: [ "prong" ]
+  workflow_dispatch:            # lets you trigger it manually too
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  nupkg-pub-job:
+    runs-on: windows-latest     # ubuntu-latest works too unless you need Windows-specific targets
+
+    environment: nupkg-pub
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration ${{ matrix.configuration }} --no-restore
+
+    - name: Test
+      run: dotnet test --configuration ${{ matrix.configuration }} --no-restore
+
+    # 1. CREATE the package
+    - name: Pack
+      run: dotnet pack ./Collection.Superb/Collection.Superb.csproj --configuration ${{ matrix.configuration }} --no-restore --output ${{ github.workspace }}/nupkgs
+
+    - name: Upload to artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nupkgs-${{ matrix.configuration }}
+        path: ${{ github.workspace }}/nupkgs/*.*nupkg
+        retention-days: 2
+
+    - name: NuGet login (Trusted Publishing)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: that-deepfelt
+
+    # 2. PUBLISH the package
+    - name: Push
+      shell: pwsh
+      run: |
+        $dir = "${{ github.workspace }}/nupkgs"
+        $files = Get-ChildItem -Path $dir -File | Where-Object { $_.Extension -in '.nupkg', '.snupkg' }
+        if ($files.Count -eq 0) { Write-Error "No packages found in $dir"; exit 1 }
+        $ordered = $files | Sort-Object @{Expression = { if ($_.Extension -eq '.nupkg') {0} elseif ($_.Extension -eq '.snupkg') {1} else {2} }}, Name
+        foreach ($f in $ordered) {
+          Write-Host "Pushing $($f.Name)"
+          dotnet nuget push $f.FullName --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate }

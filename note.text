@@ -1,5 +1,3 @@
-- add to/into methods
-- test in actual project
 - add IReadOnlyListSegment 
 - add non-T IListSegment 
 - add Capacitor

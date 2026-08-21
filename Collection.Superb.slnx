@@ -8,6 +8,4 @@
     <File Path="SharedProjectConfiguration.props" />
   </Folder>
   <Project Path="Collection.Superb/Collection.Superb.csproj" />
-  <Project Path="TestArrangement/TestArrangement.csproj" Id="0c5370b2-870d-404c-a120-abf2ba81802a" />
-  <Project Path="TestProject/TestProject.csproj" Id="1a61f826-f987-4bf5-8263-04150d291a34" />
 </Solution>
