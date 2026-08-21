@@ -1,0 +1,25 @@
+[*.cs]
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = silent
+
+# MSTEST0052: Avoid passing an explicit 'DynamicDataSourceType' and use the default auto detect behavior
+dotnet_diagnostic.MSTEST0052.severity = silent
+
+# CA1515: Consider making public types internal
+dotnet_diagnostic.CA1515.severity = silent
+
+# CA1861: Avoid constant arrays as arguments
+dotnet_diagnostic.CA1861.severity = silent
+
+# IDE1006: Naming Styles
+dotnet_diagnostic.IDE1006.severity = silent
+
+# CA1825: Avoid zero-length array allocations
+dotnet_diagnostic.CA1825.severity = silent
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = silent
+
+# CA1062: Validate arguments of public methods
+dotnet_diagnostic.CA1062.severity = silent

@@ -12,23 +12,23 @@ class SegmentationValidator
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public int LimitOutOf ( int offset, int count ) => offset + count;
 
-  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public bool ValidateSetup ( int listLength, int offset, int count, out int limit,
    [NotNullWhen(true)]
     out ImpossibleSegmentationException? e )
   {
     limit = LimitOutOf ( offset, count );
 
-    e = null;
     if (offset < 0)
       e = ImpossibleSegmentationException.NegativeOffsetMsg ( offset );
     else if (count < 0)
       e = ImpossibleSegmentationException.NegativeCountMsg ( count );
     else if (limit > listLength)
       e = ImpossibleSegmentationException.OufRangeMsg ( listLength: listLength, offset: offset, count: count, limit );
-
-    if (e == null)
+    else
+    {
+      e = null;
       return false;
+    }
 
     return true;
 
@@ -53,10 +53,9 @@ class SegmentationValidator
   }
 
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
-  static public bool ValidateIndex (
+  static public bool ValidateIndex<T> (
     ref int index,
-    int offset,
-    int limit,
+    in IListSegment<T> segment,
     [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
   {
 
@@ -66,10 +65,11 @@ class SegmentationValidator
       return true;
     }
 
+    int offset = segment.offset;
     index += offset;
-    if (index >= limit)
+    if (index >= segment.limit)
     {
-      e = IndexOutOfSegmentException.OutOfRangeMsg ( index: index - offset, length: limit - offset );
+      e = IndexOutOfSegmentException.OutOfRangeMsg ( index: index - offset, length: segment.Count );
       return true;
     }
 

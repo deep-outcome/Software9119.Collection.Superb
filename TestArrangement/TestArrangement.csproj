@@ -1,0 +1,20 @@
+﻿<Project Sdk="MSTest.Sdk/4.0.2">
+
+  <Import Project="../SharedProjectConfiguration.props" />
+
+  <PropertyGroup>
+    <UseVSTest>true</UseVSTest>
+    <RootNamespace>Software9119.Collection.Superb.TestArrangement</RootNamespace>
+    <AssemblyName>Software9119.Collection.Superb.TestArrangement</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Collection.Superb\Collection.Superb.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\.editorconfig" />
+  </ItemGroup>
+
+</Project>

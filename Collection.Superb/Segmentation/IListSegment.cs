@@ -20,8 +20,8 @@ namespace Software9119.Collection.Superb.Segmentation;
 public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSegment<T>>
 {
   readonly IList<T?> list;
-  readonly int offset;
-  readonly int limit;
+  readonly internal int offset;
+  readonly internal int limit;
 
   /// <summary>
   /// Count of items available through this segment.
@@ -147,7 +147,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
   {
-    return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, limit: limit, out e );
+    return SegmentationValidator.ValidateIndex ( index: ref index, in this, out e );
   }
 
   /// <summary>

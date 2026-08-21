@@ -835,3 +835,6 @@ dotnet_diagnostic.IDE0027.severity = silent
 
 # IDE0046: Convert to conditional expression
 dotnet_diagnostic.IDE0046.severity = silent
+
+# CA1708: Identifiers should differ by more than case
+dotnet_diagnostic.CA1708.severity = silent
