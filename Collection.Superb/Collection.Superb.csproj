@@ -5,7 +5,7 @@
   <PropertyGroup>
     <RootNamespace>Software9119.Collection.Superb</RootNamespace>
     <AssemblyName>Software9119.Collection.Superb</AssemblyName>
-    <PackageVersion>0.0.9</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
