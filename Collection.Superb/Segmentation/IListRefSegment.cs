@@ -8,16 +8,16 @@ using System.Diagnostics.CodeAnalysis;
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// <see cref="IListSegment{T}"/> is parallel to <see cref="ArraySegment{T}"/> but generalized
+/// <see cref="IListRefSegment{T}"/> is parallel to <see cref="ArraySegment{T}"/> but generalized
 /// to <see cref="IList{T}"/>.
 /// </summary>
 /// <remarks>
 /// Everything comes with a price and for this reason is up to 
-/// client code to ensure <see cref="IList{T}"/> passed into <see cref="IListSegment{T}"/> is not
+/// client code to ensure <see cref="IList{T}"/> passed into <see cref="IListRefSegment{T}"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
 /// <typeparam name="T"></typeparam>
-public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSegment<T>>
+public ref struct IListRefSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListRefSegment<T>>
 {
   readonly IList<T?> list;
   readonly internal int offset;
@@ -33,7 +33,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   readonly public int Offset => offset;
 
   /// <summary>
-  /// See <see cref="IListSegment{T}"/> is not readonly.
+  /// See <see cref="IListRefSegment{T}"/> is not readonly.
   /// </summary>
   readonly public bool IsReadOnly => false;
 
@@ -52,7 +52,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
   /// will be used. See <see cref="EqualityComparer"/> for more.
   /// </param>
-  public IListSegment ( IList<T?> list, IEqualityComparer<T>? equalityComparer = null )
+  public IListRefSegment ( IList<T?> list, IEqualityComparer<T>? equalityComparer = null )
   {
 
     this.list = list;
@@ -79,7 +79,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
   /// <exception cref="ImpossibleSegmentationException">Thrown when the segmention settings are impossible.</exception>
-  public IListSegment ( IList<T?> list, int offset, int count, IEqualityComparer<T>? equalityComparer = null )
+  public IListRefSegment ( IList<T?> list, int offset, int count, IEqualityComparer<T>? equalityComparer = null )
   {
     this.list = list;
 
@@ -115,7 +115,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
 
   /// <summary>
-  /// <see cref="IListSegment{T}"/> indexer.
+  /// <see cref="IListRefSegment{T}"/> indexer.
   /// </summary>
   /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>  
   readonly public T? this [ int index ]
@@ -246,17 +246,14 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
 
   /// <summary>
-  /// In core, it calls to <see cref="Equals(IListSegment{T})"/>.
+  /// <see langword="false"/> by default.
   /// </summary>
-  override readonly public bool Equals ( object? obj )
-  {
-    return obj is IListSegment<T> other && Equals ( other );
-  }
+  override readonly public bool Equals ( object? obj ) => false;
 
   /// <summary>
   /// Segment value-equals if referenced lists are referential equal and offset and count are the same.
   /// </summary>
-  readonly public bool Equals ( IListSegment<T> other )
+  readonly public bool Equals ( IListRefSegment<T> other )
   {
     return ReferenceEquals ( list, other.list ) && offset == other.offset && limit == other.limit;
   }
@@ -268,17 +265,17 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
 
   /// <summary>
-  /// Calls to <see cref="Equals(IListSegment{T})"/>.
+  /// Calls to <see cref="Equals(IListRefSegment{T})"/>.
   /// </summary>
-  static public bool operator == ( IListSegment<T> left, IListSegment<T> right )
+  static public bool operator == ( IListRefSegment<T> left, IListRefSegment<T> right )
   {
     return left.Equals ( right );
   }
 
   /// <summary>
-  /// Calls to <see cref="Equals(IListSegment{T})"/>.
+  /// Calls to <see cref="Equals(IListRefSegment{T})"/>.
   /// </summary>
-  static public bool operator != ( IListSegment<T> left, IListSegment<T> right )
+  static public bool operator != ( IListRefSegment<T> left, IListRefSegment<T> right )
   {
     return left.Equals ( right ) == false;
   }

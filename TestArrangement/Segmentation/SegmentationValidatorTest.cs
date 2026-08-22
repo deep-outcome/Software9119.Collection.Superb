@@ -72,9 +72,10 @@ public class SegmentationValidatorTest
   public void ValidateIndex_NegativeScenarios ( int index, int computedIndex, int offset, int count )
   {
     int origIndex = index;
-    IListSegment<int> segment = new ([1,2,3,4,5], offset, count);
-
-    bool result = SegmentationValidator.ValidateIndex ( ref index, in segment, out IndexOutOfSegmentException? e);
+    int limit = SegmentationValidator.LimitOutOf(offset: offset, count);
+    bool result = SegmentationValidator.ValidateIndex (ref index,
+      offset: offset, limit:limit,
+      count, out IndexOutOfSegmentException? e);
 
     Assert.IsTrue ( result );
     Assert.AreEqual ( computedIndex, index );
@@ -93,8 +94,10 @@ public class SegmentationValidatorTest
   [DataRow ( 4, 4, 0, 5 )]
   public void ValidateIndex_PositiveScenarios ( int index, int computedIndex, int offset, int count )
   {
-    IListSegment<int> segment = new ([1,2,3,4,5], offset, count);
-    bool result = SegmentationValidator.ValidateIndex ( ref index, in segment, out IndexOutOfSegmentException? e);
+    int limit = SegmentationValidator.LimitOutOf(offset: offset, count);
+    bool result = SegmentationValidator.ValidateIndex (ref index,
+      offset: offset, limit:limit,
+      count, out IndexOutOfSegmentException? e);
     Assert.IsFalse ( result );
     Assert.AreEqual ( computedIndex, index );
     Assert.IsNull ( e );

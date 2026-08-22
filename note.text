@@ -1,5 +1,3 @@
-- add auto-adjusting (and replacable list?)
-- add segment<T> for ref structs
 - add IReadOnlyListSegment<T>
 - add non-T IListSegment 
 - add ref struct non-T IListSegment 
