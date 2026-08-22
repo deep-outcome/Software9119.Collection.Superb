@@ -38,7 +38,7 @@ public ref struct IListRefSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<
   readonly public bool IsReadOnly => false;
 
   /// <summary>
-  /// The <see cref="List{T}"/> over which segmentation occurs.
+  /// The <see cref="IList{T}"/> over which segmentation occurs.
   /// </summary>
   readonly public IList<T?> List => list;
 
@@ -142,7 +142,7 @@ public ref struct IListRefSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<
   [MemberNotNullWhen ( false, nameof ( list ) )]
   readonly internal bool ValidateList ( [NotNullWhen ( true )] out ArgumentNullException? e )
   {
-    return SegmentationValidator.ValidateList<T> ( list, out e );
+    return SegmentationValidator.ValidateList ( list, out e );
   }
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfSegmentException? e )

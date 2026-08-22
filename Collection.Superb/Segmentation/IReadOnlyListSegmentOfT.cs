@@ -9,11 +9,11 @@ namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
 /// <see cref="IReadOnlyListSegment{T}"/> is parallel to <see cref="ArraySegment{T}"/> but generalized
-/// to <see cref="IList{T}"/>.
+/// to <see cref="IReadOnlyList{T}"/>.
 /// </summary>
 /// <remarks>
 /// Everything comes with a price and for this reason is up to 
-/// client code to ensure <see cref="IList{T}"/> passed into <see cref="IReadOnlyListSegment{T}"/> is not
+/// client code to ensure <see cref="IReadOnlyList{T}"/> passed into <see cref="IReadOnlyListSegment{T}"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
 /// <typeparam name="T"></typeparam>
@@ -38,7 +38,7 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   readonly public bool IsReadOnly => false;
 
   /// <summary>
-  /// The <see cref="List{T}"/> over which segmentation occurs.
+  /// The <see cref="IReadOnlyList{T}"/> over which segmentation occurs.
   /// </summary>
   readonly public IReadOnlyList<T?> List => list;
 
@@ -137,7 +137,7 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   [MemberNotNullWhen ( false, nameof ( list ) )]
   readonly internal bool ValidateList ( [NotNullWhen ( true )] out ArgumentNullException? e )
   {
-    return SegmentationValidator.ValidateList<T> ( list, out e );
+    return SegmentationValidator.ValidateList ( list, out e );
   }
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
@@ -226,7 +226,7 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   readonly public void Clear () => throw new NotSupportedException ();
 
   /// <summary>
-  /// Gets the <see cref="IListEnumerator{T}"/> for this segment defined.
+  /// Gets the <see cref="IReadOnlyListEnumerator{T}"/> for this segment defined.
   /// </summary>
   readonly IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
 

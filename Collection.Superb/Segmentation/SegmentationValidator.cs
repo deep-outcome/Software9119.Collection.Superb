@@ -1,7 +1,7 @@
 ﻿using Software9119.Collection.Superb.Segmentation.Exceptionality;
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -35,9 +35,9 @@ class SegmentationValidator
   }
 
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
-  static public bool ValidateList<T>
+  static public bool ValidateList
   (
-    [NotNullWhen ( false )] IEnumerable<T?>? list,
+    [NotNullWhen ( false )] IEnumerable? list,
     [NotNullWhen ( true )] out ArgumentNullException? e,
     [CallerArgumentExpression ( nameof ( list ) )] string? listParamName = null
   )

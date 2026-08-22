@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// Allows for segmented enumeration of arbitraty <see cref="IList{T}"/>.
+/// Allows for segmented enumeration of arbitraty <see cref="IReadOnlyList{T}"/>.
 /// </summary>
 public struct IReadOnlyListEnumerator<T> : IEnumerator<T?>
 {
@@ -25,7 +25,7 @@ public struct IReadOnlyListEnumerator<T> : IEnumerator<T?>
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
   public IReadOnlyListEnumerator ( int offset, int count, IReadOnlyList<T?> list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
   {
-    if (SegmentationValidator.ValidateList<T> ( list, out ArgumentNullException? ane ))
+    if (SegmentationValidator.ValidateList ( list, out ArgumentNullException? ane ))
       throw ane;
 
 #pragma warning disable CA1062 // Validate arguments of public methods

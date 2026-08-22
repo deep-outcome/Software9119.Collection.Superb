@@ -1,5 +1,6 @@
-- add non-T IListSegment 
+- move segments into folders
 - add ref struct non-T IListSegment 
+- implement IEqualityComparer ?
 - add Capacitor
 - add step
 - consider other collection things when finished

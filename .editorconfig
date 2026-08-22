@@ -838,3 +838,6 @@ dotnet_diagnostic.IDE0046.severity = silent
 
 # CA1708: Identifiers should differ by more than case
 dotnet_diagnostic.CA1708.severity = silent
+
+# CA1725: Parameter names should match base declaration
+dotnet_diagnostic.CA1725.severity = silent

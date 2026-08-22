@@ -25,7 +25,7 @@ public struct IListEnumerator<T> : IEnumerator<T?>
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
   public IListEnumerator ( int offset, int count, IList<T?> list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
   {
-    if (SegmentationValidator.ValidateList<T> ( list, out ArgumentNullException? ane ))
+    if (SegmentationValidator.ValidateList ( list, out ArgumentNullException? ane ))
       throw ane;
 
 #pragma warning disable CA1062 // Validate arguments of public methods
