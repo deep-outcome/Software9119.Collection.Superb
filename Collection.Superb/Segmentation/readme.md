@@ -7,6 +7,8 @@ This namespace contains types to ease working with segments.
 - [`IListEnumerator<T>`](./IListEnumerator.cs) – allows for segmented enumeration
 - [`IListSegment<T>`](./IListSegment.cs) – segment over `IList<T>`
 - [`IListSegmentEqualityComparer<T>`](./IListSegmentEqualityComparer.cs) – `IListSegment<T>` equality comparer
+- [`IListRefSegment<T>`](./IListRefSegment.cs) – segment over `IList<T>`, `ref struct` type
+- [`IListRefSegmentEqualityComparer<T>`](./IListRefSegmentEqualityComparer.cs) – `IListRefSegment<T>` equality comparer
 
 Everything comes with a price and for this reason is up to client code to ensure `IList<T>` passed
 into `IListSegment<T>` or `IListEnumerator<T>` is not mutated in a harmful way, most notably that 
