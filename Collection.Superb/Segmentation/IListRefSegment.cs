@@ -20,8 +20,8 @@ namespace Software9119.Collection.Superb.Segmentation;
 public ref struct IListRefSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListRefSegment<T>>
 {
   readonly IList<T?> list;
-  readonly internal int offset;
-  readonly internal int limit;
+  internal int offset;
+  internal int limit;
 
   /// <summary>
   /// Count of items available through this segment.

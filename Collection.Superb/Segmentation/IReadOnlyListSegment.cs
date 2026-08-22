@@ -8,18 +8,18 @@ using System.Diagnostics.CodeAnalysis;
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// <see cref="IListSegment{T}"/> is parallel to <see cref="ArraySegment{T}"/> but generalized
+/// <see cref="IReadOnlyListSegment{T}"/> is parallel to <see cref="ArraySegment{T}"/> but generalized
 /// to <see cref="IList{T}"/>.
 /// </summary>
 /// <remarks>
 /// Everything comes with a price and for this reason is up to 
-/// client code to ensure <see cref="IList{T}"/> passed into <see cref="IListSegment{T}"/> is not
+/// client code to ensure <see cref="IList{T}"/> passed into <see cref="IReadOnlyListSegment{T}"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
 /// <typeparam name="T"></typeparam>
-public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSegment<T>>
+public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IReadOnlyListSegment<T>>
 {
-  readonly IList<T?> list;
+  readonly IReadOnlyList<T?> list;
   internal int offset;
   internal int limit;
 
@@ -33,14 +33,14 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   readonly public int Offset => offset;
 
   /// <summary>
-  /// See <see cref="IListSegment{T}"/> is not readonly.
+  /// See <see cref="IReadOnlyListSegment{T}"/> is not readonly.
   /// </summary>
   readonly public bool IsReadOnly => false;
 
   /// <summary>
   /// The <see cref="List{T}"/> over which segmentation occurs.
   /// </summary>
-  readonly public IList<T?> List => list;
+  readonly public IReadOnlyList<T?> List => list;
 
 
   IEqualityComparer<T> equalityComparer;
@@ -52,7 +52,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
   /// will be used. See <see cref="EqualityComparer"/> for more.
   /// </param>
-  public IListSegment ( IList<T?> list, IEqualityComparer<T>? equalityComparer = null )
+  public IReadOnlyListSegment ( IReadOnlyList<T?> list, IEqualityComparer<T>? equalityComparer = null )
   {
 
     this.list = list;
@@ -79,7 +79,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
   /// <exception cref="ImpossibleSegmentationException">Thrown when the segmention settings are impossible.</exception>
-  public IListSegment ( IList<T?> list, int offset, int count, IEqualityComparer<T>? equalityComparer = null )
+  public IReadOnlyListSegment ( IReadOnlyList<T?> list, int offset, int count, IEqualityComparer<T>? equalityComparer = null )
   {
     this.list = list;
 
@@ -115,9 +115,10 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
 
   /// <summary>
-  /// <see cref="IListSegment{T}"/> indexer.
+  /// <see cref="IReadOnlyListSegment{T}"/> indexer.
   /// </summary>
   /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>  
+  /// <exception cref="NotSupportedException">On setter call.</exception>
   readonly public T? this [ int index ]
   {
     [SuppressMessage ( "Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "Expected location." )]
@@ -125,13 +126,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
     {
       return ValidateIndex ( ref index, out IndexOutOfSegmentException? e ) ? throw e : list [ index ];
     }
-    set
-    {
-      if (ValidateIndex ( ref index, out IndexOutOfSegmentException? e ))
-        throw e;
-
-      list [ index ] = value;
-    }
+    set => throw new NotSupportedException ();
   }
 
   readonly internal bool ValidateSetup ( int count, out int limit, [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
@@ -148,15 +143,6 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
   {
     return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, limit: limit, count: Count, out e );
-  }
-
-  /// <summary>
-  /// Sets segment values to <c>default(T)</c>.
-  /// </summary>
-  readonly public void Clear ()
-  {
-    for (int i = offset ; i < limit ; ++i)
-      list [ i ] = default;
   }
 
   /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>. 
@@ -184,7 +170,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
       throw new ArgumentException ( message: errMsg, paramName: nameof ( array ) );
     }
 
-    IList<T?> list = this.list;
+    IReadOnlyList<T?> list = this.list;
     if (list is T [] arrSource)
       Array.Copy ( arrSource, offset, array, arrayIndex, Count );
 
@@ -201,7 +187,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   readonly public int IndexOf ( T? item )
   {
     IEqualityComparer<T> comparer = EqualityComparer;
-    IList<T?> list = this.list;
+    IReadOnlyList<T?> list = this.list;
     for (int i = offset ; i < limit ; ++i)
       if (comparer.Equals ( item, list [ i ] ))
         return i - offset;
@@ -233,6 +219,11 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void Add ( T? item ) => throw new NotSupportedException ();
 
+  /// <summary>
+  /// Not supported method.
+  /// </summary>  
+  /// <exception cref="NotSupportedException">At call.</exception>
+  readonly public void Clear () => throw new NotSupportedException ();
 
   /// <summary>
   /// Gets the <see cref="IListEnumerator{T}"/> for this segment defined.
@@ -240,23 +231,23 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   readonly IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
 
   /// <summary>
-  /// Gets the <see cref="IListEnumerator{T}"/> for this segment defined.
+  /// Gets the <see cref="IReadOnlyListEnumerator{T}"/> for this segment defined.
   /// </summary>
-  readonly public IEnumerator<T> GetEnumerator () => new IListEnumerator<T> ( list, offset: offset, limit );
+  readonly public IEnumerator<T> GetEnumerator () => new IReadOnlyListEnumerator<T> ( list, offset: offset, limit );
 
 
   /// <summary>
-  /// In core, it calls to <see cref="Equals(IListSegment{T})"/>.
+  /// In core, it calls to <see cref="Equals(IReadOnlyListSegment{T})"/>.
   /// </summary>
   override readonly public bool Equals ( object? obj )
   {
-    return obj is IListSegment<T> other && Equals ( other );
+    return obj is IReadOnlyListSegment<T> other && Equals ( other );
   }
 
   /// <summary>
   /// Segment value-equals if referenced lists are referential equal and offset and count are the same.
   /// </summary>
-  readonly public bool Equals ( IListSegment<T> other )
+  readonly public bool Equals ( IReadOnlyListSegment<T> other )
   {
     return ReferenceEquals ( list, other.list ) && offset == other.offset && limit == other.limit;
   }
@@ -268,17 +259,17 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
 
   /// <summary>
-  /// Calls to <see cref="Equals(IListSegment{T})"/>.
+  /// Calls to <see cref="Equals(IReadOnlyListSegment{T})"/>.
   /// </summary>
-  static public bool operator == ( IListSegment<T> left, IListSegment<T> right )
+  static public bool operator == ( IReadOnlyListSegment<T> left, IReadOnlyListSegment<T> right )
   {
     return left.Equals ( right );
   }
 
   /// <summary>
-  /// Calls to <see cref="Equals(IListSegment{T})"/>.
+  /// Calls to <see cref="Equals(IReadOnlyListSegment{T})"/>.
   /// </summary>
-  static public bool operator != ( IListSegment<T> left, IListSegment<T> right )
+  static public bool operator != ( IReadOnlyListSegment<T> left, IReadOnlyListSegment<T> right )
   {
     return left.Equals ( right ) == false;
   }

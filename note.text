@@ -1,4 +1,3 @@
-- add IReadOnlyListSegment<T>
 - add non-T IListSegment 
 - add ref struct non-T IListSegment 
 - add Capacitor

@@ -9,9 +9,12 @@ This namespace contains types to ease working with segments.
 - [`IListSegmentEqualityComparer<T>`](./IListSegmentEqualityComparer.cs) – `IListSegment<T>` equality comparer
 - [`IListRefSegment<T>`](./IListRefSegment.cs) – segment over `IList<T>`, `ref struct` type
 - [`IListRefSegmentEqualityComparer<T>`](./IListRefSegmentEqualityComparer.cs) – `IListRefSegment<T>` equality comparer
+- [`IReadOnlyListEnumerator<T>`](./IReadOnlyListEnumerator.cs) – allows for segmented enumeration
+- [`IReadOnlyListSegment<T>`](./IReadOnlyListSegment.cs) – segment over `IReadOnlyList<T>`
+- [`IReadOnlyListSegmentEqualityComparer<T>`](./IListSegmentEqualityComparer.cs) – `IReadOnlyListSegment<T>` equality comparer
 
-Everything comes with a price and for this reason is up to client code to ensure `IList<T>` passed
-into `IListSegment<T>` or `IListEnumerator<T>` is not mutated in a harmful way, most notably that 
+Everything comes with a price and for this reason is up to client code to ensure `IList<T>`/`IReadOnlyList<T>` passed
+into `IListSegment<T>` or `IListEnumerator<T>` and others is not mutated in the mean time in a harmful way, most notably that 
 it is not shrunk beyond segment defined.
 
 ```csharp

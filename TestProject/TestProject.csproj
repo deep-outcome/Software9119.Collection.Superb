@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <!--<PackageReference Include="Software9119.Collection.Superb.Debug" Version="1.0.2" />-->
-    <PackageReference Include="Software9119.Collection.Superb" Version="1.0.2" />
+    <PackageReference Include="Software9119.Collection.Superb" Version="1.1.1" />
   </ItemGroup>
 
 </Project>
