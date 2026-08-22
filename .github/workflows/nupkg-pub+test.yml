@@ -56,7 +56,7 @@ jobs:
       shell: pwsh
       run: |
         $dir = "${{ github.workspace }}/nupkgs"
-        $files = Get-ChildItem -Path $dir -File | Where-Object { $_.Extension -in '.nupkg', '.snupkg' }
+        $files = Get-ChildItem -Path $dir -File | Where-Object { $_.Extension -in '.nupkg' }
         if ($files.Count -eq 0) { Write-Error "No packages found in $dir"; exit 1 }
         $ordered = $files | Sort-Object @{Expression = { if ($_.Extension -eq '.nupkg') {0} elseif ($_.Extension -eq '.snupkg') {1} else {2} }}, Name
         foreach ($f in $ordered) {

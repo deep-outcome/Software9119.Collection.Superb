@@ -89,7 +89,8 @@ public class SegmentationValidatorTest
   [TestMethod]
   [DataRow ( 0, 1, 1, 2 )]
   [DataRow ( 1, 2, 1, 2 )]
-  [DataRow ( 0, 0, 0, 5 )]  
+  [DataRow ( 0, 0, 0, 5 )]
+  [DataRow ( 4, 4, 0, 5 )]
   public void ValidateIndex_PositiveScenarios ( int index, int computedIndex, int offset, int count )
   {
     IListSegment<int> segment = new ([1,2,3,4,5], offset, count);
