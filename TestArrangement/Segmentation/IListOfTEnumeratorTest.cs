@@ -9,13 +9,13 @@ using System.Collections;
 namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
 
 [TestClass]
-public class IReadOnlyListEnumeratorTest
+public class IListOfTEnumeratorTest
 {
   [TestMethod]
   public void PubCtor_NullList ()
   {
     int[]? list = null;
-    Func<object> test = () => new IReadOnlyListEnumerator<int>(0,0, list!);
+    Func<object> test = () => new IListEnumerator<int>(0,0, list!);
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> (test);
     Assert.AreEqual ( "Null list provided. (Parameter 'list')", e.Message );
   }
@@ -23,7 +23,7 @@ public class IReadOnlyListEnumeratorTest
   [TestMethod]
   public void PubCtor_NegativeOffset ()
   {
-    Func<object> test = () => new IReadOnlyListEnumerator<int>(-1,0, []);
+    Func<object> test = () => new IListEnumerator<int>(-1,0, []);
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
     const string expMessage = "Offset must be a non-negative integer, but it is -1.";
     Assert.AreEqual ( expMessage, e.Message );
@@ -32,7 +32,7 @@ public class IReadOnlyListEnumeratorTest
   [TestMethod]
   public void PubCtor_NegativeCount ()
   {
-    Func<object> test = () => new IReadOnlyListEnumerator<int>(0,-1, []);
+    Func<object> test = () => new IListEnumerator<int>(0,-1, []);
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
     const string expMessage = "Count must be a non-negative integer, but it is -1.";
     Assert.AreEqual ( expMessage, e.Message );
@@ -44,7 +44,7 @@ public class IReadOnlyListEnumeratorTest
   [DataRow ( 8, 3, "List has length 5, given offset 8 and count 3 produces out-of indexing in range 5–10." )]
   public void PubCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
-    Func<object> test = () => new IReadOnlyListEnumerator<int>(offset,count, [1,2,3,4, 5]);
+    Func<object> test = () => new IListEnumerator<int>(offset,count, [1,2,3,4, 5]);
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
     Assert.AreEqual ( errMsg, e.Message );
   }
@@ -52,7 +52,7 @@ public class IReadOnlyListEnumeratorTest
   [TestMethod]
   public void Current ()
   {
-    IReadOnlyListEnumerator<int> enumerator = new (0,5, [1,2,3,4, 5]);
+    IListEnumerator<int> enumerator = new (0,5, [1,2,3,4, 5]);
     Assert.AreEqual ( 0, enumerator.Current );
     Assert.AreEqual ( enumerator.Current, ((IEnumerator) enumerator).Current );
     _ = enumerator.MoveNext ();
@@ -66,7 +66,7 @@ public class IReadOnlyListEnumeratorTest
   [DataRow ( 3, 1, 4 )]
   public void MoveNextA ( int offset, int count, int current )
   {
-    IReadOnlyListEnumerator<int> enumerator = new (offset,count, [1,2,3,4,5]);
+    IListEnumerator<int> enumerator = new (offset,count, [1,2,3,4,5]);
     Assert.AreEqual ( 0, enumerator.Current );
 
     Assert.IsTrue ( enumerator.MoveNext () );
@@ -82,7 +82,7 @@ public class IReadOnlyListEnumeratorTest
   [DataRow ( 2, 2, new int [] { 3, 4 } )]
   public void MoveNextB ( int offset, int count, int [] current )
   {
-    IReadOnlyListEnumerator<int> enumerator = new (offset,count, [1,2,3,4,5]);
+    IListEnumerator<int> enumerator = new (offset,count, [1,2,3,4,5]);
     Assert.AreEqual ( 0, enumerator.Current );
 
     Assert.IsTrue ( enumerator.MoveNext () );
@@ -98,7 +98,7 @@ public class IReadOnlyListEnumeratorTest
   [TestMethod]
   public void Reset ()
   {
-    IReadOnlyListEnumerator<int> enumerator = new (0,1, [1]);
+    IListEnumerator<int> enumerator = new (0,1, [1]);
     Assert.IsTrue ( enumerator.MoveNext () );
 
     enumerator.Reset ();

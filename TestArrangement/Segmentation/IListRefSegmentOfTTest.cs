@@ -12,7 +12,7 @@ using System.Linq;
 namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
 
 [TestClass]
-public class IListRefSegmentTest
+public class IListRefSegmentOfTTest
 {
   [TestMethod]
   public void DefaultCtor ()

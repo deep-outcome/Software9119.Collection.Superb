@@ -13,7 +13,7 @@ using System.Linq;
 namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
 
 [TestClass]
-public class IReadOnlyListSegmentTest
+public class IReadOnlyListSegmentOfTTest
 {
   static public IEnumerable<object []> NullListCtors ()
   {

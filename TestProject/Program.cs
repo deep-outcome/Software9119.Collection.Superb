@@ -2,26 +2,36 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+[SuppressMessage ( "Style", "IDE0008:Use explicit type", Justification = "Unimportant." )]
+[SuppressMessage ( "Style", "IDE0059:Unnecessary assignment of a value", Justification = "Unimportant." )]
+
 sealed class Program
 {
-  [SuppressMessage ( "Style", "IDE0008:Use explicit type", Justification = "Unimportant." )]
-  [SuppressMessage ( "Style", "IDE0059:Unnecessary assignment of a value", Justification = "Unimportant." )]
+
   static void Main ()
   {
-    IListSegment ();
-    IListRefSegment ();
+    IListSegmentOfT ();
+    IListRefSegmentOfT ();
+    IReadOnlyListSegmentOfT ();
   }
 
-  static void IListSegment ()
+  static void IListSegmentOfT ()
   {
     var segment = new IListSegment<int>([]);
     var comparer = new IListSegmentEqualityComparer<int>();
     var enumerator = new IListEnumerator<int>(0, 0, []);
   }
 
-  static void IListRefSegment ()
+  static void IListRefSegmentOfT ()
   {
     var segment = new IListRefSegment<int>([]);
-    var comparer = new IListRefSegmentEqualityComparer<int>();    
+    var comparer = new IListRefSegmentEqualityComparer<int>();
+  }
+
+  static void IReadOnlyListSegmentOfT ()
+  {
+    var segment = new IReadOnlyListSegment<int>([]);
+    var comparer = new IReadOnlyListSegmentEqualityComparer<int>();
+    var enumerator = new IReadOnlyListEnumerator<int>(0, 0, []);
   }
 }
