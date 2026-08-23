@@ -6,10 +6,12 @@ This namespace contains types to ease working with segments.
 
 - [`IListEnumerator`](./IListEnumerator.cs) – allows for segmented enumeration of `IList`
 - [`IListEnumerator<T>`](./IListOfTEnumerator.cs) – allows for segmented enumeration of `IList<T>`
+- [`IListRefEnumerator<T>`](./IListRefEnumerator.cs) – allows for segmented enumeration of `IList` implementing `ref struct`
 - [`IListRefEnumerator<T, U>`](./IListOfTRefEnumerator.cs) – allows for segmented enumeration of `IList<U>` implementing `ref struct`
 - [`IReadOnlyListEnumerator<T>`](./IReadOnlyListOfTEnumerator.cs) – allows for segmented enumeration of `IReadOnlyList<T>`
 - [`IListSegment`](./IListSegment.cs) – segment over `IList`
 - [`IListSegment<T>`](./IListSegmentOfT.cs) – segment over `IList<T>`
+- [`IListRefSegment<T>`](./IListRefSegment.cs) – segment over `IList` implementing `ref struct`
 - [`IListRefSegment<T,U>`](./IListRefSegmentOfT.cs) – segment over `IList<U>` implementing `ref struct`
 - [`IReadOnlyListSegment<T>`](./IReadOnlyListSegmentOfT.cs) – segment over `IReadOnlyList<T>`
 - [`IListSegmentEqualityComparer`](./IListSegmentEqualityComparer.cs) – `IListSegment` equality comparer

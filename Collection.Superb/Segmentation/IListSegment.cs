@@ -175,6 +175,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   /// </summary>
   readonly public void Clear ()
   {
+    IList list = this.list;
     for (int i = offset ; i < limit ; ++i)
       list [ i ] = default;
   }
