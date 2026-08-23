@@ -6,7 +6,7 @@ This namespace contains types to ease working with segments.
 
 - [`IListEnumerator`](./IListEnumerator.cs) – allows for segmented enumeration of `IList`
 - [`IListEnumerator<T>`](./IListOfTEnumerator.cs) – allows for segmented enumeration of `IList<T>`
-- [`IListRefEnumerator<T, U>`](./IListRefEnumerator.cs) – allows for segmented enumeration of `IList<U>` implementing `ref struct`
+- [`IListRefEnumerator<T, U>`](./IListOfTRefEnumerator.cs) – allows for segmented enumeration of `IList<U>` implementing `ref struct`
 - [`IReadOnlyListEnumerator<T>`](./IReadOnlyListOfTEnumerator.cs) – allows for segmented enumeration of `IReadOnlyList<T>`
 - [`IListSegment`](./IListSegment.cs) – segment over `IList`
 - [`IListSegment<T>`](./IListSegmentOfT.cs) – segment over `IList<T>`
@@ -16,7 +16,7 @@ This namespace contains types to ease working with segments.
 - [`IListSegmentEqualityComparer<T>`](./IListSegmentOfTEqualityComparer.cs) – `IListSegment<T>` equality comparer
 - [`IReadOnlyListSegmentEqualityComparer<T>`](./IReadOnlyListSegmentOfTEqualityComparer.cs) – `IReadOnlyListSegment<T>` equality comparer
 
-Everything comes with a price and for this reason is up to client code to ensure `IList<T>`/`IReadOnlyList<T>` passed
+Everything comes with a price and for this reason is up to client code to ensure _'list'_ passed
 into `IListSegment<T>` or `IListEnumerator<T>` and others is not mutated in the mean time in a harmful way, most notably that 
 it is not shrunk beyond segment defined.
 

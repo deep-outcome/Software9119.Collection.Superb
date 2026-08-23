@@ -1,5 +1,5 @@
 
-- add ref struct non-T IListSegment 
+- add ref struct non-T IListSegment and IReadOnlyList
 - implement IEqualityComparer ?
 - add Capacitor
 - add step
