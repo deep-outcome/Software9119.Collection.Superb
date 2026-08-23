@@ -5,7 +5,7 @@
   <PropertyGroup>
     <RootNamespace>Software9119.Collection.Superb</RootNamespace>
     <AssemblyName>Software9119.Collection.Superb</AssemblyName>
-    <PackageVersion>1.2.0</PackageVersion>
+    <PackageVersion>1.3.0</PackageVersion>
     <PackageReadmeFile>./README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
