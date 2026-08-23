@@ -35,9 +35,12 @@ public class IListSegmentOfTTest
     List<string?> list = ["a", "b", "c", "d", "e",];
 
     IListSegment<string> segment = new ( list );
-    Assert.HasCount ( list.Count, segment );
+    Assert.AreEqual ( list.Count, segment.Count );
+    Assert.AreEqual ( list.Count, segment.limit );
     Assert.AreEqual ( 0, segment.Offset );
-    Assert.AreSame ( list, segment.List );
+    Assert.AreEqual ( 0, segment.offset );
+    Assert.AreEqual ( list, segment.list );
+    Assert.AreEqual ( list, segment.List );
 
     Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
   }
@@ -64,9 +67,12 @@ public class IListSegmentOfTTest
     List<string?> list = ["a", "b", "c", "d", "e",];
 
     IListSegment<string> segment = new ( list, offset: offset, count );
-    Assert.HasCount ( count, segment );
+    Assert.AreEqual ( count, segment.Count );
+    Assert.AreEqual ( SegmentationValidator.LimitOutOf ( offset: offset, count ), segment.limit );
     Assert.AreEqual ( offset, segment.Offset );
-    Assert.AreSame ( list, segment.List );
+    Assert.AreEqual ( offset, segment.offset );
+    Assert.AreEqual ( list, segment.list );
+    Assert.AreEqual ( list, segment.List );
 
     Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
   }

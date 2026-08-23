@@ -22,9 +22,9 @@ public struct IListSegment : IList, IEquatable<IListSegment>
 {
   readonly Lock syncStump = new ();
 
-  readonly IList list;
-  internal int offset;
-  internal int limit;
+  readonly internal IList list;
+  readonly internal int offset;
+  readonly internal int limit;
 
   /// <summary>
   /// Count of items available through this segment.

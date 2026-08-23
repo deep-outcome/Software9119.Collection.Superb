@@ -16,12 +16,11 @@ namespace Software9119.Collection.Superb.Segmentation;
 /// client code to ensure <see cref="IReadOnlyList{T}"/> passed into <see cref="IReadOnlyListSegment{T}"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
-/// <typeparam name="T"></typeparam>
 public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IReadOnlyListSegment<T>>
 {
-  readonly IReadOnlyList<T?> list;
-  internal int offset;
-  internal int limit;
+  readonly internal IReadOnlyList<T?> list;
+  readonly internal int offset;
+  readonly internal int limit;
 
   /// <summary>
   /// Count of items available through this segment.

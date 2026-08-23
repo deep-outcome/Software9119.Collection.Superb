@@ -2,6 +2,7 @@
 
 using Software9119.Collection.Superb.Segmentation;
 using Software9119.Collection.Superb.Segmentation.Exceptionality;
+using Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
 
 using System;
 using System.Collections.Generic;
@@ -17,27 +18,17 @@ public class IListRefSegmentOfTTest
   [TestMethod]
   public void DefaultCtor ()
   {
-    List<string?> list = ["a", "b", "c", "d", "e",];
+    ArraySegment<string?> list = new(["a", "b", "c", "d", "e",]);
 
-    IListRefSegment<string> segment = new ( list );
+    IListRefSegment<ArraySegment<string?>, string> segment = new ( list );
     Assert.AreEqual ( list.Count, segment.Count );
+    Assert.AreEqual ( list.Count, segment.limit );
     Assert.AreEqual ( 0, segment.Offset );
-    Assert.AreSame ( list, segment.List );
+    Assert.AreEqual ( 0, segment.offset );
+    Assert.AreEqual ( list, segment.list );
+    Assert.AreEqual ( list, segment.List );
 
     Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
-  }
-
-  [TestMethod]
-  public void DefaultCtor_NullList ()
-  {
-    try
-    {
-      _ = new IListRefSegment<string> ( null! );
-    }
-    catch (ArgumentNullException e)
-    {
-      Assert.AreEqual ( "Null list provided. (Parameter 'list')", e.Message );
-    }
   }
 
   [TestMethod]
@@ -45,9 +36,9 @@ public class IListRefSegmentOfTTest
   [DataRow ( true )]
   public void DefaultCtor_NullEqualityComparer ( bool passNullExplicitly )
   {
-    List<string?> list = ["a", "b", "c", "d", "e",];
+    RefList<string?> list = new (["a", "b", "c", "d", "e",]);
 
-    IListRefSegment<string> segment = passNullExplicitly ? new ( list, null ) : new ( list );
+    IListRefSegment<RefList<string?>, string> segment = passNullExplicitly ? new ( list, null ) : new ( list );
     Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
   }
 
@@ -59,27 +50,17 @@ public class IListRefSegmentOfTTest
   [DataRow ( 4, 0 )]
   public void OffsetCtor ( int offset, int count )
   {
-    List<string?> list = ["a", "b", "c", "d", "e",];
+    ArraySegment<string?> list = new (["a", "b", "c", "d", "e",]);
 
-    IListRefSegment<string> segment = new ( list, offset: offset, count );
+    IListRefSegment<ArraySegment<string?>, string> segment = new ( list, offset: offset, count );
     Assert.AreEqual ( count, segment.Count );
+    Assert.AreEqual ( SegmentationValidator.LimitOutOf ( offset: offset, count ), segment.limit );
     Assert.AreEqual ( offset, segment.Offset );
-    Assert.AreSame ( list, segment.List );
+    Assert.AreEqual ( offset, segment.offset );
+    Assert.AreEqual ( list, segment.list );
+    Assert.AreEqual ( list, segment.List );
 
     Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
-  }
-
-  [TestMethod]
-  public void OffsetCtor_NullList ()
-  {
-    try
-    {
-      _ = new IListRefSegment<string> ( null!, 0, 0 );
-    }
-    catch (ArgumentNullException e)
-    {
-      Assert.AreEqual ( "Null list provided. (Parameter 'list')", e.Message );
-    }
   }
 
   [TestMethod]
@@ -87,11 +68,11 @@ public class IListRefSegmentOfTTest
   [DataRow ( true )]
   public void OffsetCtor_NullEqualityComparer ( bool passNullExplicitly )
   {
-    List<string?> list = ["a", "b", "c", "d", "e",];
+    RefList<string?> list = new (["a", "b", "c", "d", "e",]);
     const int offset = 0;
     int count = list.Count;
 
-    IListRefSegment<string>  segment = passNullExplicitly ? new ( list, offset: offset, count, null ) : new ( list, offset: offset, count );
+    IListRefSegment<RefList<string?>, string>  segment = passNullExplicitly ? new ( list, offset: offset, count, null ) : new ( list, offset: offset, count );
     Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
   }
 
@@ -101,9 +82,9 @@ public class IListRefSegmentOfTTest
   [DataRow ( 0, -1, "Count must be a non-negative integer, but it is -1.", DisplayName = "Negative count." )]
   public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
-    List<string?> list = ["a", "b", "c", "d", "e",];
+    ArraySegment<string?> list = new(["a", "b", "c", "d", "e",]);
     ImpossibleSegmentationException ise = Assert.ThrowsExactly<ImpossibleSegmentationException> (
-      () => _ = new IListRefSegment<string> ( list, offset: offset, count ) );
+      () => _ = new IListRefSegment<ArraySegment<string?>,string> ( list, offset: offset, count ) );
 
     Assert.AreEqual ( errMsg, ise.Message );
   }
@@ -112,7 +93,8 @@ public class IListRefSegmentOfTTest
   [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "Not particularly useful." )]
   public void EqualityComparer ()
   {
-    IListRefSegment<int> segment = new( [] );
+    RefList<int> list = new ( [] );
+    IListRefSegment<RefList<int>, int> segment = new( list );
     SixEqualsFiveEqualityComparer comparer = new ();
     segment.EqualityComparer = comparer;
     Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
@@ -125,7 +107,8 @@ public class IListRefSegmentOfTTest
   [DataRow ( 2, 2, 1, "d", DisplayName = "Segmentation, high." )]
   public void Indexer_Get_PositiveScenarios ( int offset, int count, int index, string exp )
   {
-    IListRefSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    RefList<string?> list = new ( ["a", "b", "c", "d", "e"]);
+    IListRefSegment<RefList<string?>,string> segment = new ( list, offset, count: count);
     string? test = segment[index];
     Assert.AreEqual ( exp, test );
   }
@@ -137,7 +120,8 @@ public class IListRefSegmentOfTTest
   [DataRow ( 0, 0, 0, "Segment length is 0, index 0 is out of its range." )]
   public void Indexer_Get_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
-    IListRefSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    RefList<string?> list = new (["a", "b", "c", "d", "e"]);
+    IListRefSegment<RefList<string?>,string> segment = new ( list, offset, count: count);
     try
     {
       _ = segment [ index ]!;
@@ -157,7 +141,8 @@ public class IListRefSegmentOfTTest
   public void Indexer_Set_PositiveScenarios ( int offset, int count, int index )
   {
     const string val = "z";
-    IListRefSegment<string> segment = new ( [ "a", "b", "c", "d", "e" ], offset, count: count );
+    RefList<string?> list = new ( ["a", "b", "c", "d", "e"]);
+    IListRefSegment<RefList<string?>,string> segment = new ( list, offset, count: count );
     segment [ index ] = val;
     Assert.AreEqual ( val, segment [ index ] );
   }
@@ -169,7 +154,8 @@ public class IListRefSegmentOfTTest
   [DataRow ( 0, 0, 0, "Segment length is 0, index 0 is out of its range." )]
   public void Indexer_Set_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
-    IListRefSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    RefList<string?> list = new ( ["a", "b", "c", "d", "e"]);
+    IListRefSegment<RefList<string?>,string> segment = new ( list, offset, count: count);
     try
     {
       segment [ index ] = "";
@@ -187,20 +173,11 @@ public class IListRefSegmentOfTTest
   [DataRow ( 3, 0, 3, DisplayName = "Empty segment, offsetting" )]
   public void ValidateSetup_PositiveScenario ( int offset, int count, int expLimit )
   {
-    IListRefSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    RefList<int> list = new ( [1,2,3,4,5]);
+    IListRefSegment<RefList<int>, int> segment = new ( list, offset, count: count);
     bool result = segment.ValidateSetup ( count, out int limit, out ImpossibleSegmentationException? e );
     Assert.IsFalse ( result );
     Assert.AreEqual ( expLimit, limit );
-    Assert.IsNull ( e );
-  }
-
-  [TestMethod]
-  public void ValidateList_PositiveScenario ()
-  {
-    IListRefSegment<int> segment = new ( new int[0], 0, 0);
-
-    bool result = segment.ValidateList ( out ArgumentNullException? e );
-    Assert.IsFalse ( result );
     Assert.IsNull ( e );
   }
 
@@ -211,7 +188,8 @@ public class IListRefSegmentOfTTest
   [DataRow ( 4, 4, 0, 5, DisplayName = "Upper." )]
   public void ValidateIndex_PositiveScenarios ( int index, int computedIndex, int offset, int count )
   {
-    IListRefSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    RefList<string?> list = new ( ["a", "b", "c", "d", "e"]);
+    IListRefSegment<RefList<string?>,string> segment = new ( list, offset, count: count);
     bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
     Assert.IsFalse ( result );
     Assert.AreEqual ( computedIndex, index );
@@ -226,7 +204,9 @@ public class IListRefSegmentOfTTest
   public void ValidateIndex_NegativeScenarios ( int index, int computedIndex, int offset, int count )
   {
     int origIndex = index;
-    IListRefSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+
+    RefList<string?> list = new ( ["a", "b", "c", "d", "e"]);
+    IListRefSegment<RefList<string?>,string> segment = new ( list, offset, count: count);
     bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
     Assert.IsTrue ( result );
     Assert.AreEqual ( computedIndex, index );
@@ -243,11 +223,15 @@ public class IListRefSegmentOfTTest
   [DataRow ( 0, 0, new int [] { 1, 2, 3, 4, 5 }, new int [] { }, DisplayName = "Empty segment." )]
   public void Clear ( int offset, int count, int [] sourceExp, int [] segmentExp )
   {
-    int[] source = [1,2,3,4,5];
-    IListRefSegment<int> segment = new ( source, offset, count: count);
+    RefList<int> source = new([1,2,3,4,5]);
+    IListRefSegment<RefList<int>, int> segment = new ( source, offset, count: count);
     segment.Clear ();
-    Assert.IsTrue ( sourceExp.SequenceEqual ( source ) );
     int index = 0;
+    foreach (int exp in sourceExp)
+    {
+      Assert.AreEqual ( exp, source [ index++ ] );
+    }
+    index = 0;
     foreach (int exp in segmentExp)
     {
       Assert.AreEqual ( exp, segment [ index++ ] );
@@ -262,7 +246,8 @@ public class IListRefSegmentOfTTest
   [DataRow ( 0, 0, 5, false, DisplayName = "Empty segment." )]
   public void Contains_DefaultEqualityComparer ( int offset, int count, int value, bool contains )
   {
-    IListRefSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    RefList<int> list = new ( [1,2,3,4,5]);
+    IListRefSegment<RefList<int>, int> segment = new ( list, offset, count: count);
     bool result = segment.Contains(value);
     Assert.AreEqual ( contains, result );
   }
@@ -283,7 +268,8 @@ public class IListRefSegmentOfTTest
   [TestMethod]
   public void Contains_CustomEqualityComparer ()
   {
-    IListRefSegment<int> segment = new ( [1,2,3,4,5], new SixEqualsFiveEqualityComparer());
+    RefList<int> list = new ( [1,2,3,4,5]);
+    IListRefSegment<RefList<int>, int> segment = new ( list, new SixEqualsFiveEqualityComparer());
     bool result = segment.Contains(6);
     Assert.IsTrue ( result );
   }
@@ -291,7 +277,8 @@ public class IListRefSegmentOfTTest
   [TestMethod]
   public void CopyTo_NullArray ()
   {
-    IListRefSegment<int> segment = new ( [] );
+    RefList<int> list = new ( []);
+    IListRefSegment<RefList<int>, int> segment = new ( list );
 
     try
     {
@@ -306,7 +293,8 @@ public class IListRefSegmentOfTTest
   [TestMethod]
   public void CopyTo_NegativeIndex ()
   {
-    IListRefSegment<int> segment = new ( [] );
+    RefList<int> list = new ( []);
+    IListRefSegment<RefList<int>, int> segment = new ( list );
 
     try
     {
@@ -326,7 +314,8 @@ public class IListRefSegmentOfTTest
   [DataRow ( 0, 1, 0, 0 )]
   public void CopyTo_InsufficientArrayLenght ( int offset, int count, int startingIndex, int arrayLength )
   {
-    IListRefSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    RefList<int> list = new ( [1,2,3,4,5]);
+    IListRefSegment<RefList<int>, int> segment = new ( list, offset, count: count);
     try
     {
       segment.CopyTo ( new int [ arrayLength ], startingIndex );
@@ -347,8 +336,8 @@ public class IListRefSegmentOfTTest
   [DataRow ( 0, 0, 1, 2, new [] { 0, 0 } )]
   public void CopyTo_SufficientArrayLenght_Array ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
   {
-
-    IListRefSegment<int> segment = new ( new int []  { 1,2,3,4,5 }, offset, count: count);
+    RefList<int> list = new ( [1,2,3,4,5]);
+    IListRefSegment<RefList<int>, int> segment = new ( list, offset, count: count);
     int [] test = new int [ arrayLength ];
     segment.CopyTo ( test, startingIndex );
 
@@ -366,7 +355,8 @@ public class IListRefSegmentOfTTest
   public void CopyTo_SufficientArrayLenght_List ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
   {
 
-    IListRefSegment<int> segment = new ( new List<int> { 1,2,3,4,5 }, offset, count: count);
+    RefList<int> list = new ( [1,2,3,4,5]);
+    IListRefSegment<RefList<int>, int> segment = new ( list, offset, count: count);
     int [] test = new int [ arrayLength ];
     segment.CopyTo ( test, startingIndex );
 
@@ -384,7 +374,7 @@ public class IListRefSegmentOfTTest
   {
     ImmutableArray<int> source = ImmutableArray.Create([1,2,3,4,5]);
 
-    IListRefSegment<int> segment = new (source, offset, count: count);
+    IListRefSegment<ImmutableArray<int>, int> segment = new (source, offset, count: count);
     int [] test = new int [ arrayLength ];
     segment.CopyTo ( test, startingIndex );
 
@@ -401,7 +391,8 @@ public class IListRefSegmentOfTTest
   [DataRow ( 0, 0, 5, -1 )]
   public void IndexOf_DefaultEqualityComparer ( int offset, int count, int value, int index )
   {
-    IListRefSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    RefList<int> list = new ( [1,2,3,4,5]);
+    IListRefSegment<RefList<int>, int> segment = new ( list, offset, count: count);
     int result = segment.IndexOf(value);
     Assert.AreEqual ( index, result );
   }
@@ -409,7 +400,8 @@ public class IListRefSegmentOfTTest
   [TestMethod]
   public void IndexOf_CustomEqualityComparer ()
   {
-    IListRefSegment<int> segment = new ( [1,2,3,4,5], new SixEqualsFiveEqualityComparer());
+    RefList<int> list = new ( [1,2,3,4,5]);
+    IListRefSegment<RefList<int>,int> segment = new ( list, new SixEqualsFiveEqualityComparer());
     int result = segment.IndexOf(6);
     Assert.AreEqual ( 4, result );
   }
@@ -419,10 +411,11 @@ public class IListRefSegmentOfTTest
   [DataRow ( 1, 3, new [] { 2, 3, 4, } )]
   [DataRow ( 0, 0, new int [] { } )]
   [DataRow ( 3, 0, new int [] { } )]
-  public void IEnumerableOfTGetEnumerator ( int offset, int count, int [] expResult )
+  public void GetRefEnumerator ( int offset, int count, int [] expResult )
   {
-    IListRefSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
-    IEnumerator<int> enumerator = segment.GetEnumerator();
+    RefList<int> list = new ( [1,2,3,4,5]);
+    IListRefSegment<RefList<int>,int> segment = new ( list, offset, count: count);
+    IListRefEnumerator<RefList<int>, int> enumerator = segment.GetRefEnumerator();
     List<int> test = [];
     while (enumerator.MoveNext ()) { test.Add ( enumerator.Current ); }
     Assert.IsTrue ( expResult.SequenceEqual ( test ) );
@@ -431,65 +424,9 @@ public class IListRefSegmentOfTTest
   [TestMethod]
   public void EqualsObject ()
   {
-    IListRefSegment<int> segment = new ( []);
+    RefList<int> list = new ([]);
+    IListRefSegment<RefList<int>,int> segment = new (list);
     Assert.IsFalse ( segment.Equals ( null ) );
     Assert.IsFalse ( segment.Equals ( new object () ) );
-  }
-
-  [TestMethod]
-  public void Equals_Equals ()
-  {
-    IListRefSegment<int> segment = new ( []);
-    Assert.IsTrue ( segment.Equals ( segment ) );
-  }
-
-  [TestMethod]
-  public void Equals_NotEqual_Reference ()
-  {
-    IListRefSegment<int> i = new ( [1]);
-    IListRefSegment<int> you = new ([1]);
-    Assert.IsFalse ( i.Equals ( you ) );
-  }
-
-  [TestMethod]
-  public void Equals_NotEqual_Offset ()
-  {
-    int[] source = [1,2, 3];
-    IListRefSegment<int> i = new ( source, 0, 2);
-    IListRefSegment<int> you = new (source, 1, 2);
-    Assert.IsFalse ( i.Equals ( you ) );
-  }
-
-  [TestMethod]
-  public void Equals_NotEqual_Count ()
-  {
-    int[] source = [1,2, 3];
-    IListRefSegment<int> i = new ( source, 1, 1);
-    IListRefSegment<int> you = new (source, 1, 2);
-    Assert.IsFalse ( i.Equals ( you ) );
-  }
-
-  [TestMethod]
-  public void EqualOperator ()
-  {
-    IListRefSegment<int> segment = new ( []);
-#pragma warning disable CS1718 // Comparison made to same variable
-    Assert.IsTrue ( segment == segment );
-#pragma warning restore CS1718 // Comparison made to same variable
-
-    IListRefSegment<int> other = new ( []);
-    Assert.IsFalse ( segment == other );
-  }
-
-  [TestMethod]
-  public void NotEqualOperator ()
-  {
-    IListRefSegment<int> segment = new ( []);
-#pragma warning disable CS1718 // Comparison made to same variable
-    Assert.IsFalse ( segment != segment );
-#pragma warning restore CS1718 // Comparison made to same variable
-
-    IListRefSegment<int> other = new ( []);
-    Assert.IsTrue ( segment != other );
   }
 }

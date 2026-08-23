@@ -34,7 +34,6 @@ class SegmentationValidator
 
   }
 
-  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public bool ValidateList
   (
     [NotNullWhen ( false )] IEnumerable? list,
