@@ -107,7 +107,7 @@ public class IListOfTSegmentTest
   public void EqualityComparer ()
   {
     IListSegmentEqualityComparer<int> comparer = new();
-    IListSegment<IListSegment<int>> segment = new( [] );
+    IListSegment<IListSegment<int>> segment = new([]);
     segment.EqualityComparer = comparer;
     Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
   }
@@ -119,7 +119,7 @@ public class IListOfTSegmentTest
   [DataRow ( 2, 2, 1, "d", DisplayName = "Segmentation, high." )]
   public void Indexer_Get_PositiveScenarios ( int offset, int count, int index, string exp )
   {
-    IListSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     string? test = segment[index];
     Assert.AreEqual ( exp, test );
   }
@@ -131,7 +131,7 @@ public class IListOfTSegmentTest
   [DataRow ( 0, 0, 0, "Segment length is 0, index 0 is out of its range." )]
   public void Indexer_Get_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
-    IListSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     Func<object> test = () => segment[index]!;
     IndexOutOfSegmentException e = Assert.ThrowsExactly<IndexOutOfSegmentException> ( test );
     Assert.AreEqual ( expMsg, e.Message );
@@ -146,9 +146,9 @@ public class IListOfTSegmentTest
   public void Indexer_Set_PositiveScenarios ( int offset, int count, int index )
   {
     const string val = "z";
-    IListSegment<string> segment = new ( [ "a", "b", "c", "d", "e" ], offset, count: count );
+    IListSegment<string> segment = new ([ "a", "b", "c", "d", "e" ], offset, count: count );
     segment [ index ] = val;
-    Assert.AreEqual ( val, segment [ index ] );
+    Assert.AreEqual ( val, segment [ index ]);
   }
 
   [TestMethod]
@@ -158,7 +158,7 @@ public class IListOfTSegmentTest
   [DataRow ( 0, 0, 0, "Segment length is 0, index 0 is out of its range." )]
   public void Indexer_Set_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
-    IListSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     Func<object> test = () => segment[index] = "";
     IndexOutOfSegmentException e = Assert.ThrowsExactly<IndexOutOfSegmentException> ( test );
     Assert.AreEqual ( expMsg, e.Message );
@@ -171,7 +171,7 @@ public class IListOfTSegmentTest
   [DataRow ( 3, 0, 3, DisplayName = "Empty segment, offsetting" )]
   public void ValidateSetup_PositiveScenario ( int offset, int count, int expLimit )
   {
-    IListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     bool result = segment.ValidateSetup ( count, out int limit, out ImpossibleSegmentationException? e );
     Assert.IsFalse ( result );
     Assert.AreEqual ( expLimit, limit );
@@ -195,7 +195,7 @@ public class IListOfTSegmentTest
   [DataRow ( 4, 4, 0, 5, DisplayName = "Upper." )]
   public void ValidateIndex_PositiveScenarios ( int index, int computedIndex, int offset, int count )
   {
-    IListSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
     Assert.IsFalse ( result );
     Assert.AreEqual ( computedIndex, index );
@@ -210,7 +210,7 @@ public class IListOfTSegmentTest
   public void ValidateIndex_NegativeScenarios ( int index, int computedIndex, int offset, int count )
   {
     int origIndex = index;
-    IListSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
     Assert.IsTrue ( result );
     Assert.AreEqual ( computedIndex, index );
@@ -242,7 +242,7 @@ public class IListOfTSegmentTest
   [DataRow ( 0, 0, 5, false, DisplayName = "Empty segment." )]
   public void Contains_DefaultEqualityComparer ( int offset, int count, int value, bool contains )
   {
-    IListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     bool result = segment.Contains(value);
     Assert.AreEqual ( contains, result );
   }
@@ -263,7 +263,7 @@ public class IListOfTSegmentTest
   [TestMethod]
   public void Contains_CustomEqualityComparer ()
   {
-    IListSegment<int> segment = new ( [1,2,3,4,5], new SixEqualsFiveEqualityComparer());
+    IListSegment<int> segment = new ([1,2,3,4,5], new SixEqualsFiveEqualityComparer());
     bool result = segment.Contains(6);
     Assert.IsTrue ( result );
   }
@@ -271,7 +271,7 @@ public class IListOfTSegmentTest
   [TestMethod]
   public void CopyTo_NullArray ()
   {
-    IListSegment<int> segment = new ( [] );
+    IListSegment<int> segment = new ([]);
     Action test = () => segment.CopyTo(null!, 0);
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Value cannot be null. (Parameter 'array')", e.Message );
@@ -280,7 +280,7 @@ public class IListOfTSegmentTest
   [TestMethod]
   public void CopyTo_NegativeIndex ()
   {
-    IListSegment<int> segment = new ( [] );
+    IListSegment<int> segment = new ([]);
     Action test = () => segment.CopyTo([], -1);
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
     Assert.AreEqual ( "Index must be non-negative. (Parameter 'arrayIndex')\r\nActual value was -1.", e.Message );
@@ -294,7 +294,7 @@ public class IListOfTSegmentTest
   [DataRow ( 0, 1, 0, 0 )]
   public void CopyTo_InsufficientArrayLenght ( int offset, int count, int startingIndex, int arrayLength )
   {
-    IListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     Action test = () => segment.CopyTo(new int[arrayLength], startingIndex);
     ArgumentException e = Assert.ThrowsExactly<ArgumentException>(test);
     string expMsg = $"Array length of {arrayLength} is insufficient, starting index {startingIndex}, segement length {segment.Count}. (Parameter 'array')";
@@ -364,7 +364,7 @@ public class IListOfTSegmentTest
   [DataRow ( 0, 0, 5, -1 )]
   public void IndexOf_DefaultEqualityComparer ( int offset, int count, int value, int index )
   {
-    IListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     int result = segment.IndexOf(value);
     Assert.AreEqual ( index, result );
   }
@@ -372,7 +372,7 @@ public class IListOfTSegmentTest
   [TestMethod]
   public void IndexOf_CustomEqualityComparer ()
   {
-    IListSegment<int> segment = new ( [1,2,3,4,5], new SixEqualsFiveEqualityComparer());
+    IListSegment<int> segment = new ([1,2,3,4,5], new SixEqualsFiveEqualityComparer());
     int result = segment.IndexOf(6);
     Assert.AreEqual ( 4, result );
   }
@@ -384,7 +384,7 @@ public class IListOfTSegmentTest
   [DataRow ( 3, 0, new int [] { } )]
   public void IEnumerableGetEnumerator ( int offset, int count, int [] expResult )
   {
-    IListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     IEnumerator enumerator = ((IEnumerable)segment).GetEnumerator();
     List<int> test = [];
     while (enumerator.MoveNext ()) { test.Add ( (int) enumerator.Current ); }
@@ -398,7 +398,7 @@ public class IListOfTSegmentTest
   [DataRow ( 3, 0, new int [] { } )]
   public void IEnumerableOfTGetEnumerator ( int offset, int count, int [] expResult )
   {
-    IListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     IEnumerator<int> enumerator = segment.GetEnumerator();
     List<int> test = [];
     while (enumerator.MoveNext ()) { test.Add ( enumerator.Current ); }
@@ -408,7 +408,7 @@ public class IListOfTSegmentTest
   [TestMethod]
   public void EqualsObject ()
   {
-    IListSegment<int> segment = new ( []);
+    IListSegment<int> segment = new ([]);
     Assert.IsTrue ( segment.Equals ( (object)segment ) );
     Assert.IsFalse ( segment.Equals ( null ) );
     Assert.IsFalse ( segment.Equals ( new object () ) );
@@ -417,14 +417,14 @@ public class IListOfTSegmentTest
   [TestMethod]
   public void Equals_Equals ()
   {
-    IListSegment<int> segment = new ( []);
+    IListSegment<int> segment = new ([]);
     Assert.IsTrue ( segment.Equals ( segment ) );
   }
 
   [TestMethod]
   public void Equals_NotEqual_Reference ()
   {
-    IListSegment<int> i = new ( [1]);
+    IListSegment<int> i = new ([1]);
     IListSegment<int> you = new ([1]);
     Assert.IsFalse ( i.Equals ( you ) );
   }
@@ -450,24 +450,24 @@ public class IListOfTSegmentTest
   [TestMethod]
   public void EqualOperator ()
   {
-    IListSegment<int> segment = new ( []);
+    IListSegment<int> segment = new ([]);
 #pragma warning disable CS1718 // Comparison made to same variable
     Assert.IsTrue ( segment == segment );
 #pragma warning restore CS1718 // Comparison made to same variable
 
-    IListSegment<int> other = new ( []);
+    IListSegment<int> other = new ([]);
     Assert.IsFalse ( segment == other );
   }
 
   [TestMethod]
   public void NotEqualOperator ()
   {
-    IListSegment<int> segment = new ( []);
+    IListSegment<int> segment = new ([]);
 #pragma warning disable CS1718 // Comparison made to same variable
     Assert.IsFalse ( segment != segment );
 #pragma warning restore CS1718 // Comparison made to same variable
 
-    IListSegment<int> other = new ( []);
+    IListSegment<int> other = new ([]);
     Assert.IsTrue ( segment != other );
   }
 
@@ -479,7 +479,7 @@ public class IListOfTSegmentTest
     IListSegment<int> segment = new (list, offset: 3, count: 3);
     Assert.AreEqual ( 15, segment.Sum () ); // 4 +5 +6
     list.RemoveAt ( 5 ); // 6 gone
-    var e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( () => segment [ 2 ] ); // List<int> angry
+    var e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( () => segment [ 2 ]); // List<int> angry
     Assert.Contains ( "System.Collections.Generic.List`1.get_Item(Int32 index)", e.StackTrace! ); // yep, it's List<int>
   }
 }

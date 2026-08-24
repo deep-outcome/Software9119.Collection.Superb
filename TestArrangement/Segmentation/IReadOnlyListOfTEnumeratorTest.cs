@@ -15,7 +15,7 @@ public class IReadOnlyListOfTEnumeratorTest
   public void PubCtor_NullList ()
   {
     int[]? list = null;
-    Action test = () =>{ using ( new IReadOnlyListEnumerator<int>(0,0, list!)){ } } ;
+    Action test = () => { using ( new IReadOnlyListEnumerator<int>(0,0, list!)) { } } ;
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> (test);
     Assert.AreEqual ( "Null list provided. (Parameter 'list')", e.Message );
   }
@@ -23,7 +23,7 @@ public class IReadOnlyListOfTEnumeratorTest
   [TestMethod]
   public void PubCtor_NegativeOffset ()
   {
-    Action test = () =>{ using ( new IReadOnlyListEnumerator<int>(-1,0, [])){ } } ;
+    Action test = () => { using ( new IReadOnlyListEnumerator<int>(-1,0, [])) { } } ;
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
     const string expMessage = "Offset must be a non-negative integer, but it is -1.";
     Assert.AreEqual ( expMessage, e.Message );
@@ -32,7 +32,7 @@ public class IReadOnlyListOfTEnumeratorTest
   [TestMethod]
   public void PubCtor_NegativeCount ()
   {
-    Action test = () => { using (new IReadOnlyListEnumerator<int>(0,-1, [])){ } } ;
+    Action test = () => { using (new IReadOnlyListEnumerator<int>(0,-1, [])) { } } ;
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
     const string expMessage = "Count must be a non-negative integer, but it is -1.";
     Assert.AreEqual ( expMessage, e.Message );
@@ -44,7 +44,7 @@ public class IReadOnlyListOfTEnumeratorTest
   [DataRow ( 8, 3, "List has length 5, given offset 8 and count 3 produces out-of indexing in range 5–10." )]
   public void PubCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
-    Action test = () => { using (new IReadOnlyListEnumerator<int>(offset,count, [1,2,3,4, 5])) {} };
+    Action test = () => { using (new IReadOnlyListEnumerator<int>(offset,count, [1,2,3,4, 5])) { } };
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
     Assert.AreEqual ( errMsg, e.Message );
   }

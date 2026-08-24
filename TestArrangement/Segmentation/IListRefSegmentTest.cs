@@ -142,7 +142,7 @@ public class IListRefSegmentTest
     RefList list = new (new string [] { "a", "b", "c", "d", "e" });
     IListRefSegment<RefList> segment = new ( list, offset, count: count );
     segment [ index ] = val;
-    Assert.AreEqual ( val, segment [ index ] );
+    Assert.AreEqual ( val, segment [ index ]);
   }
 
   [TestMethod]
@@ -226,12 +226,12 @@ public class IListRefSegmentTest
     int index = 0;
     foreach (int exp in sourceExp)
     {
-      Assert.AreEqual ( exp, source [ index++ ] );
+      Assert.AreEqual ( exp, source [ index++ ]);
     }
     index = 0;
     foreach (int exp in segmentExp)
     {
-      Assert.AreEqual ( exp, segment [ index++ ] );
+      Assert.AreEqual ( exp, segment [ index++ ]);
     }
   }
 

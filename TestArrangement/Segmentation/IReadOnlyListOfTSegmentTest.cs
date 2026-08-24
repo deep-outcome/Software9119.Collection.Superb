@@ -107,7 +107,7 @@ public class IReadOnlyListOfTSegmentTest
   public void EqualityComparer ()
   {
     IReadOnlyListSegmentEqualityComparer<int> comparer = new();
-    IReadOnlyListSegment<IReadOnlyListSegment<int>> segment = new( [] );
+    IReadOnlyListSegment<IReadOnlyListSegment<int>> segment = new([]);
     segment.EqualityComparer = comparer;
     Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
   }
@@ -119,7 +119,7 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 2, 2, 1, "d", DisplayName = "Segmentation, high." )]
   public void Indexer_Get_PositiveScenarios ( int offset, int count, int index, string exp )
   {
-    IReadOnlyListSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    IReadOnlyListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     string? test = segment[index];
     Assert.AreEqual ( exp, test );
   }
@@ -131,7 +131,7 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 0, 0, 0, "Segment length is 0, index 0 is out of its range." )]
   public void Indexer_Get_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
-    IReadOnlyListSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    IReadOnlyListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     Func<object> test = () => segment[index]!;
     IndexOutOfSegmentException e = Assert.ThrowsExactly<IndexOutOfSegmentException> ( test );
     Assert.AreEqual ( expMsg, e.Message );
@@ -144,7 +144,7 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 3, 0, 3, DisplayName = "Empty segment, offsetting" )]
   public void ValidateSetup_PositiveScenario ( int offset, int count, int expLimit )
   {
-    IReadOnlyListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     bool result = segment.ValidateSetup ( count, out int limit, out ImpossibleSegmentationException? e );
     Assert.IsFalse ( result );
     Assert.AreEqual ( expLimit, limit );
@@ -168,7 +168,7 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 4, 4, 0, 5, DisplayName = "Upper." )]
   public void ValidateIndex_PositiveScenarios ( int index, int computedIndex, int offset, int count )
   {
-    IReadOnlyListSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    IReadOnlyListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
     Assert.IsFalse ( result );
     Assert.AreEqual ( computedIndex, index );
@@ -183,7 +183,7 @@ public class IReadOnlyListOfTSegmentTest
   public void ValidateIndex_NegativeScenarios ( int index, int computedIndex, int offset, int count )
   {
     int origIndex = index;
-    IReadOnlyListSegment<string> segment = new ( ["a", "b", "c", "d", "e"], offset, count: count);
+    IReadOnlyListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
     Assert.IsTrue ( result );
     Assert.AreEqual ( computedIndex, index );
@@ -202,7 +202,7 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 0, 0, 5, false, DisplayName = "Empty segment." )]
   public void Contains_DefaultEqualityComparer ( int offset, int count, int value, bool contains )
   {
-    IReadOnlyListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     bool result = segment.Contains(value);
     Assert.AreEqual ( contains, result );
   }
@@ -223,7 +223,7 @@ public class IReadOnlyListOfTSegmentTest
   [TestMethod]
   public void Contains_CustomEqualityComparer ()
   {
-    IReadOnlyListSegment<int> segment = new ( [1,2,3,4,5], new SixEqualsFiveEqualityComparer());
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], new SixEqualsFiveEqualityComparer());
     bool result = segment.Contains(6);
     Assert.IsTrue ( result );
   }
@@ -231,7 +231,7 @@ public class IReadOnlyListOfTSegmentTest
   [TestMethod]
   public void CopyTo_NullArray ()
   {
-    IReadOnlyListSegment<int> segment = new ( [] );
+    IReadOnlyListSegment<int> segment = new ([]);
     Action test = () => segment.CopyTo(null!, 0);
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Value cannot be null. (Parameter 'array')", e.Message );
@@ -240,7 +240,7 @@ public class IReadOnlyListOfTSegmentTest
   [TestMethod]
   public void CopyTo_NegativeIndex ()
   {
-    IReadOnlyListSegment<int> segment = new ( [] );
+    IReadOnlyListSegment<int> segment = new ([]);
     Action test = () => segment.CopyTo([], -1);
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
     Assert.AreEqual ( "Index must be non-negative. (Parameter 'arrayIndex')\r\nActual value was -1.", e.Message );
@@ -254,7 +254,7 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 0, 1, 0, 0 )]
   public void CopyTo_InsufficientArrayLenght ( int offset, int count, int startingIndex, int arrayLength )
   {
-    IReadOnlyListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     Action test = () => segment.CopyTo(new int[arrayLength], startingIndex);
     ArgumentException e = Assert.ThrowsExactly<ArgumentException>(test);
     string expMsg = $"Array length of {arrayLength} is insufficient, starting index {startingIndex}, segement length {segment.Count}. (Parameter 'array')";
@@ -324,7 +324,7 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 0, 0, 5, -1 )]
   public void IndexOf_DefaultEqualityComparer ( int offset, int count, int value, int index )
   {
-    IReadOnlyListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     int result = segment.IndexOf(value);
     Assert.AreEqual ( index, result );
   }
@@ -332,7 +332,7 @@ public class IReadOnlyListOfTSegmentTest
   [TestMethod]
   public void IndexOf_CustomEqualityComparer ()
   {
-    IReadOnlyListSegment<int> segment = new ( [1,2,3,4,5], new SixEqualsFiveEqualityComparer());
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], new SixEqualsFiveEqualityComparer());
     int result = segment.IndexOf(6);
     Assert.AreEqual ( 4, result );
   }
@@ -344,7 +344,7 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 3, 0, new int [] { } )]
   public void IEnumerableGetEnumerator ( int offset, int count, int [] expResult )
   {
-    IReadOnlyListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     IEnumerator enumerator = ((IEnumerable)segment).GetEnumerator();
     List<int> test = [];
     while (enumerator.MoveNext ()) { test.Add ( (int) enumerator.Current ); }
@@ -358,7 +358,7 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 3, 0, new int [] { } )]
   public void IEnumerableOfTGetEnumerator ( int offset, int count, int [] expResult )
   {
-    IReadOnlyListSegment<int> segment = new ( [1,2,3,4,5], offset, count: count);
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     IEnumerator<int> enumerator = segment.GetEnumerator();
     List<int> test = [];
     while (enumerator.MoveNext ()) { test.Add ( enumerator.Current ); }
@@ -368,7 +368,7 @@ public class IReadOnlyListOfTSegmentTest
   [TestMethod]
   public void EqualsObject ()
   {
-    IReadOnlyListSegment<int> segment = new ( []);
+    IReadOnlyListSegment<int> segment = new ([]);
     Assert.IsTrue ( segment.Equals ( (object) segment ) );
     Assert.IsFalse ( segment.Equals ( null ) );
     Assert.IsFalse ( segment.Equals ( new object () ) );
@@ -377,14 +377,14 @@ public class IReadOnlyListOfTSegmentTest
   [TestMethod]
   public void Equals_Equals ()
   {
-    IReadOnlyListSegment<int> segment = new ( []);
+    IReadOnlyListSegment<int> segment = new ([]);
     Assert.IsTrue ( segment.Equals ( segment ) );
   }
 
   [TestMethod]
   public void Equals_NotEqual_Reference ()
   {
-    IReadOnlyListSegment<int> i = new ( [1]);
+    IReadOnlyListSegment<int> i = new ([1]);
     IReadOnlyListSegment<int> you = new ([1]);
     Assert.IsFalse ( i.Equals ( you ) );
   }

@@ -238,7 +238,7 @@ public class IReadOnlyListOfTRefSegmentTest
     IReadOnlyListRefSegment<ReadRefList<int>,int> segment = new ( list );
     try
     {
-      segment.CopyTo ( [], -1 );
+      segment.CopyTo ([], -1 );
     }
     catch (ArgumentOutOfRangeException e)
     {

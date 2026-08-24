@@ -23,7 +23,7 @@ public class IListOfTEnumeratorTest
   [TestMethod]
   public void PubCtor_NegativeOffset ()
   {
-    Action test = () =>{ using ( new IListEnumerator<int>(-1,0, [])){ } } ;
+    Action test = () => { using ( new IListEnumerator<int>(-1,0, [])) { } } ;
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
     const string expMessage = "Offset must be a non-negative integer, but it is -1.";
     Assert.AreEqual ( expMessage, e.Message );
@@ -44,7 +44,7 @@ public class IListOfTEnumeratorTest
   [DataRow ( 8, 3, "List has length 5, given offset 8 and count 3 produces out-of indexing in range 5–10." )]
   public void PubCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
-    Action test = () => { using (new IListEnumerator<int> ( offset, count, [ 1, 2, 3, 4, 5 ] )) { } };
+    Action test = () => { using (new IListEnumerator<int> ( offset, count, [ 1, 2, 3, 4, 5 ])) { } };
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
     Assert.AreEqual ( errMsg, e.Message );
   }

@@ -19,7 +19,7 @@ public class IListOfTSegmentEqualityComparerTest
   [TestMethod]
   public void Equals_NotEqual_Reference ()
   {
-    IListSegment<int> i = new ( []);
+    IListSegment<int> i = new ([]);
     IListSegment<int> you = new ([]);
     IListSegmentEqualityComparer<int> comparer = new ();
     Assert.IsFalse ( comparer.Equals ( i, you ) );

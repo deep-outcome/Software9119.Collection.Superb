@@ -107,7 +107,7 @@ public class IListSegmentTest
   public void EqualityComparer ()
   {
     SixEqualsFiveEqualityComparer comparer = new();
-    IListSegment segment = new( new int [0] );
+    IListSegment segment = new( new int [0]);
     segment.EqualityComparer = comparer;
     Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
   }
@@ -148,7 +148,7 @@ public class IListSegmentTest
     const string val = "z";
     IListSegment segment = new ( new string [] { "a", "b", "c", "d", "e" }, offset, count: count );
     segment [ index ] = val;
-    Assert.AreEqual ( val, segment [ index ] );
+    Assert.AreEqual ( val, segment [ index ]);
   }
 
   [TestMethod]
@@ -276,7 +276,7 @@ public class IListSegmentTest
   [TestMethod]
   public void CopyTo_NullArray ()
   {
-    IListSegment segment = new ( new int [0] );
+    IListSegment segment = new ( new int [0]);
     Action test = () => segment.CopyTo(null!, 0);
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Value cannot be null. (Parameter 'array')", e.Message );
@@ -285,7 +285,7 @@ public class IListSegmentTest
   [TestMethod]
   public void CopyTo_NegativeIndex ()
   {
-    IListSegment segment = new ( new int [0] );
+    IListSegment segment = new ( new int [0]);
     Action test = () => segment.CopyTo(new int [0], -1);
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
     Assert.AreEqual ( "Index must be non-negative. (Parameter 'index')\r\nActual value was -1.", e.Message );
