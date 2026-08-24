@@ -7,15 +7,15 @@ using Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
 namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
 
 [TestClass]
-public class IListOfTRefEnumeratorTest
+public class IReadOnlyListOfTRefEnumeratorTest
 {
   [TestMethod]
   public void PubCtor_NegativeOffset ()
   {
     try
     {
-      RefList<int> list = new ([]);
-      using (new IListRefEnumerator<RefList<int>, int> ( -1, 0, list )) { }
+      ReadRefList<int> list = new ([]);
+      using (new IReadOnlyListRefEnumerator<ReadRefList<int>, int> ( -1, 0, list )) { }
     }
     catch (ImpossibleSegmentationException e)
     {
@@ -29,8 +29,8 @@ public class IListOfTRefEnumeratorTest
   {
     try
     {
-      RefList<int> list = new ([]);
-      using (new IListRefEnumerator<RefList<int>, int> ( 0, -1, list )) { }
+      ReadRefList<int> list = new ([]);
+      using (new IReadOnlyListRefEnumerator<ReadRefList<int>, int> ( 0, -1, list )) { }
     }
     catch (ImpossibleSegmentationException e)
     {
@@ -47,11 +47,11 @@ public class IListOfTRefEnumeratorTest
   {
     try
     {
-      RefList<int> list = new ([ 1, 2, 3, 4, 5 ]);
-      using (new IListRefEnumerator<RefList<int>, int> ( offset, count,  list)) { }
+      ReadRefList<int> list = new ([1,2,3,4, 5]);
+      using (new IReadOnlyListRefEnumerator<ReadRefList<int>, int> ( offset, count, list )) { }
     }
     catch (ImpossibleSegmentationException e)
-    { 
+    {
       Assert.AreEqual ( errMsg, e.Message );
     }
   }
@@ -59,9 +59,9 @@ public class IListOfTRefEnumeratorTest
   [TestMethod]
   public void Current ()
   {
-    RefList<int> list = new ([ 1, 2, 3, 4, 5 ]);
-    using IListRefEnumerator<RefList<int>,int> enumerator = new (0,5, list);
-    Assert.AreEqual ( 0, enumerator.Current );    
+    ReadRefList<int> list = new ([1,2,3,4, 5]);
+    using IReadOnlyListRefEnumerator<ReadRefList<int>, int> enumerator = new (0,5, list);
+    Assert.AreEqual ( 0, enumerator.Current );
     _ = enumerator.MoveNext ();
     Assert.AreEqual ( 1, enumerator.Current );
   }
@@ -72,8 +72,8 @@ public class IListOfTRefEnumeratorTest
   [DataRow ( 3, 1, 4 )]
   public void MoveNextA ( int offset, int count, int current )
   {
-    RefList<int> list = new ([ 1, 2, 3, 4, 5 ]);
-    using IListRefEnumerator<RefList<int>,int> enumerator = new (offset,count, list);
+    ReadRefList<int> list = new ([1,2,3,4, 5]);
+    using IReadOnlyListRefEnumerator<ReadRefList<int>, int> enumerator = new (offset,count, list);
     Assert.AreEqual ( 0, enumerator.Current );
 
     Assert.IsTrue ( enumerator.MoveNext () );
@@ -89,8 +89,8 @@ public class IListOfTRefEnumeratorTest
   [DataRow ( 2, 2, new int [] { 3, 4 } )]
   public void MoveNextB ( int offset, int count, int [] current )
   {
-    RefList<int> list = new ([ 1, 2, 3, 4, 5 ]);
-    using IListRefEnumerator<RefList<int>,int> enumerator = new (offset,count, list);
+    ReadRefList<int> list = new ([1,2,3,4, 5]);
+    using IReadOnlyListRefEnumerator<ReadRefList<int>, int> enumerator = new (offset,count, list);
     Assert.AreEqual ( 0, enumerator.Current );
 
     Assert.IsTrue ( enumerator.MoveNext () );
@@ -106,8 +106,8 @@ public class IListOfTRefEnumeratorTest
   [TestMethod]
   public void Reset ()
   {
-    RefList<int> list = new ([ 1, ]);
-    using IListRefEnumerator<RefList<int>,int> enumerator = new (0,1, list);
+    ReadRefList<int> list = new ([1]);
+    using IReadOnlyListRefEnumerator<ReadRefList<int>, int> enumerator = new (0,1, list);
     Assert.IsTrue ( enumerator.MoveNext () );
 
     enumerator.Reset ();

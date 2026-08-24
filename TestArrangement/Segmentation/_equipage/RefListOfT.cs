@@ -18,5 +18,5 @@ readonly ref struct RefList<T> ( IList<T> values ) : IList<T>
   public void Insert ( int index, T item ) => values.Insert ( index, item );
   public bool Remove ( T item ) => values.Remove ( item );
   public void RemoveAt ( int index ) => values.RemoveAt ( index );
-  IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
+  IEnumerator IEnumerable.GetEnumerator () => ((IEnumerable) values).GetEnumerator ();
 }

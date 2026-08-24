@@ -97,11 +97,9 @@ public class IListSegmentTest
   public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
     List<string?> list = ["a", "b", "c", "d", "e",];
-
-    Func<object> test =() => new IListSegment ( list, offset: offset, count );
-    ImpossibleSegmentationException ise = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-
-    Assert.AreEqual ( errMsg, ise.Message );
+    Func<object> test = () => new IListSegment ( list, offset: offset, count );
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( errMsg, e.Message );
   }
 
   [TestMethod]

@@ -82,10 +82,9 @@ public class IListOfTRefSegmentTest
   public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
     ArraySegment<string?> list = new(["a", "b", "c", "d", "e",]);
-    ImpossibleSegmentationException ise = Assert.ThrowsExactly<ImpossibleSegmentationException> (
-      () => _ = new IListRefSegment<ArraySegment<string?>,string> ( list, offset: offset, count ) );
-
-    Assert.AreEqual ( errMsg, ise.Message );
+    Action test = () => _ = new IListRefSegment<ArraySegment<string?>,string> ( list, offset: offset, count );
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
+    Assert.AreEqual ( errMsg, e.Message );
   }
 
   [TestMethod]

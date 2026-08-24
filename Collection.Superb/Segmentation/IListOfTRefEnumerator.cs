@@ -26,9 +26,7 @@ public ref struct IListRefEnumerator<T, U> : IEnumerator<U?>
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
   public IListRefEnumerator ( int offset, int count, T list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
   {
-#pragma warning disable CA1062 // Validate arguments of public methods
     int listLength = list.Count;
-#pragma warning restore CA1062 // Validate arguments of public methods
     if (SegmentationValidator.ValidateSetup ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
       throw ise;
   }

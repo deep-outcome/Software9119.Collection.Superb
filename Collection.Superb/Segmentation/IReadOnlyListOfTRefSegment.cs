@@ -8,19 +8,16 @@ using System.Diagnostics.CodeAnalysis;
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// <see cref="IListRefSegment{T, U}"/> is parallel to <see cref="ArraySegment{U}"/> but generalized
-/// to <see cref="IList{U}"/>.
+/// <see cref="IReadOnlyListRefSegment{T, U}"/> is parallel to <see cref="ArraySegment{U}"/> but generalized
+/// to <see cref="IReadOnlyList{U}"/>.
 /// </summary>
 /// <remarks>
 /// Everything comes with a price and for this reason is up to 
-/// client code to ensure <see cref="IList{U}"/> passed into <see cref="IListRefSegment{T, U}"/> is not
+/// client code to ensure <see cref="IReadOnlyList{U}"/> passed into <see cref="IReadOnlyListRefSegment{T, U}"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
-/// <typeparam name="T"><see cref="IList{U}"/> type.</typeparam>
-/// <typeparam name="U"><see cref="IList{U}"/> item type.</typeparam>
-public ref struct IListRefSegment<T, U>
-  : IList<U?>, IReadOnlyList<U?>
-  where T : struct, IList<U?>, allows ref struct
+public ref struct IReadOnlyListRefSegment<T, U> : IList<U?>, IReadOnlyList<U?>
+  where T : struct, IReadOnlyList<U?>, allows ref struct
 {
   internal T list;
   readonly internal int offset;
@@ -36,14 +33,15 @@ public ref struct IListRefSegment<T, U>
   readonly public int Offset => offset;
 
   /// <summary>
-  /// See <see cref="IListRefSegment{T, U}"/> is not readonly.
+  /// See <see cref="IReadOnlyListRefSegment{T, U}"/> is not readonly.
   /// </summary>
   readonly public bool IsReadOnly => false;
 
   /// <summary>
-  /// The <see cref="IList{U}"/> over which segmentation occurs.
+  /// The <see cref="IReadOnlyList{U}"/> over which segmentation occurs.
   /// </summary>
   readonly public T List => list;
+
 
   IEqualityComparer<U> equalityComparer;
 
@@ -51,10 +49,10 @@ public ref struct IListRefSegment<T, U>
   /// Basic constructor.
   /// </summary>  
   /// <param name="equalityComparer">
-  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{U}.Default"/>
+  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
   /// will be used. See <see cref="EqualityComparer"/> for more.
   /// </param>
-  public IListRefSegment ( T list, IEqualityComparer<U>? equalityComparer = null )
+  public IReadOnlyListRefSegment ( T list, IEqualityComparer<U>? equalityComparer = null )
   {
     this.list = list;
     offset = 0;
@@ -67,14 +65,14 @@ public ref struct IListRefSegment<T, U>
   /// Offset constructor.
   /// </summary>  
   /// <param name="equalityComparer">
-  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{U}.Default"/>
+  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
   /// will be used. See <see cref="EqualityComparer"/> for more.
   /// </param>
   /// <param name="offset">Starting index of segment.</param>
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
   /// <exception cref="ImpossibleSegmentationException">Thrown when the segmention settings are impossible.</exception>
-  public IListRefSegment ( T list, int offset, int count, IEqualityComparer<U>? equalityComparer = null )
+  public IReadOnlyListRefSegment ( T list, int offset, int count, IEqualityComparer<U>? equalityComparer = null )
   {
     this.list = list;
     this.offset = offset;
@@ -91,7 +89,7 @@ public ref struct IListRefSegment<T, U>
   /// <summary>
   /// Equality comparer used in <see cref="Contains(U?)"/> and <see cref="IndexOf(U?)"/> methods.
   /// </summary>
-  /// <remarks>Cannot be set to <see langword="null"/> because it defaults to <see cref="EqualityComparer{U}.Default"/>.</remarks>
+  /// <remarks>Cannot be set to <see langword="null"/> because it defaults to <see cref="EqualityComparer{T}.Default"/>.</remarks>
   public IEqualityComparer<U> EqualityComparer
   {
     readonly get
@@ -106,23 +104,18 @@ public ref struct IListRefSegment<T, U>
 
 
   /// <summary>
-  /// <see cref="IListRefSegment{T, U}"/> indexer.
+  /// <see cref="IReadOnlyListRefSegment{T, U}"/> indexer.
   /// </summary>
   /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>  
-  public U? this [ int index ]
+  /// <exception cref="NotSupportedException">On setter call.</exception>
+  readonly public U? this [ int index ]
   {
     [SuppressMessage ( "Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "Expected location." )]
-    readonly get
+    get
     {
       return ValidateIndex ( ref index, out IndexOutOfSegmentException? e ) ? throw e : list [ index ];
     }
-    set
-    {
-      if (ValidateIndex ( ref index, out IndexOutOfSegmentException? e ))
-        throw e;
-
-      list [ index ] = value;
-    }
+    set => throw new NotSupportedException ();
   }
 
   readonly internal bool ValidateSetup ( int count, out int limit, [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
@@ -133,16 +126,6 @@ public ref struct IListRefSegment<T, U>
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
   {
     return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, limit: limit, count: Count, out e );
-  }
-
-  /// <summary>
-  /// Sets segment values to <c>default(U)</c>.
-  /// </summary>
-  readonly public void Clear ()
-  {
-    T list = this.list;
-    for (int i = offset ; i < limit ; ++i)
-      list [ i ] = default;
   }
 
   /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>. 
@@ -217,6 +200,12 @@ public ref struct IListRefSegment<T, U>
   /// Not supported method.
   /// </summary>  
   /// <exception cref="NotSupportedException">At call.</exception>
+  readonly public void Clear () => throw new NotSupportedException ();
+
+  /// <summary>
+  /// Not supported method.
+  /// </summary>  
+  /// <exception cref="NotSupportedException">At call.</exception>
   readonly IEnumerator IEnumerable.GetEnumerator () => throw new NotSupportedException ();
 
   /// <summary>
@@ -226,10 +215,9 @@ public ref struct IListRefSegment<T, U>
   readonly public IEnumerator<U> GetEnumerator () => throw new NotSupportedException ();
 
   /// <summary>
-  /// Gets the <see cref="IListRefEnumerator{T, U}"/> for this segment defined.
+  /// Gets the <see cref="IReadOnlyListRefEnumerator{T, U}"/> for this segment defined.
   /// </summary>
-  readonly public IListRefEnumerator<T, U> GetRefEnumerator () => new ( list, offset: offset, limit );
-
+  readonly public IReadOnlyListRefEnumerator<T, U> GetRefEnumerator () => new ( list, offset: offset, limit );
 
   /// <summary>
   /// <see langword="false"/> by default.

@@ -17,13 +17,15 @@ public class IListRefSegmentTest
   [TestMethod]
   public void DefaultCtor ()
   {
-    RefList list = new(new string[] { "a", "b", "c", "d", "e", } );
+    NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );
 
-    IListRefSegment<RefList> segment = new ( list );
+    IListRefSegment<NoRefList> segment = new ( list );
     Assert.AreEqual ( list.Count, segment.Count );
     Assert.AreEqual ( list.Count, segment.limit );
     Assert.AreEqual ( 0, segment.Offset );
     Assert.AreEqual ( 0, segment.offset );
+    Assert.AreEqual ( list, segment.list );
+    Assert.AreEqual ( list, segment.List );
 
     Assert.AreSame ( EqualityComparer<object>.Default, segment.EqualityComparer );
   }
@@ -47,13 +49,15 @@ public class IListRefSegmentTest
   [DataRow ( 4, 0 )]
   public void OffsetCtor ( int offset, int count )
   {
-    RefList list = new(new string[] { "a", "b", "c", "d", "e", } );
+    NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );
 
-    IListRefSegment<RefList> segment = new ( list, offset: offset, count );
+    IListRefSegment<NoRefList> segment = new ( list, offset: offset, count );
     Assert.AreEqual ( count, segment.Count );
     Assert.AreEqual ( SegmentationValidator.LimitOutOf ( offset: offset, count ), segment.limit );
     Assert.AreEqual ( offset, segment.Offset );
     Assert.AreEqual ( offset, segment.offset );
+    Assert.AreEqual ( list, segment.list );
+    Assert.AreEqual ( list, segment.List );
 
     Assert.AreSame ( EqualityComparer<object>.Default, segment.EqualityComparer );
   }
@@ -77,16 +81,10 @@ public class IListRefSegmentTest
   [DataRow ( 0, -1, "Count must be a non-negative integer, but it is -1.", DisplayName = "Negative count." )]
   public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
-    RefList list = new(new string[] { "a", "b", "c", "d", "e", } );
-
-    try
-    {
-      _ = new IListRefSegment<RefList> ( list, offset: offset, count );
-    }
-    catch (ImpossibleSegmentationException e)
-    {
-      Assert.AreEqual ( errMsg, e.Message );
-    }
+    NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );
+    Action test = () => _ = new IListRefSegment<NoRefList> ( list, offset: offset, count );
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( errMsg, e.Message );
   }
 
   [TestMethod]

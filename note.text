@@ -1,7 +1,6 @@
-
-- add ref struct non-T IListSegment and IReadOnlyList
 - implement IEqualityComparer ?
-- add Capacitor
-- add step
 - move segments into folders => implement roslyn analyzer first
+- add step
+- add Capacitor
+- add helper methods
 - consider other collection things when finished
