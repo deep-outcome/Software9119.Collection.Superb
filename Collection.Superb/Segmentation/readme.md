@@ -9,16 +9,16 @@ This namespace contains types to ease working with segments.
 - [`IReadOnlyListEnumerator<T>`](./IReadOnlyListOfTEnumerator.cs) – allows for segmented enumeration of `IReadOnlyList<T>`
 - [`IListRefEnumerator<T>`](./IListRefEnumerator.cs) – allows for segmented enumeration of `IList` implementing `ref struct`
 - [`IListRefEnumerator<T, U>`](./IListOfTRefEnumerator.cs) – allows for segmented enumeration of `IList<U>` implementing `ref struct`
-- [`IReadOnlyListRefEnumerator<T, U>`](./IReadOnlyListOfTRefEnumerator.cs.cs) – allows for segmented enumeration of `IReadOnlyList<U>` implementing `ref struct`
+- [`IReadOnlyListRefEnumerator<T, U>`](./IReadOnlyListOfTRefEnumerator.cs) – allows for segmented enumeration of `IReadOnlyList<U>` implementing `ref struct`
 - [`IListSegment`](./IListSegment.cs) – segment over `IList`
-- [`IListSegment<T>`](./IListSegmentOfT.cs) – segment over `IList<T>`
-- [`IReadOnlyListSegment<T>`](./IReadOnlyListSegmentOfT.cs) – segment over `IReadOnlyList<T>`
+- [`IListSegment<T>`](./IListOfTSegment.cs) – segment over `IList<T>`
+- [`IReadOnlyListSegment<T>`](./IReadOnlyListOfTSegment.cs) – segment over `IReadOnlyList<T>`
 - [`IListRefSegment<T>`](./IListRefSegment.cs) – segment over `IList` implementing `ref struct`
-- [`IListRefSegment<T,U>`](./IListRefSegmentOfT.cs) – segment over `IList<U>` implementing `ref struct`
+- [`IListRefSegment<T,U>`](./IListOfTRefSegment.cs) – segment over `IList<U>` implementing `ref struct`
 - [`IReadOnlyListRefSegment<T, U>`](./IReadOnlyListOfTRefSegment.cs) – segment over `IReadOnlyList<U>` implementing `ref struct`
 - [`IListSegmentEqualityComparer`](./IListSegmentEqualityComparer.cs) – `IListSegment` equality comparer
-- [`IListSegmentEqualityComparer<T>`](./IListSegmentOfTEqualityComparer.cs) – `IListSegment<T>` equality comparer
-- [`IReadOnlyListSegmentEqualityComparer<T>`](./IReadOnlyListSegmentOfTEqualityComparer.cs) – `IReadOnlyListSegment<T>` equality comparer
+- [`IListSegmentEqualityComparer<T>`](./IListOfTSegmentEqualityComparer.cs) – `IListSegment<T>` equality comparer
+- [`IReadOnlyListSegmentEqualityComparer<T>`](./IReadOnlyListOfTSegmentEqualityComparer.cs) – `IReadOnlyListSegment<T>` equality comparer
 
 Everything comes with a price and for this reason is up to client code to ensure _'list'_ passed
 into `IListSegment<T>` or `IListEnumerator<T>` and others is not mutated in the mean time in a harmful way, most notably that 
