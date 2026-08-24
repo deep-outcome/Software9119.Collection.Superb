@@ -5,10 +5,22 @@
   <PropertyGroup>
     <RootNamespace>Software9119.Collection.Superb</RootNamespace>
     <AssemblyName>Software9119.Collection.Superb</AssemblyName>
+    <PackageOutputFolder>./../packages/</PackageOutputFolder>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
     <PackageVersion>2.2.0</PackageVersion>
     <PackageReadmeFile>./README.md</PackageReadmeFile>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>.NET collections enhancements going further and beyond.</Description>
+    <PackageTags>Collection,Collections</PackageTags>
+    <PackageReleaseNotes>TBD</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/deep-outcome/Software9119.Collection.Superb</PackageProjectUrl>
   </PropertyGroup>
+
+  <ItemGroup Label="Info">
+    <None Include="./../LICENSE.md" Pack="true" PackagePath="\" />
+    <None Include="./README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PackageId>$(AssemblyName).$(Configuration)</PackageId>
@@ -19,28 +31,14 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <PackageOutputFolder>./../packages/</PackageOutputFolder>
-  </PropertyGroup>
-
   <Target Name="CopyPackage" AfterTargets="Pack">
     <Copy SourceFiles="$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="$(PackageOutputFolder)" />
     <Copy SourceFiles="$(OutputPath)..\$(PackageId).$(PackageVersion).snupkg" DestinationFolder="$(PackageOutputFolder)" />
   </Target>
 
-  <ItemGroup Label="Info">
-    <None Include="./../LICENSE.md" Pack="true" PackagePath="\" />
-    <None Include="./README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
   <ItemGroup>
     <None Include="./.editorconfig" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400" PrivateAssets="All" />
   </ItemGroup>
-
-  <PropertyGroup Label="Debug">
-    <RepositoryUrl>https://github.com/deep-outcome/Software9119.Collection.Superb</RepositoryUrl>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-  </PropertyGroup>
 
 </Project>

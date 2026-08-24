@@ -13,7 +13,9 @@
   <PropertyGroup Label="Id">
     <Authors>software9119.technology</Authors>
     <Company>software9119.technology</Company>
-    <Copyright>MIT</Copyright>    
+    <Copyright>MIT</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>    
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
@@ -27,6 +29,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Debug">
+    <RepositoryUrl>https://github.com/deep-outcome/Software9119.Collection.Superb</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>false</EmbedUntrackedSources>
     <DebugSymbols>true</DebugSymbols>
