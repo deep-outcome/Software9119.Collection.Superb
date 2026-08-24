@@ -1,4 +1,3 @@
-- implement IEqualityComparer ?
 - move segments into folders => implement roslyn analyzer first
 - add step
 - add Capacitor

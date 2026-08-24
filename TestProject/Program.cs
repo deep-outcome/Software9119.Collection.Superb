@@ -1,37 +1,63 @@
 ﻿using Software9119.Collection.Superb.Segmentation;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+
+using TestProject;
 
 [SuppressMessage ( "Style", "IDE0008:Use explicit type", Justification = "Unimportant." )]
 [SuppressMessage ( "Style", "IDE0059:Unnecessary assignment of a value", Justification = "Unimportant." )]
 
 sealed class Program
 {
-
   static void Main ()
   {
-    IListSegmentOfT ();
-    IListRefSegmentOfT ();
-    IReadOnlyListSegmentOfT ();
+    IListSegment ();
+    IListRefSegment ();
+
+    IListOfTSegment ();
+    IListOfTRefSegment ();
+
+    IReadOnlyOfTListSegment ();
+    IReadOnlyListOfTRefSegment ();
   }
 
-  static void IListSegmentOfT ()
+  static void IListSegment ()
+  {
+    var segment = new IListSegment(new int [0]);
+    var comparer = new IListSegmentEqualityComparer();
+    var enumerator = new IListEnumerator(0, 0, new int [0]);
+  }
+
+  static void IListRefSegment ()
+  {
+    var segment = new IListRefSegment<StructRefList>(new StructRefList(new int [0]));
+    using var enumerator = new IListRefEnumerator<ArraySegment<int>, int>(0, 0, []);
+  }
+
+  static void IListOfTSegment ()
   {
     var segment = new IListSegment<int>([]);
     var comparer = new IListSegmentEqualityComparer<int>();
-    var enumerator = new IListEnumerator<int>(0, 0, []);
+    using var enumerator = new IListEnumerator<int>(0, 0, []);
   }
 
-  static void IListRefSegmentOfT ()
+  static void IListOfTRefSegment ()
   {
-    var segment = new IListRefSegment<int>([]);
-    var comparer = new IListRefSegmentEqualityComparer<int>();
+    var segment = new IListRefSegment<ArraySegment<int>, int>([]);
+    using var enumerator = new IListRefEnumerator<ArraySegment<int>, int>(0, 0, []);
   }
 
-  static void IReadOnlyListSegmentOfT ()
+  static void IReadOnlyOfTListSegment ()
   {
     var segment = new IReadOnlyListSegment<int>([]);
     var comparer = new IReadOnlyListSegmentEqualityComparer<int>();
-    var enumerator = new IReadOnlyListEnumerator<int>(0, 0, []);
+    using var enumerator = new IReadOnlyListEnumerator<int>(0, 0, []);
+  }
+
+  static void IReadOnlyListOfTRefSegment ()
+  {
+    var segment = new IReadOnlyListRefSegment<ArraySegment<int>, int>([]);
+    using var enumerator = new IReadOnlyListRefEnumerator<ArraySegment<int>, int>(0, 0, []);
   }
 }
