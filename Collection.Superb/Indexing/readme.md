@@ -1,4 +1,4 @@
-## Software9119.Collection.Superb.Indexing
+## Software9119.Collection.Superb.Indexing namespace
 
 This namespace contains types to ease indexing.
 
