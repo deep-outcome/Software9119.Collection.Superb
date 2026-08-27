@@ -8,3 +8,4 @@ of release build pckg [Software9119.Collection.Superb](https://www.nuget.org/pac
 
 See specific readmes for more:
 - [Software9119.Collection.Superb.Segmentation namespace](./Collection.Superb/Segmentation/readme.md) 
+- [Software9119.Collection.Superb.Indexing](./Collection.Superb/Indexing/readme.md)

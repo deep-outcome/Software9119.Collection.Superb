@@ -2,7 +2,7 @@
 
 This namespace contains types to ease working with segments.
 
-### `IList<T>` segmentation
+### Types Available
 
 - [`IListEnumerator`](./IListEnumerator.cs) – allows for segmented enumeration of `IList`
 - [`IListEnumerator<T>`](./IListOfTEnumerator.cs) – allows for segmented enumeration of `IList<T>`
