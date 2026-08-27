@@ -1,4 +1,4 @@
-## Software9119.Collection.Superb.Segmentation namespace
+## Software9119.Collection.Superb.Segmentation Namespace
 
 This namespace contains types to ease working with segments.
 
