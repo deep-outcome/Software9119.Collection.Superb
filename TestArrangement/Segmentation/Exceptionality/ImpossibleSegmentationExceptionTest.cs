@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Software9119.Collection.Superb.Segmentation;
-using Software9119.Collection.Superb.Segmentation.Exceptionality;
 
 namespace Software9119.Collection.Superb.TestArrangement.Segmentation.Exceptionality;
 

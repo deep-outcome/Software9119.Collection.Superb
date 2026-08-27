@@ -1,27 +1,28 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Software9119.Collection.Superb.Segmentation;
-using Software9119.Collection.Superb.Segmentation.Exceptionality;
 using Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
 
 namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
 
 [TestClass]
-public class IListOfTRefEnumeratorTest
+public class IListRefEnumeratorTest
 {
   [TestMethod]
   public void PubCtor_NegativeOffset ()
   {
     try
     {
-      RefList<int> list = new ([]);
-      using (new IListRefEnumerator<RefList<int>, int> ( -1, 0, list )) { }
+      RefList list = new (new int [0]);
+      _ = new IListRefEnumerator<RefList> ( -1, 0, list );
     }
     catch (ImpossibleSegmentationException e)
     {
       const string expMessage = "Offset must be a non-negative integer, but it is -1.";
       Assert.AreEqual ( expMessage, e.Message );
     }
+
+
   }
 
   [TestMethod]
@@ -29,8 +30,8 @@ public class IListOfTRefEnumeratorTest
   {
     try
     {
-      RefList<int> list = new ([]);
-      using (new IListRefEnumerator<RefList<int>, int> ( 0, -1, list )) { }
+      RefList list = new (new int [0]);
+      _ = new IListRefEnumerator<RefList> ( 0, -1, list );
     }
     catch (ImpossibleSegmentationException e)
     {
@@ -47,11 +48,11 @@ public class IListOfTRefEnumeratorTest
   {
     try
     {
-      RefList<int> list = new ([ 1, 2, 3, 4, 5 ]);
-      using (new IListRefEnumerator<RefList<int>, int> ( offset, count,  list)) { }
+      RefList list = new (new int []{ 1, 2, 3, 4, 5 } );
+      _ = new IListRefEnumerator<RefList> ( offset, count, list );
     }
     catch (ImpossibleSegmentationException e)
-    { 
+    {
       Assert.AreEqual ( errMsg, e.Message );
     }
   }
@@ -59,9 +60,9 @@ public class IListOfTRefEnumeratorTest
   [TestMethod]
   public void Current ()
   {
-    RefList<int> list = new ([ 1, 2, 3, 4, 5 ]);
-    using IListRefEnumerator<RefList<int>,int> enumerator = new (0,5, list);
-    Assert.AreEqual ( 0, enumerator.Current );    
+    RefList list = new (new int []{ 1, 2, 3, 4, 5 } );
+    IListRefEnumerator<RefList> enumerator = new (0,5, list);
+    Assert.IsNull ( enumerator.Current );
     _ = enumerator.MoveNext ();
     Assert.AreEqual ( 1, enumerator.Current );
   }
@@ -72,9 +73,9 @@ public class IListOfTRefEnumeratorTest
   [DataRow ( 3, 1, 4 )]
   public void MoveNextA ( int offset, int count, int current )
   {
-    RefList<int> list = new ([ 1, 2, 3, 4, 5 ]);
-    using IListRefEnumerator<RefList<int>,int> enumerator = new (offset,count, list);
-    Assert.AreEqual ( 0, enumerator.Current );
+    RefList list = new (new int [] { 1, 2, 3, 4, 5 } );
+    IListRefEnumerator<RefList> enumerator = new (offset,count, list);
+    Assert.IsNull ( enumerator.Current );
 
     Assert.IsTrue ( enumerator.MoveNext () );
     Assert.AreEqual ( current, enumerator.Current );
@@ -89,9 +90,9 @@ public class IListOfTRefEnumeratorTest
   [DataRow ( 2, 2, new int [] { 3, 4 } )]
   public void MoveNextB ( int offset, int count, int [] current )
   {
-    RefList<int> list = new ([ 1, 2, 3, 4, 5 ]);
-    using IListRefEnumerator<RefList<int>,int> enumerator = new (offset,count, list);
-    Assert.AreEqual ( 0, enumerator.Current );
+    RefList list = new (new int []{ 1, 2, 3, 4, 5 } );
+    IListRefEnumerator<RefList> enumerator = new (offset,count, list);
+    Assert.IsNull ( enumerator.Current );
 
     Assert.IsTrue ( enumerator.MoveNext () );
     Assert.AreEqual ( current [ 0 ], enumerator.Current );
@@ -106,12 +107,12 @@ public class IListOfTRefEnumeratorTest
   [TestMethod]
   public void Reset ()
   {
-    RefList<int> list = new ([ 1, ]);
-    using IListRefEnumerator<RefList<int>,int> enumerator = new (0,1, list);
+    RefList list = new (new int [1]{ 1, } );
+    IListRefEnumerator<RefList> enumerator = new (0,1, list);
     Assert.IsTrue ( enumerator.MoveNext () );
 
     enumerator.Reset ();
-    Assert.AreEqual ( 0, enumerator.Current );
+    Assert.IsNull ( enumerator.Current );
     Assert.IsTrue ( enumerator.MoveNext () );
   }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Software9119.Collection.Superb.Segmentation.Exceptionality;
+namespace Software9119.Collection.Superb.Segmentation;
 
 class SegmentationExceptionHelper
 {

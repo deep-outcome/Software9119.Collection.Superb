@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Software9119.Collection.Superb.Segmentation.Exceptionality;
+namespace Software9119.Collection.Superb.Segmentation;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 

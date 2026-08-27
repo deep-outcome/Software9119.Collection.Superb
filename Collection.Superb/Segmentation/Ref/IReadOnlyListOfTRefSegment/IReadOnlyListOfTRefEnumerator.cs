@@ -1,17 +1,16 @@
-﻿using Software9119.Collection.Superb.Segmentation.Exceptionality;
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// Allows for segmented enumeration of arbitraty <see cref="IList{T}"/>.
+/// Allows for segmented enumeration of arbitraty <see cref="IReadOnlyList{T}"/>.
 /// </summary>
-public struct IListEnumerator<T> : IEnumerator<T?>
+public ref struct IReadOnlyListRefEnumerator<T, U> : IEnumerator<U?>
+  where T : struct, IReadOnlyList<U?>, allows ref struct
 {
-  readonly IList<T?> list;
+  readonly T list;
   readonly int offset;
   readonly int limit;
 
@@ -23,19 +22,14 @@ public struct IListEnumerator<T> : IEnumerator<T?>
   /// <exception cref="ArgumentNullException">when <paramref name="list"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
-  public IListEnumerator ( int offset, int count, IList<T?> list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
+  public IReadOnlyListRefEnumerator ( int offset, int count, T list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
   {
-    if (SegmentationValidator.ValidateList ( list, out ArgumentNullException? ane ))
-      throw ane;
-
-#pragma warning disable CA1062 // Validate arguments of public methods
     int listLength = list.Count;
-#pragma warning restore CA1062 // Validate arguments of public methods
     if (SegmentationValidator.ValidateSetup ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
       throw ise;
   }
 
-  internal IListEnumerator ( IList<T?> list, int offset, int limit )
+  internal IReadOnlyListRefEnumerator ( T list, int offset, int limit )
   {
     this.list = list;
     this.offset = offset;
@@ -43,12 +37,12 @@ public struct IListEnumerator<T> : IEnumerator<T?>
     Reset ();
   }
 
-  T? current;
+  U? current;
 
   /// <summary>
   /// Current enumeration item.
   /// </summary>
-  readonly public T? Current => current;
+  readonly public U? Current => current;
 
   /// <summary>
   /// Current enumeration item.

@@ -1,6 +1,4 @@
-﻿using Software9119.Collection.Superb.Segmentation.Exceptionality;
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -9,20 +7,21 @@ using System.Threading;
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// <see cref="IListSegment"/> is parallel to <see cref="ArraySegment{T}"/> but generalized
+/// <see cref="IListRefSegment{T}"/> is parallel to <see cref="ArraySegment{U}"/> but generalized
 /// to <see cref="IList"/>.
 /// </summary>
 /// <remarks>
 /// Everything comes with a price and for this reason is up to 
-/// client code to ensure <see cref="IList"/> passed into <see cref="IListSegment"/> is not
+/// client code to ensure <see cref="IList"/> passed into <see cref="IListRefSegment{T}"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
 [SuppressMessage ( "Design", "CA1010:Generic interface should also be implemented", Justification = "Not interested." )]
-public struct IListSegment : IList, IEquatable<IListSegment>
+public ref struct IListRefSegment<T> : IList
+  where T : struct, IList, allows ref struct
 {
   readonly Lock syncStump = new ();
 
-  readonly internal IList list;
+  internal  T list;
   readonly internal int offset;
   readonly internal int limit;
 
@@ -36,7 +35,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   readonly public int Offset => offset;
 
   /// <summary>
-  /// See <see cref="IListSegment"/> is not readonly.
+  /// See <see cref="IListRefSegment{T}"/> is not readonly.
   /// </summary>
   readonly public bool IsReadOnly => false;
 
@@ -60,7 +59,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   /// <summary>
   /// The <see cref="IList"/> over which segmentation occurs.
   /// </summary>
-  readonly public IList List => list;
+  readonly public T List => list;
 
 
   IEqualityComparer<object> equalityComparer;
@@ -72,18 +71,11 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   /// If <see langword="null"/> passed-in, the <c>EqualityComparer&lt;object&gt;.Default</c>
   /// will be used. See <see cref="EqualityComparer"/> for more.
   /// </param>
-  public IListSegment ( IList list, IEqualityComparer<object>? equalityComparer = null )
+  public IListRefSegment ( T list, IEqualityComparer<object>? equalityComparer = null )
   {
-
     this.list = list;
-    if (ValidateList ( out ArgumentNullException? ae ))
-    {
-      throw ae;
-    }
     offset = 0;
-#pragma warning disable CA1062 // Validate arguments of public methods
     limit = list.Count;
-#pragma warning restore CA1062 // Validate arguments of public methods
 
     EqualityComparer = equalityComparer!;
   }
@@ -99,13 +91,9 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
   /// <exception cref="ImpossibleSegmentationException">Thrown when the segmention settings are impossible.</exception>
-  public IListSegment ( IList list, int offset, int count, IEqualityComparer<object>? equalityComparer = null )
+  public IListRefSegment ( T list, int offset, int count, IEqualityComparer<object>? equalityComparer = null )
   {
     this.list = list;
-
-    if (ValidateList ( out ArgumentNullException? ae ))
-      throw ae;
-
     this.offset = offset;
 
     if (ValidateSetup ( count, out int limit, out ImpossibleSegmentationException? e ))
@@ -135,13 +123,13 @@ public struct IListSegment : IList, IEquatable<IListSegment>
 
 
   /// <summary>
-  /// <see cref="IListSegment"/> indexer.
+  /// <see cref="IListRefSegment{T}"/> indexer.
   /// </summary>
   /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>  
-  readonly public object? this [ int index ]
+  public object? this [ int index ]
   {
     [SuppressMessage ( "Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "Expected location." )]
-    get
+    readonly get
     {
       return ValidateIndex ( ref index, out IndexOutOfSegmentException? e ) ? throw e : list [ index ];
     }
@@ -159,12 +147,6 @@ public struct IListSegment : IList, IEquatable<IListSegment>
     return SegmentationValidator.ValidateSetup ( list.Count, offset: offset, count: count, out limit, out e );
   }
 
-  [MemberNotNullWhen ( false, nameof ( list ) )]
-  readonly internal bool ValidateList ( [NotNullWhen ( true )] out ArgumentNullException? e )
-  {
-    return SegmentationValidator.ValidateList ( list, out e );
-  }
-
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
   {
     return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, limit: limit, count: Count, out e );
@@ -175,7 +157,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   /// </summary>
   readonly public void Clear ()
   {
-    IList list = this.list;
+    T list = this.list;
     for (int i = offset ; i < limit ; ++i)
       list [ i ] = default;
   }
@@ -205,10 +187,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
       throw new ArgumentException ( message: errMsg, paramName: nameof ( array ) );
     }
 
-    IList list = this.list;
-    if (list is Array arrSource)
-      Array.Copy ( arrSource, offset, array, index, Count );
-
+    T list = this.list;
     for (int i = offset ; i < limit ;)
       array.SetValue ( list [ i++ ], index++ );
   }
@@ -219,7 +198,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   readonly public int IndexOf ( object? item )
   {
     IEqualityComparer<object> comparer = EqualityComparer;
-    IList list = this.list;
+    T list = this.list;
     for (int i = offset ; i < limit ; ++i)
       if (comparer.Equals ( item, list [ i ] ))
         return i - offset;
@@ -252,46 +231,23 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   readonly public int Add ( object? item ) => throw new NotSupportedException ();
 
   /// <summary>
-  /// Gets the <see cref="IListEnumerator"/> for this segment defined.
-  /// </summary>
-  readonly public IEnumerator GetEnumerator () => new IListEnumerator ( list, offset: offset, limit );
-
-
-  /// <summary>
-  /// In core, it calls to <see cref="Equals(IListSegment)"/>.
-  /// </summary>
-  override readonly public bool Equals ( object? obj )
-  {
-    return obj is IListSegment other && Equals ( other );
-  }
+  /// Not supported method.
+  /// </summary>  
+  /// <exception cref="NotSupportedException">At call.</exception>
+  readonly public IEnumerator GetEnumerator () => throw new NotSupportedException ();
 
   /// <summary>
-  /// Segment value-equals if referenced lists are referential equal and offset and count are the same.
+  /// Gets the <see cref="IListRefEnumerator{T}"/> for this segment defined.
   /// </summary>
-  readonly public bool Equals ( IListSegment other )
-  {
-    return ReferenceEquals ( list, other.list ) && offset == other.offset && limit == other.limit;
-  }
+  readonly public IListRefEnumerator<T> GetRefEnumerator () => new ( list, offset: offset, limit );
 
   /// <summary>
-  /// Hash code made out of 'signature' values of segment.
+  /// <see langword="false"/> by default.
   /// </summary>
-  override readonly public int GetHashCode () => HashCode.Combine ( list, offset, limit );
-
-
-  /// <summary>
-  /// Calls to <see cref="Equals(IListSegment)"/>.
-  /// </summary>
-  static public bool operator == ( IListSegment left, IListSegment right )
-  {
-    return left.Equals ( right );
-  }
+  override readonly public bool Equals ( object? obj ) => false;
 
   /// <summary>
-  /// Calls to <see cref="Equals(IListSegment)"/>.
+  /// This segment hash code.
   /// </summary>
-  static public bool operator != ( IListSegment left, IListSegment right )
-  {
-    return left.Equals ( right ) == false;
-  }
+  override readonly public int GetHashCode () => HashCode.Combine ( GetHashCode (), offset, limit );
 }

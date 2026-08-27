@@ -1,17 +1,15 @@
-﻿using Software9119.Collection.Superb.Segmentation.Exceptionality;
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// Allows for segmented enumeration of arbitraty <see cref="IReadOnlyList{T}"/>.
+/// Allows for segmented enumeration of arbitraty <see cref="IList{T}"/>.
 /// </summary>
-public struct IReadOnlyListEnumerator<T> : IEnumerator<T?>
+public struct IListEnumerator<T> : IEnumerator<T?>
 {
-  readonly IReadOnlyList<T?> list;
+  readonly IList<T?> list;
   readonly int offset;
   readonly int limit;
 
@@ -23,7 +21,7 @@ public struct IReadOnlyListEnumerator<T> : IEnumerator<T?>
   /// <exception cref="ArgumentNullException">when <paramref name="list"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
-  public IReadOnlyListEnumerator ( int offset, int count, IReadOnlyList<T?> list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
+  public IListEnumerator ( int offset, int count, IList<T?> list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
   {
     if (SegmentationValidator.ValidateList ( list, out ArgumentNullException? ane ))
       throw ane;
@@ -35,7 +33,7 @@ public struct IReadOnlyListEnumerator<T> : IEnumerator<T?>
       throw ise;
   }
 
-  internal IReadOnlyListEnumerator ( IReadOnlyList<T?> list, int offset, int limit )
+  internal IListEnumerator ( IList<T?> list, int offset, int limit )
   {
     this.list = list;
     this.offset = offset;

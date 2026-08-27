@@ -1,44 +1,42 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Software9119.Collection.Superb.Segmentation;
-using Software9119.Collection.Superb.Segmentation.Exceptionality;
-using Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
+
+using System;
+using System.Collections;
 
 namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
 
 [TestClass]
-public class IListRefEnumeratorTest
+public class IListEnumeratorTest
 {
+  [TestMethod]
+  public void PubCtor_NullList ()
+  {
+    int[]? list = null;
+    Func<object> test = () => new IListEnumerator(0,0, list!);
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> (test);
+    Assert.AreEqual ( "Null list provided. (Parameter 'list')", e.Message );
+  }
+
   [TestMethod]
   public void PubCtor_NegativeOffset ()
   {
-    try
-    {
-      RefList list = new (new int [0]);
-      _ = new IListRefEnumerator<RefList> ( -1, 0, list );
-    }
-    catch (ImpossibleSegmentationException e)
-    {
-      const string expMessage = "Offset must be a non-negative integer, but it is -1.";
-      Assert.AreEqual ( expMessage, e.Message );
-    }
-
-
+    int[]? list = [];
+    Func<object> test = () => new IListEnumerator(-1,0, list);
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
+    const string expMessage = "Offset must be a non-negative integer, but it is -1.";
+    Assert.AreEqual ( expMessage, e.Message );
   }
 
   [TestMethod]
   public void PubCtor_NegativeCount ()
   {
-    try
-    {
-      RefList list = new (new int [0]);
-      _ = new IListRefEnumerator<RefList> ( 0, -1, list );
-    }
-    catch (ImpossibleSegmentationException e)
-    {
-      const string expMessage = "Count must be a non-negative integer, but it is -1.";
-      Assert.AreEqual ( expMessage, e.Message );
-    }
+    int[]? list = [];
+    Func<object> test = () => new IListEnumerator(0,-1, list);
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
+    const string expMessage = "Count must be a non-negative integer, but it is -1.";
+    Assert.AreEqual ( expMessage, e.Message );
   }
 
   [TestMethod]
@@ -47,25 +45,20 @@ public class IListRefEnumeratorTest
   [DataRow ( 8, 3, "List has length 5, given offset 8 and count 3 produces out-of indexing in range 5–10." )]
   public void PubCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
-    try
-    {
-      RefList list = new (new int []{ 1, 2, 3, 4, 5 } );
-      _ = new IListRefEnumerator<RefList> ( offset, count, list );
-    }
-    catch (ImpossibleSegmentationException e)
-    {
-      Assert.AreEqual ( errMsg, e.Message );
-    }
+    Func<object> test = () => new IListEnumerator(offset,count, new int [] { 1,2,3,4, 5 } );
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
+    Assert.AreEqual ( errMsg, e.Message );
   }
 
   [TestMethod]
   public void Current ()
   {
-    RefList list = new (new int []{ 1, 2, 3, 4, 5 } );
-    IListRefEnumerator<RefList> enumerator = new (0,5, list);
+    IListEnumerator enumerator = new (0,5, new int [] {1,2,3,4, 5 } );
     Assert.IsNull ( enumerator.Current );
+    Assert.AreEqual ( enumerator.Current, ((IEnumerator) enumerator).Current );
     _ = enumerator.MoveNext ();
     Assert.AreEqual ( 1, enumerator.Current );
+    Assert.AreEqual ( enumerator.Current, ((IEnumerator) enumerator).Current );
   }
 
   [TestMethod]
@@ -74,8 +67,7 @@ public class IListRefEnumeratorTest
   [DataRow ( 3, 1, 4 )]
   public void MoveNextA ( int offset, int count, int current )
   {
-    RefList list = new (new int [] { 1, 2, 3, 4, 5 } );
-    IListRefEnumerator<RefList> enumerator = new (offset,count, list);
+    IListEnumerator enumerator = new (offset,count, new int [] { 1,2,3,4,5 } );
     Assert.IsNull ( enumerator.Current );
 
     Assert.IsTrue ( enumerator.MoveNext () );
@@ -91,8 +83,7 @@ public class IListRefEnumeratorTest
   [DataRow ( 2, 2, new int [] { 3, 4 } )]
   public void MoveNextB ( int offset, int count, int [] current )
   {
-    RefList list = new (new int []{ 1, 2, 3, 4, 5 } );
-    IListRefEnumerator<RefList> enumerator = new (offset,count, list);
+    IListEnumerator enumerator = new (offset,count, new int [] { 1,2,3,4,5 } );
     Assert.IsNull ( enumerator.Current );
 
     Assert.IsTrue ( enumerator.MoveNext () );
@@ -108,8 +99,7 @@ public class IListRefEnumeratorTest
   [TestMethod]
   public void Reset ()
   {
-    RefList list = new (new int [1]{ 1, } );
-    IListRefEnumerator<RefList> enumerator = new (0,1, list);
+    IListEnumerator enumerator = new (0,1, new int [] { 1 } );
     Assert.IsTrue ( enumerator.MoveNext () );
 
     enumerator.Reset ();

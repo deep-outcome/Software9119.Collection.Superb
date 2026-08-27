@@ -58,7 +58,6 @@ jobs:
         $dir = "${{ github.workspace }}/nupkgs"
         $files = Get-ChildItem -Path $dir -File | Where-Object { $_.Extension -in '.nupkg' }
         if ($files.Count -eq 0) { Write-Error "No packages found in $dir"; exit 1 }
-        $ordered = $files | Sort-Object @{Expression = { if ($_.Extension -eq '.nupkg') {0} elseif ($_.Extension -eq '.snupkg') {1} else {2} }}, Name
-        foreach ($f in $ordered) {
+        foreach ($f in $files) {
           Write-Host "Pushing $($f.Name)"
           dotnet nuget push $f.FullName --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate }

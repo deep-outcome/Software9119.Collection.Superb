@@ -9,11 +9,10 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
-    <PackageVersion>2.2.0</PackageVersion>
+    <PackageVersion>3.0.0</PackageVersion>
     <PackageReadmeFile>./README.md</PackageReadmeFile>
     <Description>.NET collections enhancements going further and beyond.</Description>
     <PackageTags>Collection,Collections</PackageTags>
-    <PackageReleaseNotes>TBD</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/deep-outcome/Software9119.Collection.Superb</PackageProjectUrl>
   </PropertyGroup>
 
@@ -39,6 +38,10 @@
   <ItemGroup>
     <None Include="./.editorconfig" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400" PrivateAssets="All" />
+    <PackageReference Include="Software9119.ProxyNsAnalyzer" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

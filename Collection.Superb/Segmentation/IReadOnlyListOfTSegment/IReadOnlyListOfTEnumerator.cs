@@ -1,16 +1,15 @@
-﻿using Software9119.Collection.Superb.Segmentation.Exceptionality;
-
-using System;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// Allows for segmented enumeration of arbitraty <see cref="IList"/>.
+/// Allows for segmented enumeration of arbitraty <see cref="IReadOnlyList{T}"/>.
 /// </summary>
-public struct IListEnumerator : IEnumerator
+public struct IReadOnlyListEnumerator<T> : IEnumerator<T?>
 {
-  readonly IList list;
+  readonly IReadOnlyList<T?> list;
   readonly int offset;
   readonly int limit;
 
@@ -22,7 +21,7 @@ public struct IListEnumerator : IEnumerator
   /// <exception cref="ArgumentNullException">when <paramref name="list"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
-  public IListEnumerator ( int offset, int count, IList list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
+  public IReadOnlyListEnumerator ( int offset, int count, IReadOnlyList<T?> list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
   {
     if (SegmentationValidator.ValidateList ( list, out ArgumentNullException? ane ))
       throw ane;
@@ -34,7 +33,7 @@ public struct IListEnumerator : IEnumerator
       throw ise;
   }
 
-  internal IListEnumerator ( IList list, int offset, int limit )
+  internal IReadOnlyListEnumerator ( IReadOnlyList<T?> list, int offset, int limit )
   {
     this.list = list;
     this.offset = offset;
@@ -42,12 +41,22 @@ public struct IListEnumerator : IEnumerator
     Reset ();
   }
 
-  object? current;
+  T? current;
 
   /// <summary>
   /// Current enumeration item.
   /// </summary>
-  readonly public object? Current => current;
+  readonly public T? Current => current;
+
+  /// <summary>
+  /// Current enumeration item.
+  /// </summary>
+  readonly object? IEnumerator.Current => current;
+
+  /// <summary>
+  /// Nothing to dispose.
+  /// </summary>
+  readonly public void Dispose () { }
 
   /// <summary>
   /// Returns <see langword="true"/> when enumerator can provide next enumeration item.

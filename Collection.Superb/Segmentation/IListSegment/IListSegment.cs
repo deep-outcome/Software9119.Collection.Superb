@@ -1,24 +1,26 @@
-﻿using Software9119.Collection.Superb.Segmentation.Exceptionality;
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// <see cref="IListSegment{T}"/> is parallel to <see cref="ArraySegment{T}"/> but generalized
-/// to <see cref="IList{T}"/>.
+/// <see cref="IListSegment"/> is parallel to <see cref="ArraySegment{T}"/> but generalized
+/// to <see cref="IList"/>.
 /// </summary>
 /// <remarks>
 /// Everything comes with a price and for this reason is up to 
-/// client code to ensure <see cref="IList{T}"/> passed into <see cref="IListSegment{T}"/> is not
+/// client code to ensure <see cref="IList"/> passed into <see cref="IListSegment"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
-public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSegment<T>>
+[SuppressMessage ( "Design", "CA1010:Generic interface should also be implemented", Justification = "Not interested." )]
+public struct IListSegment : IList, IEquatable<IListSegment>
 {
-  readonly internal IList<T?> list;
+  readonly Lock syncStump = new ();
+
+  readonly internal IList list;
   readonly internal int offset;
   readonly internal int limit;
 
@@ -32,26 +34,43 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   readonly public int Offset => offset;
 
   /// <summary>
-  /// See <see cref="IListSegment{T}"/> is not readonly.
+  /// See <see cref="IListSegment"/> is not readonly.
   /// </summary>
   readonly public bool IsReadOnly => false;
 
   /// <summary>
-  /// The <see cref="IList{T}"/> over which segmentation occurs.
+  /// Segment size is fixed.
   /// </summary>
-  readonly public IList<T?> List => list;
+  readonly public bool IsFixedSize => true;
+
+  /// <summary>
+  /// Segment is not thread safe.
+  /// </summary>
+  readonly public bool IsSynchronized => false;
+
+  /// <summary>
+  /// Segment sync root.
+  /// </summary>
+#pragma warning disable CS9216 // A value of type 'System.Threading.Lock' converted to a different type will use likely unintended monitor-based locking in 'lock' statement.
+  readonly public object SyncRoot => syncStump;
+#pragma warning restore CS9216 // A value of type 'System.Threading.Lock' converted to a different type will use likely unintended monitor-based locking in 'lock' statement.
+
+  /// <summary>
+  /// The <see cref="IList"/> over which segmentation occurs.
+  /// </summary>
+  readonly public IList List => list;
 
 
-  IEqualityComparer<T> equalityComparer;
+  IEqualityComparer<object> equalityComparer;
 
   /// <summary>
   /// Basic constructor.
   /// </summary>  
   /// <param name="equalityComparer">
-  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
+  /// If <see langword="null"/> passed-in, the <c>EqualityComparer&lt;object&gt;.Default</c>
   /// will be used. See <see cref="EqualityComparer"/> for more.
   /// </param>
-  public IListSegment ( IList<T?> list, IEqualityComparer<T>? equalityComparer = null )
+  public IListSegment ( IList list, IEqualityComparer<object>? equalityComparer = null )
   {
 
     this.list = list;
@@ -71,14 +90,14 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// Offset constructor.
   /// </summary>  
   /// <param name="equalityComparer">
-  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
+  /// If <see langword="null"/> passed-in, the <c>EqualityComparer&lt;object&gt;.Default</c>
   /// will be used. See <see cref="EqualityComparer"/> for more.
   /// </param>
   /// <param name="offset">Starting index of segment.</param>
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
   /// <exception cref="ImpossibleSegmentationException">Thrown when the segmention settings are impossible.</exception>
-  public IListSegment ( IList<T?> list, int offset, int count, IEqualityComparer<T>? equalityComparer = null )
+  public IListSegment ( IList list, int offset, int count, IEqualityComparer<object>? equalityComparer = null )
   {
     this.list = list;
 
@@ -97,10 +116,10 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
 
   /// <summary>
-  /// Equality comparer used in <see cref="Contains(T?)"/> and <see cref="IndexOf(T?)"/> methods.
+  /// Equality comparer used in <see cref="Contains(object?)"/> and <see cref="IndexOf(object?)"/> methods.
   /// </summary>
-  /// <remarks>Cannot be set to <see langword="null"/> because it defaults to <see cref="EqualityComparer{T}.Default"/>.</remarks>
-  public IEqualityComparer<T> EqualityComparer
+  /// <remarks>Cannot be set to <see langword="null"/> because it defaults to <c>EqualityComparer&lt;object&gt;.Default</c>.</remarks>
+  public IEqualityComparer<object> EqualityComparer
   {
     readonly get
     {
@@ -108,16 +127,16 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
     }
 
     [MemberNotNull ( nameof ( equalityComparer ) )]
-    set => equalityComparer = (value ?? EqualityComparer<T>.Default);
+    set => equalityComparer = (value ?? EqualityComparer<object>.Default);
   }
 
 
 
   /// <summary>
-  /// <see cref="IListSegment{T}"/> indexer.
+  /// <see cref="IListSegment"/> indexer.
   /// </summary>
   /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>  
-  readonly public T? this [ int index ]
+  readonly public object? this [ int index ]
   {
     [SuppressMessage ( "Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "Expected location." )]
     get
@@ -150,58 +169,55 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   }
 
   /// <summary>
-  /// Sets segment values to <c>default(T)</c>.
+  /// Sets segment values to <see langword="null"/>.
   /// </summary>
   readonly public void Clear ()
   {
-    IList<T?> list = this.list;
+    IList list = this.list;
     for (int i = offset ; i < limit ; ++i)
       list [ i ] = default;
   }
 
   /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>. 
   /// Otherwise, returns <see langword="false"/>.</returns>
-  readonly public bool Contains ( T? item ) => IndexOf ( item ) != -1;
+  readonly public bool Contains ( object? item ) => IndexOf ( item ) != -1;
 
   /// <summary>
   /// Copies segment into destination array.
   /// </summary>  
   /// <exception cref="ArgumentNullException">For <see langword="null"/> <paramref name="array"/>.</exception>
-  /// <exception cref="ArgumentOutOfRangeException">For negative <paramref name="arrayIndex"/>.</exception>
+  /// <exception cref="ArgumentOutOfRangeException">For negative <paramref name="index"/>.</exception>
   /// <exception cref="ArgumentException">For <paramref name="array"/> with insufficient length.</exception>
-  readonly public void CopyTo ( T? [] array, int arrayIndex )
+  readonly public void CopyTo ( Array array, int index )
   {
     if (array == null)
       ArgumentNullException.ThrowIfNull ( argument: array );
 
-    if (arrayIndex < 0)
-      throw new ArgumentOutOfRangeException ( paramName: nameof ( arrayIndex ), arrayIndex, "Index must be non-negative." );
+    if (index < 0)
+      throw new ArgumentOutOfRangeException ( paramName: nameof ( index ), index, "Index must be non-negative." );
 
-    if (arrayIndex + Count > array.Length)
+    if (index + Count > array.Length)
     {
       const string template = "Array length of {0} is insufficient, starting index {1}, segement length {2}.";
-      string errMsg = string.Format(template, array.Length, arrayIndex, Count);
+      string errMsg = string.Format(template, array.Length, index, Count);
       throw new ArgumentException ( message: errMsg, paramName: nameof ( array ) );
     }
 
-    IList<T?> list = this.list;
-    if (list is T [] arrSource)
-      Array.Copy ( arrSource, offset, array, arrayIndex, Count );
-
-    if (list is List<T?> listOfT)
-      listOfT.CopyTo ( offset, array, arrayIndex, Count );
+    IList list = this.list;
+    if (list is Array arrSource)
+      Array.Copy ( arrSource, offset, array, index, Count );
 
     for (int i = offset ; i < limit ;)
-      array [ arrayIndex++ ] = list [ i++ ];
+      array.SetValue ( list [ i++ ], index++ );
   }
 
   /// <returns>
   /// Returns index of item, if found in segment. <c>-1</c> otherwise.
   /// </returns>
-  readonly public int IndexOf ( T? item )
+  readonly public int IndexOf ( object? item )
   {
-    IEqualityComparer<T> comparer = EqualityComparer;
-    IList<T?> list = this.list;
+    IEqualityComparer<object> comparer = EqualityComparer;
+    IList list = this.list;
     for (int i = offset ; i < limit ; ++i)
       if (comparer.Equals ( item, list [ i ] ))
         return i - offset;
@@ -213,13 +229,13 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// Not supported method.
   /// </summary>  
   /// <exception cref="NotSupportedException">At call.</exception>
-  readonly public void Insert ( int index, T? item ) => throw new NotSupportedException ();
+  readonly public void Insert ( int index, object? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
   /// </summary>  
   /// <exception cref="NotSupportedException">At call.</exception>
-  readonly public bool Remove ( T? item ) => throw new NotSupportedException ();
+  readonly public void Remove ( object? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
@@ -231,32 +247,26 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// Not supported method.
   /// </summary>  
   /// <exception cref="NotSupportedException">At call.</exception>
-  readonly public void Add ( T? item ) => throw new NotSupportedException ();
-
+  readonly public int Add ( object? item ) => throw new NotSupportedException ();
 
   /// <summary>
-  /// Gets the <see cref="IListEnumerator{T}"/> for this segment defined.
+  /// Gets the <see cref="IListEnumerator"/> for this segment defined.
   /// </summary>
-  readonly IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
-
-  /// <summary>
-  /// Gets the <see cref="IListEnumerator{T}"/> for this segment defined.
-  /// </summary>
-  readonly public IEnumerator<T> GetEnumerator () => new IListEnumerator<T> ( list, offset: offset, limit );
+  readonly public IEnumerator GetEnumerator () => new IListEnumerator ( list, offset: offset, limit );
 
 
   /// <summary>
-  /// In core, it calls to <see cref="Equals(IListSegment{T})"/>.
+  /// In core, it calls to <see cref="Equals(IListSegment)"/>.
   /// </summary>
   override readonly public bool Equals ( object? obj )
   {
-    return obj is IListSegment<T> other && Equals ( other );
+    return obj is IListSegment other && Equals ( other );
   }
 
   /// <summary>
   /// Segment value-equals if referenced lists are referential equal and offset and count are the same.
   /// </summary>
-  readonly public bool Equals ( IListSegment<T> other )
+  readonly public bool Equals ( IListSegment other )
   {
     return ReferenceEquals ( list, other.list ) && offset == other.offset && limit == other.limit;
   }
@@ -268,17 +278,17 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
 
   /// <summary>
-  /// Calls to <see cref="Equals(IListSegment{T})"/>.
+  /// Calls to <see cref="Equals(IListSegment)"/>.
   /// </summary>
-  static public bool operator == ( IListSegment<T> left, IListSegment<T> right )
+  static public bool operator == ( IListSegment left, IListSegment right )
   {
     return left.Equals ( right );
   }
 
   /// <summary>
-  /// Calls to <see cref="Equals(IListSegment{T})"/>.
+  /// Calls to <see cref="Equals(IListSegment)"/>.
   /// </summary>
-  static public bool operator != ( IListSegment<T> left, IListSegment<T> right )
+  static public bool operator != ( IListSegment left, IListSegment right )
   {
     return left.Equals ( right ) == false;
   }

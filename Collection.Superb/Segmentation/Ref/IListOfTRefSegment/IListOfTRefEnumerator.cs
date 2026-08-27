@@ -1,16 +1,14 @@
-﻿using Software9119.Collection.Superb.Segmentation.Exceptionality;
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Software9119.Collection.Superb.Segmentation;
 
 /// <summary>
-/// Allows for segmented enumeration of arbitraty <see cref="IReadOnlyList{T}"/>.
+/// Allows for segmented enumeration of arbitraty <see cref="IList{U}"/>.
 /// </summary>
-public ref struct IReadOnlyListRefEnumerator<T, U> : IEnumerator<U?>
-  where T : struct, IReadOnlyList<U?>, allows ref struct
+public ref struct IListRefEnumerator<T, U> : IEnumerator<U?>
+  where T : struct, IList<U?>, allows ref struct
 {
   readonly T list;
   readonly int offset;
@@ -24,14 +22,14 @@ public ref struct IReadOnlyListRefEnumerator<T, U> : IEnumerator<U?>
   /// <exception cref="ArgumentNullException">when <paramref name="list"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
-  public IReadOnlyListRefEnumerator ( int offset, int count, T list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
+  public IListRefEnumerator ( int offset, int count, T list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
   {
     int listLength = list.Count;
     if (SegmentationValidator.ValidateSetup ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
       throw ise;
   }
 
-  internal IReadOnlyListRefEnumerator ( T list, int offset, int limit )
+  internal IListRefEnumerator ( T list, int offset, int limit )
   {
     this.list = list;
     this.offset = offset;
@@ -60,7 +58,7 @@ public ref struct IReadOnlyListRefEnumerator<T, U> : IEnumerator<U?>
   /// Returns <see langword="true"/> when enumerator can provide next enumeration item.
   /// </summary>
   public bool MoveNext ()
-  {
+  {    
     if (index < limit && ++index < limit)
     {
       current = list [ index ];
