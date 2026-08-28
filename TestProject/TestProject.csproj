@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>    
-    <PackageReference Include="Software9119.Collection.Superb.Debug" Version="3.1.0" />
-    <!--<PackageReference Include="Software9119.Collection.Superb" Version="2.2.0" />-->
+    <!--<PackageReference Include="Software9119.Collection.Superb.Debug" Version="3.1.0" />-->
+    <PackageReference Include="Software9119.Collection.Superb" Version="3.2.0" />
   </ItemGroup>
   
   <ItemGroup>

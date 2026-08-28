@@ -36,7 +36,7 @@ static public class ObjectExtension
   /// <see langword="null"/> safe equality check method.
   /// </summary>  
   /// <remarks>
-  /// Truth table
+  /// Truth Table
   /// <code>
   /// ╔══════╦═════════╦═════════════════════╗
   /// ║ one  ║ another ║       result        ║
