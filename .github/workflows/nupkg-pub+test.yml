@@ -37,7 +37,7 @@ jobs:
       run: dotnet test --configuration ${{ matrix.configuration }} --no-restore
     
     - name: Pack
-      run: dotnet pack ./Collection.Superb/Collection.Superb.csproj --configuration ${{ matrix.configuration }} --no-restore --output ${{ github.workspace }}/nupkgs
+      run: dotnet pack ./Collection.Superb/Collection.Superb.csproj --configuration ${{ matrix.configuration }} --no-restore --no-build --output ${{ github.workspace }}/nupkgs
 
     - name: Upload to artifacts
       uses: actions/upload-artifact@v4

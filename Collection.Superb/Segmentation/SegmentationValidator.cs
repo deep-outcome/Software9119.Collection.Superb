@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Software9119.Collection.Superb.Extension;
+
+using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -39,7 +41,7 @@ class SegmentationValidator
     [CallerArgumentExpression ( nameof ( list ) )] string? listParamName = null
   )
   {
-    if (list == null)
+    if (list.IsNull ())
     {
       e = new ArgumentNullException ( paramName: listParamName, message: "Null list provided." );
       return true;

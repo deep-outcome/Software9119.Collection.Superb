@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Software9119.Collection.Superb.Extension;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -154,7 +156,7 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   /// <exception cref="ArgumentException">For <paramref name="array"/> with insufficient length.</exception>
   readonly public void CopyTo ( T? [] array, int arrayIndex )
   {
-    if (array == null)
+    if (array.IsNull ())
       ArgumentNullException.ThrowIfNull ( argument: array );
 
     if (arrayIndex < 0)
