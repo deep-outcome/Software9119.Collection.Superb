@@ -164,11 +164,118 @@ public partial class IEnumerableExtensionTest
     Assert.IsTrue ( enumerable.SequenceEqual ( coll ) );
   }
 
+  [TestMethod]
+  public void ToReadOnlyDictionary_KeySelectorOnly_NullSource_ReturnEmpty ()
+  {
+    Func<int, int> keySelector = x => x *2;
+    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    (
+      keySelector,
+      EnumerableNullBehavior.ReturnEmpty
+    )!;
+    Assert.HasCount ( 0, test );
+  }
+
+  [TestMethod]
+  public void ToReadOnlyDictionary_KeySelectorOnly_NullSource_ReturnDefault ()
+  {
+    Func<int, int> keySelector = x => x *2;
+    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    (
+      keySelector,
+      EnumerableNullBehavior.ReturnDefault
+    )!;
+    Assert.IsNull ( test );
+  }
+
+  [TestMethod]
+  public void ToReadOnlyDictionary_KeySelectorOnly_NullSource_ThrowException ()
+  {
+    const string expectation = "Null source enumerable encounter. (Parameter 'enumerable')";
+    Func<int, int> keySelector = x => x *2;
+    Action test = () => _ = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    (
+      keySelector,
+      EnumerableNullBehavior.ThrowException
+    )!;
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( expectation, e.Message );
+  }
+
+  [TestMethod]
+  public void ToReadOnlyDictionary_KeySelectorOnly_NullSource_UknownBehavior ()
+  {
+    const string expectation = "Unsupported behavior, '793'. (Parameter 'behavior')";
+    Func<int, int> keySelector = x => x *2;
+    Action test = () => _ = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    (
+      keySelector,
+      (EnumerableNullBehavior) 793
+    )!;
+
+    UnsupportedBehaviorException e = Assert.ThrowsExactly<UnsupportedBehaviorException> ( test );
+    Assert.AreEqual ( expectation, e.Message );
+  }
+
+  [TestMethod]
+  public void ToReadOnlyDictionary_KeySelectorOnly_NullKeySelector ()
+  {
+    const string expectation = "Key selector not provided. (Parameter 'keySelector')";
+    Func<int, int> keySelector = null!;
+    Action test = () => _ = new int[0].ToReadOnlyDictionary(keySelector!);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( expectation, e.Message );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Performance", "CA1851:Possible multiple enumerations of 'IEnumerable' collection", Justification = "Unneeded." )]
+  public void ToReadOnlyDictionary_KeySelectorOnly ()
+  {
+    IEnumerable<int> enumerable = Enumerable.Range(1, 12);
+    Func<int, int> keySelector = x => x *2;
+    ReadOnlyDictionary<int, int> test = enumerable.ToReadOnlyDictionary(keySelector)!;
+
+    Assert.IsTrue ( test.Keys.SequenceEqual ( enumerable.Select ( keySelector ) ) );
+    Assert.IsTrue ( test.Values.SequenceEqual ( enumerable ) );
+
+    Dictionary<int, int> dict = Dictionary(test);
+    Assert.AreEqual ( 23, dict.Capacity );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Performance", "CA1851:Possible multiple enumerations of 'IEnumerable' collection", Justification = "Unneeded." )]
+  public void ToReadOnlyDictionary_KeySelectorOnly_ExactCapacity ()
+  {
+    const int count = 3;
+    IEnumerable<int> enumerable = Enumerable.Range(1, count);
+    Func<int, int> keySelector = x => x *2;
+    ReadOnlyDictionary<int, int> test = enumerable.ToReadOnlyDictionary
+    (
+      keySelector,
+      capacity: count
+    )!;
+
+    Assert.IsTrue ( test.Keys.SequenceEqual ( enumerable.Select ( keySelector ) ) );
+    Assert.IsTrue ( test.Values.SequenceEqual ( enumerable ) );
+
+    Dictionary<int, int> dict = Dictionary(test);
+    Assert.AreEqual ( count, dict.Capacity );
+  }
+
   static IList<int> Items ( ReadOnlyCollection<int> coll )
   {
     PropertyInfo property = NonPublicInstanceProperty(coll.GetType(), "Items");
     IList<int> items = (IList<int>)property.GetValue(coll)!;
     return items;
+  }
+
+  static Dictionary<int, int> Dictionary ( ReadOnlyDictionary<int, int> dict )
+  {
+    PropertyInfo property = NonPublicInstanceProperty(dict.GetType(), "Dictionary");
+    IDictionary<int, int> dictionary = (IDictionary<int, int>)property.GetValue(dict)!;
+    return (Dictionary<int, int>) dictionary;
   }
 
   static PropertyInfo NonPublicInstanceProperty ( Type from, string ofName )
@@ -177,4 +284,5 @@ public partial class IEnumerableExtensionTest
     PropertyInfo info = from.GetProperty ( ofName, flags )!;
     return info;
   }
+
 }
