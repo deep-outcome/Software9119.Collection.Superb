@@ -1,0 +1,186 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Software9119.Collection.Superb.Extension;
+
+using NullBehavior = EnumerableNullBehavior;
+
+/// <summary>
+/// <see cref="IEnumerable{T}"/> extension methods.
+/// </summary>
+static public partial class IEnumerableExtension
+{
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+  public const int DefaultListCapacity = 8;
+  public const int DefaultDictCapacity = 8;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
+
+  static internal ArgumentNullException EnumerableNull ( string paramName ) => new ( paramName: paramName, "Null source enumerable encounter." );
+  static internal ArgumentNullException DictionaryNull ( string paramName ) => new ( paramName: paramName, "Null source dictionary encounter." );
+
+  /// <summary>
+  /// Copies or casts <paramref name="enumerable"/> into <see cref="IList{T}"/>.
+  /// </summary>
+  /// <remarks>
+  /// Cast/Copy Table
+  /// <code>
+  /// ╔════════════════╦══════════╦════════╗
+  /// ║   enumerable   ║  result  ║ action ║
+  /// ╠════════════════╬══════════╬════════╣
+  /// ║ IEnumerable&lt;T&gt; ║ List&lt;T&gt;  ║ Copy   ║
+  /// ║ ICollection&lt;T&gt; ║ T []     ║ Copy   ║
+  /// ║ IList&lt;T&gt;       ║ IList&lt;T&gt; ║ Cast   ║
+  /// ╚════════════════╩══════════╩════════╝
+  /// </code>
+  /// <paramref name="capacity"/> can be used to capacitate <see cref="List{T}"/> sufficiently before population from <paramref name="enumerable"/>.
+  /// </remarks>
+  /// <exception cref="ArgumentNullException">
+  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is 
+  /// <see langword="null"/>.
+  /// </exception>
+  /// <exception cref="UnsupportedBehaviorException"><paramref name="behavior"/> is unsupported behavior.</exception>
+  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
+  static public IList<T>? ToOrAsIList<T>
+  (
+    this IEnumerable<T>? enumerable,
+    NullBehavior behavior = NullBehavior.ReturnEmpty,
+    int capacity = DefaultListCapacity
+  )
+  {
+    if (enumerable.IsNull ())
+    {
+      return behavior switch
+      {
+        NullBehavior.ReturnEmpty => Array.Empty<T> (),
+        NullBehavior.ReturnDefault => null,
+        NullBehavior.ThrowException => throw EnumerableNull ( nameof ( enumerable ) ),
+        _ => throw new UnsupportedBehaviorException ( behavior ),
+      };
+    }
+
+    if (enumerable is IList<T> ilist)
+      return ilist;
+
+    if (enumerable is ICollection<T> collection)
+    {
+      T[] array = new T[collection.Count];
+      collection.CopyTo ( array, 0 );
+      return array;
+    }
+
+    List<T> list = new(capacity);
+    list.AddRange ( enumerable );
+    return list;
+  }
+
+  /// <summary>
+  /// <see cref="ReadOnlyCollection{T}"/> from any enumerable.
+  /// </summary>
+  /// <remarks>
+  /// <paramref name="enumerable"/> is processed into <see cref="IList{T}"/> by <see cref="ToOrAsIList"/> and put into
+  /// <see cref="ReadOnlyCollection{T}"/>.
+  /// </remarks>
+  static public ReadOnlyCollection<T>? ToOrAsReadOnlyCollection<T> (
+    this IEnumerable<T>? enumerable,
+    NullBehavior behavior = NullBehavior.ReturnEmpty,
+    int capacity = DefaultListCapacity )
+  {
+    IList<T>? ilist = enumerable.ToOrAsIList ( behavior, capacity );
+    return ilist is null ? null : new ReadOnlyCollection<T> ( ilist );
+  }
+
+
+  /// <summary>
+  /// Creates <see cref="ReadOnlyDictionary{Key,Value}"/> from <paramref name="enumerable"/>.
+  /// </summary>
+  /// <remarks>
+  /// Calls to <see cref="ToReadOnlyDictionary{Source,Key,Value}(IEnumerable{Source},Func{Source,Key},Func{Source,Value},NullBehavior, int)"/>.
+  /// </remarks>
+  static public ReadOnlyDictionary<Key, Source>? ToReadOnlyDictionary<Source, Key>
+  (
+    this IEnumerable<Source>? enumerable,
+    Func<Source, Key> keySelector,
+    NullBehavior behavior = NullBehavior.ReturnEmpty,
+    int capacity = DefaultDictCapacity
+  )
+    where Key : notnull
+  {
+    return enumerable.ToReadOnlyDictionary ( keySelector, v => v, behavior, capacity );
+  }
+
+  /// <summary>
+  /// Creates <see cref="ReadOnlyDictionary{Key,Value}"/> from <paramref name="enumerable"/>.
+  /// </summary>
+  /// <exception cref="ArgumentNullException">  
+  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is 
+  /// <see langword="null"/> or when either of <paramref name="keySelector"/>, <paramref name="valueSelector"/> is 
+  /// <see langword="null"/>.
+  /// </exception>
+  /// <exception cref="UnsupportedBehaviorException"><paramref name="behavior"/> is unsupported behavior.</exception>
+  static public ReadOnlyDictionary<Key, Value>? ToReadOnlyDictionary<Source, Key, Value>
+  (
+    this IEnumerable<Source>? enumerable,
+    Func<Source, Key> keySelector,
+    Func<Source, Value> valueSelector,
+    NullBehavior behavior = NullBehavior.ReturnEmpty,
+    int capacity = DefaultDictCapacity
+  )
+    where Key : notnull
+  {
+    if (enumerable.IsNull ())
+    {
+      return behavior switch
+      {
+        NullBehavior.ReturnEmpty => ReadOnlyDictionary<Key, Value>.Empty,
+        NullBehavior.ReturnDefault => null,
+        NullBehavior.ThrowException => throw EnumerableNull ( nameof ( enumerable ) ),
+        _ => throw new UnsupportedBehaviorException ( behavior ),
+      };
+    }
+
+    if (keySelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
+
+    if (valueSelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
+
+    Dictionary<Key, Value> dict = new (capacity);
+    foreach (Source item in enumerable)
+      dict.Add ( keySelector ( item ), valueSelector ( item ) );
+
+    return new ReadOnlyDictionary<Key, Value> ( dict );
+  }
+
+  /// <summary>
+  /// Puts see <paramref name="dict"/> into <see cref="ReadOnlyDictionary{Key,Value}"/>.
+  /// </summary>
+  /// <exception cref="ArgumentNullException">  
+  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="dict"/> is 
+  /// <see langword="null"/>.
+  /// </exception>
+  /// <exception cref="UnsupportedBehaviorException"><paramref name="behavior"/> is unsupported behavior.</exception>
+  static public ReadOnlyDictionary<Key, Value>? AsReadOnlyDictionary<Key, Value>
+  (
+    this IDictionary<Key, Value>? dict,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+    where Key : notnull
+  {
+    if (dict.IsNull ())
+    {
+      return behavior switch
+      {
+        NullBehavior.ReturnEmpty => ReadOnlyDictionary<Key, Value>.Empty,
+        NullBehavior.ReturnDefault => null,
+        NullBehavior.ThrowException => throw DictionaryNull ( nameof ( dict ) ),
+        _ => throw new UnsupportedBehaviorException ( behavior ),
+      };
+    }
+
+    return new ReadOnlyDictionary<Key, Value> ( dict );
+  }
+}
