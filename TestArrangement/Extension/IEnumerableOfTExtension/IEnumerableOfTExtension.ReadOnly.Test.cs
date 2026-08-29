@@ -197,7 +197,7 @@ public partial class IEnumerableExtensionTest
     (
       keySelector,
       EnumerableNullBehavior.ThrowException
-    )!;
+    );
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( expectation, e.Message );
@@ -212,7 +212,7 @@ public partial class IEnumerableExtensionTest
     (
       keySelector,
       (EnumerableNullBehavior) 793
-    )!;
+    );
 
     UnsupportedBehaviorException e = Assert.ThrowsExactly<UnsupportedBehaviorException> ( test );
     Assert.AreEqual ( expectation, e.Message );
@@ -303,7 +303,7 @@ public partial class IEnumerableExtensionTest
       keySelector,
       valueSelector,
       EnumerableNullBehavior.ThrowException
-    )!;
+    );
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( expectation, e.Message );
@@ -320,7 +320,7 @@ public partial class IEnumerableExtensionTest
       keySelector,
       valueSelector,
       (EnumerableNullBehavior) 793
-    )!;
+    );
 
     UnsupportedBehaviorException e = Assert.ThrowsExactly<UnsupportedBehaviorException> ( test );
     Assert.AreEqual ( expectation, e.Message );
@@ -409,4 +409,46 @@ public partial class IEnumerableExtensionTest
     return info;
   }
 
+  [TestMethod]
+  public void AsReadOnlyDictionary_NullSource_ReturnEmpty ()
+  {
+    ReadOnlyDictionary<int, int> test = ((IDictionary<int,int>?) null).AsReadOnlyDictionary(EnumerableNullBehavior.ReturnEmpty)!;
+    Assert.HasCount ( 0, test );
+  }
+
+
+  [TestMethod]
+  public void AsReadOnlyDictionary_NullSource_ReturnDefault ()
+  {
+    ReadOnlyDictionary<int, int> test = ((IDictionary<int,int>?) null).AsReadOnlyDictionary(EnumerableNullBehavior.ReturnDefault)!;
+    Assert.IsNull ( test );
+  }
+
+  [TestMethod]
+  public void AsReadOnlyDictionary_NullSource_ThrowException ()
+  {
+    const string expectation = "Null source dictionary encounter. (Parameter 'dict')";
+    Action test = () => _ = ((IDictionary<int,int>?) null).AsReadOnlyDictionary(EnumerableNullBehavior.ThrowException);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( expectation, e.Message );
+  }
+
+  [TestMethod]
+  public void AsReadOnlyDictionary_NullSource_UknownBehavior ()
+  {
+    const string expectation = "Unsupported behavior, '793'. (Parameter 'behavior')";
+    Action test = () => _ = ((IDictionary<int,int>?) null).AsReadOnlyDictionary((EnumerableNullBehavior) 793);
+
+    UnsupportedBehaviorException e = Assert.ThrowsExactly<UnsupportedBehaviorException> ( test );
+    Assert.AreEqual ( expectation, e.Message );
+  }
+
+  [TestMethod]
+  public void AsReadOnlyDictionary ()
+  {
+    IDictionary<int, int> source = new [] { 1,2,3 }.ToDictionary(x => x);
+    ReadOnlyDictionary<int, int> test = source.AsReadOnlyDictionary()!;
+    Assert.IsTrue ( ReferenceEquals ( source, Dictionary ( test ) ) );
+  }
 }
