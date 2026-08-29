@@ -153,6 +153,14 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
+  public void ToOrAsReadOnlyCollection_ReadOnlyCollectionAlready ()
+  {
+    IEnumerable<int> enumerable = new ReadOnlyCollection<int>(new int[0]);
+    ReadOnlyCollection<int> test = enumerable.ToOrAsReadOnlyCollection()!;
+    Assert.IsTrue ( ReferenceEquals ( enumerable, test ) );
+  }
+
+  [TestMethod]
   public void ToOrAsReadOnlyCollection_ExactCapacity ()
   {
     const int count = 3;

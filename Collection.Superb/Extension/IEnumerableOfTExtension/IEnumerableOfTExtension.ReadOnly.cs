@@ -81,7 +81,8 @@ static public partial class IEnumerableExtension
   /// <see cref="ReadOnlyCollection{T}"/> from any enumerable.
   /// </summary>
   /// <remarks>
-  /// <paramref name="enumerable"/> is processed into <see cref="IList{T}"/> by <see cref="ToOrAsIList"/> and put into
+  /// Casts <paramref name="enumerable"/> into <see cref="ReadOnlyCollection{T}"/> or delegates it
+  /// to <see cref="ToOrAsIList"/> for processing and then puts result into
   /// <see cref="ReadOnlyCollection{T}"/>.
   /// </remarks>
   static public ReadOnlyCollection<T>? ToOrAsReadOnlyCollection<T> (
@@ -89,6 +90,9 @@ static public partial class IEnumerableExtension
     NullBehavior behavior = NullBehavior.ReturnEmpty,
     int capacity = DefaultListCapacity )
   {
+    if (enumerable is ReadOnlyCollection<T> coll)
+      return coll;
+
     IList<T>? ilist = enumerable.ToOrAsIList ( behavior, capacity );
     return ilist is null ? null : new ReadOnlyCollection<T> ( ilist );
   }
