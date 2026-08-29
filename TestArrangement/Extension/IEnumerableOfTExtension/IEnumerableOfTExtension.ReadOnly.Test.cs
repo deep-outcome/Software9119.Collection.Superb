@@ -4,8 +4,10 @@ using Software9119.Collection.Superb.Extension;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableOfTExtension;
 
@@ -105,5 +107,74 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
     Assert.AreEqual ( count, ((List<int>) test).Capacity );
     Assert.IsTrue ( enumerable.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  public void ToOrAsReadOnlyCollection_NullSource_ReturnEmpty ()
+  {
+    ReadOnlyCollection<int> test = ((IEnumerable<int>?) null).ToOrAsReadOnlyCollection ( EnumerableNullBehavior.ReturnEmpty )!;
+    Assert.HasCount ( 0, test );
+  }
+
+  [TestMethod]
+  public void ToOrAsReadOnlyCollection_NullSource_ReturnDefault ()
+  {
+    ReadOnlyCollection<int> test = ((IEnumerable<int>?) null).ToOrAsReadOnlyCollection ( EnumerableNullBehavior.ReturnDefault )!;
+    Assert.IsNull ( test );
+  }
+
+  [TestMethod]
+  public void ToOrAsReadOnlyCollection_NullSource_ThrowException ()
+  {
+    const string expectation = "Null source enumerable encounter. (Parameter 'enumerable')";
+    Action test = () => ((IEnumerable<int>?) null).ToOrAsReadOnlyCollection ( EnumerableNullBehavior.ThrowException );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( expectation, e.Message );
+  }
+
+  [TestMethod]
+  public void ToOrAsReadOnlyCollection_UknownBehavior ()
+  {
+    const string expectation = "Unsupported behavior, '793'. (Parameter 'behavior')";
+    Action test = () => ((IEnumerable<int>?) null).ToOrAsReadOnlyCollection ( (EnumerableNullBehavior) 793 );
+    UnsupportedBehaviorException e = Assert.ThrowsExactly<UnsupportedBehaviorException> ( test );
+    Assert.AreEqual ( expectation, e.Message );
+  }
+
+  [TestMethod]
+  public void ToOrAsReadOnlyCollection ()
+  {
+    IEnumerable<int> enumerable = Enumerable.Range(1, 9).Select(x => x);
+    ReadOnlyCollection<int> coll = enumerable.ToOrAsReadOnlyCollection()!;
+    IList<int> test = Items(coll);
+    Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
+    Assert.AreEqual ( 16, ((List<int>) test).Capacity );
+    Assert.IsTrue ( enumerable.SequenceEqual ( coll ) );
+  }
+
+  [TestMethod]
+  public void ToOrAsReadOnlyCollection_ExactCapacity ()
+  {
+    const int count = 3;
+    IEnumerable<int> enumerable = Enumerable.Range(1, count).Select(x => x);
+    ReadOnlyCollection<int> coll = enumerable.ToOrAsReadOnlyCollection(capacity: count)!;
+    IList<int> test = Items(coll);
+    Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
+    Assert.AreEqual ( count, ((List<int>) test).Capacity );
+    Assert.IsTrue ( enumerable.SequenceEqual ( coll ) );
+  }
+
+  static IList<int> Items ( ReadOnlyCollection<int> coll )
+  {
+    PropertyInfo property = NonPublicInstanceProperty(coll.GetType(), "Items");
+    IList<int> items = (IList<int>)property.GetValue(coll)!;
+    return items;
+  }
+
+  static PropertyInfo NonPublicInstanceProperty ( Type from, string ofName )
+  {
+    const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+    PropertyInfo info = from.GetProperty ( ofName, flags )!;
+    return info;
   }
 }
