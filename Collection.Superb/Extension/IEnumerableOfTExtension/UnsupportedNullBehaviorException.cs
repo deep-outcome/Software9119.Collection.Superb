@@ -13,9 +13,9 @@ namespace Software9119.Collection.Superb.Extension;
 /// </list>
 /// </summary>
 [SuppressMessage ( "Design", "CA1032:Implement standard exception constructors", Justification = "Intentional." )]
-sealed public class UnsupportedBehaviorException : ArgumentOutOfRangeException
+sealed public class UnsupportedNullBehaviorException : ArgumentOutOfRangeException
 {
-  internal UnsupportedBehaviorException
+  internal UnsupportedNullBehaviorException
   (
     EnumerableNullBehavior behavior,
     [CallerArgumentExpression ( nameof ( behavior ) )] string? paramName = null

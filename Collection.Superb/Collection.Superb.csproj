@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
-    <PackageVersion>4.0.0</PackageVersion>
+    <PackageVersion>5.0.0</PackageVersion>
     <PackageReadmeFile>./README.md</PackageReadmeFile>
     <Description>.NET collections enhancements going further and beyond.</Description>
     <PackageTags>Collection,Collections</PackageTags>

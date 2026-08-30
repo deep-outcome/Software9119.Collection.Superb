@@ -32,7 +32,7 @@ static public partial class IEnumerableExtension
   /// ║   enumerable   ║  result  ║ action ║
   /// ╠════════════════╬══════════╬════════╣
   /// ║ IEnumerable&lt;T&gt; ║ List&lt;T&gt;  ║ Copy   ║
-  /// ║ ICollection&lt;T&gt; ║ T []     ║ Copy   ║
+  /// ║ ICollection&lt;T&gt; ║ T []     ║ Copy   ║  
   /// ║ IList&lt;T&gt;       ║ IList&lt;T&gt; ║ Cast   ║
   /// ╚════════════════╩══════════╩════════╝
   /// </code>
@@ -42,9 +42,9 @@ static public partial class IEnumerableExtension
   /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is 
   /// <see langword="null"/>.
   /// </exception>
-  /// <exception cref="UnsupportedBehaviorException"><paramref name="behavior"/> is unsupported behavior.</exception>
+  /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
   [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
-  static public IList<T>? ToOrAsIList<T>
+  static public IList<T>? AsOrToIList<T>
   (
     this IEnumerable<T>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty,
@@ -58,7 +58,7 @@ static public partial class IEnumerableExtension
         NullBehavior.ReturnEmpty => Array.Empty<T> (),
         NullBehavior.ReturnDefault => null,
         NullBehavior.ThrowException => throw EnumerableNull ( nameof ( enumerable ) ),
-        _ => throw new UnsupportedBehaviorException ( behavior ),
+        _ => throw new UnsupportedNullBehaviorException ( behavior ),
       };
     }
 
@@ -82,10 +82,10 @@ static public partial class IEnumerableExtension
   /// </summary>
   /// <remarks>
   /// Casts <paramref name="enumerable"/> into <see cref="ReadOnlyCollection{T}"/> or delegates it
-  /// to <see cref="ToOrAsIList"/> for processing and then puts result into
+  /// to <see cref="AsOrToIList"/> for processing and then puts result into
   /// <see cref="ReadOnlyCollection{T}"/>.
   /// </remarks>
-  static public ReadOnlyCollection<T>? ToOrAsReadOnlyCollection<T> (
+  static public ReadOnlyCollection<T>? AsOrToReadOnlyCollection<T> (
     this IEnumerable<T>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty,
     int capacity = DefaultListCapacity )
@@ -93,7 +93,7 @@ static public partial class IEnumerableExtension
     if (enumerable is ReadOnlyCollection<T> coll)
       return coll;
 
-    IList<T>? ilist = enumerable.ToOrAsIList ( behavior, capacity );
+    IList<T>? ilist = enumerable.AsOrToIList ( behavior, capacity );
     return ilist is null ? null : new ReadOnlyCollection<T> ( ilist );
   }
 
@@ -124,7 +124,7 @@ static public partial class IEnumerableExtension
   /// <see langword="null"/> or when either of <paramref name="keySelector"/>, <paramref name="valueSelector"/> is 
   /// <see langword="null"/>.
   /// </exception>
-  /// <exception cref="UnsupportedBehaviorException"><paramref name="behavior"/> is unsupported behavior.</exception>
+  /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
   static public ReadOnlyDictionary<Key, Value>? ToReadOnlyDictionary<Source, Key, Value>
   (
     this IEnumerable<Source>? enumerable,
@@ -142,7 +142,7 @@ static public partial class IEnumerableExtension
         NullBehavior.ReturnEmpty => ReadOnlyDictionary<Key, Value>.Empty,
         NullBehavior.ReturnDefault => null,
         NullBehavior.ThrowException => throw EnumerableNull ( nameof ( enumerable ) ),
-        _ => throw new UnsupportedBehaviorException ( behavior ),
+        _ => throw new UnsupportedNullBehaviorException ( behavior ),
       };
     }
 
@@ -166,7 +166,7 @@ static public partial class IEnumerableExtension
   /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="dict"/> is 
   /// <see langword="null"/>.
   /// </exception>
-  /// <exception cref="UnsupportedBehaviorException"><paramref name="behavior"/> is unsupported behavior.</exception>
+  /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
   static public ReadOnlyDictionary<Key, Value>? AsReadOnlyDictionary<Key, Value>
   (
     this IDictionary<Key, Value>? dict,
@@ -181,7 +181,7 @@ static public partial class IEnumerableExtension
         NullBehavior.ReturnEmpty => ReadOnlyDictionary<Key, Value>.Empty,
         NullBehavior.ReturnDefault => null,
         NullBehavior.ThrowException => throw DictionaryNull ( nameof ( dict ) ),
-        _ => throw new UnsupportedBehaviorException ( behavior ),
+        _ => throw new UnsupportedNullBehaviorException ( behavior ),
       };
     }
 
