@@ -8,11 +8,11 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>    
+  <ItemGroup>
     <!--<PackageReference Include="Software9119.Collection.Superb.Debug" Version="3.1.0" />-->
     <PackageReference Include="Software9119.Collection.Superb" Version="4.0.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Include=".\.editorconfig" />
   </ItemGroup>

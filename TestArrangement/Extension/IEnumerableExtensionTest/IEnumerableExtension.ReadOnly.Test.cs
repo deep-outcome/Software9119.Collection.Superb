@@ -9,10 +9,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
-namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableOfTExtension;
+namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
 
+#pragma warning disable CA1724
 [TestClass]
 public partial class IEnumerableExtensionTest
+#pragma warning restore CA1724
 {
   [TestMethod]
   [SuppressMessage ( "Design", "MSTEST0032:Assertion condition is always true", Justification = "Intentional" )]

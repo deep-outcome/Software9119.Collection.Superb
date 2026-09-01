@@ -2,7 +2,7 @@
 
 using Software9119.Collection.Superb.Extension;
 
-namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableOfTExtension;
+namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
 
 [TestClass]
 public class UnsupportedNullBehaviorExceptionTest
