@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 namespace Software9119.Collection.Superb.Extension;
 
@@ -20,6 +21,10 @@ public enum EnumerableNullBehavior
   /// <summary>
   /// Empty target type is returned.
   /// </summary>
+  /// <remarks>
+  /// See also 
+  /// <see cref="AsOrToTargetType{Target}.AsOrToTargetType(Func{IEnumerable, int?, Target}, bool, Func{Target})"/>.
+  /// </remarks>
   ReturnEmpty,
   /// <summary>
   /// <see cref="System.ArgumentNullException"/> is thrown.

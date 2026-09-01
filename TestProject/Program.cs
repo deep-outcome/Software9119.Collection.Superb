@@ -1,7 +1,11 @@
-﻿using Software9119.Collection.Superb.Segmentation;
+﻿using Software9119.Collection.Superb.Extension;
+using Software9119.Collection.Superb.Segmentation;
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 using TestProject;
 
@@ -20,6 +24,8 @@ sealed class Program
 
     IReadOnlyOfTListSegment ();
     IReadOnlyListOfTRefSegment ();
+
+    AsOrTo ();
   }
 
   static void IListSegment ()
@@ -59,5 +65,17 @@ sealed class Program
   {
     var segment = new IReadOnlyListRefSegment<ArraySegment<int>, int>([]);
     using var enumerator = new IReadOnlyListRefEnumerator<ArraySegment<int>, int>(0, 0, []);
+  }
+
+  static void AsOrTo ()
+  {
+    IEnumerable<int> sourceOfT = Enumerable.Range(1, 10);
+    IEnumerable source = Enumerable.Range(1, 10);
+
+     //source.AsOrTo()
+
+    // UnsupportedNullBehaviorException
+    // Software9119.Collection.Superb.Extension.system_collections.Queue
+    //Software9119.Collection.Superb.Extension.AsOrToTargetType
   }
 }

@@ -51,7 +51,7 @@ static public class AsOrToTargetType
 /// <summary>
 /// Used by <see cref="IEnumerableExtension.AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, EnumerableNullBehavior)"/>.
 /// </summary>
-public record class AsOrToTargetType<Target>
+public class AsOrToTargetType<Target>
 {
   /// <summary>
   /// Target type constructor.

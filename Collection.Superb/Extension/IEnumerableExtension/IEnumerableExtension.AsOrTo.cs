@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 namespace Software9119.Collection.Superb.Extension;
 
-using NullBehavior = EnumerableNullBehavior;
-
 static public partial class IEnumerableExtension
 {
   /// <summary>
