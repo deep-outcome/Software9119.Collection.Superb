@@ -10,62 +10,93 @@ namespace Software9119.Collection.Superb.Extension;
 static public partial class IEnumerableExtension
 {
   /// <summary>
-  /// Creates <see cref="FrozenDictionary{Key, Value}"/> with <paramref name="keyComaparer"/> from <paramref name="enumerable"/> 
+  /// Creates <see cref="FrozenDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/> 
   /// using <paramref name="keySelector"/> provided.
   /// </summary>
   /// <remarks>
   /// <list type="bullet">
   /// <item>
   /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with 
-  /// <see cref="collections_frozen.FrozenDictionary{Source, Key}(Func{Source, Key}, IEqualityComparer{Key})"/>.
+  /// <see cref="collections_frozen.FrozenDictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
-  /// When <paramref name="keyComaparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
   /// </item>
   /// </list>
   /// </remarks>
-  static public FrozenDictionary<Key, Source>? ToFrozenDictionary<Source, Key> (
-    this IEnumerable<Source> enumerable,
-    Func<Source, Key> keySelector,
-    IEqualityComparer<Key>? keyComaparer = null,
+  static public FrozenDictionary<Key, Item>? ToFrozenDictionary<Item, Key> (
+    this IEnumerable<Item> enumerable,
+    Func<Item, Key> keySelector,
+    IEqualityComparer<Key>? keyComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     where Key : notnull
   {
-    keyComaparer ??= EqualityComparer<Key>.Default;
-    AsOrToTargetType<FrozenDictionary<Key, Source>> targetType = collections_frozen.FrozenDictionary ( keySelector, keyComaparer );
+    keyComparer ??= EqualityComparer<Key>.Default;
+    AsOrToTargetType<FrozenDictionary<Key, Item>> targetType = collections_frozen.FrozenDictionary ( keySelector, keyComparer );
     return enumerable.AsOrTo ( targetType, null, behavior );
   }
 
   /// <summary>
-  /// Creates <see cref="FrozenDictionary{Key, Value}"/> with <paramref name="keyComaparer"/> from <paramref name="enumerable"/> 
+  /// Creates <see cref="FrozenDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/> 
   /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>
   /// <list type="bullet">
   /// <item>
   /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with 
-  /// <see cref="collections_frozen.FrozenDictionary{Source, Key, Value}(Func{Source, Key}, Func{Source, Value}, IEqualityComparer{Key})"/>.
+  /// <see cref="collections_frozen.FrozenDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
-  /// When <paramref name="keyComaparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
   /// </item>
   /// </list>
   /// </remarks>
-  static public FrozenDictionary<Key, Value>? ToFrozenDictionary<Source, Key, Value> (
-    this IEnumerable<Source> enumerable,
-    Func<Source, Key> keySelector,
-    Func<Source, Value> valueSelector,
-    IEqualityComparer<Key>? keyComaparer = null,
+  static public FrozenDictionary<Key, Value>? ToFrozenDictionary<Item, Key, Value> (
+    this IEnumerable<Item> enumerable,
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
+    IEqualityComparer<Key>? keyComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     where Key : notnull
   {
-    keyComaparer ??= EqualityComparer<Key>.Default;
+    keyComparer ??= EqualityComparer<Key>.Default;
     AsOrToTargetType<FrozenDictionary<Key, Value>> targetType = collections_frozen.FrozenDictionary
     (
       keySelector,
       valueSelector,
-      keyComaparer
+      keyComparer
     );
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="FrozenSet{Item}"/> provided with <paramref name="itemComparer"/>.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with 
+  /// <see cref="collections_frozen.FrozenSet{Item}(IEqualityComparer{Item})"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="itemComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
+  /// </item>
+  /// <item>
+  /// Cast is allowed only when source <see cref="IEnumerable"/> is <see cref="FrozenSet{T}"/> and <paramref name="itemComparer"/>
+  /// referentially equal to <see cref="FrozenSet{T}.Comparer"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public FrozenSet<Item>? AsOrToFrozenSet<Item>
+  (
+    this IEnumerable<Item> enumerable,
+    IEqualityComparer<Item>? itemComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    itemComparer ??= EqualityComparer<Item>.Default;
+    AsOrToTargetType<FrozenSet<Item>> targetType = collections_frozen.FrozenSet(itemComparer);
+
     return enumerable.AsOrTo ( targetType, null, behavior );
   }
 }

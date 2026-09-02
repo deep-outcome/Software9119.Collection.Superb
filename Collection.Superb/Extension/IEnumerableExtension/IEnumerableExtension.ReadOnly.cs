@@ -102,12 +102,12 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="ReadOnlyDictionary{Key,Value}"/> from <paramref name="enumerable"/>.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="ToReadOnlyDictionary{Source,Key,Value}(IEnumerable{Source},Func{Source,Key},Func{Source,Value},NullBehavior, int)"/>.
+  /// Calls to <see cref="ToReadOnlyDictionary{Item,Key,Value}(IEnumerable{Item},Func{Item,Key},Func{Item,Value},NullBehavior, int)"/>.
   /// </remarks>
-  static public ReadOnlyDictionary<Key, Source>? ToReadOnlyDictionary<Source, Key>
+  static public ReadOnlyDictionary<Key, Item>? ToReadOnlyDictionary<Item, Key>
   (
-    this IEnumerable<Source>? enumerable,
-    Func<Source, Key> keySelector,
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
     NullBehavior behavior = NullBehavior.ReturnEmpty,
     int capacity = DefaultDictCapacity
   )
@@ -125,11 +125,11 @@ static public partial class IEnumerableExtension
   /// <see langword="null"/>.
   /// </exception>
   /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
-  static public ReadOnlyDictionary<Key, Value>? ToReadOnlyDictionary<Source, Key, Value>
+  static public ReadOnlyDictionary<Key, Value>? ToReadOnlyDictionary<Item, Key, Value>
   (
-    this IEnumerable<Source>? enumerable,
-    Func<Source, Key> keySelector,
-    Func<Source, Value> valueSelector,
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
     NullBehavior behavior = NullBehavior.ReturnEmpty,
     int capacity = DefaultDictCapacity
   )
@@ -153,7 +153,7 @@ static public partial class IEnumerableExtension
       throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
 
     Dictionary<Key, Value> dict = new (capacity);
-    foreach (Source item in enumerable)
+    foreach (Item item in enumerable)
       dict.Add ( keySelector ( item ), valueSelector ( item ) );
 
     return new ReadOnlyDictionary<Key, Value> ( dict );

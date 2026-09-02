@@ -18,22 +18,24 @@ static public class system_collections_frozen
 {
   /// <summary>
   /// Target type for
-  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary?view=net-10.0">FrozenDictionary.</see>
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary-2?view=net-10.0">
+  /// FrozenDictionary&lt;Key, Item&gt;</see>.
   /// </summary>
-  static public AsOrToTargetType<FrozenDictionary<Key, Source>> FrozenDictionary<Source, Key> (
-    Func<Source, Key> keySelector,
+  static public AsOrToTargetType<FrozenDictionary<Key, Item>> FrozenDictionary<Item, Key> (
+    Func<Item, Key> keySelector,
     IEqualityComparer<Key> keyComparer
   ) where Key : notnull
     => FrozenDictionary ( keySelector, x => x, keyComparer );
 
   /// <summary>
   /// Target type for
-  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary?view=net-10.0">FrozenDictionary.</see>
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary-2?view=net-10.0">
+  /// FrozenDictionary&lt;Key, Value&gt;</see>.
   /// </summary>
-  static public AsOrToTargetType<FrozenDictionary<Key, Value>> FrozenDictionary<Source, Key, Value>
+  static public AsOrToTargetType<FrozenDictionary<Key, Value>> FrozenDictionary<Item, Key, Value>
   (
-    Func<Source, Key> keySelector,
-    Func<Source, Value> valueSelector,
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
     IEqualityComparer<Key> keyComparer
   )
   where Key : notnull
@@ -47,13 +49,34 @@ static public class system_collections_frozen
     if (keyComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
 
-    Func<IEnumerable<Source>, int?, FrozenDictionary<Key,Value>> typedCtor = (e, c) =>
+    Ctor<Item, FrozenDictionary<Key,Value>> typedCtor = (e, c) =>
     {
       FrozenDictionary<Key,Value> result = FrozenDict.ToFrozenDictionary(e, keySelector, valueSelector, keyComparer);
       return result;
     };
 
-    Func<FrozenDictionary<Key, Value>> empty = () => FrozenDict.ToFrozenDictionary<Key, Value> ( [], keyComparer );
-    return AsOrToTargetType.FromTypedCtor ( typedCtor, false, empty );
+    Empty<FrozenDictionary<Key, Value>> empty = () => FrozenDict.ToFrozenDictionary<Key, Value> ( [], keyComparer );
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozenset-1?view=net-10.0">
+  /// FrozenSet&lt;Item&gt;</see>
+  /// </summary>
+  static public AsOrToTargetType<FrozenSet<Item>> FrozenSet<Item> ( IEqualityComparer<Item> itemComparer )
+  {
+    if (itemComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
+
+    Ctor<Item, FrozenSet<Item>> typedCtor = (e, c) =>
+    {
+      FrozenSet<Item> result = System.Collections.Frozen.FrozenSet.ToFrozenSet(e, itemComparer);
+      return result;
+    };
+
+    Empty<FrozenSet<Item>> empty = () => System.Collections.Frozen.FrozenSet.ToFrozenSet ( [], itemComparer );
+    CanCast canCast = e => e is FrozenSet<Item> fs && ReferenceEquals(fs.Comparer, itemComparer);
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
 }

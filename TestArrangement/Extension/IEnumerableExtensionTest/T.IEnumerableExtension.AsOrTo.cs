@@ -15,22 +15,22 @@ namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableEx
 public partial class IEnumerableExtensionTest
 #pragma warning restore CA1724
 {
-  static public AsOrToTargetType<List<int>> TargetClass ( bool tryCast )
+  static public AsOrToTargetType<List<int>> TargetClass ( bool canCast )
   {
-    Func<IEnumerable<int>, int?, List<int>> ctor = ( e, c ) =>
+    Ctor<int, List<int>> ctor = ( e, c ) =>
     {
       List<int> output = c is int capacity ? new (10 * capacity) : new();
       output.AddRange(e);
       return output;
     };
-    AsOrToTargetType<List<int>> targetType = AsOrToTargetType.FromTypedCtor(ctor, tryCast, () => []);
+    AsOrToTargetType<List<int>> targetType = AsOrToTargetType.FromTypedCtor(ctor, e => canCast, () => []);
     return targetType;
   }
 
   static public AsOrToTargetType<ArraySegment<int>> TargetStruct ()
   {
-    Func<IEnumerable<int>, int?, ArraySegment<int>> ctor = (e, c) => new ([ .. e ]);
-    AsOrToTargetType<ArraySegment<int>> targetType = AsOrToTargetType.FromTypedCtor(ctor, default, () => default);
+    Ctor<int, ArraySegment<int>> ctor = (e, c) => new ([ .. e ]);
+    AsOrToTargetType<ArraySegment<int>> targetType = AsOrToTargetType.FromTypedCtor(ctor, e => default, () => default);
     return targetType;
   }
 
@@ -96,13 +96,13 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( true )]
   [DataRow ( false )]
-  public void AsOrTo_CastingVsEnumeration ( bool tryCast )
+  public void AsOrTo_CastingVsEnumeration ( bool canCast )
   {
-    AsOrToTargetType<List<int>> targetType = TargetClass(tryCast);
+    AsOrToTargetType<List<int>> targetType = TargetClass(canCast);
 
     List<int> source = [0,1,2,3];
     List<int> test = source.AsOrTo ( targetType )!;
-    Assert.AreEqual ( tryCast, ReferenceEquals ( source, test ) );
+    Assert.AreEqual ( canCast, ReferenceEquals ( source, test ) );
   }
 
   [TestMethod]
@@ -140,7 +140,7 @@ public partial class IEnumerableExtensionTest
   [SuppressMessage ( "Style", "IDE0040:Remove accessibility modifiers", Justification = "Readme style." )]
   private static AsOrToTargetType<string> CreateConstructor ()
   {
-    Func<IEnumerable<int>, int?, string> builder = (e, c) =>
+    Ctor<int, string> builder = (e, c) =>
     {
       const int defaultCapacity = 1000;
       StringBuilder builder = new ( c ?? defaultCapacity);
@@ -152,7 +152,7 @@ public partial class IEnumerableExtensionTest
       return builder.ToString();
     };
 
-    return AsOrToTargetType.FromTypedCtor ( builder, isCastable: false, empty: () => "" );
+    return AsOrToTargetType.FromTypedCtor ( builder, canCast: e => false, empty: () => "" );
   }
 
   [SuppressMessage ( "Style", "IDE0036:Order modifiers", Justification = "Readme style" )]

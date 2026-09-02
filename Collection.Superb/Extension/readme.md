@@ -17,8 +17,8 @@ This namespace contains types with extension methods.
     - read-only related
         - [`IList<T>? AsOrToIList<T>(IEnumerable<T>?, EnumerableNullBehavior, int)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/3caed7a843109f3c7dc27831090d86697563c247/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.ReadOnly.cs#L47) – converts or casts `IEnumerable<T>`.
         - [`ReadOnlyCollection<T>? AsOrToReadOnlyCollection<T>(IEnumerable<T>?, EnumerableNullBehavior, int)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/3caed7a843109f3c7dc27831090d86697563c247/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.ReadOnly.cs#L87) – converts or casts `IEnumerable<T>` and puts it into read-only collection.
-        - [`ReadOnlyDictionary<Key, Source>? ToReadOnlyDictionary<Source, Key>(IEnumerable<Source>?, Func<Source, Key>, EnumerableNullBehavior, int)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/3caed7a843109f3c7dc27831090d86697563c247/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.ReadOnly.cs#L103) – converts `IEnumerable<T>` and puts it into read-only dictionary.
-        - [`ReadOnlyDictionary<Key, Value>? ToReadOnlyDictionary<Source, Key, Value>(IEnumerable<Source>?, Func<Source, Key>, Func<Source, Value>, EnumerableNullBehavior, int)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/3caed7a843109f3c7dc27831090d86697563c247/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.ReadOnly.cs#L124) – converts `IEnumerable<T>` and puts it into read-only dictionary.
+        - [`ReadOnlyDictionary<Key, Item>? ToReadOnlyDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, EnumerableNullBehavior, int)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/3caed7a843109f3c7dc27831090d86697563c247/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.ReadOnly.cs#L103) – converts `IEnumerable<T>` and puts it into read-only dictionary.
+        - [`ReadOnlyDictionary<Key, Value>? ToReadOnlyDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, EnumerableNullBehavior, int)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/3caed7a843109f3c7dc27831090d86697563c247/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.ReadOnly.cs#L124) – converts `IEnumerable<T>` and puts it into read-only dictionary.
         - [`ReadOnlyDictionary<Key, Value>? AsReadOnlyDictionary<Key, Value>(IDictionary<Key, Value>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/3caed7a843109f3c7dc27831090d86697563c247/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.ReadOnly.cs#L166) – wraps source dictionary into read-only dictionary.
     - `AsOrTo` core method
         - [`T? AsOrTo<T> (IEnumerable, AsOrToTargetType<T>, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/2812b122e978945ba7d8c4876e8afa5deab64ec1/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.cs#L36)
@@ -29,7 +29,7 @@ This namespace contains types with extension methods.
         
         private static AsOrToTargetType<string> CreateConstructor ()
         {
-          Func<IEnumerable<int>, int?, string> builder = (e, c) =>
+          Ctor<int, string> builder = (e, c) =>
           {
             const int defaultCapacity = 1000;
             StringBuilder builder = new ( c ?? defaultCapacity);
@@ -41,7 +41,7 @@ This namespace contains types with extension methods.
             return builder.ToString();
            };
         
-           return AsOrToTargetType.FromTypedCtor ( builder, isCastable: false, empty: () => "" );
+           return AsOrToTargetType.FromTypedCtor ( builder, canCast: e => false, empty: () => "" );
         }
         
         public static string ToNumberStringList ( this IEnumerable<int> enumerable )
@@ -79,5 +79,5 @@ This namespace contains types with extension methods.
         - [`Stack? AsOrToStack<T>(IEnumerable<T>, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/2812b122e978945ba7d8c4876e8afa5deab64ec1/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collection.cs#L176) – casts or copies `IEnumerable<T>` into stack.
         - [`Stack? AsOrToStack(IEnumerable, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/2812b122e978945ba7d8c4876e8afa5deab64ec1/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collection.cs#L186) – casts or copies `IEnumerable` into stack.            
     - `AsOrTo` or `To` for chosen [`System.Collections.Frozen` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen?view=net-10.0) types
-        - `FrozenDictionary<Key, Source>? ToFrozenDictionary<Source, Key> (IEnumerable<Source>, Func<Source, Key>, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates frozen dictionary from `IEnumerable<T>`
-        - `FrozenDictionary<Key, Value>? ToFrozenDictionary<Source, Key, Value> (IEnumerable<Source>, Func<Source, Key>, Func<Source, Value>, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates frozen dictionary from `IEnumerable<T>`
+        - `FrozenDictionary<Key, Item>? ToFrozenDictionary<Item, Key> (IEnumerable<Item>, Func<Item, Key>, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates frozen dictionary from `IEnumerable<T>`
+        - `FrozenDictionary<Key, Value>? ToFrozenDictionary<Item, Key, Value> (IEnumerable<Item>, Func<Item, Key>, Func<Item, Value>, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates frozen dictionary from `IEnumerable<T>`

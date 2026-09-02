@@ -18,7 +18,7 @@ static public class system_collections
   /// </summary>
   static public AsOrToTargetType<ArrayList> ArrayList ()
   {
-    Func<IEnumerable, int?, ArrayList> ctor = (e, c) =>
+    Ctor<ArrayList> ctor = (e, c) =>
     {
       ArrayList? result = null;
       if(c is int cap)
@@ -33,7 +33,7 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, true, () => [] );
+    return new ( ctor, e => true, () => [] );
   }
 
   /// <summary>
@@ -54,7 +54,7 @@ static public class system_collections
     if (valueSelector == null)
       throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
 
-    Func<IEnumerable, int?, Hashtable> ctor = (e, c) =>
+    Ctor<Hashtable> ctor = (e, c) =>
     {
       Hashtable result =  c is int cap ? new Hashtable ( cap ) : [];
       foreach (T item in e)
@@ -63,7 +63,7 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, false, () => [] );
+    return new ( ctor, e => false, () => [] );
   }
 
   /// <summary>
@@ -72,7 +72,7 @@ static public class system_collections
   /// </summary>
   static public AsOrToTargetType<Queue> Queue ()
   {
-    Func<IEnumerable, int?, Queue > ctor = (e, c) =>
+    Ctor<Queue > ctor = (e, c) =>
     {
       Queue? result = null;
       if(c is int cap)
@@ -87,7 +87,7 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, true, () => [] );
+    return new ( ctor, e => true, () => [] );
   }
 
   /// <summary>
@@ -108,7 +108,7 @@ static public class system_collections
     if (valueSelector == null)
       throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
 
-    Func<IEnumerable, int?, SortedList> ctor = (e, c) =>
+    Ctor<SortedList> ctor = (e, c) =>
     {
       SortedList result =  c is int cap ? new SortedList ( cap ) : [];
       foreach (T item in e)
@@ -117,7 +117,7 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, false, () => [] );
+    return new ( ctor, e => false, () => [] );
   }
 
   /// <summary>
@@ -126,7 +126,7 @@ static public class system_collections
   /// </summary>
   static public AsOrToTargetType<Stack> Stack ()
   {
-    Func<IEnumerable, int?, Stack > ctor = (e, c) =>
+    Ctor<Stack > ctor = (e, c) =>
     {
       Stack ? result = null;
       if(c is int cap)
@@ -141,6 +141,6 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, true, () => [] );
+    return new ( ctor, e => true, () => [] );
   }
 }

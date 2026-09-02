@@ -23,7 +23,7 @@ public enum EnumerableNullBehavior
   /// </summary>
   /// <remarks>
   /// See also 
-  /// <see cref="AsOrToTargetType{Target}.AsOrToTargetType(Func{IEnumerable, int?, Target}, bool, Func{Target})"/>.
+  /// <see cref="AsOrToTargetType{Target}.AsOrToTargetType(Ctor{Target}, CanCast, Empty{Target})"/>.
   /// </remarks>
   ReturnEmpty,
   /// <summary>

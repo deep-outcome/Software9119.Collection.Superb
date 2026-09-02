@@ -21,7 +21,7 @@ public class system_collections_test
   {
     AsOrToTargetType<ArrayList> targetType = system_collections.ArrayList();
 
-    Assert.IsTrue ( targetType.TryCast );
+    Assert.IsTrue ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
@@ -62,7 +62,7 @@ public class system_collections_test
       ? system_collections.Hashtable ( keySelector)
       : system_collections.Hashtable(keySelector, valueSelector);
 
-    Assert.IsFalse ( targetType.TryCast );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
@@ -117,7 +117,7 @@ public class system_collections_test
   {
     AsOrToTargetType<Queue> targetType = system_collections.Queue();
 
-    Assert.IsTrue ( targetType.TryCast );
+    Assert.IsTrue ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
@@ -161,7 +161,7 @@ public class system_collections_test
       ? system_collections.SortedList ( keySelector)
       : system_collections.SortedList(keySelector, valueSelector);
 
-    Assert.IsFalse ( targetType.TryCast );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
@@ -215,7 +215,7 @@ public class system_collections_test
   {
     AsOrToTargetType<Stack> targetType = system_collections.Stack();
 
-    Assert.IsTrue ( targetType.TryCast );
+    Assert.IsTrue ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(4);
