@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <!--<PackageReference Include="Software9119.Collection.Superb.Debug" Version="3.1.0" />-->
-    <PackageReference Include="Software9119.Collection.Superb" Version="5.0.1" />
+    <PackageReference Include="Software9119.Collection.Superb" Version="6.0.1" />
   </ItemGroup>
 
 </Project>

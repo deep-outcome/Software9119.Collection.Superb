@@ -8,8 +8,8 @@ This namespace contains types to ease indexing.
 
 ##### > 1 Step Size Example
 ```csharp
-Step stepOdd = new (2, 0);
-Step stepEven = new (2, 1);
+Step stepOdd = new (size: 2, value: 0);
+Step stepEven = new (size: 2, value: 1);
 
 List<int> source = [ .. Enumerable.Range(1, 90) ];
 

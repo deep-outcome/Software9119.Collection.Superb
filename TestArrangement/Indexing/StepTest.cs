@@ -272,7 +272,7 @@ public class StepTest
     Step you  = new (4);
 
     Assert.IsFalse ( i.Equals ( you ) );
-        
+
     you = new ( 3 );
 
     Assert.IsTrue ( i.Equals ( you ) );
@@ -286,7 +286,7 @@ public class StepTest
     Step you  = new (4);
 
     Assert.IsFalse ( i == you );
-        
+
     you = new ( 3 );
 
     Assert.IsTrue ( i == you );
@@ -300,7 +300,7 @@ public class StepTest
     Step you  = new (4);
 
     Assert.IsTrue ( i != you );
-        
+
     you = new ( 3 );
 
     Assert.IsFalse ( i != you );
@@ -325,8 +325,8 @@ public class StepTest
   [TestMethod]
   public void Usage ()
   {
-    Step stepOdd = new (2, 0);
-    Step stepEven = new (2, 1);
+    Step stepOdd = new (size: 2, value: 0);
+    Step stepEven = new (size: 2, value: 1);
 
     List<int> source = [ .. Enumerable.Range(1, 90) ];
 
