@@ -45,10 +45,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToFrozenDictionary_KeySelectorOnly_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToFrozenDictionary_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
   {
-    TestFrozenDict? test = ((IEnumerable<int>)null!).ToFrozenDictionary(x => x, behavior: NullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    TestFrozenDict? test = returnsDefault
+      ? source.ToFrozenDictionary(x => x, behavior: behavior!.Value)
+      : source.ToFrozenDictionary(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -82,9 +89,16 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToFrozenDictionary_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToFrozenDictionary_NullBehavior ( NullBehavior? behavior )
   {
-    TestFrozenDict? test = ((IEnumerable<int>)null!).ToFrozenDictionary(x => x, x => x, behavior: NullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    TestFrozenDict? test = returnsDefault
+      ? source.ToFrozenDictionary(x => x, x => x, behavior: behavior!.Value)
+      : source.ToFrozenDictionary(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 }

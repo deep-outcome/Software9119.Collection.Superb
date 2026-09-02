@@ -25,11 +25,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void AsOrToArrayList_IEnumerableOfT_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToArrayList_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable<int> source = null!;
-    ArrayList? test = source.AsOrToArrayList(behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ArrayList? test = returnsDefault
+      ? source.AsOrToArrayList(behavior: behavior!.Value)
+      : source.AsOrToArrayList();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -43,11 +49,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void AsOrToArrayList_IEnumerable_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToArrayList_IEnumerable_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable source = null!;
-    ArrayList? test = source.AsOrToArrayList(behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ArrayList? test = returnsDefault
+      ? source.AsOrToArrayList(behavior: behavior!.Value)
+      : source.AsOrToArrayList();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -71,13 +83,19 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( 1149, _loadsize );
   }
 
+
   [TestMethod]
-  public void ToHashtable_IEnumerableOfT_KeySelectorOnly_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToHashtable_IEnumerableOfT_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
   {
-    Func<int, object> keySelector = x => x;
     IEnumerable<int> source = null!;
-    Hashtable? test = source.ToHashtable(keySelector, behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Hashtable? test = returnsDefault
+      ? source.ToHashtable(x => x, behavior: behavior!.Value)
+      : source.ToHashtable(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -104,13 +122,19 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( 1149, _loadsize );
   }
 
+
   [TestMethod]
-  public void ToHashtable_IEnumerable_KeySelectorOnly_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToHashtable_IEnumerable_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
   {
-    Func<object, object> keySelector = x => x;
     IEnumerable source = null!;
-    Hashtable? test = source.ToHashtable(keySelector, behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Hashtable? test = returnsDefault
+      ? source.ToHashtable(x => x, behavior: behavior!.Value)
+      : source.ToHashtable(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -137,14 +161,19 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( 1149, _loadsize );
   }
 
+
   [TestMethod]
-  public void ToHashtable_IEnumerableOfT_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToHashtable_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
   {
-    Func<int, object> keySelector = x => x;
-    Func<int, object> valueSelector = x => x;
     IEnumerable<int> source = null!;
-    Hashtable? test = source.ToHashtable(keySelector, valueSelector, behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Hashtable? test = returnsDefault
+      ? source.ToHashtable(x => x, x => x, behavior: behavior!.Value)
+      : source.ToHashtable(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -173,13 +202,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToHashtable_IEnumerable_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToHashtable_IEnumerable_NullBehavior ( NullBehavior? behavior )
   {
-    Func<object, object> keySelector = x => x;
-    Func<object, object> valueSelector = x => x;
     IEnumerable source = null!;
-    Hashtable? test = source.ToHashtable(keySelector,valueSelector, behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Hashtable? test = returnsDefault
+      ? source.ToHashtable(x => x, x => x, behavior: behavior!.Value)
+      : source.ToHashtable(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -194,12 +227,19 @@ public partial class IEnumerableExtensionTest
     Assert.HasCount ( cap, storage );
   }
 
+
   [TestMethod]
-  public void AsOrToQueue_IEnumerableOfT_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToQueue_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable<int> source = null!;
-    Queue? test = source.AsOrToQueue(behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Queue? test = returnsDefault
+      ? source.AsOrToQueue(behavior: behavior!.Value)
+      : source.AsOrToQueue();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -214,12 +254,19 @@ public partial class IEnumerableExtensionTest
     Assert.HasCount ( cap, storage );
   }
 
+
   [TestMethod]
-  public void AsOrToQueue_IEnumerable_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToQueue_IEnumerable_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable source = null!;
-    Queue? test = source.AsOrToQueue(behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Queue? test = returnsDefault
+      ? source.AsOrToQueue(behavior: behavior!.Value)
+      : source.AsOrToQueue();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -241,13 +288,19 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( cap, test.Capacity );
   }
 
+
   [TestMethod]
-  public void ToSortedList_IEnumerableOfT_KeySelectorOnly_NullBehavior ()
-  {
-    Func<int, object> keySelector = x => x;
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToSortedList_IEnumerableOfT_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  {   
     IEnumerable<int> source = null!;
-    SortedList? test = source.ToSortedList(keySelector, behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    SortedList? test = returnsDefault
+      ? source.ToSortedList(x => x, behavior: behavior!.Value)
+      : source.ToSortedList(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -272,13 +325,19 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( cap, test.Capacity );
   }
 
+
   [TestMethod]
-  public void ToSortedList_IEnumerable_KeySelectorOnly_NullBehavior ()
-  {
-    Func<object, object> keySelector = x => x;
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToSortedList_IEnumerable_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  {    
     IEnumerable source = null!;
-    SortedList? test = source.ToSortedList(keySelector, behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    SortedList? test = returnsDefault
+      ? source.ToSortedList(x => x, behavior: behavior!.Value)
+      : source.ToSortedList(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -303,14 +362,19 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( cap, test.Capacity );
   }
 
+
   [TestMethod]
-  public void ToSortedList_IEnumerableOfT_NullBehavior ()
-  {
-    Func<int, object> keySelector = x => x;
-    Func<int, object> valueSelector = x => x;
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToSortedList_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
+  {    
     IEnumerable<int> source = null!;
-    SortedList? test = source.ToSortedList(keySelector, valueSelector, behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    SortedList? test = returnsDefault
+      ? source.ToSortedList(x => x, x => x, behavior: behavior!.Value)
+      : source.ToSortedList(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -337,13 +401,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToSortedList_IEnumerable_NullBehavior ()
-  {
-    Func<object, object> keySelector = x => x;
-    Func<object, object> valueSelector = x => x;
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void ToSortedList_IEnumerable_NullBehavior ( NullBehavior? behavior )
+  {    
     IEnumerable source = null!;
-    SortedList? test = source.ToSortedList(keySelector,valueSelector, behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    SortedList? test = returnsDefault
+      ? source.ToSortedList(x => x, x => x, behavior: behavior!.Value)
+      : source.ToSortedList(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -359,11 +427,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void AsOrToStack_IEnumerableOfT_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToStack_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable<int> source = null!;
-    Stack? test = source.AsOrToStack(behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Stack? test = returnsDefault
+      ? source.AsOrToStack(behavior: behavior!.Value)
+      : source.AsOrToStack();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
@@ -379,10 +453,16 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void AsOrToStack_IEnumerable_NullBehavior ()
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToStack_IEnumerable_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable source = null!;
-    Stack? test = source.AsOrToStack(behavior: EnumerableNullBehavior.ReturnDefault);
-    Assert.IsNull ( test );
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Stack? test = returnsDefault
+      ? source.AsOrToStack(behavior: behavior!.Value)
+      : source.AsOrToStack();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 }
