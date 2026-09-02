@@ -11,7 +11,9 @@ using System.Text;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
 
+#pragma warning disable CA1724
 public partial class IEnumerableExtensionTest
+#pragma warning restore CA1724
 {
   static public AsOrToTargetType<List<int>> TargetClass ( bool tryCast )
   {
@@ -121,7 +123,7 @@ public partial class IEnumerableExtensionTest
   {
     AsOrToTargetType<List<int>> targetType = TargetClass(default);
 
-    IEnumerable<int> source = Enumerable.Range(1, 10).Select(x => x * 2);
+    IEnumerable<int> source =  Enumerable.Range(1, 10);
     List<int> test = source.AsOrTo ( targetType  )!;
     Assert.IsTrue ( source.SequenceEqual ( test ) );
   }

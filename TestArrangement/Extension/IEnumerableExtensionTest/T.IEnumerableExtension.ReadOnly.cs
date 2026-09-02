@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Software9119.Collection.Superb.Extension;
+using Software9119.Collection.Superb.TestArrangement.TestAide;
 
 using System;
 using System.Collections.Generic;
@@ -93,7 +94,7 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   public void AsOrToIList_EnumerableIsEnumerable ()
   {
-    IEnumerable<int> enumerable = Enumerable.Range(1, 9).Select(x => x);
+    IEnumerable<int> enumerable = XEnumerable.RangeEnumerable(1, 9);
     IList<int> test = enumerable.AsOrToIList()!;
     Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
     Assert.AreEqual ( 16, ((List<int>) test).Capacity );
@@ -104,7 +105,7 @@ public partial class IEnumerableExtensionTest
   public void AsOrToIList_ExactCapacity ()
   {
     const int count = 3;
-    IEnumerable<int> enumerable = Enumerable.Range(1, count).Select(x => x);
+    IEnumerable<int> enumerable = XEnumerable.RangeEnumerable(1, count);
     IList<int> test = enumerable.AsOrToIList(capacity: count)!;
     Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
     Assert.AreEqual ( count, ((List<int>) test).Capacity );
@@ -146,7 +147,7 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   public void AsOrToReadOnlyCollection ()
   {
-    IEnumerable<int> enumerable = Enumerable.Range(1, 9).Select(x => x);
+    IEnumerable<int> enumerable = XEnumerable.RangeEnumerable(1, 9);
     ReadOnlyCollection<int> coll = enumerable.AsOrToReadOnlyCollection()!;
     IList<int> test = Items(coll);
     Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
@@ -166,7 +167,7 @@ public partial class IEnumerableExtensionTest
   public void AsOrToReadOnlyCollection_ExactCapacity ()
   {
     const int count = 3;
-    IEnumerable<int> enumerable = Enumerable.Range(1, count).Select(x => x);
+    IEnumerable<int> enumerable = XEnumerable.RangeEnumerable(1, count);
     ReadOnlyCollection<int> coll = enumerable.AsOrToReadOnlyCollection(capacity: count)!;
     IList<int> test = Items(coll);
     Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
