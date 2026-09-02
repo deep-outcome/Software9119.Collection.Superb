@@ -6,6 +6,7 @@ using Software9119.Collection.Superb.TestArrangement.TestAide;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
@@ -23,7 +24,7 @@ public class system_collections_test
     Assert.IsTrue ( targetType.TryCast );
     Assert.HasCount ( 0, targetType.Empty () );
 
-    IEnumerable<object> source = new object [] {new(), new() }.Select(x => x);
+    IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
 
     ArrayList target = targetType.Ctor(source, capacity);
     Assert.IsTrue ( source.SequenceEqual ( target.Cast<object> () ) );
@@ -37,7 +38,7 @@ public class system_collections_test
   {
     AsOrToTargetType<ArrayList> targetType = system_collections.ArrayList();
 
-    ICollection source = new object [] { new(), new() };
+    ICollection source = XEnumerable.ObjectsEnumerable(2).ToList();
 
     ArrayList target = targetType.Ctor(source, capacity);
     Assert.IsTrue ( source.Cast<object> ().SequenceEqual ( target.Cast<object> () ) );
@@ -64,7 +65,7 @@ public class system_collections_test
     Assert.IsFalse ( targetType.TryCast );
     Assert.HasCount ( 0, targetType.Empty () );
 
-    IEnumerable<object> source = new object[] {new(), new() }.Select(x => x);
+    IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
     Hashtable target = targetType.Ctor(source, capacity);
 
     int _loadsize = (int)Reflection.GetNonPublicFieldValue(target, "_loadsize");
@@ -119,7 +120,7 @@ public class system_collections_test
     Assert.IsTrue ( targetType.TryCast );
     Assert.HasCount ( 0, targetType.Empty () );
 
-    IEnumerable<object> source = new object [] {new(), new() }.Select(x => x);
+    IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
 
     Queue target = targetType.Ctor(source, capacity);
     Assert.IsTrue ( source.SequenceEqual ( target.Cast<object> () ) );
@@ -135,7 +136,7 @@ public class system_collections_test
   {
     AsOrToTargetType<Queue> targetType = system_collections.Queue();
 
-    ICollection source = new object [] { new(), new() };
+    ICollection source = XEnumerable.ObjectsEnumerable(2).ToList();
 
     Queue target = targetType.Ctor(source, capacity);
     Assert.IsTrue ( source.Cast<object> ().SequenceEqual ( target.Cast<object> () ) );
@@ -163,7 +164,7 @@ public class system_collections_test
     Assert.IsFalse ( targetType.TryCast );
     Assert.HasCount ( 0, targetType.Empty () );
 
-    IEnumerable<object> source = new object[] {new(), new() }.Select(x => x);
+    IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
     SortedList target = targetType.Ctor(source, capacity);
 
     Assert.AreEqual ( capacity ?? 16, target.Capacity );
@@ -217,7 +218,7 @@ public class system_collections_test
     Assert.IsTrue ( targetType.TryCast );
     Assert.HasCount ( 0, targetType.Empty () );
 
-    IEnumerable<object> source = new object [] {new(), new(), new(), new() }.Select(x => x);
+    IEnumerable<object> source = XEnumerable.ObjectsEnumerable(4);
 
     Stack target = targetType.Ctor(source, capacity);
     Assert.IsTrue ( source.SequenceEqual ( target.Cast<object> ().Reverse () ) );
@@ -229,16 +230,12 @@ public class system_collections_test
   [TestMethod]
   [DataRow ( 100 )]
   [DataRow ( null )]
+  [SuppressMessage ( "Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "Obviousity." )]
   public void Stack_ICollection ( int? capacity )
   {
     AsOrToTargetType<Stack> targetType = system_collections.Stack();
 
-    ICollection source = new object [] 
-    { 
-      new(), new(), new(), new(),
-      new(), new(), new(), new(),
-      new(), new(), new(), new(),
-    };
+    ICollection source = XEnumerable.ObjectsEnumerable(12).ToList();
 
     Stack target = targetType.Ctor(source, capacity);
     Assert.IsTrue ( source.Cast<object> ().SequenceEqual ( target.Cast<object> ().Reverse () ) );
