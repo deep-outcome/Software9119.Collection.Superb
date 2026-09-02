@@ -33,7 +33,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public T? AsOrTo<T>
   (
-    this IEnumerable enumerable,
+    this IEnumerable? enumerable,
     AsOrToTargetType<T> asOrToType,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty

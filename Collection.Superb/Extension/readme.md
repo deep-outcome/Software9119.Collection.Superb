@@ -44,7 +44,7 @@ This namespace contains types with extension methods.
            return AsOrToTargetType.FromTypedCtor ( builder, canCast: e => false, empty: () => "" );
         }
         
-        public static string ToNumberStringList ( this IEnumerable<int> enumerable )
+        public static string ToNumberStringList ( this IEnumerable<int>? enumerable )
         {
           AsOrToTargetType<string> constructor = _constructor;
           return enumerable.AsOrTo ( constructor )!;
@@ -81,3 +81,4 @@ This namespace contains types with extension methods.
     - `AsOrTo` or `To` for chosen [`System.Collections.Frozen` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen?view=net-10.0) types
         - `FrozenDictionary<Key, Item>? ToFrozenDictionary<Item, Key> (IEnumerable<Item>, Func<Item, Key>, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates frozen dictionary from `IEnumerable<T>`
         - `FrozenDictionary<Key, Value>? ToFrozenDictionary<Item, Key, Value> (IEnumerable<Item>, Func<Item, Key>, Func<Item, Value>, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates frozen dictionary from `IEnumerable<T>`
+        - `FrozenSet<Item>? AsOrToFrozenSet<Item>(IEnumerable<Item>, IEqualityComparer<Item>?, EnumerableNullBehavior)` – creates frozen set from `IEnumerable<T>`

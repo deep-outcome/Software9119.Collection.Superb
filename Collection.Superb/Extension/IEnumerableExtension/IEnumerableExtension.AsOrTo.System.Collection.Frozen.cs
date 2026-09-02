@@ -25,7 +25,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public FrozenDictionary<Key, Item>? ToFrozenDictionary<Item, Key> (
-    this IEnumerable<Item> enumerable,
+    this IEnumerable<Item>? enumerable,
     Func<Item, Key> keySelector,
     IEqualityComparer<Key>? keyComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
@@ -52,7 +52,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public FrozenDictionary<Key, Value>? ToFrozenDictionary<Item, Key, Value> (
-    this IEnumerable<Item> enumerable,
+    this IEnumerable<Item>? enumerable,
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
     IEqualityComparer<Key>? keyComparer = null,
@@ -89,7 +89,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public FrozenSet<Item>? AsOrToFrozenSet<Item>
   (
-    this IEnumerable<Item> enumerable,
+    this IEnumerable<Item>? enumerable,
     IEqualityComparer<Item>? itemComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )

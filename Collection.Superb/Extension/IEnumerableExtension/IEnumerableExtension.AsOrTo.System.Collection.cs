@@ -14,7 +14,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with <see cref="system_collections.ArrayList ()"/>.
   /// </remarks>
-  static public ArrayList? AsOrToArrayList<T> ( this IEnumerable<T> enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
+  static public ArrayList? AsOrToArrayList<T> ( this IEnumerable<T>? enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( system_collections.ArrayList (), capacity, behavior );
 
 
@@ -24,7 +24,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with <see cref="system_collections.ArrayList ()"/>.
   /// </remarks>
-  static public ArrayList? AsOrToArrayList ( this IEnumerable enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
+  static public ArrayList? AsOrToArrayList ( this IEnumerable? enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( system_collections.ArrayList (), capacity, behavior );
 
   // hashtable
@@ -37,7 +37,7 @@ static public partial class IEnumerableExtension
   /// with <see cref="system_collections.Hashtable{T}(Func{T, object})"/>.
   /// </remarks>
   static public Hashtable? ToHashtable<T> (
-    this IEnumerable<T> enumerable,
+    this IEnumerable<T>? enumerable,
     Func<T, object> keySelector,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
@@ -51,7 +51,7 @@ static public partial class IEnumerableExtension
   /// with <see cref="system_collections.Hashtable{T}(Func{T, object})"/>.
   /// </remarks>
   static public Hashtable? ToHashtable (
-    this IEnumerable enumerable,
+    this IEnumerable? enumerable,
     Func<object, object> keySelector,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
@@ -66,7 +66,7 @@ static public partial class IEnumerableExtension
   /// <see cref="system_collections.Hashtable{T}(Func{T, object}, Func{T, object?})"/>.
   /// </remarks>
   static public Hashtable? ToHashtable<T> (
-    this IEnumerable<T> enumerable,
+    this IEnumerable<T>? enumerable,
     Func<T, object> keySelector,
     Func<T, object> valueSelector,
     int? capacity = null,
@@ -82,7 +82,7 @@ static public partial class IEnumerableExtension
   /// <see cref="system_collections.Hashtable{T}(Func{T, object}, Func{T, object?})"/>.
   /// </remarks>
   static public Hashtable? ToHashtable (
-    this IEnumerable enumerable,
+    this IEnumerable? enumerable,
     Func<object, object> keySelector,
     Func<object, object> valueSelector,
     int? capacity = null,
@@ -97,7 +97,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with <see cref="system_collections.Queue ()"/>.
   /// </remarks>
-  static public Queue? AsOrToQueue<T> ( this IEnumerable<T> enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
+  static public Queue? AsOrToQueue<T> ( this IEnumerable<T>? enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
    => enumerable.AsOrTo ( system_collections.Queue (), capacity, behavior );
 
   /// <summary>
@@ -106,7 +106,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with <see cref="system_collections.Queue ()"/>.
   /// </remarks>
-  static public Queue? AsOrToQueue ( this IEnumerable enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
+  static public Queue? AsOrToQueue ( this IEnumerable? enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( system_collections.Queue (), capacity, behavior );
 
   // sorted list
@@ -119,7 +119,7 @@ static public partial class IEnumerableExtension
   /// with <see cref="system_collections.SortedList{T}(Func{T, object})"/>.
   /// </remarks>
   static public SortedList? ToSortedList<T> (
-    this IEnumerable<T> enumerable,
+    this IEnumerable<T>? enumerable,
     Func<T, object> keySelector,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
@@ -133,7 +133,7 @@ static public partial class IEnumerableExtension
   /// with <see cref="system_collections.SortedList{T}(Func{T, object})"/>.
   /// </remarks>
   static public SortedList? ToSortedList (
-    this IEnumerable enumerable,
+    this IEnumerable? enumerable,
     Func<object, object> keySelector,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
@@ -148,7 +148,7 @@ static public partial class IEnumerableExtension
   /// <see cref="system_collections.SortedList{T}(Func{T, object}, Func{T, object?})"/>.
   /// </remarks>
   static public SortedList? ToSortedList<T> (
-    this IEnumerable<T> enumerable,
+    this IEnumerable<T>? enumerable,
     Func<T, object> keySelector,
     Func<T, object> valueSelector,
     int? capacity = null,
@@ -164,7 +164,7 @@ static public partial class IEnumerableExtension
   /// <see cref="system_collections.SortedList{T}(Func{T, object}, Func{T, object?})"/>.
   /// </remarks>
   static public SortedList? ToSortedList (
-    this IEnumerable enumerable,
+    this IEnumerable? enumerable,
     Func<object, object> keySelector,
     Func<object, object> valueSelector,
     int? capacity = null,
@@ -179,7 +179,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with <see cref="system_collections.Stack ()"/>.
   /// </remarks>
-  static public Stack? AsOrToStack<T> ( this IEnumerable<T> enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
+  static public Stack? AsOrToStack<T> ( this IEnumerable<T>? enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( system_collections.Stack (), capacity, behavior );
 
 
@@ -189,7 +189,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with <see cref="system_collections.Stack ()"/>.
   /// </remarks>
-  static public Stack? AsOrToStack ( this IEnumerable enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
+  static public Stack? AsOrToStack ( this IEnumerable? enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( system_collections.Stack (), capacity, behavior );
 }
 

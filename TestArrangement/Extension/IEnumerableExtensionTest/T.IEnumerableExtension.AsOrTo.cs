@@ -156,7 +156,7 @@ public partial class IEnumerableExtensionTest
   }
 
   [SuppressMessage ( "Style", "IDE0036:Order modifiers", Justification = "Readme style" )]
-  public static string ToNumberStringList ( IEnumerable<int> enumerable )
+  public static string ToNumberStringList ( IEnumerable<int>? enumerable )
   {
     AsOrToTargetType<string> constructor = _constructor;
     return enumerable.AsOrTo ( constructor )!;
