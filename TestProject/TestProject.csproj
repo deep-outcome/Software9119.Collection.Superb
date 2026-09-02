@@ -9,12 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="Software9119.Collection.Superb.Debug" Version="3.1.0" />-->
-    <PackageReference Include="Software9119.Collection.Superb" Version="5.0.1" />
+    <None Include=".\.editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".\.editorconfig" />
+    <!--<PackageReference Include="Software9119.Collection.Superb.Debug" Version="3.1.0" />-->
+    <PackageReference Include="Software9119.Collection.Superb" Version="5.0.1" />
   </ItemGroup>
 
 </Project>

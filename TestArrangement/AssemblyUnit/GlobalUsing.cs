@@ -1,0 +1,1 @@
+﻿global using NullBehavior = Software9119.Collection.Superb.Extension.EnumerableNullBehavior;
