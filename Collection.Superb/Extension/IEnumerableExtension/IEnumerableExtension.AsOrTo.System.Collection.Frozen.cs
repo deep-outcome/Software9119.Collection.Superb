@@ -16,7 +16,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
   /// <see cref="collections_frozen.FrozenDictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -43,7 +43,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
   /// <see cref="collections_frozen.FrozenDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -75,15 +75,15 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
   /// <see cref="collections_frozen.FrozenSet{Item}(IEqualityComparer{Item})"/>.
   /// </item>
   /// <item>
   /// When <paramref name="itemComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
   /// </item>
   /// <item>
-  /// Cast is allowed only when source <see cref="IEnumerable"/> is <see cref="FrozenSet{T}"/> and <paramref name="itemComparer"/>
-  /// referentially equal to <see cref="FrozenSet{T}.Comparer"/>.
+  /// Cast is allowed only when source <see cref="IEnumerable"/> is <see cref="FrozenSet{Item}"/> and <paramref name="itemComparer"/>
+  /// referentially equal to <see cref="FrozenSet{Item}.Comparer"/>.
   /// </item>
   /// </list>
   /// </remarks>

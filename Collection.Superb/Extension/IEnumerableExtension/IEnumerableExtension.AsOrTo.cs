@@ -31,10 +31,10 @@ static public partial class IEnumerableExtension
   /// </item>  
   /// </list>
   /// </remarks>
-  static public T? AsOrTo<T>
+  static public Target? AsOrTo<Target>
   (
     this IEnumerable? enumerable,
-    AsOrToTargetType<T> asOrToType,
+    AsOrToTargetType<Target> asOrToType,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
@@ -45,7 +45,7 @@ static public partial class IEnumerableExtension
     if (enumerable.IsNull ())
     {
       if (behavior == NullBehavior.ReturnDefault)
-        return default ( T );
+        return default ( Target );
 
       if (behavior == NullBehavior.ReturnEmpty)
         return asOrToType.Empty ();
@@ -59,7 +59,7 @@ static public partial class IEnumerableExtension
 
     if (asOrToType.CanCast ( enumerable ))
       if (enumerable.GetType () == asOrToType.TypeOfTarget)
-        return (T) enumerable;
+        return (Target) enumerable;
 
     return asOrToType.Ctor ( enumerable, capacity );
   }

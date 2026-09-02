@@ -39,12 +39,12 @@ static public class AsOrToTargetType
   /// Notice:
   /// <br/>
   /// - <paramref name="canCast"/> is used by
-  /// <see cref="IEnumerableExtension.AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, EnumerableNullBehavior)"/> 
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/> 
   /// for checking whether source enumerable can be cast to target type. Usually, condense to <c>e => true</c> or
   /// <c>e => false</c>.
   /// <br/>  
   /// - <paramref name="empty"/> is used by 
-  /// <see cref="IEnumerableExtension.AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, EnumerableNullBehavior)"/>
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
   /// to solve <see cref="EnumerableNullBehavior.ReturnEmpty"/> null case.
   /// </remarks>
   static public AsOrToTargetType<Target> FromTypedCtor<Item, Target>
@@ -74,7 +74,7 @@ static public class AsOrToTargetType
 }
 
 /// <summary>
-/// Used by <see cref="IEnumerableExtension.AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, EnumerableNullBehavior)"/>.
+/// Used by <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>.
 /// </summary>
 public class AsOrToTargetType<Target>
 {
@@ -87,12 +87,12 @@ public class AsOrToTargetType<Target>
   /// Notice:
   /// <br/>
   /// - <paramref name="canCast"/> is used by
-  /// <see cref="IEnumerableExtension.AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, EnumerableNullBehavior)"/> 
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/> 
   /// for checking whether source enumerable can be cast to target type. Usually, condense to <c>e => true</c> or
   /// <c>e => false</c>.
   /// <br/>  
   /// - <paramref name="empty"/> is used by 
-  /// <see cref="IEnumerableExtension.AsOrTo{T}(IEnumerable, AsOrToTargetType{T}, int?, EnumerableNullBehavior)"/>
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
   /// to solve <see cref="EnumerableNullBehavior.ReturnEmpty"/> null case.
   /// </remarks>
   public AsOrToTargetType ( Ctor<Target> ctor, CanCast canCast, Empty<Target> empty )

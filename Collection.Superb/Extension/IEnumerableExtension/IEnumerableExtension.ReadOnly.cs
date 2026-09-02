@@ -5,8 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Software9119.Collection.Superb.Extension;
 
-using NullBehavior = EnumerableNullBehavior;
-
 /// <summary>
 /// <see cref="IEnumerable{T}"/> extension methods.
 /// </summary>
@@ -23,7 +21,7 @@ static public partial class IEnumerableExtension
   static internal ArgumentNullException DictionaryNull ( string paramName ) => new ( paramName: paramName, "Null source dictionary encounter." );
 
   /// <summary>
-  /// Copies or casts <paramref name="enumerable"/> into <see cref="IList{T}"/>.
+  /// Copies or casts <paramref name="enumerable"/> into <see cref="IList{Item}"/>.
   /// </summary>
   /// <remarks>
   /// Cast/Copy Table
@@ -36,7 +34,7 @@ static public partial class IEnumerableExtension
   /// ║ IList&lt;T&gt;       ║ IList&lt;T&gt; ║ Cast   ║
   /// ╚════════════════╩══════════╩════════╝
   /// </code>
-  /// <paramref name="capacity"/> can be used to capacitate <see cref="List{T}"/> sufficiently before population from <paramref name="enumerable"/>.
+  /// <paramref name="capacity"/> can be used to capacitate <see cref="List{Item}"/> sufficiently before population from <paramref name="enumerable"/>.
   /// </remarks>
   /// <exception cref="ArgumentNullException">
   /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is 
@@ -44,9 +42,9 @@ static public partial class IEnumerableExtension
   /// </exception>
   /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
   [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
-  static public IList<T>? AsOrToIList<T>
+  static public IList<Item>? AsOrToIList<Item>
   (
-    this IEnumerable<T>? enumerable,
+    this IEnumerable<Item>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty,
     int capacity = DefaultListCapacity
   )
@@ -55,46 +53,46 @@ static public partial class IEnumerableExtension
     {
       return behavior switch
       {
-        NullBehavior.ReturnEmpty => Array.Empty<T> (),
+        NullBehavior.ReturnEmpty => Array.Empty<Item> (),
         NullBehavior.ReturnDefault => null,
         NullBehavior.ThrowException => throw EnumerableNull ( nameof ( enumerable ) ),
         _ => throw new UnsupportedNullBehaviorException ( behavior ),
       };
     }
 
-    if (enumerable is IList<T> ilist)
+    if (enumerable is IList<Item> ilist)
       return ilist;
 
-    if (enumerable is ICollection<T> collection)
+    if (enumerable is ICollection<Item> collection)
     {
-      T[] array = new T[collection.Count];
+      Item[] array = new Item[collection.Count];
       collection.CopyTo ( array, 0 );
       return array;
     }
 
-    List<T> list = new(capacity);
+    List<Item> list = new(capacity);
     list.AddRange ( enumerable );
     return list;
   }
 
   /// <summary>
-  /// <see cref="ReadOnlyCollection{T}"/> from any enumerable.
+  /// <see cref="ReadOnlyCollection{Item}"/> from any enumerable.
   /// </summary>
   /// <remarks>
-  /// Casts <paramref name="enumerable"/> into <see cref="ReadOnlyCollection{T}"/> or delegates it
+  /// Casts <paramref name="enumerable"/> into <see cref="ReadOnlyCollection{Item}"/> or delegates it
   /// to <see cref="AsOrToIList"/> for processing and then puts result into
-  /// <see cref="ReadOnlyCollection{T}"/>.
+  /// <see cref="ReadOnlyCollection{Item}"/>.
   /// </remarks>
-  static public ReadOnlyCollection<T>? AsOrToReadOnlyCollection<T> (
-    this IEnumerable<T>? enumerable,
+  static public ReadOnlyCollection<Item>? AsOrToReadOnlyCollection<Item> (
+    this IEnumerable<Item>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty,
     int capacity = DefaultListCapacity )
   {
-    if (enumerable is ReadOnlyCollection<T> coll)
+    if (enumerable is ReadOnlyCollection<Item> coll)
       return coll;
 
-    IList<T>? ilist = enumerable.AsOrToIList ( behavior, capacity );
-    return ilist is null ? null : new ReadOnlyCollection<T> ( ilist );
+    IList<Item>? ilist = enumerable.AsOrToIList ( behavior, capacity );
+    return ilist is null ? null : new ReadOnlyCollection<Item> ( ilist );
   }
 
 

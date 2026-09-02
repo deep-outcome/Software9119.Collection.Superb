@@ -40,13 +40,13 @@ static public class system_collections
   /// Target type for 
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable?view=net-10.0"/>.
   /// </summary>
-  static public AsOrToTargetType<Hashtable> Hashtable<T> ( Func<T, object> keySelector ) => Hashtable ( keySelector, x => x );
+  static public AsOrToTargetType<Hashtable> Hashtable<Item> ( Func<Item, object> keySelector ) => Hashtable ( keySelector, x => x );
 
   /// <summary>
   /// Target type for 
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable?view=net-10.0"/>.
   /// </summary>
-  static public AsOrToTargetType<Hashtable> Hashtable<T> ( Func<T, object> keySelector, Func<T, object?> valueSelector )
+  static public AsOrToTargetType<Hashtable> Hashtable<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector )
   {
     if (keySelector == null)
       throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
@@ -57,7 +57,7 @@ static public class system_collections
     Ctor<Hashtable> ctor = (e, c) =>
     {
       Hashtable result =  c is int cap ? new Hashtable ( cap ) : [];
-      foreach (T item in e)
+      foreach (Item item in e)
         result.Add ( keySelector(item), valueSelector(item) );
 
       return result;
@@ -94,13 +94,13 @@ static public class system_collections
   /// Target type for 
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-10.0"/>.
   /// </summary>
-  static public AsOrToTargetType<SortedList> SortedList<T> ( Func<T, object> keySelector ) => SortedList ( keySelector, x => x );
+  static public AsOrToTargetType<SortedList> SortedList<Item> ( Func<Item, object> keySelector ) => SortedList ( keySelector, x => x );
 
   /// <summary>
   /// Target type for 
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-10.0"/>.
   /// </summary>
-  static public AsOrToTargetType<SortedList> SortedList<T> ( Func<T, object> keySelector, Func<T, object?> valueSelector )
+  static public AsOrToTargetType<SortedList> SortedList<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector )
   {
     if (keySelector == null)
       throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
@@ -111,7 +111,7 @@ static public class system_collections
     Ctor<SortedList> ctor = (e, c) =>
     {
       SortedList result =  c is int cap ? new SortedList ( cap ) : [];
-      foreach (T item in e)
+      foreach (Item item in e)
         result.Add ( keySelector(item), valueSelector(item) );
 
       return result;
