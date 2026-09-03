@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Software9119.Collection.Superb.Extension;
 
@@ -97,23 +98,60 @@ public class AsOrToTargetType<Target>
     if (empty is null)
       throw new ArgumentNullException ( paramName: nameof ( empty ), "Empty constructor must be provided." );
 
-    Ctor = ctor;
-    CanCast = canCast ?? (e => e is Target);
-    Empty = empty;
+
+    this.ctor = ctor;
+    this.empty = empty;
+    CanCast = canCast!;
   }
 
+
+  Empty<Target> empty;
   /// <summary>
   /// Empty instance of <typeparamref name="Target"/> constructor.
   /// </summary>
-  public Empty<Target> Empty { get; private set; }
+  /// <exception cref="ArgumentNullException">When <see langword="value"/> is <see langword="null"/>.</exception>  
+  public Empty<Target> Empty
+  {
+    get => empty;
+    [MemberNotNull ( nameof ( empty ) )]
+    set
+    {
+      if (value is null)
+        throw new ArgumentNullException ( paramName: nameof ( value ), "Empty constructor must be provided." );
 
+      empty = value;
+    }
+  }
+
+  CanCast canCast;
   /// <summary>
   /// Whether casting to <typeparamref name="Target"/> should be performed on source enumerable.
   /// </summary>
-  public CanCast CanCast { get; private set; }
+  /// <remarks>
+  /// Defaults to <c>e => e is Target</c> when <see langword="value"/> is <see langword="null"/>.
+  /// </remarks>
+  public CanCast CanCast
+  {
+    get => canCast;
+    [MemberNotNull ( nameof ( canCast ) )]
+    set => canCast = value ?? (e => e is Target);
+  }
 
+  Ctor<Target> ctor;
   /// <summary>
   /// Target type <typeparamref name="Target"/> constructor.
   /// </summary>
-  public Ctor<Target> Ctor { get; private set; }
+  /// <exception cref="ArgumentNullException">When <see langword="value"/> is <see langword="null"/>.</exception>  
+  public Ctor<Target> Ctor
+  {
+    get => ctor;
+    [MemberNotNull ( nameof ( ctor ) )]
+    set
+    {
+      if (value is null)
+        throw new ArgumentNullException ( paramName: nameof ( value ), "Constructor must be provided." );
+
+      ctor = value;
+    }
+  }
 }

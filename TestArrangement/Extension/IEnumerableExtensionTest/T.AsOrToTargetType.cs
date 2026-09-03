@@ -4,6 +4,7 @@ using Software9119.Collection.Superb.Extension;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
@@ -12,16 +13,25 @@ namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableEx
 public class AsOrToTargetTypeTest
 {
   [TestMethod]
-  [DataRow ( true )]
-  [DataRow ( false )]
-  public void Constructor ( bool canCast )
+  public void Constructor ()
   {
     Ctor<ArraySegment<object>> func = (e,c) => default;
-    AsOrToTargetType<ArraySegment<object>> test = new(func, e => canCast, () => default);
+    AsOrToTargetType<ArraySegment<object>> test = new(func, null, () => default);
 
-    Assert.AreSame ( func, test.Ctor );
-    Assert.AreEqual ( canCast, test.CanCast ( null! ) );
+    Assert.IsTrue ( ReferenceEquals ( func, test.Ctor ) );
+    Assert.IsTrue ( test.CanCast ( default ( ArraySegment<object> ) ) );
     Assert.AreEqual ( default ( ArraySegment<object> ), test.Empty () );
+  }
+
+  [TestMethod]
+  public void Constructor_CanCast ()
+  {
+    Ctor<ArraySegment<object>> func = (e,c) => default;
+    CanCast canCast = e => e.Cast<object>().Any();
+    AsOrToTargetType<ArraySegment<object>> test = new(func, canCast, () => default);
+
+    Assert.IsFalse ( test.CanCast ( new int [ 0 ] ) );
+    Assert.IsTrue ( test.CanCast ( new int [] { 1 } ) );
   }
 
   [TestMethod]
@@ -38,9 +48,64 @@ public class AsOrToTargetTypeTest
   }
 
   [TestMethod]
-  [DataRow ( true )]
-  [DataRow ( false )]
-  public void FromTypedCtor ( bool canCast )
+  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "Obviousity." )]
+  public void Empty_Setter ()
+  {
+    Ctor<int> func = (e,c) => default;
+    AsOrToTargetType<int> targetType = new(func, e => default, empty: () => 0);
+
+    targetType.Empty = () => -1;
+    Assert.AreEqual ( -1, targetType.Empty () );
+  }
+
+  [TestMethod]
+  public void Empty_Setter_NullValue ()
+  {
+    Ctor<int> func = (e,c) => default;
+    AsOrToTargetType<int> targetType = new(func, e => default, () => default);
+
+    Action test = () => targetType.Empty = null!;
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Empty constructor must be provided. (Parameter 'value')", e.Message );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "Obviousity." )]
+  public void CanCast_Setter ()
+  {
+    Ctor<List<int>> func = (e,c) => default!;
+    AsOrToTargetType<List<int>> targetType = new(func, e => default, () => default!);
+
+    targetType.CanCast = null!;
+    Assert.IsTrue ( targetType.CanCast ( new List<int> () ) );
+    targetType.CanCast = e => e is not List<int>;
+    Assert.IsFalse ( targetType.CanCast ( new List<int> () ) );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "Obviousity." )]
+  public void Ctor_Setter ()
+  {
+    Ctor<int> func = (e,c) => 0;
+    AsOrToTargetType<int> targetType = new(func, e => default, () => default);
+
+    targetType.Ctor = ( e, c ) => -1;
+    Assert.AreEqual ( -1, targetType.Ctor ( null!, null ) );
+  }
+
+  [TestMethod]
+  public void Ctor_Setter_NullValue ()
+  {
+    Ctor<int> func = (e,c) => default;
+    AsOrToTargetType<int> targetType = new(func, e => default, () => default);
+
+    Action test = () => targetType.Ctor = null!;
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Constructor must be provided. (Parameter 'value')", e.Message );
+  }
+
+  [TestMethod]
+  public void FromTypedCtor ()
   {
     Ctor<int, List<int>> func = ( e, c ) =>
     {
@@ -49,18 +114,30 @@ public class AsOrToTargetTypeTest
       return output;
     };
 
-    AsOrToTargetType<List<int>> test = AsOrToTargetType.FromTypedCtor(func, e => canCast, () => []);
+    AsOrToTargetType<List<int>> test = AsOrToTargetType.FromTypedCtor(func, null, () => []);
 
     const int count = 11;
     IEnumerable<int> enumerable = Enumerable.Range(1, count);
     List<int> expectation = new ([..enumerable]);
 
-    Assert.AreEqual ( canCast, test.CanCast ( null! ) );
+    Assert.IsTrue ( test.CanCast ( new List<int> () ) );
 
     List<int> list = test.Ctor(enumerable, count);
     Assert.IsTrue ( expectation.SequenceEqual ( list ) );
     Assert.AreEqual ( 2 * count, list.Capacity );
     Assert.HasCount ( 0, test.Empty () );
+  }
+
+  [TestMethod]
+  public void FromTypedCtor_CanCast ()
+  {
+    Ctor<int, List<int>> func = (e,c) => default!;
+    CanCast canCast = e => e.Cast<object>().Any();
+
+    AsOrToTargetType<List<int>> test = AsOrToTargetType.FromTypedCtor(func, canCast, () => []);
+
+    Assert.IsFalse ( test.CanCast ( new int [ 0 ] ) );
+    Assert.IsTrue ( test.CanCast ( new int [] { 1 } ) );
   }
 
   [TestMethod]
