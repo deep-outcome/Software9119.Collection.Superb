@@ -86,3 +86,4 @@ This namespace contains types with extension methods.
         - `Dictionary<Key, Item>? IntoDictionary<Item, Key> (IEnumerable<Item>?, Func<Item, Key>, IEqualityComparer<Key>?, int?, EnumerableNullBehavior)` – creates dictionary from `IEnumerable<T>`
         - `Dictionary<Key, Value>? IntoDictionary<Item, Key, Value> (IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates dictionary from `IEnumerable<T>`
         - `HashSet<Item>? AsOrToHashSet<Item>(IEnumerable<Item>?, int?, IEqualityComparer<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into hash set
+        - `LinkedList<Item>? AsOrToLinkedList<Item>(IEnumerable<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into linked list

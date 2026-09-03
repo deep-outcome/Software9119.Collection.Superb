@@ -93,7 +93,20 @@ static public class system_collections_generic
     };
 
     Empty<HashSet<Item>> empty = () => new ( [], itemComparer );
-    CanCast canCast = e => e is HashSet<Item> x && ReferenceEquals(x.Comparer, itemComparer);
+    CanCast canCast = e => e is HashSet<Item> x && ReferenceEquals ( x.Comparer, itemComparer );
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.linkedlist-1?view=net-10.0">
+  /// LinkedList&lt;Item&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<LinkedList<Item>> LinkedList<Item> ()
+  {
+    Ctor<Item, LinkedList<Item>> typedCtor = (e, c) => new (e);
+    Empty<LinkedList<Item>> empty = () => new ();    
+
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 }

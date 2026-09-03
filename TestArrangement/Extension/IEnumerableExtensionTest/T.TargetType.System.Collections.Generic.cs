@@ -106,7 +106,7 @@ public class system_collections_generic_test
 
     Assert.IsTrue ( ReferenceEquals ( itemComparer, target.Comparer ) );
     Assert.AreEqual ( capacityGotten, target.Capacity );
-        
+
     Assert.IsTrue ( targetType.CanCast ( new HashSet<int> ( [], itemComparer ) ) );
     Assert.IsFalse ( targetType.CanCast ( new HashSet<int> ( [], new TestComparer<int> () ) ) );
     Assert.IsFalse ( targetType.CanCast ( new HashSet<object> ( [] ) ) );
@@ -122,6 +122,24 @@ public class system_collections_generic_test
     Action test = () => system_collections_generic.HashSet ( itemComparer );
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Item comparer not provided. (Parameter 'itemComparer')", e.Message );
+  }
+
+  [TestMethod]
+  public void LinkedList ()
+  {
+    TestComparer<int> itemComparer = new ();
+    AsOrToTargetType<LinkedList<int>> targetType = system_collections_generic.LinkedList<int> ();
+
+    LinkedList<int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    LinkedList<int> target = targetType.Ctor(source, null);
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.SequenceEqual ( target.OrderBy ( x => x ) ) );
   }
 }
 

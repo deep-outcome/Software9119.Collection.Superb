@@ -151,5 +151,27 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
-}
 
+  [TestMethod]
+  public void AsOrToLinkedList ()
+  {
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    LinkedList<int> test = source.AsOrToLinkedList()!;
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToLinkedList_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    LinkedList<int>? test = returnsDefault
+      ? source.AsOrToLinkedList(behavior!.Value)
+      : source.AsOrToLinkedList();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+}

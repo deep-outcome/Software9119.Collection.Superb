@@ -24,7 +24,7 @@ public partial class IEnumerableExtensionTest
     TestComparer<int> keyComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    fzDictionary? test = source.IntoFrozenDictionary(keySelector, keyComparer)!;
+    fzDictionary test = source.IntoFrozenDictionary(keySelector, keyComparer)!;
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
 
@@ -38,7 +38,7 @@ public partial class IEnumerableExtensionTest
   public void IntoFrozenDictionary_KeySelectorOnly_DefaultComparer ( bool explicitNull )
   {
     IEnumerable<int> source = [];
-    fzDictionary? test = explicitNull
+    fzDictionary test = explicitNull
       ? source.IntoFrozenDictionary(x => x, keyComparer: null)!
       : source.IntoFrozenDictionary(x => x)!;
 
@@ -67,7 +67,7 @@ public partial class IEnumerableExtensionTest
     TestComparer<int> keyComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    fzDictionary? test = source.IntoFrozenDictionary(keySelector, valueSelector, keyComparer)!;
+    fzDictionary test = source.IntoFrozenDictionary(keySelector, valueSelector, keyComparer)!;
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
 
@@ -82,7 +82,7 @@ public partial class IEnumerableExtensionTest
   public void IntoFrozenDictionary_DefaultComparer ( bool explicitNull )
   {
     IEnumerable<int> source = [];
-    fzDictionary? test = explicitNull
+    fzDictionary test = explicitNull
       ? source.IntoFrozenDictionary(x => x, x => x, keyComparer: null)!
       : source.IntoFrozenDictionary(x => x, x => x)!;
 
@@ -120,7 +120,7 @@ public partial class IEnumerableExtensionTest
   public void AsOrToFrozenSet_DefaultComparer ( bool explicitNull )
   {
     IEnumerable<int> source = [];
-    fzSet? test = explicitNull
+    fzSet test = explicitNull
       ? source.AsOrToFrozenSet(itemComparer: null)!
       : source.AsOrToFrozenSet()!;
 

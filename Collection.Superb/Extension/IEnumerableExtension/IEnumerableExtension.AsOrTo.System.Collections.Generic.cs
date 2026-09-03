@@ -101,4 +101,21 @@ static public partial class IEnumerableExtension
 
     return enumerable.AsOrTo ( targetType, capacity, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="LinkedList{Item}"/>.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// <see cref="collections_generic.LinkedList{Item}()"/>.  
+  /// </remarks>
+  static public LinkedList<Item>? AsOrToLinkedList<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<LinkedList<Item>> targetType = collections_generic.LinkedList<Item>();
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
 }
