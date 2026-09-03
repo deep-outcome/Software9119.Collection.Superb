@@ -39,7 +39,7 @@ public partial class IEnumerableExtensionTest
   {
     IEnumerable<int> source = [];
     fzDictionary? test = explicitNull
-      ? source.IntoFrozenDictionary(x => x, null)!
+      ? source.IntoFrozenDictionary(x => x, keyComparer: null)!
       : source.IntoFrozenDictionary(x => x)!;
 
     Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
@@ -83,7 +83,7 @@ public partial class IEnumerableExtensionTest
   {
     IEnumerable<int> source = [];
     fzDictionary? test = explicitNull
-      ? source.IntoFrozenDictionary(x => x, x => x, null)!
+      ? source.IntoFrozenDictionary(x => x, x => x, keyComparer: null)!
       : source.IntoFrozenDictionary(x => x, x => x)!;
 
     Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
@@ -121,7 +121,7 @@ public partial class IEnumerableExtensionTest
   {
     IEnumerable<int> source = [];
     fzSet? test = explicitNull
-      ? source.AsOrToFrozenSet(null)!
+      ? source.AsOrToFrozenSet(itemComparer: null)!
       : source.AsOrToFrozenSet()!;
 
     Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );

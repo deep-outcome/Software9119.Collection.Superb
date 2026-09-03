@@ -83,7 +83,7 @@ static public partial class IEnumerableExtension
   /// </item>
   /// <item>
   /// Cast is allowed only when source <see cref="IEnumerable"/> is <see cref="FrozenSet{Item}"/> and <paramref name="itemComparer"/>
-  /// referentially equal to <see cref="FrozenSet{Item}.Comparer"/>.
+  /// referentially equals to <see cref="FrozenSet{Item}.Comparer"/>.
   /// </item>
   /// </list>
   /// </remarks>

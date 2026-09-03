@@ -69,4 +69,36 @@ static public partial class IEnumerableExtension
     );
     return enumerable.AsOrTo ( targetType, capacity, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="HashSet{Item}"/> provided with <paramref name="itemComparer"/>.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// <see cref="collections_generic.HashSet{Item}(IEqualityComparer{Item})"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="itemComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
+  /// </item>
+  /// <item>
+  /// Cast is allowed only when source <see cref="IEnumerable"/> is <see cref="HashSet{Item}"/> and <paramref name="itemComparer"/>
+  /// referentially equals to <see cref="HashSet{Item}.Comparer"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public HashSet<Item>? AsOrToHashSet<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    int? capacity = null,
+    IEqualityComparer<Item>? itemComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    itemComparer ??= EqualityComparer<Item>.Default;
+    AsOrToTargetType<HashSet<Item>> targetType = collections_generic.HashSet(itemComparer);
+
+    return enumerable.AsOrTo ( targetType, capacity, behavior );
+  }
 }

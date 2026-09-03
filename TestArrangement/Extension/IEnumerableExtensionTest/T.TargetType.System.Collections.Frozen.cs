@@ -105,7 +105,7 @@ public class system_collections_frozen_test
 
     Assert.IsTrue ( ReferenceEquals ( itemComparer, target.Comparer ) );
 
-    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsTrue ( targetType.CanCast ( System.Collections.Frozen.FrozenSet.ToFrozenSet ( [], itemComparer ) ) );
     Assert.IsFalse ( targetType.CanCast ( System.Collections.Frozen.FrozenSet.ToFrozenSet ( [], new TestComparer<int> () ) ) );
     Assert.IsFalse ( targetType.CanCast ( System.Collections.Frozen.FrozenSet.ToFrozenSet<object> ( [] ) ) );
     Assert.IsTrue ( source.SequenceEqual ( target.OrderBy ( x => x ) ) );

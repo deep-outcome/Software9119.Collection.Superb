@@ -88,5 +88,40 @@ public class system_collections_generic_test
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
+
+  [TestMethod]
+  [DataRow ( 100, 107 )]
+  [DataRow ( null, 17 )]
+  public void HashSet ( int? capacityRequested, int capacityGotten )
+  {
+    TestComparer<int> itemComparer = new ();
+    AsOrToTargetType<HashSet<int>> targetType = system_collections_generic.HashSet ( itemComparer );
+
+    HashSet<int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.Comparer ) );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    HashSet<int> target = targetType.Ctor(source, capacityRequested);
+
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, target.Comparer ) );
+    Assert.AreEqual ( capacityGotten, target.Capacity );
+        
+    Assert.IsTrue ( targetType.CanCast ( new HashSet<int> ( [], itemComparer ) ) );
+    Assert.IsFalse ( targetType.CanCast ( new HashSet<int> ( [], new TestComparer<int> () ) ) );
+    Assert.IsFalse ( targetType.CanCast ( new HashSet<object> ( [] ) ) );
+
+    Assert.IsTrue ( source.SequenceEqual ( target.OrderBy ( x => x ) ) );
+  }
+
+
+  [TestMethod]
+  public void HashSet_NullComparer ()
+  {
+    TestComparer<int> itemComparer = null!;
+    Action test = () => system_collections_generic.HashSet ( itemComparer );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Item comparer not provided. (Parameter 'itemComparer')", e.Message );
+  }
 }
 

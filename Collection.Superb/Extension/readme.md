@@ -85,3 +85,4 @@ This namespace contains types with extension methods.
     - `AsOrTo` or `Into` for chosen [`System.Collections.Generic ` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic?view=net-10.0) types
         - `Dictionary<Key, Item>? IntoDictionary<Item, Key> (IEnumerable<Item>?, Func<Item, Key>, IEqualityComparer<Key>?, int?, EnumerableNullBehavior)` – creates dictionary from `IEnumerable<T>`
         - `Dictionary<Key, Value>? IntoDictionary<Item, Key, Value> (IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates dictionary from `IEnumerable<T>`
+        - `HashSet<Item>? AsOrToHashSet<Item>(IEnumerable<Item>?, int?, IEqualityComparer<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into hash set

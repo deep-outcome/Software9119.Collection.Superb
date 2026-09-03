@@ -40,7 +40,7 @@ public partial class IEnumerableExtensionTest
   {
     IEnumerable<int> source = [];
     Dictionary<int, int>? test = explicitNull
-    ? source.IntoDictionary(x => x, null)!
+    ? source.IntoDictionary(x => x, keyComparer: null)!
     : source.IntoDictionary(x => x)!;
 
     Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
@@ -89,7 +89,7 @@ public partial class IEnumerableExtensionTest
   {
     IEnumerable<int> source = [];
     Dictionary<int, int>? test = explicitNull
-    ? source.IntoDictionary(x => x, x => x, null)!
+    ? source.IntoDictionary(x => x, x => x, keyComparer: null)!
     : source.IntoDictionary(x => x, x => x)!;
 
     Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
@@ -105,6 +105,49 @@ public partial class IEnumerableExtensionTest
     Dictionary<int, int>? test = returnsDefault
     ? source.IntoDictionary(x => x, x => x, behavior: behavior!.Value)
     : source.IntoDictionary(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( 100, 107 )]
+  [DataRow ( null, 11 )]
+  public void AsOrToHashSet ( int? capacityRequested, int capacityGotten )
+  {
+    TestComparer<int> itemComparer = new ();
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    HashSet<int> test = capacityRequested is int
+      ? source.AsOrToHashSet(capacityRequested, itemComparer: itemComparer)!
+      : source.AsOrToHashSet(itemComparer: itemComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, test.Comparer ) );
+    Assert.IsTrue ( source.SequenceEqual ( test.OrderBy ( x => x ) ) );
+    Assert.AreEqual ( capacityGotten, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void AsOrToHashSet_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    HashSet<int>? test = explicitNull
+      ? source.AsOrToHashSet(itemComparer: null)!
+      : source.AsOrToHashSet()!;
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToHashSet_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    HashSet<int>? test = returnsDefault
+      ? source.AsOrToHashSet(behavior: behavior!.Value)
+      : source.AsOrToHashSet();
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }

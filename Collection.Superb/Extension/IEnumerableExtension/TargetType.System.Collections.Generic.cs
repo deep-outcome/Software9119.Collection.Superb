@@ -53,11 +53,11 @@ static public class system_collections_generic
     {
       if (c is int capacity)
       {
-        Dictionary<Key, Value> dict = new  ( capacity, keyComparer );
+        Dictionary<Key, Value> result = new  ( capacity, keyComparer );
         foreach (Item i in e )
-          dict.Add(keySelector(i), valueSelector(i));
+          result.Add(keySelector(i), valueSelector(i));
 
-        return dict;
+        return result;
       }
 
       return e.ToDictionary(keySelector, valueSelector, keyComparer);
@@ -65,5 +65,35 @@ static public class system_collections_generic
 
     Empty<Dictionary<Key, Value>> empty = () => new (keyComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
+  }
+
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.-ctor?view=net-10.0">
+  /// HashSet&lt;Item&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<HashSet<Item>> HashSet<Item> ( IEqualityComparer<Item> itemComparer )
+  {
+    if (itemComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
+
+    Ctor<Item, HashSet<Item>> typedCtor = (e, c) =>
+    {
+      if (c is int capacity)
+      {
+        HashSet<Item> result = new (capacity, itemComparer);
+        foreach (Item i in e )
+          _ = result.Add(i);
+
+        return result;
+      }
+
+      return new(e, itemComparer);
+    };
+
+    Empty<HashSet<Item>> empty = () => new ( [], itemComparer );
+    CanCast canCast = e => e is HashSet<Item> x && ReferenceEquals(x.Comparer, itemComparer);
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
 }

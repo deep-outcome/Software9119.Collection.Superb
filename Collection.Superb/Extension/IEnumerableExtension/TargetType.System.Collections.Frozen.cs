@@ -76,7 +76,7 @@ static public class system_collections_frozen
     };
 
     Empty<FrozenSet<Item>> empty = () => System.Collections.Frozen.FrozenSet.ToFrozenSet ( [], itemComparer );
-    CanCast canCast = e => e is FrozenSet<Item> fs && ReferenceEquals(fs.Comparer, itemComparer);
+    CanCast canCast = e => e is FrozenSet<Item> x && ReferenceEquals(x.Comparer, itemComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
 }
