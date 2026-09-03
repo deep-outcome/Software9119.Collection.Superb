@@ -1,0 +1,112 @@
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Software9119.Collection.Superb.Extension;
+using Software9119.Collection.Superb.TestArrangement.TestAide;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
+
+#pragma warning disable CA1724
+public partial class IEnumerableExtensionTest
+#pragma warning restore CA1724
+{
+  [TestMethod]
+  [DataRow ( 1000, 1103 )]
+  [DataRow ( null, 11 )]
+  public void IntoDictionary_KeySelectorOnly ( int? cap, int expCap )
+  {
+    Func<int, int> keySelector = x => x * 2;
+    TestComparer<int> keyComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    Dictionary<int, int> test = cap is int
+      ? source.IntoDictionary(keySelector, keyComparer, cap)!
+      : source.IntoDictionary(keySelector, keyComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source.Select(x => new KeyValuePair<int, int>(keySelector(x), x));
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+    Assert.AreEqual ( expCap, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoDictionary_KeySelectorOnly_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    Dictionary<int, int>? test = explicitNull
+    ? source.IntoDictionary(x => x, null)!
+    : source.IntoDictionary(x => x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoDictionary_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Dictionary<int, int>? test = returnsDefault
+    ? source.IntoDictionary(x => x, behavior: behavior!.Value)
+    : source.IntoDictionary(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( 1000, 1103 )]
+  [DataRow ( null, 11 )]
+  public void IntoDictionary ( int? cap, int expCap )
+  {
+    Func<int, int> keySelector = x => x * 2;
+    Func<int, int> valueSelector = x => x * 3;
+    TestComparer<int> keyComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    Dictionary<int, int>? test = cap is int
+      ? source.IntoDictionary(keySelector, valueSelector, cap, keyComparer: keyComparer)!
+      : source.IntoDictionary(keySelector, valueSelector, keyComparer: keyComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+    .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+    Assert.AreEqual ( expCap, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoDictionary_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    Dictionary<int, int>? test = explicitNull
+    ? source.IntoDictionary(x => x, x => x, null)!
+    : source.IntoDictionary(x => x, x => x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoDictionary_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Dictionary<int, int>? test = returnsDefault
+    ? source.IntoDictionary(x => x, x => x, behavior: behavior!.Value)
+    : source.IntoDictionary(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+}
+

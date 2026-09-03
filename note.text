@@ -1,3 +1,4 @@
+- add methods' links
 - rework read-only extensions when finished with asOrTo (remove default capacities)
 - add other As read-only wrapper methods 
 - add Capacitor
