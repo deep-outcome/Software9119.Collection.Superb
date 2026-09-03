@@ -21,12 +21,14 @@ public class system_collections_test
   {
     AsOrToTargetType<ArrayList> targetType = system_collections.ArrayList();
 
-    Assert.IsTrue ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
 
     ArrayList target = targetType.Ctor(source, capacity);
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+
     Assert.IsTrue ( source.SequenceEqual ( target.Cast<object> () ) );
     Assert.AreEqual ( capacity ?? 4, target.Capacity );
   }
@@ -117,12 +119,13 @@ public class system_collections_test
   {
     AsOrToTargetType<Queue> targetType = system_collections.Queue();
 
-    Assert.IsTrue ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
 
     Queue target = targetType.Ctor(source, capacity);
+    Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsTrue ( source.SequenceEqual ( target.Cast<object> () ) );
 
     Array storage = (Array)Reflection.GetNonPublicFieldValue(target, "_array");
@@ -215,12 +218,13 @@ public class system_collections_test
   {
     AsOrToTargetType<Stack> targetType = system_collections.Stack();
 
-    Assert.IsTrue ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(4);
 
     Stack target = targetType.Ctor(source, capacity);
+    Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsTrue ( source.SequenceEqual ( target.Cast<object> ().Reverse () ) );
 
     Array storage = (Array)Reflection.GetNonPublicFieldValue(target, "_array");

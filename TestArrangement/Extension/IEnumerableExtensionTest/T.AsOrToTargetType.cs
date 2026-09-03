@@ -20,7 +20,6 @@ public class AsOrToTargetTypeTest
     AsOrToTargetType<ArraySegment<object>> test = new(func, e => canCast, () => default);
 
     Assert.AreSame ( func, test.Ctor );
-    Assert.AreSame ( typeof ( ArraySegment<object> ), test.TypeOfTarget );
     Assert.AreEqual ( canCast, test.CanCast ( null! ) );
     Assert.AreEqual ( default ( ArraySegment<object> ), test.Empty () );
   }
@@ -28,14 +27,12 @@ public class AsOrToTargetTypeTest
   [TestMethod]
   [DataRow ( "c", "Constructor must be provided. (Parameter 'ctor')" )]
   [DataRow ( "e", "Empty constructor must be provided. (Parameter 'empty')" )]
-  [DataRow ( "cc", "'CanCast' delegate must be provided. (Parameter 'canCast')" )]
   public void Constructor_NullParameter ( string whosNull, string msg )
   {
     Ctor<object> ctor   = whosNull == "c" ? null!  : (e, c) => null!;
     Empty<object> empty = whosNull == "e" ? null!  : () => null!;
-    CanCast canCast     = whosNull == "cc" ? null! : e => default;
 
-    Action test = () => _ = new AsOrToTargetType<object>(ctor, canCast, empty);
+    Action test = () => _ = new AsOrToTargetType<object>(ctor, null, empty);
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> (test);
     Assert.AreEqual ( msg, e.Message );
   }
@@ -58,7 +55,6 @@ public class AsOrToTargetTypeTest
     IEnumerable<int> enumerable = Enumerable.Range(1, count);
     List<int> expectation = new ([..enumerable]);
 
-    Assert.AreSame ( typeof ( List<int> ), test.TypeOfTarget );
     Assert.AreEqual ( canCast, test.CanCast ( null! ) );
 
     List<int> list = test.Ctor(enumerable, count);
@@ -70,14 +66,12 @@ public class AsOrToTargetTypeTest
   [TestMethod]
   [DataRow ( "c", "Constructor must be provided. (Parameter 'ctor')" )]
   [DataRow ( "e", "Empty constructor must be provided. (Parameter 'empty')" )]
-  [DataRow ( "cc", "'CanCast' delegate must be provided. (Parameter 'canCast')" )]
   public void FromTypedCtor_NullParameter ( string whosNull, string msg )
   {
     Ctor<int, int> ctor = whosNull == "c"  ? null!  : (e, c) => 0;
     Empty<int> empty    = whosNull == "e"  ? null!  : () => 0;
-    CanCast canCast     = whosNull == "cc" ? null!  : e => default;
 
-    Action test = () => _ = AsOrToTargetType.FromTypedCtor(ctor, canCast, empty);
+    Action test = () => _ = AsOrToTargetType.FromTypedCtor(ctor, null, empty);
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> (test);
     Assert.AreEqual ( msg, e.Message );
   }

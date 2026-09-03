@@ -57,8 +57,7 @@ static public partial class IEnumerableExtension
       };
     }
 
-    if (asOrToType.CanCast ( enumerable ))
-      if (enumerable.GetType () == asOrToType.TypeOfTarget)
+    if (asOrToType.CanCast ( enumerable ))      
         return (Target) enumerable;
 
     return asOrToType.Ctor ( enumerable, capacity );

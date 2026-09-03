@@ -33,7 +33,7 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, e => true, () => [] );
+    return new ( ctor, null, () => [] );
   }
 
   /// <summary>
@@ -87,7 +87,7 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, e => true, () => [] );
+    return new ( ctor, null, () => [] );
   }
 
   /// <summary>
@@ -141,6 +141,6 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, e => true, () => [] );
+    return new ( ctor, null, () => [] );
   }
 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace Software9119.Collection.Superb.Extension;
 
-
 /// <summary>
 /// Delegate decides whether source <paramref name="e"/> can be cast to target type or not.
 /// </summary>
@@ -40,8 +39,7 @@ static public class AsOrToTargetType
   /// <br/>
   /// - <paramref name="canCast"/> is used by
   /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/> 
-  /// for checking whether source enumerable can be cast to target type. Usually, condense to <c>e => true</c> or
-  /// <c>e => false</c>.
+  /// for checking whether source enumerable can be cast to target type. Defaults to <c>e => e is Target</c>.
   /// <br/>  
   /// - <paramref name="empty"/> is used by 
   /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
@@ -50,7 +48,7 @@ static public class AsOrToTargetType
   static public AsOrToTargetType<Target> FromTypedCtor<Item, Target>
   (
     Ctor<Item, Target> ctor,
-    CanCast canCast,
+    CanCast? canCast,
     Empty<Target> empty
   )
   {
@@ -59,9 +57,6 @@ static public class AsOrToTargetType
 
     if (empty is null)
       throw new ArgumentNullException ( paramName: nameof ( empty ), "Empty constructor must be provided." );
-
-    if (canCast is null)
-      throw new ArgumentNullException ( paramName: nameof ( canCast ), "'CanCast' delegate must be provided." );
 
     Ctor<Target> conversion = ( x, c ) =>
     {
@@ -88,14 +83,13 @@ public class AsOrToTargetType<Target>
   /// <br/>
   /// - <paramref name="canCast"/> is used by
   /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/> 
-  /// for checking whether source enumerable can be cast to target type. Usually, condense to <c>e => true</c> or
-  /// <c>e => false</c>.
+  /// for checking whether source enumerable can be cast to target type. Defaults to <c>e => e is Target</c>.
   /// <br/>  
   /// - <paramref name="empty"/> is used by 
   /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
   /// to solve <see cref="EnumerableNullBehavior.ReturnEmpty"/> null case.
   /// </remarks>
-  public AsOrToTargetType ( Ctor<Target> ctor, CanCast canCast, Empty<Target> empty )
+  public AsOrToTargetType ( Ctor<Target> ctor, CanCast? canCast, Empty<Target> empty )
   {
     if (ctor is null)
       throw new ArgumentNullException ( paramName: nameof ( ctor ), "Constructor must be provided." );
@@ -103,31 +97,23 @@ public class AsOrToTargetType<Target>
     if (empty is null)
       throw new ArgumentNullException ( paramName: nameof ( empty ), "Empty constructor must be provided." );
 
-    if (canCast is null)
-      throw new ArgumentNullException ( paramName: nameof ( canCast ), "'CanCast' delegate must be provided." );
-
     Ctor = ctor;
-    CanCast = canCast;
+    CanCast = canCast ?? (e => e is Target);
     Empty = empty;
   }
 
   /// <summary>
   /// Empty instance of <typeparamref name="Target"/> constructor.
   /// </summary>  
-  public Empty<Target> Empty { get; private init; }
+  public Empty<Target> Empty { get; private set; }
 
   /// <summary>
-  /// Whether casting to <see cref="TypeOfTarget"/> should be tried on source enumerable.
+  /// Whether casting to <typeparamref name="Target"/> should be performed on source enumerable.
   /// </summary>
-  public CanCast CanCast { get; private init; }
-
-  /// <summary>
-  /// Type of <typeparamref name="Target"/>.
-  /// </summary>
-  public Type TypeOfTarget { get; private init; } = typeof ( Target );
+  public CanCast CanCast { get; private set; }
 
   /// <summary>
   /// Target type <typeparamref name="Target"/> constructor.
   /// </summary>
-  public Ctor<Target> Ctor { get; private init; }
+  public Ctor<Target> Ctor { get; private set; }
 }
