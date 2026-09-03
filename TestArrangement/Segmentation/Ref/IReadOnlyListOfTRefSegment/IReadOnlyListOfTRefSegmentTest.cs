@@ -80,10 +80,10 @@ public class IReadOnlyListOfTRefSegmentTest
   [DataRow ( 0, -1, "Count must be a non-negative integer, but it is -1.", DisplayName = "Negative count." )]
   public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
-    ArraySegment<string> list = new (["a", "b", "c", "d", "e",]);    
+    ArraySegment<string> list = new (["a", "b", "c", "d", "e",]);
     Action test =() => _ = new IReadOnlyListRefSegment<ArraySegment<string>, string> ( list, offset: offset, count );
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    Assert.AreEqual ( errMsg, e.Message );    
+    Assert.AreEqual ( errMsg, e.Message );
   }
 
   [TestMethod]

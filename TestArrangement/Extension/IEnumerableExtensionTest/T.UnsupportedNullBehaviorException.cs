@@ -9,7 +9,7 @@ public class UnsupportedNullBehaviorExceptionTest
 {
   [TestMethod]
   public void Message ()
-  {    
+  {
     UnsupportedNullBehaviorException e = new((EnumerableNullBehavior)333, "behavior");
     Assert.AreEqual ( "Unsupported behavior, '333'. (Parameter 'behavior')", e.Message );
   }

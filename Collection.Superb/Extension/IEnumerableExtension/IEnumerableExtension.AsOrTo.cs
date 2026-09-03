@@ -11,7 +11,7 @@ static public partial class IEnumerableExtension
   /// </summary>
   /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
   /// <exception cref="ArgumentNullException">
-  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is 
+  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is
   /// <see langword="null"/>.
   /// </exception>
   /// <exception cref="ArgumentNullException">When <paramref name="asOrToType"/> is <see langword="null"/>.</exception>
@@ -21,14 +21,14 @@ static public partial class IEnumerableExtension
   /// <paramref name="capacity"/> is passed to <see cref="AsOrToTargetType{Target}.Ctor"/>.
   /// </item>
   /// <item>
-  /// This means it is client code responsibility to ensure correct behavior of constructor with capacity provided, e.g. 
+  /// This means it is client code responsibility to ensure correct behavior of constructor with capacity provided, e.g.
   /// its suffieciency or  non-exceedance.
-  /// </item>  
-  /// <item>  
-  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ReturnEmpty"/> 
+  /// </item>
+  /// <item>
+  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ReturnEmpty"/>
   /// and <paramref name="enumerable"/> is <see langword="null"/>, <see cref="AsOrToTargetType{Target}.Empty"/> result
   /// is returned.
-  /// </item>  
+  /// </item>
   /// </list>
   /// </remarks>
   static public Target? AsOrTo<Target>
@@ -57,7 +57,7 @@ static public partial class IEnumerableExtension
       };
     }
 
-    if (asOrToType.CanCast ( enumerable ))      
+    if (asOrToType.CanCast ( enumerable ))
         return (Target) enumerable;
 
     return asOrToType.Ctor ( enumerable, capacity );

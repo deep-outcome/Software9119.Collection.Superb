@@ -9,13 +9,13 @@ namespace Software9119.Collection.Superb.Extension;
 static public partial class IEnumerableExtension
 {
   /// <summary>
-  /// Creates <see cref="Dictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/> 
+  /// Creates <see cref="Dictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> provided.
   /// </summary>
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="collections_generic.Dictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -37,13 +37,13 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Creates <see cref="Dictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/> 
+  /// Creates <see cref="Dictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="collections_generic.Dictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -76,7 +76,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="collections_generic.HashSet{Item}(IEqualityComparer{Item})"/>.
   /// </item>
   /// <item>
@@ -105,9 +105,9 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="LinkedList{Item}"/>.
   /// </summary>
-  /// <remarks>  
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
-  /// <see cref="collections_generic.LinkedList{Item}()"/>.  
+  /// <remarks>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_generic.LinkedList{Item}()"/>.
   /// </remarks>
   static public LinkedList<Item>? AsOrToLinkedList<Item>
   (

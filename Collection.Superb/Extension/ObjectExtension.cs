@@ -10,31 +10,31 @@ static public class ObjectExtension
 {
   /// <summary>
   /// <see langword="null"/> check extension method.
-  /// </summary>  
+  /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public bool IsNull<T> ( [NotNullWhen ( false )] this T? obj ) => obj is null;
 
   /// <summary>
   /// Not <see langword="null"/> check extension method.
-  /// </summary>  
+  /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public bool IsNotNull<T> ( [NotNullWhen ( true )] this T? obj ) => obj is not null;
 
   /// <summary>
   /// <see langword="default"/> check extension method.
-  /// </summary>  
+  /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public bool IsDefault<T> ( this T obj ) where T : struct => obj.Equals ( default ( T ) );
 
   /// <summary>
   /// Not <see langword="default"/> check extension method.
-  /// </summary>  
+  /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public bool IsNotDefault<T> ( this T obj ) where T : struct => !obj.Equals ( default ( T ) );
 
   /// <summary>
   /// <see langword="null"/> safe equality check method.
-  /// </summary>  
+  /// </summary>
   /// <remarks>
   /// Truth Table
   /// <code>

@@ -30,18 +30,18 @@ public delegate Target Empty<Target> ();
 static public class AsOrToTargetType
 {
   /// <summary>
-  /// Creates <see cref="AsOrToTargetType{Target}"/> from typed enumerable constructor function.  
-  /// </summary>  
+  /// Creates <see cref="AsOrToTargetType{Target}"/> from typed enumerable constructor function.
+  /// </summary>
   /// <exception cref="ArgumentNullException">When <paramref name="ctor"/> is <see langword="null"/>.</exception>
   /// <exception cref="ArgumentNullException">When <paramref name="empty"/> is <see langword="null"/>.</exception>
   /// <remarks>
   /// Notice:
   /// <br/>
   /// - <paramref name="canCast"/> is used by
-  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/> 
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
   /// for checking whether source enumerable can be cast to target type. Defaults to <c>e => e is Target</c>.
-  /// <br/>  
-  /// - <paramref name="empty"/> is used by 
+  /// <br/>
+  /// - <paramref name="empty"/> is used by
   /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
   /// to solve <see cref="EnumerableNullBehavior.ReturnEmpty"/> null case.
   /// </remarks>
@@ -82,10 +82,10 @@ public class AsOrToTargetType<Target>
   /// Notice:
   /// <br/>
   /// - <paramref name="canCast"/> is used by
-  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/> 
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
   /// for checking whether source enumerable can be cast to target type. Defaults to <c>e => e is Target</c>.
-  /// <br/>  
-  /// - <paramref name="empty"/> is used by 
+  /// <br/>
+  /// - <paramref name="empty"/> is used by
   /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
   /// to solve <see cref="EnumerableNullBehavior.ReturnEmpty"/> null case.
   /// </remarks>
@@ -104,7 +104,7 @@ public class AsOrToTargetType<Target>
 
   /// <summary>
   /// Empty instance of <typeparamref name="Target"/> constructor.
-  /// </summary>  
+  /// </summary>
   public Empty<Target> Empty { get; private set; }
 
   /// <summary>

@@ -21,11 +21,11 @@ This namespace contains types to ease working with segments.
 - [`IReadOnlyListSegmentEqualityComparer<T>`](./IReadOnlyListOfTSegmentEqualityComparer.cs) – `IReadOnlyListSegment<T>` equality comparer
 
 Everything comes with a price and for this reason is up to client code to ensure _'list'_ passed
-into `IListSegment<T>` or `IListEnumerator<T>` and others is not mutated in the mean time in a harmful way, most notably that 
+into `IListSegment<T>` or `IListEnumerator<T>` and others is not mutated in the mean time in a harmful way, most notably that
 it is not shrunk beyond segment defined.
 
 ```csharp
-[TestMethod]  
+[TestMethod]
 public void ShrunkedReallyBadSample ()
 {
   List<int> list = [1,2 ,3, 4, 5, 6];

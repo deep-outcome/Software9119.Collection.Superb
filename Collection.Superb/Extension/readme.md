@@ -5,11 +5,11 @@ This namespace contains types with extension methods.
 ### Types Available
 
 - [`ObjectExtension`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/ObjectExtension.cs) – banal _object_ extension methods, barely noteworthy.
-- `IEnumerableExtension`    
+- `IEnumerableExtension`
     - `As` prefixed stands for:
         - Trying source enumerable cast to target type first, `AsOrTo` methods only.
         - If target type is wrapper-like, method tries casting to necessary type first, e.g. `IEnumerable<Item>` -> `IList<Item>` -> `ReadOnlyCollection<Item>`, `AsOrTo` methods only.
-        - 'Putting' source enumerable into target type, like `IDictionary<Key, Value>` into `ReadOnlyDictionary<Key, Value>`.        
+        - 'Putting' source enumerable into target type, like `IDictionary<Key, Value>` into `ReadOnlyDictionary<Key, Value>`.
     - `Into` prefixed method implies source enumerable enumeration (copying, transforming) into target type.
     - `AsOrTo` methods do `As` and `Into` both as described above.
     - Methods expose `int?` capacity parameter that can be used for target type pre-capacitation, optional parameter.
@@ -24,35 +24,35 @@ This namespace contains types with extension methods.
         - [`Target? AsOrTo<Target> (IEnumerable?, AsOrToTargetType<Target>, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.cs#L34)
         - Open to user extension method declarations.
         - For instance you can declare your own extension method for creating string list out of `IEnumerable<int>`.
-        ```csharp              
+        ```csharp
         private readonly static AsOrToTargetType<string> _constructor = CreateConstructor();
-        
+
         private static AsOrToTargetType<string> CreateConstructor ()
         {
           Ctor<int, string> builder = (e, c) =>
           {
             const int defaultCapacity = 1000;
             StringBuilder builder = new ( c ?? defaultCapacity);
-            
+
             int order = 1;
             foreach(int i in e)
               builder.AppendLine(CultureInfo.InvariantCulture, $"{order++}: {i}");
-            
+
             return builder.ToString();
            };
-        
+
            return AsOrToTargetType.FromTypedCtor ( builder, canCast: e => false, empty: () => "" );
         }
-        
+
         public static string ToNumberStringList ( this IEnumerable<int>? enumerable )
         {
           AsOrToTargetType<string> constructor = _constructor;
           return enumerable.AsOrTo ( constructor )!;
         }
-        
+
         int[] numbers = [24, 34, 5, 15434, 26546, 13, 4];
         string result = numbers.ToNumberStringList()!;
-        
+
         /*  *result*
         1: 24
         2: 34
@@ -77,7 +77,7 @@ This namespace contains types with extension methods.
         - [`SortedList? IntoSortedList(IEnumerable?, int?, Func<object, object>, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collection.cs#L135) – creates sorted list from `IEnumerable`
         - [`SortedList? IntoSortedList(IEnumerable?, int?, Func<object, object>, Func<object, object>, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collection.cs#L166) – creates sorted list from `IEnumerable`
         - [`Stack? AsOrToStack<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collection.cs#L182) – casts or copies `IEnumerable<T>` into stack.
-        - [`Stack? AsOrToStack(IEnumerable?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collection.cs#L192) – casts or copies `IEnumerable` into stack.            
+        - [`Stack? AsOrToStack(IEnumerable?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collection.cs#L192) – casts or copies `IEnumerable` into stack.
     - `AsOrTo` or `Into` for chosen [`System.Collections.Frozen` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen?view=net-10.0) types
         - [`FrozenDictionary<Key, Item>? IntoFrozenDictionary<Item, Key> (IEnumerable<Item>?, Func<Item, Key>, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collection.Frozen.cs#L27) – creates frozen dictionary from `IEnumerable<T>`
         - [`FrozenDictionary<Key, Value>? IntoFrozenDictionary<Item, Key, Value> (IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collection.Frozen.cs#L54) – creates frozen dictionary from `IEnumerable<T>`

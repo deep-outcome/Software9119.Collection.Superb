@@ -58,7 +58,7 @@ public ref struct IListRefEnumerator<T, U> : IEnumerator<U?>
   /// Returns <see langword="true"/> when enumerator can provide next enumeration item.
   /// </summary>
   public bool MoveNext ()
-  {    
+  {
     if (index < limit && ++index < limit)
     {
       current = list [ index ];

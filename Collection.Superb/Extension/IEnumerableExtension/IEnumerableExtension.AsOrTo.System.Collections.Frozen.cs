@@ -10,13 +10,13 @@ namespace Software9119.Collection.Superb.Extension;
 static public partial class IEnumerableExtension
 {
   /// <summary>
-  /// Creates <see cref="FrozenDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/> 
+  /// Creates <see cref="FrozenDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> provided.
   /// </summary>
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="collections_frozen.FrozenDictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -37,13 +37,13 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Creates <see cref="FrozenDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/> 
+  /// Creates <see cref="FrozenDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="collections_frozen.FrozenDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -75,7 +75,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="collections_frozen.FrozenSet{Item}(IEqualityComparer{Item})"/>.
   /// </item>
   /// <item>

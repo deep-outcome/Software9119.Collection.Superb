@@ -12,7 +12,7 @@ namespace Software9119.Collection.Superb.Segmentation;
 /// to <see cref="IList{U}"/>.
 /// </summary>
 /// <remarks>
-/// Everything comes with a price and for this reason is up to 
+/// Everything comes with a price and for this reason is up to
 /// client code to ensure <see cref="IList{U}"/> passed into <see cref="IListRefSegment{T, U}"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
@@ -49,7 +49,7 @@ public ref struct IListRefSegment<T, U>
 
   /// <summary>
   /// Basic constructor.
-  /// </summary>  
+  /// </summary>
   /// <param name="equalityComparer">
   /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{U}.Default"/>
   /// will be used. See <see cref="EqualityComparer"/> for more.
@@ -65,7 +65,7 @@ public ref struct IListRefSegment<T, U>
 
   /// <summary>
   /// Offset constructor.
-  /// </summary>  
+  /// </summary>
   /// <param name="equalityComparer">
   /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{U}.Default"/>
   /// will be used. See <see cref="EqualityComparer"/> for more.
@@ -108,7 +108,7 @@ public ref struct IListRefSegment<T, U>
   /// <summary>
   /// <see cref="IListRefSegment{T, U}"/> indexer.
   /// </summary>
-  /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>  
+  /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>
   public U? this [ int index ]
   {
     [SuppressMessage ( "Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "Expected location." )]
@@ -145,13 +145,13 @@ public ref struct IListRefSegment<T, U>
       list [ i ] = default;
   }
 
-  /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>. 
+  /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>.
   /// Otherwise, returns <see langword="false"/>.</returns>
   readonly public bool Contains ( U? item ) => IndexOf ( item ) != -1;
 
   /// <summary>
   /// Copies segment into destination array.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="ArgumentNullException">For <see langword="null"/> <paramref name="array"/>.</exception>
   /// <exception cref="ArgumentOutOfRangeException">For negative <paramref name="arrayIndex"/>.</exception>
   /// <exception cref="ArgumentException">For <paramref name="array"/> with insufficient length.</exception>
@@ -191,37 +191,37 @@ public ref struct IListRefSegment<T, U>
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void Insert ( int index, U? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public bool Remove ( U? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void RemoveAt ( int index ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void Add ( U? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly IEnumerator IEnumerable.GetEnumerator () => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public IEnumerator<U> GetEnumerator () => throw new NotSupportedException ();
 

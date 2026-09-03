@@ -13,7 +13,7 @@ namespace Software9119.Collection.Superb.Segmentation;
 /// to <see cref="IList"/>.
 /// </summary>
 /// <remarks>
-/// Everything comes with a price and for this reason is up to 
+/// Everything comes with a price and for this reason is up to
 /// client code to ensure <see cref="IList"/> passed into <see cref="IListRefSegment{T}"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
@@ -68,7 +68,7 @@ public ref struct IListRefSegment<T> : IList
 
   /// <summary>
   /// Basic constructor.
-  /// </summary>  
+  /// </summary>
   /// <param name="equalityComparer">
   /// If <see langword="null"/> passed-in, the <c>EqualityComparer&lt;object&gt;.Default</c>
   /// will be used. See <see cref="EqualityComparer"/> for more.
@@ -84,7 +84,7 @@ public ref struct IListRefSegment<T> : IList
 
   /// <summary>
   /// Offset constructor.
-  /// </summary>  
+  /// </summary>
   /// <param name="equalityComparer">
   /// If <see langword="null"/> passed-in, the <c>EqualityComparer&lt;object&gt;.Default</c>
   /// will be used. See <see cref="EqualityComparer"/> for more.
@@ -127,7 +127,7 @@ public ref struct IListRefSegment<T> : IList
   /// <summary>
   /// <see cref="IListRefSegment{T}"/> indexer.
   /// </summary>
-  /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>  
+  /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>
   public object? this [ int index ]
   {
     [SuppressMessage ( "Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "Expected location." )]
@@ -164,13 +164,13 @@ public ref struct IListRefSegment<T> : IList
       list [ i ] = default;
   }
 
-  /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>. 
+  /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>.
   /// Otherwise, returns <see langword="false"/>.</returns>
   readonly public bool Contains ( object? item ) => IndexOf ( item ) != -1;
 
   /// <summary>
   /// Copies segment into destination array.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="ArgumentNullException">For <see langword="null"/> <paramref name="array"/>.</exception>
   /// <exception cref="ArgumentOutOfRangeException">For negative <paramref name="index"/>.</exception>
   /// <exception cref="ArgumentException">For <paramref name="array"/> with insufficient length.</exception>
@@ -210,31 +210,31 @@ public ref struct IListRefSegment<T> : IList
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void Insert ( int index, object? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void Remove ( object? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void RemoveAt ( int index ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public int Add ( object? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public IEnumerator GetEnumerator () => throw new NotSupportedException ();
 

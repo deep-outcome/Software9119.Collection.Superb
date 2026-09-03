@@ -50,7 +50,7 @@ public class IListOfTRefEnumeratorTest
       using (new IListRefEnumerator<RefList<int>, int> ( offset, count,  list)) { }
     }
     catch (ImpossibleSegmentationException e)
-    { 
+    {
       Assert.AreEqual ( errMsg, e.Message );
     }
   }
@@ -60,7 +60,7 @@ public class IListOfTRefEnumeratorTest
   {
     RefList<int> list = new ([ 1, 2, 3, 4, 5 ]);
     using IListRefEnumerator<RefList<int>,int> enumerator = new (0,5, list);
-    Assert.AreEqual ( 0, enumerator.Current );    
+    Assert.AreEqual ( 0, enumerator.Current );
     _ = enumerator.MoveNext ();
     Assert.AreEqual ( 1, enumerator.Current );
   }

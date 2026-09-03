@@ -105,7 +105,7 @@ static public class system_collections_generic
   static public AsOrToTargetType<LinkedList<Item>> LinkedList<Item> ()
   {
     Ctor<Item, LinkedList<Item>> typedCtor = (e, c) => new (e);
-    Empty<LinkedList<Item>> empty = () => new ();    
+    Empty<LinkedList<Item>> empty = () => new ();
 
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }

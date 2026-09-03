@@ -39,7 +39,7 @@ public class IListSegmentEqualityComparer : IEqualityComparer<IListSegment>, IEq
   readonly EqualityComparer<object> comparer = EqualityComparer<object>.Default;
 
   /// <summary>
-  /// Calls to <see cref="Equals(IListSegment, IListSegment)"/> 
+  /// Calls to <see cref="Equals(IListSegment, IListSegment)"/>
   /// or <c>EqualityComparer&lt;object&gt;.Equals(object?, object?)</c>
   /// with <paramref name="x"/> and <paramref name="y"/> based on type match.
   /// </summary>

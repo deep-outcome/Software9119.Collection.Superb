@@ -22,7 +22,7 @@ public enum EnumerableNullBehavior
   /// Empty target type is returned.
   /// </summary>
   /// <remarks>
-  /// See also 
+  /// See also
   /// <see cref="AsOrToTargetType{Target}.AsOrToTargetType(Ctor{Target}, CanCast, Empty{Target})"/>.
   /// </remarks>
   ReturnEmpty,

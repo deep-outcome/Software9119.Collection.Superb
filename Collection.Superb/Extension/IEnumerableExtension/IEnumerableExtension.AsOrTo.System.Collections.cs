@@ -33,7 +33,7 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="Hashtable"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/> provided.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/>
   /// with <see cref="system_collections.Hashtable{Item}(Func{Item, object})"/>.
   /// </remarks>
   static public Hashtable? IntoHashtable<Item> (
@@ -47,7 +47,7 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="Hashtable"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/> provided.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/>
   /// with <see cref="system_collections.Hashtable{Item}(Func{Item, object})"/>.
   /// </remarks>
   static public Hashtable? IntoHashtable (
@@ -62,7 +62,7 @@ static public partial class IEnumerableExtension
   /// and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="system_collections.Hashtable{Item}(Func{Item, object}, Func{Item, object?})"/>.
   /// </remarks>
   static public Hashtable? IntoHashtable<Item> (
@@ -74,11 +74,11 @@ static public partial class IEnumerableExtension
     => enumerable.AsOrTo ( system_collections.Hashtable ( keySelector, valueSelector ), capacity, behavior );
 
   /// <summary>
-  /// Creates <see cref="Hashtable"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/> 
+  /// Creates <see cref="Hashtable"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/>
   /// and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="system_collections.Hashtable{Item}(Func{Item, object}, Func{Item, object?})"/>.
   /// </remarks>
   static public Hashtable? IntoHashtable (
@@ -115,7 +115,7 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="SortedList"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/> provided.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/>
   /// with <see cref="system_collections.SortedList{Item}(Func{Item, object})"/>.
   /// </remarks>
   static public SortedList? IntoSortedList<Item> (
@@ -129,7 +129,7 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="SortedList"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/> provided.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/>
   /// with <see cref="system_collections.SortedList{Item}(Func{Item, object})"/>.
   /// </remarks>
   static public SortedList? IntoSortedList (
@@ -140,11 +140,11 @@ static public partial class IEnumerableExtension
     => enumerable.AsOrTo ( system_collections.SortedList ( keySelector ), capacity, behavior );
 
   /// <summary>
-  /// Creates <see cref="SortedList"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/> 
+  /// Creates <see cref="SortedList"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/>
   /// and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="system_collections.SortedList{Item}(Func{Item, object}, Func{Item, object?})"/>.
   /// </remarks>
   static public SortedList? IntoSortedList<Item> (
@@ -156,11 +156,11 @@ static public partial class IEnumerableExtension
     => enumerable.AsOrTo ( system_collections.SortedList ( keySelector, valueSelector ), capacity, behavior );
 
   /// <summary>
-  /// Creates <see cref="SortedList"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/> 
+  /// Creates <see cref="SortedList"/> from <paramref name="enumerable"/> using <paramref name="keySelector"/>
   /// and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
   /// <see cref="system_collections.SortedList{Item}(Func{Item, object}, Func{Item, object?})"/>.
   /// </remarks>
   static public SortedList? IntoSortedList (

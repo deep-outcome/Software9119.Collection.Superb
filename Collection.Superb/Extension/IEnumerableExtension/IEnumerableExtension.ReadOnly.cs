@@ -30,14 +30,14 @@ static public partial class IEnumerableExtension
   /// ║   enumerable   ║  result  ║ action ║
   /// ╠════════════════╬══════════╬════════╣
   /// ║ IEnumerable&lt;T&gt; ║ List&lt;T&gt;  ║ Copy   ║
-  /// ║ ICollection&lt;T&gt; ║ T []     ║ Copy   ║  
+  /// ║ ICollection&lt;T&gt; ║ T []     ║ Copy   ║
   /// ║ IList&lt;T&gt;       ║ IList&lt;T&gt; ║ Cast   ║
   /// ╚════════════════╩══════════╩════════╝
   /// </code>
   /// <paramref name="capacity"/> can be used to capacitate <see cref="List{Item}"/> sufficiently before population from <paramref name="enumerable"/>.
   /// </remarks>
   /// <exception cref="ArgumentNullException">
-  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is 
+  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is
   /// <see langword="null"/>.
   /// </exception>
   /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
@@ -117,9 +117,9 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Creates <see cref="ReadOnlyDictionary{Key,Value}"/> from <paramref name="enumerable"/>.
   /// </summary>
-  /// <exception cref="ArgumentNullException">  
-  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is 
-  /// <see langword="null"/> or when either of <paramref name="keySelector"/>, <paramref name="valueSelector"/> is 
+  /// <exception cref="ArgumentNullException">
+  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is
+  /// <see langword="null"/> or when either of <paramref name="keySelector"/>, <paramref name="valueSelector"/> is
   /// <see langword="null"/>.
   /// </exception>
   /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
@@ -160,8 +160,8 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Puts see <paramref name="dict"/> into <see cref="ReadOnlyDictionary{Key,Value}"/>.
   /// </summary>
-  /// <exception cref="ArgumentNullException">  
-  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="dict"/> is 
+  /// <exception cref="ArgumentNullException">
+  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="dict"/> is
   /// <see langword="null"/>.
   /// </exception>
   /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>

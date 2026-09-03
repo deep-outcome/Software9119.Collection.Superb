@@ -12,7 +12,7 @@ namespace Software9119.Collection.Superb.Segmentation;
 /// to <see cref="IReadOnlyList{U}"/>.
 /// </summary>
 /// <remarks>
-/// Everything comes with a price and for this reason is up to 
+/// Everything comes with a price and for this reason is up to
 /// client code to ensure <see cref="IReadOnlyList{U}"/> passed into <see cref="IReadOnlyListRefSegment{T, U}"/> is not
 /// mutated in a harmful way, most notably that it is not shrunk beyond segment defined.
 /// </remarks>
@@ -47,7 +47,7 @@ public ref struct IReadOnlyListRefSegment<T, U> : IList<U?>, IReadOnlyList<U?>
 
   /// <summary>
   /// Basic constructor.
-  /// </summary>  
+  /// </summary>
   /// <param name="equalityComparer">
   /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
   /// will be used. See <see cref="EqualityComparer"/> for more.
@@ -63,7 +63,7 @@ public ref struct IReadOnlyListRefSegment<T, U> : IList<U?>, IReadOnlyList<U?>
 
   /// <summary>
   /// Offset constructor.
-  /// </summary>  
+  /// </summary>
   /// <param name="equalityComparer">
   /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
   /// will be used. See <see cref="EqualityComparer"/> for more.
@@ -106,7 +106,7 @@ public ref struct IReadOnlyListRefSegment<T, U> : IList<U?>, IReadOnlyList<U?>
   /// <summary>
   /// <see cref="IReadOnlyListRefSegment{T, U}"/> indexer.
   /// </summary>
-  /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>  
+  /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>
   /// <exception cref="NotSupportedException">On setter call.</exception>
   readonly public U? this [ int index ]
   {
@@ -128,13 +128,13 @@ public ref struct IReadOnlyListRefSegment<T, U> : IList<U?>, IReadOnlyList<U?>
     return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, limit: limit, count: Count, out e );
   }
 
-  /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>. 
+  /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>.
   /// Otherwise, returns <see langword="false"/>.</returns>
   readonly public bool Contains ( U? item ) => IndexOf ( item ) != -1;
 
   /// <summary>
   /// Copies segment into destination array.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="ArgumentNullException">For <see langword="null"/> <paramref name="array"/>.</exception>
   /// <exception cref="ArgumentOutOfRangeException">For negative <paramref name="arrayIndex"/>.</exception>
   /// <exception cref="ArgumentException">For <paramref name="array"/> with insufficient length.</exception>
@@ -174,43 +174,43 @@ public ref struct IReadOnlyListRefSegment<T, U> : IList<U?>, IReadOnlyList<U?>
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void Insert ( int index, U? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public bool Remove ( U? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void RemoveAt ( int index ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void Add ( U? item ) => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public void Clear () => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly IEnumerator IEnumerable.GetEnumerator () => throw new NotSupportedException ();
 
   /// <summary>
   /// Not supported method.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="NotSupportedException">At call.</exception>
   readonly public IEnumerator<U> GetEnumerator () => throw new NotSupportedException ();
 
