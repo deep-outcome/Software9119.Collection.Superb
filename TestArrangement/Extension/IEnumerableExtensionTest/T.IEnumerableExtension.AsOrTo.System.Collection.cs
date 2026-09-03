@@ -15,13 +15,17 @@ public partial class IEnumerableExtensionTest
 #pragma warning restore CA1724
 {
   [TestMethod]
-  public void AsOrToArrayList_IEnumerableOfT ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void AsOrToArrayList_IEnumerableOfT ( int? cap )
   {
-    const int cap = 1000;
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    ArrayList test = source.AsOrToArrayList(cap)!;
+    ArrayList test = cap is int
+      ? source.AsOrToArrayList(cap)!
+      : source.AsOrToArrayList()!;
+
     Assert.IsTrue ( source.SequenceEqual ( test.Cast<int> () ) );
-    Assert.AreEqual ( cap, test.Capacity );
+    Assert.AreEqual ( cap ?? 16, test.Capacity );
   }
 
   [TestMethod]
@@ -39,13 +43,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void AsOrToArrayList_IEnumerable ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void AsOrToArrayList_IEnumerable ( int? cap )
   {
-    const int cap = 1000;
     IEnumerable source = Enumerable.Range(0, 10);
-    ArrayList test = source.AsOrToArrayList(cap)!;
+    ArrayList test = cap is int
+      ? source.AsOrToArrayList(cap)!
+      : source.AsOrToArrayList()!;
+
     Assert.IsTrue ( source.Cast<int> ().SequenceEqual ( test.Cast<int> () ) );
-    Assert.AreEqual ( cap, test.Capacity );
+    Assert.AreEqual ( cap ?? 16, test.Capacity );
   }
 
   [TestMethod]
@@ -63,13 +71,16 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void IntoHashtable_IEnumerableOfT_KeySelectorOnly ()
+  [DataRow ( 1000, 1149 )]
+  [DataRow ( null, 12 )]
+  public void IntoHashtable_IEnumerableOfT_KeySelectorOnly ( int? cap, int loadsize )
   {
-    const int cap = 1000;
     Func<int, object> keySelector = x => x * 2;
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    Hashtable test = source.IntoHashtable(keySelector, cap)!;
+    Hashtable test = cap is int
+      ? source.IntoHashtable(keySelector, cap)!
+      : source.IntoHashtable(keySelector)!;
 
     IEnumerable<(int, int)> expectation = source.Select(x => ((int)keySelector(x), x)).OrderBy(x => x.Item1);
     IEnumerable<(int, int)> actual = test
@@ -80,7 +91,7 @@ public partial class IEnumerableExtensionTest
     Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
 
     int _loadsize = (int)Reflection.GetNonPublicFieldValue(test, "_loadsize");
-    Assert.AreEqual ( 1149, _loadsize );
+    Assert.AreEqual ( loadsize, _loadsize );
   }
 
 
@@ -99,13 +110,16 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void IntoHashtable_IEnumerable_KeySelectorOnly ()
+  [DataRow ( 1000, 1149 )]
+  [DataRow ( null, 12 )]
+  public void IntoHashtable_IEnumerable_KeySelectorOnly ( int? cap, int loadsize )
   {
-    const int cap = 1000;
     Func<object, object> keySelector = x => x.GetHashCode();
 
     IEnumerable source = Enumerable.Range(0, 10);
-    Hashtable test = source.IntoHashtable(keySelector, cap)!;
+    Hashtable test = cap is int
+      ? source.IntoHashtable(keySelector, cap)!
+      : source.IntoHashtable(keySelector)!;
 
     IEnumerable<(int, int)> expectation = source
       .Cast<int>()
@@ -119,7 +133,7 @@ public partial class IEnumerableExtensionTest
     Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
 
     int _loadsize = (int)Reflection.GetNonPublicFieldValue(test, "_loadsize");
-    Assert.AreEqual ( 1149, _loadsize );
+    Assert.AreEqual ( loadsize, _loadsize );
   }
 
 
@@ -138,14 +152,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void IntoHashtable_IEnumerableOfT ()
+  [DataRow ( 1000, 1149 )]
+  [DataRow ( null, 12 )]
+  public void IntoHashtable_IEnumerableOfT ( int? cap, int loadsize )
   {
-    const int cap = 1000;
     Func<int, object> keySelector = x => x * 2;
     Func<int, object> valueSelector = x => x * 3;
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    Hashtable test = source.IntoHashtable(keySelector, valueSelector, cap)!;
+    Hashtable test = cap is int
+      ? source.IntoHashtable(keySelector, valueSelector, cap)!
+      : source.IntoHashtable ( keySelector, valueSelector )!;
 
     IEnumerable<(int, int)> expectation = source
       .Select(x => ((int)keySelector(x), (int)valueSelector(x)))
@@ -158,7 +175,7 @@ public partial class IEnumerableExtensionTest
     Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
 
     int _loadsize = (int)Reflection.GetNonPublicFieldValue(test, "_loadsize");
-    Assert.AreEqual ( 1149, _loadsize );
+    Assert.AreEqual ( loadsize, _loadsize );
   }
 
 
@@ -176,15 +193,19 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
+
   [TestMethod]
-  public void IntoHashtable_IEnumerable ()
+  [DataRow ( 1000, 1149 )]
+  [DataRow ( null, 12 )]
+  public void IntoHashtable_IEnumerable ( int? cap, int loadsize )
   {
-    const int cap = 1000;
     Func<object, object> keySelector = x => x.GetHashCode();
     Func<object, object> valueSelector = x => x.GetHashCode() * 2;
 
     IEnumerable source = Enumerable.Range(0, 10);
-    Hashtable test = source.IntoHashtable(keySelector,valueSelector, cap)!;
+    Hashtable test = cap is int
+      ? source.IntoHashtable(keySelector,valueSelector, cap)!
+      : source.IntoHashtable(keySelector,valueSelector)!;
 
     IEnumerable<(int, int)> expectation = source
       .Cast<int>()
@@ -198,7 +219,7 @@ public partial class IEnumerableExtensionTest
     Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
 
     int _loadsize = (int)Reflection.GetNonPublicFieldValue(test, "_loadsize");
-    Assert.AreEqual ( 1149, _loadsize );
+    Assert.AreEqual ( loadsize, _loadsize );
   }
 
   [TestMethod]
@@ -216,15 +237,19 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void AsOrToQueue_IEnumerableOfT ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void AsOrToQueue_IEnumerableOfT ( int? cap )
   {
-    const int cap = 1000;
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    Queue test = source.AsOrToQueue(cap)!;
+    Queue test = cap is int
+      ? source.AsOrToQueue(cap)!
+      : source.AsOrToQueue()!;
+
     Assert.IsTrue ( source.SequenceEqual ( test.Cast<int> () ) );
 
     Array storage = (Array)Reflection.GetNonPublicFieldValue(test, "_array");
-    Assert.HasCount ( cap, storage );
+    Assert.HasCount ( cap ?? 32, storage );
   }
 
 
@@ -243,15 +268,19 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void AsOrToQueue_IEnumerable ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void AsOrToQueue_IEnumerable ( int? cap )
   {
-    const int cap = 1000;
     IEnumerable source = Enumerable.Range(0, 10);
-    Queue test = source.AsOrToQueue(cap)!;
+    Queue test = cap is int
+      ? source.AsOrToQueue(cap)!
+      : source.AsOrToQueue()!;
+
     Assert.IsTrue ( source.Cast<int> ().SequenceEqual ( test.Cast<int> () ) );
 
     Array storage = (Array)Reflection.GetNonPublicFieldValue(test, "_array");
-    Assert.HasCount ( cap, storage );
+    Assert.HasCount ( cap ?? 32, storage );
   }
 
 
@@ -270,13 +299,16 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void IntoSortedList_IEnumerableOfT_KeySelectorOnly ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void IntoSortedList_IEnumerableOfT_KeySelectorOnly ( int? cap )
   {
-    const int cap = 1000;
     Func<int, object> keySelector = x => x * 2;
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    SortedList test = source.IntoSortedList(keySelector, cap)!;
+    SortedList test = cap is int
+      ? source.IntoSortedList(keySelector, cap)!
+      : source.IntoSortedList(keySelector)!;
 
     IEnumerable<(int, int)> expectation = source.Select(x => ((int)keySelector(x), x)).OrderBy(x => x.Item1);
     IEnumerable<(int, int)> actual = test
@@ -285,7 +317,7 @@ public partial class IEnumerableExtensionTest
       .OrderBy(x => x.Item1);
 
     Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
-    Assert.AreEqual ( cap, test.Capacity );
+    Assert.AreEqual ( cap ?? 16, test.Capacity );
   }
 
 
@@ -293,7 +325,7 @@ public partial class IEnumerableExtensionTest
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
   public void IntoSortedList_IEnumerableOfT_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
-  {   
+  {
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     SortedList? test = returnsDefault
@@ -304,13 +336,16 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void IntoSortedList_IEnumerable_KeySelectorOnly ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void IntoSortedList_IEnumerable_KeySelectorOnly ( int? cap )
   {
-    const int cap = 1000;
     Func<object, object> keySelector = x => x.GetHashCode();
 
     IEnumerable source = Enumerable.Range(0, 10);
-    SortedList test = source.IntoSortedList(keySelector, cap)!;
+    SortedList test = cap is int
+      ? source.IntoSortedList(keySelector, cap)!
+      : source.IntoSortedList(keySelector)!;
 
     IEnumerable<(int, int)> expectation = source
       .Cast<int>()
@@ -322,7 +357,7 @@ public partial class IEnumerableExtensionTest
       .OrderBy(x => x.Item1);
 
     Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
-    Assert.AreEqual ( cap, test.Capacity );
+    Assert.AreEqual ( cap ?? 16, test.Capacity );
   }
 
 
@@ -330,7 +365,7 @@ public partial class IEnumerableExtensionTest
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
   public void IntoSortedList_IEnumerable_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
-  {    
+  {
     IEnumerable source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     SortedList? test = returnsDefault
@@ -341,14 +376,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void IntoSortedList_IEnumerableOfT ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void IntoSortedList_IEnumerableOfT ( int? cap )
   {
-    const int cap = 1000;
     Func<int, object> keySelector = x => x * 2;
     Func<int, object> valueSelector = x => x * 3;
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    SortedList test = source.IntoSortedList(keySelector, valueSelector, cap)!;
+    SortedList test = cap is int
+      ? source.IntoSortedList(keySelector, valueSelector, cap)!
+      : source.IntoSortedList(keySelector, valueSelector)!;
 
     IEnumerable<(int, int)> expectation = source
       .Select(x => ((int)keySelector(x), (int)valueSelector(x)))
@@ -359,7 +397,7 @@ public partial class IEnumerableExtensionTest
       .OrderBy(x => x.Item1);
 
     Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
-    Assert.AreEqual ( cap, test.Capacity );
+    Assert.AreEqual ( cap ?? 16, test.Capacity );
   }
 
 
@@ -367,7 +405,7 @@ public partial class IEnumerableExtensionTest
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
   public void IntoSortedList_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
-  {    
+  {
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     SortedList? test = returnsDefault
@@ -378,14 +416,17 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void IntoSortedList_IEnumerable ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void IntoSortedList_IEnumerable ( int? cap )
   {
-    const int cap = 1000;
     Func<object, object> keySelector = x => x.GetHashCode();
     Func<object, object> valueSelector = x => x.GetHashCode() * 2;
 
     IEnumerable source = Enumerable.Range(0, 10);
-    SortedList test = source.IntoSortedList(keySelector,valueSelector, cap)!;
+    SortedList test = cap is int
+      ? source.IntoSortedList(keySelector,valueSelector, cap)!
+      : source.IntoSortedList(keySelector,valueSelector)!;
 
     IEnumerable<(int, int)> expectation = source
       .Cast<int>()
@@ -397,14 +438,14 @@ public partial class IEnumerableExtensionTest
       .OrderBy(x => x.Item1);
 
     Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
-    Assert.AreEqual ( cap, test.Capacity );
+    Assert.AreEqual ( cap ?? 16, test.Capacity );
   }
 
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
   public void IntoSortedList_IEnumerable_NullBehavior ( NullBehavior? behavior )
-  {    
+  {
     IEnumerable source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     SortedList? test = returnsDefault
@@ -415,15 +456,19 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void AsOrToStack_IEnumerableOfT ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void AsOrToStack_IEnumerableOfT ( int? cap )
   {
-    const int cap = 1000;
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    Stack test = source.AsOrToStack(cap)!;
+    Stack test = cap is int
+      ? source.AsOrToStack(cap)!
+      : source.AsOrToStack()!;
+
     Assert.IsTrue ( source.SequenceEqual ( test.Cast<int> ().Reverse () ) );
 
     Array storage = (Array)Reflection.GetNonPublicFieldValue(test, "_array");
-    Assert.HasCount ( cap, storage );
+    Assert.HasCount ( cap ?? 10, storage );
   }
 
   [TestMethod]
@@ -441,15 +486,19 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void AsOrToStack_IEnumerable ()
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void AsOrToStack_IEnumerable ( int? cap )
   {
-    const int cap = 1000;
     IEnumerable source = Enumerable.Range(0, 10);
-    Stack test = source.AsOrToStack(cap)!;
+    Stack test = cap is int
+      ? source.AsOrToStack(cap)!
+      : source.AsOrToStack()!;
+
     Assert.IsTrue ( source.Cast<int> ().SequenceEqual ( test.Cast<int> ().Reverse () ) );
 
     Array storage = (Array)Reflection.GetNonPublicFieldValue(test, "_array");
-    Assert.HasCount ( cap, storage );
+    Assert.HasCount ( cap ?? 10, storage );
   }
 
   [TestMethod]
