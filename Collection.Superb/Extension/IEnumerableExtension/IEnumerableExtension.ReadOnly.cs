@@ -100,9 +100,9 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="ReadOnlyDictionary{Key,Value}"/> from <paramref name="enumerable"/>.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="ToReadOnlyDictionary{Item,Key,Value}(IEnumerable{Item},Func{Item,Key},Func{Item,Value},NullBehavior, int)"/>.
+  /// Calls to <see cref="IntoReadOnlyDictionary{Item,Key,Value}(IEnumerable{Item},Func{Item,Key},Func{Item,Value},NullBehavior, int)"/>.
   /// </remarks>
-  static public ReadOnlyDictionary<Key, Item>? ToReadOnlyDictionary<Item, Key>
+  static public ReadOnlyDictionary<Key, Item>? IntoReadOnlyDictionary<Item, Key>
   (
     this IEnumerable<Item>? enumerable,
     Func<Item, Key> keySelector,
@@ -111,7 +111,7 @@ static public partial class IEnumerableExtension
   )
     where Key : notnull
   {
-    return enumerable.ToReadOnlyDictionary ( keySelector, v => v, behavior, capacity );
+    return enumerable.IntoReadOnlyDictionary ( keySelector, v => v, behavior, capacity );
   }
 
   /// <summary>
@@ -123,7 +123,7 @@ static public partial class IEnumerableExtension
   /// <see langword="null"/>.
   /// </exception>
   /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
-  static public ReadOnlyDictionary<Key, Value>? ToReadOnlyDictionary<Item, Key, Value>
+  static public ReadOnlyDictionary<Key, Value>? IntoReadOnlyDictionary<Item, Key, Value>
   (
     this IEnumerable<Item>? enumerable,
     Func<Item, Key> keySelector,

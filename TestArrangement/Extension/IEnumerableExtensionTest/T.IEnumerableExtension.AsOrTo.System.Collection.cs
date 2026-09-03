@@ -63,13 +63,13 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToHashtable_IEnumerableOfT_KeySelectorOnly ()
+  public void IntoHashtable_IEnumerableOfT_KeySelectorOnly ()
   {
     const int cap = 1000;
     Func<int, object> keySelector = x => x * 2;
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    Hashtable test = source.ToHashtable(keySelector, cap)!;
+    Hashtable test = source.IntoHashtable(keySelector, cap)!;
 
     IEnumerable<(int, int)> expectation = source.Select(x => ((int)keySelector(x), x)).OrderBy(x => x.Item1);
     IEnumerable<(int, int)> actual = test
@@ -87,25 +87,25 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToHashtable_IEnumerableOfT_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  public void IntoHashtable_IEnumerableOfT_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     Hashtable? test = returnsDefault
-      ? source.ToHashtable(x => x, behavior: behavior!.Value)
-      : source.ToHashtable(x => x);
+      ? source.IntoHashtable(x => x, behavior: behavior!.Value)
+      : source.IntoHashtable(x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
-  public void ToHashtable_IEnumerable_KeySelectorOnly ()
+  public void IntoHashtable_IEnumerable_KeySelectorOnly ()
   {
     const int cap = 1000;
     Func<object, object> keySelector = x => x.GetHashCode();
 
     IEnumerable source = Enumerable.Range(0, 10);
-    Hashtable test = source.ToHashtable(keySelector, cap)!;
+    Hashtable test = source.IntoHashtable(keySelector, cap)!;
 
     IEnumerable<(int, int)> expectation = source
       .Cast<int>()
@@ -126,26 +126,26 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToHashtable_IEnumerable_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  public void IntoHashtable_IEnumerable_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     Hashtable? test = returnsDefault
-      ? source.ToHashtable(x => x, behavior: behavior!.Value)
-      : source.ToHashtable(x => x);
+      ? source.IntoHashtable(x => x, behavior: behavior!.Value)
+      : source.IntoHashtable(x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
-  public void ToHashtable_IEnumerableOfT ()
+  public void IntoHashtable_IEnumerableOfT ()
   {
     const int cap = 1000;
     Func<int, object> keySelector = x => x * 2;
     Func<int, object> valueSelector = x => x * 3;
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    Hashtable test = source.ToHashtable(keySelector, valueSelector, cap)!;
+    Hashtable test = source.IntoHashtable(keySelector, valueSelector, cap)!;
 
     IEnumerable<(int, int)> expectation = source
       .Select(x => ((int)keySelector(x), (int)valueSelector(x)))
@@ -165,26 +165,26 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToHashtable_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
+  public void IntoHashtable_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     Hashtable? test = returnsDefault
-      ? source.ToHashtable(x => x, x => x, behavior: behavior!.Value)
-      : source.ToHashtable(x => x, x => x);
+      ? source.IntoHashtable(x => x, x => x, behavior: behavior!.Value)
+      : source.IntoHashtable(x => x, x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
-  public void ToHashtable_IEnumerable ()
+  public void IntoHashtable_IEnumerable ()
   {
     const int cap = 1000;
     Func<object, object> keySelector = x => x.GetHashCode();
     Func<object, object> valueSelector = x => x.GetHashCode() * 2;
 
     IEnumerable source = Enumerable.Range(0, 10);
-    Hashtable test = source.ToHashtable(keySelector,valueSelector, cap)!;
+    Hashtable test = source.IntoHashtable(keySelector,valueSelector, cap)!;
 
     IEnumerable<(int, int)> expectation = source
       .Cast<int>()
@@ -204,13 +204,13 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToHashtable_IEnumerable_NullBehavior ( NullBehavior? behavior )
+  public void IntoHashtable_IEnumerable_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     Hashtable? test = returnsDefault
-      ? source.ToHashtable(x => x, x => x, behavior: behavior!.Value)
-      : source.ToHashtable(x => x, x => x);
+      ? source.IntoHashtable(x => x, x => x, behavior: behavior!.Value)
+      : source.IntoHashtable(x => x, x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
@@ -270,13 +270,13 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToSortedList_IEnumerableOfT_KeySelectorOnly ()
+  public void IntoSortedList_IEnumerableOfT_KeySelectorOnly ()
   {
     const int cap = 1000;
     Func<int, object> keySelector = x => x * 2;
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    SortedList test = source.ToSortedList(keySelector, cap)!;
+    SortedList test = source.IntoSortedList(keySelector, cap)!;
 
     IEnumerable<(int, int)> expectation = source.Select(x => ((int)keySelector(x), x)).OrderBy(x => x.Item1);
     IEnumerable<(int, int)> actual = test
@@ -292,25 +292,25 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToSortedList_IEnumerableOfT_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  public void IntoSortedList_IEnumerableOfT_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
   {   
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     SortedList? test = returnsDefault
-      ? source.ToSortedList(x => x, behavior: behavior!.Value)
-      : source.ToSortedList(x => x);
+      ? source.IntoSortedList(x => x, behavior: behavior!.Value)
+      : source.IntoSortedList(x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
-  public void ToSortedList_IEnumerable_KeySelectorOnly ()
+  public void IntoSortedList_IEnumerable_KeySelectorOnly ()
   {
     const int cap = 1000;
     Func<object, object> keySelector = x => x.GetHashCode();
 
     IEnumerable source = Enumerable.Range(0, 10);
-    SortedList test = source.ToSortedList(keySelector, cap)!;
+    SortedList test = source.IntoSortedList(keySelector, cap)!;
 
     IEnumerable<(int, int)> expectation = source
       .Cast<int>()
@@ -329,26 +329,26 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToSortedList_IEnumerable_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  public void IntoSortedList_IEnumerable_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
   {    
     IEnumerable source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     SortedList? test = returnsDefault
-      ? source.ToSortedList(x => x, behavior: behavior!.Value)
-      : source.ToSortedList(x => x);
+      ? source.IntoSortedList(x => x, behavior: behavior!.Value)
+      : source.IntoSortedList(x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
-  public void ToSortedList_IEnumerableOfT ()
+  public void IntoSortedList_IEnumerableOfT ()
   {
     const int cap = 1000;
     Func<int, object> keySelector = x => x * 2;
     Func<int, object> valueSelector = x => x * 3;
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    SortedList test = source.ToSortedList(keySelector, valueSelector, cap)!;
+    SortedList test = source.IntoSortedList(keySelector, valueSelector, cap)!;
 
     IEnumerable<(int, int)> expectation = source
       .Select(x => ((int)keySelector(x), (int)valueSelector(x)))
@@ -366,26 +366,26 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToSortedList_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
+  public void IntoSortedList_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
   {    
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     SortedList? test = returnsDefault
-      ? source.ToSortedList(x => x, x => x, behavior: behavior!.Value)
-      : source.ToSortedList(x => x, x => x);
+      ? source.IntoSortedList(x => x, x => x, behavior: behavior!.Value)
+      : source.IntoSortedList(x => x, x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
-  public void ToSortedList_IEnumerable ()
+  public void IntoSortedList_IEnumerable ()
   {
     const int cap = 1000;
     Func<object, object> keySelector = x => x.GetHashCode();
     Func<object, object> valueSelector = x => x.GetHashCode() * 2;
 
     IEnumerable source = Enumerable.Range(0, 10);
-    SortedList test = source.ToSortedList(keySelector,valueSelector, cap)!;
+    SortedList test = source.IntoSortedList(keySelector,valueSelector, cap)!;
 
     IEnumerable<(int, int)> expectation = source
       .Cast<int>()
@@ -403,13 +403,13 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToSortedList_IEnumerable_NullBehavior ( NullBehavior? behavior )
+  public void IntoSortedList_IEnumerable_NullBehavior ( NullBehavior? behavior )
   {    
     IEnumerable source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     SortedList? test = returnsDefault
-      ? source.ToSortedList(x => x, x => x, behavior: behavior!.Value)
-      : source.ToSortedList(x => x, x => x);
+      ? source.IntoSortedList(x => x, x => x, behavior: behavior!.Value)
+      : source.IntoSortedList(x => x, x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }

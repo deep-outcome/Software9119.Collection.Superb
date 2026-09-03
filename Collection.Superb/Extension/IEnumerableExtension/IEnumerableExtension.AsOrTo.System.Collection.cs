@@ -36,7 +36,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> 
   /// with <see cref="system_collections.Hashtable{Item}(Func{Item, object})"/>.
   /// </remarks>
-  static public Hashtable? ToHashtable<Item> (
+  static public Hashtable? IntoHashtable<Item> (
     this IEnumerable<Item>? enumerable,
     Func<Item, object> keySelector,
     int? capacity = null,
@@ -50,7 +50,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> 
   /// with <see cref="system_collections.Hashtable{Item}(Func{Item, object})"/>.
   /// </remarks>
-  static public Hashtable? ToHashtable (
+  static public Hashtable? IntoHashtable (
     this IEnumerable? enumerable,
     Func<object, object> keySelector,
     int? capacity = null,
@@ -65,7 +65,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
   /// <see cref="system_collections.Hashtable{Item}(Func{Item, object}, Func{Item, object?})"/>.
   /// </remarks>
-  static public Hashtable? ToHashtable<Item> (
+  static public Hashtable? IntoHashtable<Item> (
     this IEnumerable<Item>? enumerable,
     Func<Item, object> keySelector,
     Func<Item, object> valueSelector,
@@ -81,7 +81,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
   /// <see cref="system_collections.Hashtable{Item}(Func{Item, object}, Func{Item, object?})"/>.
   /// </remarks>
-  static public Hashtable? ToHashtable (
+  static public Hashtable? IntoHashtable (
     this IEnumerable? enumerable,
     Func<object, object> keySelector,
     Func<object, object> valueSelector,
@@ -118,7 +118,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> 
   /// with <see cref="system_collections.SortedList{Item}(Func{Item, object})"/>.
   /// </remarks>
-  static public SortedList? ToSortedList<Item> (
+  static public SortedList? IntoSortedList<Item> (
     this IEnumerable<Item>? enumerable,
     Func<Item, object> keySelector,
     int? capacity = null,
@@ -132,7 +132,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> 
   /// with <see cref="system_collections.SortedList{Item}(Func{Item, object})"/>.
   /// </remarks>
-  static public SortedList? ToSortedList (
+  static public SortedList? IntoSortedList (
     this IEnumerable? enumerable,
     Func<object, object> keySelector,
     int? capacity = null,
@@ -147,7 +147,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
   /// <see cref="system_collections.SortedList{Item}(Func{Item, object}, Func{Item, object?})"/>.
   /// </remarks>
-  static public SortedList? ToSortedList<Item> (
+  static public SortedList? IntoSortedList<Item> (
     this IEnumerable<Item>? enumerable,
     Func<Item, object> keySelector,
     Func<Item, object> valueSelector,
@@ -163,7 +163,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with 
   /// <see cref="system_collections.SortedList{Item}(Func{Item, object}, Func{Item, object?})"/>.
   /// </remarks>
-  static public SortedList? ToSortedList (
+  static public SortedList? IntoSortedList (
     this IEnumerable? enumerable,
     Func<object, object> keySelector,
     Func<object, object> valueSelector,

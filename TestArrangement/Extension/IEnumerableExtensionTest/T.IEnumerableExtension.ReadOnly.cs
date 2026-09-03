@@ -176,10 +176,10 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_KeySelectorOnly_NullSource_ReturnEmpty ()
+  public void IntoReadOnlyDictionary_KeySelectorOnly_NullSource_ReturnEmpty ()
   {
     Func<int, int> keySelector = x => x *2;
-    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).IntoReadOnlyDictionary
     (
       keySelector,
       EnumerableNullBehavior.ReturnEmpty
@@ -188,10 +188,10 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_KeySelectorOnly_NullSource_ReturnDefault ()
+  public void IntoReadOnlyDictionary_KeySelectorOnly_NullSource_ReturnDefault ()
   {
     Func<int, int> keySelector = x => x *2;
-    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).IntoReadOnlyDictionary
     (
       keySelector,
       EnumerableNullBehavior.ReturnDefault
@@ -200,11 +200,11 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_KeySelectorOnly_NullSource_ThrowException ()
+  public void IntoReadOnlyDictionary_KeySelectorOnly_NullSource_ThrowException ()
   {
     const string expectation = "Null source enumerable encounter. (Parameter 'enumerable')";
     Func<int, int> keySelector = x => x *2;
-    Action test = () => _ = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    Action test = () => _ = ((IEnumerable<int>?) null).IntoReadOnlyDictionary
     (
       keySelector,
       EnumerableNullBehavior.ThrowException
@@ -215,11 +215,11 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_KeySelectorOnly_NullSource_UknownBehavior ()
+  public void IntoReadOnlyDictionary_KeySelectorOnly_NullSource_UknownBehavior ()
   {
     const string expectation = "Unsupported behavior, '793'. (Parameter 'behavior')";
     Func<int, int> keySelector = x => x *2;
-    Action test = () => _ = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    Action test = () => _ = ((IEnumerable<int>?) null).IntoReadOnlyDictionary
     (
       keySelector,
       (EnumerableNullBehavior) 793
@@ -230,11 +230,11 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_KeySelectorOnly_NullKeySelector ()
+  public void IntoReadOnlyDictionary_KeySelectorOnly_NullKeySelector ()
   {
     const string expectation = "Key selector not provided. (Parameter 'keySelector')";
     Func<int, int> keySelector = null!;
-    Action test = () => _ = new int[0].ToReadOnlyDictionary(keySelector);
+    Action test = () => _ = new int[0].IntoReadOnlyDictionary(keySelector);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( expectation, e.Message );
@@ -242,11 +242,11 @@ public partial class IEnumerableExtensionTest
 
   [TestMethod]
   [SuppressMessage ( "Performance", "CA1851:Possible multiple enumerations of 'IEnumerable' collection", Justification = "Unneeded." )]
-  public void ToReadOnlyDictionary_KeySelectorOnly ()
+  public void IntoReadOnlyDictionary_KeySelectorOnly ()
   {
     IEnumerable<int> enumerable = Enumerable.Range(1, 12);
     Func<int, int> keySelector = x => x *2;
-    ReadOnlyDictionary<int, int> test = enumerable.ToReadOnlyDictionary(keySelector)!;
+    ReadOnlyDictionary<int, int> test = enumerable.IntoReadOnlyDictionary(keySelector)!;
 
     Assert.IsTrue ( test.Keys.SequenceEqual ( enumerable.Select ( keySelector ) ) );
     Assert.IsTrue ( test.Values.SequenceEqual ( enumerable ) );
@@ -257,12 +257,12 @@ public partial class IEnumerableExtensionTest
 
   [TestMethod]
   [SuppressMessage ( "Performance", "CA1851:Possible multiple enumerations of 'IEnumerable' collection", Justification = "Unneeded." )]
-  public void ToReadOnlyDictionary_KeySelectorOnly_ExactCapacity ()
+  public void IntoReadOnlyDictionary_KeySelectorOnly_ExactCapacity ()
   {
     const int count = 3;
     IEnumerable<int> enumerable = Enumerable.Range(1, count);
     Func<int, int> keySelector = x => x *2;
-    ReadOnlyDictionary<int, int> test = enumerable.ToReadOnlyDictionary
+    ReadOnlyDictionary<int, int> test = enumerable.IntoReadOnlyDictionary
     (
       keySelector,
       capacity: count
@@ -276,11 +276,11 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_NullSource_ReturnEmpty ()
+  public void IntoReadOnlyDictionary_NullSource_ReturnEmpty ()
   {
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = x => x *3;
-    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).IntoReadOnlyDictionary
     (
       keySelector,
       valueSelector,
@@ -290,11 +290,11 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_NullSource_ReturnDefault ()
+  public void IntoReadOnlyDictionary_NullSource_ReturnDefault ()
   {
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = x => x *3;
-    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    ReadOnlyDictionary<int, int> test = ((IEnumerable<int>?) null).IntoReadOnlyDictionary
     (
       keySelector,
       valueSelector,
@@ -304,12 +304,12 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_NullSource_ThrowException ()
+  public void IntoReadOnlyDictionary_NullSource_ThrowException ()
   {
     const string expectation = "Null source enumerable encounter. (Parameter 'enumerable')";
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = x => x *3;
-    Action test = () => _ = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    Action test = () => _ = ((IEnumerable<int>?) null).IntoReadOnlyDictionary
     (
       keySelector,
       valueSelector,
@@ -321,12 +321,12 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_NullSource_UknownBehavior ()
+  public void IntoReadOnlyDictionary_NullSource_UknownBehavior ()
   {
     const string expectation = "Unsupported behavior, '793'. (Parameter 'behavior')";
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = x => x *3;
-    Action test = () => _ = ((IEnumerable<int>?) null).ToReadOnlyDictionary
+    Action test = () => _ = ((IEnumerable<int>?) null).IntoReadOnlyDictionary
     (
       keySelector,
       valueSelector,
@@ -338,24 +338,24 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_NullKeySelector ()
+  public void IntoReadOnlyDictionary_NullKeySelector ()
   {
     const string expectation = "Key selector not provided. (Parameter 'keySelector')";
     Func<int, int> keySelector = null!;
     Func<int, int> valueSelector = x => x *3;
-    Action test = () => _ = new int[0].ToReadOnlyDictionary(keySelector, valueSelector);
+    Action test = () => _ = new int[0].IntoReadOnlyDictionary(keySelector, valueSelector);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( expectation, e.Message );
   }
 
   [TestMethod]
-  public void ToReadOnlyDictionary_NullValueSelector ()
+  public void IntoReadOnlyDictionary_NullValueSelector ()
   {
     const string expectation = "Value selector not provided. (Parameter 'valueSelector')";
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = null!;
-    Action test = () => _ = new int[0].ToReadOnlyDictionary(keySelector, valueSelector);
+    Action test = () => _ = new int[0].IntoReadOnlyDictionary(keySelector, valueSelector);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( expectation, e.Message );
@@ -363,12 +363,12 @@ public partial class IEnumerableExtensionTest
 
   [TestMethod]
   [SuppressMessage ( "Performance", "CA1851:Possible multiple enumerations of 'IEnumerable' collection", Justification = "Unneeded." )]
-  public void ToReadOnlyDictionary ()
+  public void IntoReadOnlyDictionary ()
   {
     IEnumerable<int> enumerable = Enumerable.Range(1, 12);
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = x => x *3;
-    ReadOnlyDictionary<int, int> test = enumerable.ToReadOnlyDictionary(keySelector,valueSelector)!;
+    ReadOnlyDictionary<int, int> test = enumerable.IntoReadOnlyDictionary(keySelector,valueSelector)!;
 
     Assert.IsTrue ( test.Keys.SequenceEqual ( enumerable.Select ( keySelector ) ) );
     Assert.IsTrue ( test.Values.SequenceEqual ( enumerable.Select ( valueSelector ) ) );
@@ -379,13 +379,13 @@ public partial class IEnumerableExtensionTest
 
   [TestMethod]
   [SuppressMessage ( "Performance", "CA1851:Possible multiple enumerations of 'IEnumerable' collection", Justification = "Unneeded." )]
-  public void ToReadOnlyDictionary_ExactCapacity ()
+  public void IntoReadOnlyDictionary_ExactCapacity ()
   {
     const int count = 3;
     IEnumerable<int> enumerable = Enumerable.Range(1, count);
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = x => x *3;
-    ReadOnlyDictionary<int, int> test = enumerable.ToReadOnlyDictionary
+    ReadOnlyDictionary<int, int> test = enumerable.IntoReadOnlyDictionary
     (
       keySelector,
       valueSelector,

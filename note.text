@@ -1,4 +1,3 @@
-- have a look at default capacities
-- rework read-only extensions when finished with asOrTo
-- add other As read-only methods
+- rework read-only extensions when finished with asOrTo (remove default capacities)
+- add other As read-only wrapper methods 
 - add Capacitor

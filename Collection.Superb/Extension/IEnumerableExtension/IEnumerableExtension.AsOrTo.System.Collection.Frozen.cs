@@ -24,7 +24,7 @@ static public partial class IEnumerableExtension
   /// </item>
   /// </list>
   /// </remarks>
-  static public FrozenDictionary<Key, Item>? ToFrozenDictionary<Item, Key> (
+  static public FrozenDictionary<Key, Item>? IntoFrozenDictionary<Item, Key> (
     this IEnumerable<Item>? enumerable,
     Func<Item, Key> keySelector,
     IEqualityComparer<Key>? keyComparer = null,
@@ -51,7 +51,7 @@ static public partial class IEnumerableExtension
   /// </item>
   /// </list>
   /// </remarks>
-  static public FrozenDictionary<Key, Value>? ToFrozenDictionary<Item, Key, Value> (
+  static public FrozenDictionary<Key, Value>? IntoFrozenDictionary<Item, Key, Value> (
     this IEnumerable<Item>? enumerable,
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,

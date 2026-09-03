@@ -103,6 +103,8 @@ public class system_collections_frozen_test
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     FrozenSet<int> target = targetType.Ctor(source, null);
 
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, target.Comparer ) );
+
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( System.Collections.Frozen.FrozenSet.ToFrozenSet ( [], new TestComparer<int> () ) ) );
     Assert.IsFalse ( targetType.CanCast ( System.Collections.Frozen.FrozenSet.ToFrozenSet<object> ( [] ) ) );

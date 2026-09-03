@@ -18,13 +18,13 @@ public partial class IEnumerableExtensionTest
 #pragma warning restore CA1724
 {
   [TestMethod]
-  public void ToFrozenDictionary_KeySelectorOnly ()
+  public void IntoFrozenDictionary_KeySelectorOnly ()
   {
     Func<int, int> keySelector = x => x * 2;
     TestComparer<int> keyComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    fzDictionary? test = source.ToFrozenDictionary(keySelector, keyComparer)!;
+    fzDictionary? test = source.IntoFrozenDictionary(keySelector, keyComparer)!;
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
 
@@ -35,12 +35,12 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( true )]
   [DataRow ( false )]
-  public void ToFrozenDictionary_KeySelectorOnly_DefaultComparer ( bool explicitNull )
+  public void IntoFrozenDictionary_KeySelectorOnly_DefaultComparer ( bool explicitNull )
   {
     IEnumerable<int> source = [];
     fzDictionary? test = explicitNull
-      ? source.ToFrozenDictionary(x => x, null)!
-      : source.ToFrozenDictionary(x => x)!;
+      ? source.IntoFrozenDictionary(x => x, null)!
+      : source.IntoFrozenDictionary(x => x)!;
 
     Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
   }
@@ -48,26 +48,26 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToFrozenDictionary_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  public void IntoFrozenDictionary_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     fzDictionary? test = returnsDefault
-      ? source.ToFrozenDictionary(x => x, behavior: behavior!.Value)
-      : source.ToFrozenDictionary(x => x);
+      ? source.IntoFrozenDictionary(x => x, behavior: behavior!.Value)
+      : source.IntoFrozenDictionary(x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
   [TestMethod]
-  public void ToFrozenDictionary ()
+  public void IntoFrozenDictionary ()
   {
     Func<int, int> keySelector = x => x * 2;
     Func<int, int> valueSelector = x => x * 3;
     TestComparer<int> keyComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
-    fzDictionary? test = source.ToFrozenDictionary(keySelector, valueSelector, keyComparer)!;
+    fzDictionary? test = source.IntoFrozenDictionary(keySelector, valueSelector, keyComparer)!;
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
 
@@ -79,12 +79,12 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( true )]
   [DataRow ( false )]
-  public void ToFrozenDictionary_DefaultComparer ( bool explicitNull )
+  public void IntoFrozenDictionary_DefaultComparer ( bool explicitNull )
   {
     IEnumerable<int> source = [];
     fzDictionary? test = explicitNull
-      ? source.ToFrozenDictionary(x => x, x => x, null)!
-      : source.ToFrozenDictionary(x => x, x => x)!;
+      ? source.IntoFrozenDictionary(x => x, x => x, null)!
+      : source.IntoFrozenDictionary(x => x, x => x)!;
 
     Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
   }
@@ -92,13 +92,13 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToFrozenDictionary_NullBehavior ( NullBehavior? behavior )
+  public void IntoFrozenDictionary_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     fzDictionary? test = returnsDefault
-      ? source.ToFrozenDictionary(x => x, x => x, behavior: behavior!.Value)
-      : source.ToFrozenDictionary(x => x, x => x);
+      ? source.IntoFrozenDictionary(x => x, x => x, behavior: behavior!.Value)
+      : source.IntoFrozenDictionary(x => x, x => x);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }

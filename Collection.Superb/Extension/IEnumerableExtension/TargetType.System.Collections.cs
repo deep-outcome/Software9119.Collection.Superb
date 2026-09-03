@@ -38,13 +38,13 @@ static public class system_collections
 
   /// <summary>
   /// Target type for 
-  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable?view=net-10.0"/>.
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable?view=net-10.0">Hashtable</see>.
   /// </summary>
   static public AsOrToTargetType<Hashtable> Hashtable<Item> ( Func<Item, object> keySelector ) => Hashtable ( keySelector, x => x );
 
   /// <summary>
   /// Target type for 
-  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable?view=net-10.0"/>.
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable?view=net-10.0">Hashtable</see>.
   /// </summary>
   static public AsOrToTargetType<Hashtable> Hashtable<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector )
   {
@@ -68,7 +68,7 @@ static public class system_collections
 
   /// <summary>
   /// Target type for 
-  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.queue?view=net-10.0"/>.
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.queue?view=net-10.0">Queue</see>.
   /// </summary>
   static public AsOrToTargetType<Queue> Queue ()
   {
@@ -92,13 +92,13 @@ static public class system_collections
 
   /// <summary>
   /// Target type for 
-  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-10.0"/>.
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-10.0">SortedList</see>.
   /// </summary>
   static public AsOrToTargetType<SortedList> SortedList<Item> ( Func<Item, object> keySelector ) => SortedList ( keySelector, x => x );
 
   /// <summary>
   /// Target type for 
-  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-10.0"/>.
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-10.0">SortedList</see>.
   /// </summary>
   static public AsOrToTargetType<SortedList> SortedList<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector )
   {
@@ -122,7 +122,7 @@ static public class system_collections
 
   /// <summary>
   /// Target type for 
-  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.stack.-ctor?view=net-10.0"/>.
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.stack.-ctor?view=net-10.0">Stack</see>.
   /// </summary>
   static public AsOrToTargetType<Stack> Stack ()
   {
