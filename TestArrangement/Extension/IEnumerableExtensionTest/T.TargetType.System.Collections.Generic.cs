@@ -469,4 +469,37 @@ public class system_collections_generic_test
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
+
+
+  [TestMethod]
+  public void SortedSet ()
+  {
+    ReverseOrderComparer<int> itemComparer = new ();
+    AsOrToTargetType<SortedSet<int>> targetType = system_collections_generic.SortedSet ( itemComparer );
+
+    SortedSet<int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.Comparer ) );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    SortedSet<int> target = targetType.Ctor(source, null);
+
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, target.Comparer ) );
+
+    Assert.IsTrue ( targetType.CanCast ( new SortedSet<int> ( [], itemComparer ) ) );
+    Assert.IsFalse ( targetType.CanCast ( new SortedSet<int> ( [], new ReverseOrderComparer<int> () ) ) );
+    Assert.IsFalse ( targetType.CanCast ( new SortedSet<object> ( [] ) ) );
+
+    Assert.IsTrue ( source.Reverse().SequenceEqual ( target ) );
+  }
+
+  [TestMethod]
+  public void SortedSet_NullComparer ()
+  {
+    ReverseOrderComparer<int> itemComparer = null!;
+    Action test = () => system_collections_generic.SortedSet ( itemComparer );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Item comparer not provided. (Parameter 'itemComparer')", e.Message );
+  }
+
 }

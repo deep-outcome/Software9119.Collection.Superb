@@ -89,7 +89,7 @@ static public class system_collections_generic
       return new(e, itemComparer);
     };
 
-    Empty<HashSet<Item>> empty = () => new ( [], itemComparer );
+    Empty<HashSet<Item>> empty = () => new (itemComparer );
     CanCast canCast = e => e is HashSet<Item> x && ReferenceEquals ( x.Comparer, itemComparer );
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
@@ -327,5 +327,21 @@ static public class system_collections_generic
 
     Empty<SortedList<Key, Value>> empty = () => new (keyComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.sortedset-1?view=net-10.0">
+  /// SortedSet&lt;Item&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<SortedSet<Item>> SortedSet<Item> ( IComparer<Item> itemComparer )
+  {
+    if (itemComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
+
+    Ctor<Item, SortedSet<Item>> typedCtor = (e, c) => new ( e, itemComparer );
+    Empty<SortedSet<Item>> empty = () => new (itemComparer );
+    CanCast canCast = e => e is SortedSet<Item> x && ReferenceEquals ( x.Comparer, itemComparer );
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
 }

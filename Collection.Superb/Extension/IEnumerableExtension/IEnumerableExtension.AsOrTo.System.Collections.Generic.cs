@@ -367,4 +367,36 @@ static public partial class IEnumerableExtension
     );
     return enumerable.AsOrTo ( targetType, capacity, behavior );
   }
+
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="SortedSet{Item}"/> provided with <paramref name="itemComparer"/>.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_generic.SortedSet{Item}(IComparer{Item})"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="itemComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
+  /// </item>
+  /// <item>
+  /// Cast is allowed only when source <see cref="IEnumerable"/> is <see cref="SortedSet{Item}"/> and <paramref name="itemComparer"/>
+  /// referentially equals to <see cref="SortedSet{Item}.Comparer"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public SortedSet<Item>? AsOrToSortedSet<Item>
+  (
+    this IEnumerable<Item>? enumerable,    
+    IComparer<Item>? itemComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    itemComparer ??= Comparer<Item>.Default;
+    AsOrToTargetType<SortedSet<Item>> targetType = collections_generic.SortedSet(itemComparer);
+
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
 }

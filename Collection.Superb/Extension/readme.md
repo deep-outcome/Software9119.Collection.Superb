@@ -121,3 +121,4 @@ This namespace contains types with extension methods.
         - `SortedDictionary<Key, Value>? IntoSortedDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, IComparer<Key>?, EnumerableNullBehavior)` – creates sorted dictionary from `IEnumerable<T>`
         - `SortedList<Key, Item>? IntoTypedSortedList<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, int?, IComparer<Key>?, EnumerableNullBehavior)` – creates sorted list from `IEnumerable<T>`
         - `SortedList<Key, Value>? IntoTypedSortedList<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, IComparer<Key>?, EnumerableNullBehavior)` – creates sorted list from `IEnumerable<T>`
+        - `SortedSet<Item>? AsOrToSortedSet<Item>(IEnumerable<Item>?, IComparer<Item>?, EnumerableNullBehavior)` – creates sorted set from `IEnumerable<T>`

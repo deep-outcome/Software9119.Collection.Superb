@@ -562,6 +562,44 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
+  [TestMethod]
+  public void AsOrToSortedSet ()
+  {
+    ReverseOrderComparer<int> itemComparer = new ();
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    SortedSet<int> test = source.AsOrToSortedSet(itemComparer: itemComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, test.Comparer ) );
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void AsOrToSortedSet_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    SortedSet<int>? test = explicitNull
+      ? source.AsOrToSortedSet(itemComparer: null)!
+      : source.AsOrToSortedSet()!;
+
+    Assert.IsTrue ( ReferenceEquals ( Comparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToSortedSet_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    SortedSet<int>? test = returnsDefault
+      ? source.AsOrToSortedSet(behavior: behavior!.Value)
+      : source.AsOrToSortedSet();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
   // readme
 
   [TestMethod]
