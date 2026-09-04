@@ -228,4 +228,53 @@ static public class system_collections_generic
     Empty<Queue<Item>> empty = () => new ();
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.sorteddictionary-2?view=net-10.0">
+  /// SortedDictionary&lt;Key, Item&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<SortedDictionary<Key, Item>> SortedDictionary<Item, Key>
+  (
+    Func<Item, Key> keySelector,
+    IComparer<Key> keyComparer
+  )
+  where Key : notnull
+    => SortedDictionary ( keySelector, x => x, keyComparer );
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.sorteddictionary-2?view=net-10.0">
+  /// SortedDictionary&lt;Key, Value&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<SortedDictionary<Key, Value>> SortedDictionary<Item, Key, Value>
+  (
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
+    IComparer<Key> keyComparer
+  )
+  where Key : notnull
+  {
+    if (keySelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
+
+    if (valueSelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
+
+    if (keyComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
+
+    Ctor<Item, SortedDictionary<Key,Value>> typedCtor = (e, c) =>
+    {
+
+      SortedDictionary<Key, Value> result = new  ( keyComparer );
+      foreach (Item i in e )
+        result.Add(keySelector(i), valueSelector(i));
+
+      return result;
+    };
+
+    Empty<SortedDictionary<Key, Value>> empty = () => new (keyComparer);
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
+  }
 }

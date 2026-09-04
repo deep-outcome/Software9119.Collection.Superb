@@ -375,6 +375,94 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
+  [TestMethod]
+  public void IntoSortedDictionary_KeySelectorOnly ()
+  {
+    Func<int, int> keySelector = x => x * 2;
+    ReverseOrderComparer<int> keyComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    SortedDictionary<int, int> test = source.IntoSortedDictionary(keySelector, keyComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+      .Select(x => new KeyValuePair<int, int>(keySelector(x), x))
+      .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoSortedDictionary_KeySelectorOnly_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    SortedDictionary<int, int>? test = explicitNull
+    ? source.IntoSortedDictionary(x => x, keyComparer: null)!
+    : source.IntoSortedDictionary(x => x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( Comparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoSortedDictionary_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    SortedDictionary<int, int>? test = returnsDefault
+    ? source.IntoSortedDictionary(x => x, behavior: behavior!.Value)
+    : source.IntoSortedDictionary(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  public void IntoSortedDictionary ()
+  {
+    Func<int, int> keySelector = x => x * 2;
+    Func<int, int> valueSelector = x => x * 3;
+    ReverseOrderComparer<int> keyComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    SortedDictionary<int, int>? test = source.IntoSortedDictionary(keySelector, valueSelector, keyComparer: keyComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+    .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)))
+    .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoSortedDictionary_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    SortedDictionary<int, int>? test = explicitNull
+    ? source.IntoSortedDictionary(x => x, x => x, keyComparer: null)!
+    : source.IntoSortedDictionary(x => x, x => x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( Comparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoSortedDictionary_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    SortedDictionary<int, int>? test = returnsDefault
+    ? source.IntoSortedDictionary(x => x, x => x, behavior: behavior!.Value)
+    : source.IntoSortedDictionary(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
 
   // readme
 

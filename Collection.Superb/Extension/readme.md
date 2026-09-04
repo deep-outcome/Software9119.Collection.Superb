@@ -117,3 +117,5 @@ This namespace contains types with extension methods.
         - `OrderedDictionary<Key, Value>? IntoOrderedDictionary<Item, Key, Value> (IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates ordered dictionary from `IEnumerable<T>`
         - `PriorityQueue<Item, Priority>? IntoPriorityQueue<Item, Priority>(IEnumerable<(Item, Priority)>?, int?, IComparer<Priority>?, EnumerableNullBehavior)` – creates priority queue from `IEnumerable<(TElement,TPriority)>`
         - `Queue<Item>? AsOrToTypedQueue<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into list
+        - `SortedDictionary<Key, Item>? IntoSortedDictionary<Item, Key> (IEnumerable<Item>?, Func<Item, Key>, IComparer<Key>?, EnumerableNullBehavior)` – creates sorted dictionary from `IEnumerable<T>`
+        - `SortedDictionary<Key, Value>? IntoSortedDictionary<Item, Key, Value> (IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, IComparer<Key>?, EnumerableNullBehavior)` – creates sorted dictionary from `IEnumerable<T>`

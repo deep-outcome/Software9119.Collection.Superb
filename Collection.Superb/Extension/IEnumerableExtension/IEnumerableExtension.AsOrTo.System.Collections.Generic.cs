@@ -245,4 +245,64 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<Queue<Item>> targetType = collections_generic.Queue<Item>();
     return enumerable.AsOrTo ( targetType, capacity, behavior );
   }
+
+  /// <summary>
+  /// Creates <see cref="SortedDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_generic.SortedDictionary{Item, Key}(Func{Item, Key}, IComparer{Key})"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public SortedDictionary<Key, Item>? IntoSortedDictionary<Item, Key> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
+    IComparer<Key>? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    where Key : notnull
+  {
+    keyComparer ??= Comparer<Key>.Default;
+    AsOrToTargetType<SortedDictionary<Key, Item>> targetType = collections_generic.SortedDictionary ( keySelector, keyComparer );
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="SortedDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_generic.SortedDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IComparer{Key})"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public SortedDictionary<Key, Value>? IntoSortedDictionary<Item, Key, Value> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
+    IComparer<Key>? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    where Key : notnull
+  {
+    keyComparer ??= Comparer<Key>.Default;
+    AsOrToTargetType<SortedDictionary<Key, Value>> targetType = collections_generic.SortedDictionary
+    (
+      keySelector,
+      valueSelector,
+      keyComparer
+    );
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
 }
