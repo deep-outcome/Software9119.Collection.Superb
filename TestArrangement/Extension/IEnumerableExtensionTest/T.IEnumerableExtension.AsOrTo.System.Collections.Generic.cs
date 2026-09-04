@@ -23,8 +23,8 @@ public partial class IEnumerableExtensionTest
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
     Dictionary<int, int> test = cap is int
-      ? source.IntoDictionary(keySelector, keyComparer, cap)!
-      : source.IntoDictionary(keySelector, keyComparer)!;
+      ? source.IntoDictionary(keySelector, cap, keyComparer)!
+      : source.IntoDictionary(keySelector, keyComparer: keyComparer)!;
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
 
@@ -213,8 +213,8 @@ public partial class IEnumerableExtensionTest
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
     OrderedDictionary<int, int> test = cap is int
-      ? source.IntoOrderedDictionary(keySelector, keyComparer, cap)!
-      : source.IntoOrderedDictionary(keySelector, keyComparer)!;
+      ? source.IntoOrderedDictionary(keySelector, cap, keyComparer)!
+      : source.IntoOrderedDictionary(keySelector, keyComparer: keyComparer)!;
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
 
@@ -463,6 +463,104 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
+  [TestMethod]
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void IntoTypedSortedList_KeySelectorOnly ( int? cap )
+  {
+    Func<int, int> keySelector = x => x * 2;
+    ReverseOrderComparer<int> keyComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    SortedList<int, int> test = cap is int
+      ? source.IntoTypedSortedList(keySelector, cap, keyComparer)!
+      : source.IntoTypedSortedList(keySelector, keyComparer: keyComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+      .Select(x => new KeyValuePair<int, int>(keySelector(x), x))
+      .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+    Assert.AreEqual ( cap ?? 16, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoTypedSortedList_KeySelectorOnly_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    SortedList<int, int>? test = explicitNull
+    ? source.IntoTypedSortedList(x => x, keyComparer: null)!
+    : source.IntoTypedSortedList(x => x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( Comparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoTypedSortedList_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    SortedList<int, int>? test = returnsDefault
+    ? source.IntoTypedSortedList(x => x, behavior: behavior!.Value)
+    : source.IntoTypedSortedList(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  public void IntoTypedSortedList ( int? cap )
+  {
+    Func<int, int> keySelector = x => x * 2;
+    Func<int, int> valueSelector = x => x * 3;
+    ReverseOrderComparer<int> keyComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    SortedList<int, int>? test = cap is int
+      ? source.IntoTypedSortedList(keySelector, valueSelector, cap, keyComparer: keyComparer)!
+      : source.IntoTypedSortedList(keySelector, valueSelector, keyComparer: keyComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+    .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)))
+    .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+    Assert.AreEqual ( cap ?? 16, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoTypedSortedList_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    SortedList<int, int>? test = explicitNull
+    ? source.IntoTypedSortedList(x => x, x => x, keyComparer: null)!
+    : source.IntoTypedSortedList(x => x, x => x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( Comparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoTypedSortedList_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    SortedList<int, int>? test = returnsDefault
+    ? source.IntoTypedSortedList(x => x, x => x, behavior: behavior!.Value)
+    : source.IntoTypedSortedList(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 
   // readme
 

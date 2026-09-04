@@ -383,4 +383,90 @@ public class system_collections_generic_test
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void SortedList_KeySelectorOnly ( int? capacity )
+  {
+    ReverseOrderComparer<int> keyComparer = new ();
+    Func<int, int> keySelector = x => x *2;
+
+    AsOrToTargetType<SortedList<int, int>> targetType = system_collections_generic.SortedList ( keySelector, keyComparer );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    SortedList<int, int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    SortedList<int, int> target = targetType.Ctor(source, capacity);
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
+    Assert.AreEqual ( capacity ?? 16, target.Capacity );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+      .Select(x => new KeyValuePair<int, int>(keySelector(x), x))
+      .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( target ) );
+  }
+
+  [TestMethod]
+  [DataRow ( "Key selector not provided. (Parameter 'keySelector')", false, true )]
+  [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", true, false )]
+  public void SortedList_KeySelectorOnly_NullParameter ( string errMsg, bool nullComparer, bool nullSelector )
+  {
+    ReverseOrderComparer<int> keyComparer = nullComparer ? null! : new ();
+    Func<int, int> keySelector = nullSelector ? null! : x => x;
+
+    Action test = () => system_collections_generic.SortedList ( keySelector, keyComparer );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void SortedList ( int? capacity )
+  {
+    ReverseOrderComparer<int> keyComparer = new ();
+    Func<int, int> keySelector = x => x *2;
+    Func<int, int> valueSelector = x => x *3;
+
+    AsOrToTargetType<SortedList<int, int>> targetType = system_collections_generic.SortedList
+    (
+      keySelector,
+      valueSelector,
+      keyComparer
+    );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    SortedList<int, int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    SortedList<int, int> target = targetType.Ctor(source, capacity);
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
+    Assert.AreEqual ( capacity ?? 16, target.Capacity );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+      .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)))
+      .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( target ) );
+  }
+
+  [TestMethod]
+  [DataRow ( "Key selector not provided. (Parameter 'keySelector')", 'k' )]
+  [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", 'v' )]
+  [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", 'c' )]
+  public void SortedListNullParameter ( string errMsg, char whosNull )
+  {
+    ReverseOrderComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
+    Func<int, int> keySelector            = whosNull == 'k' ? null! : x => x;
+    Func<int, int> valueSelector          = whosNull == 'v' ? null! : x => x;
+
+    Action test = () => system_collections_generic.SortedList ( keySelector, valueSelector, keyComparer );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
 }
