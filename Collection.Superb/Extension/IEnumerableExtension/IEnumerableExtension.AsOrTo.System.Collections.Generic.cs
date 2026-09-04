@@ -227,4 +227,22 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<PriorityQueue<Item, Priority>> targetType = collections_generic.PriorityQueue<Item, Priority>(priorityComparer);
     return enumerable.AsOrTo ( targetType, capacity, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="Queue{Item}"/>.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_generic.Queue{Item}()"/>.  
+  /// </remarks>  
+  static public Queue<Item>? AsOrToTypedQueue<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    int? capacity = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<Queue<Item>> targetType = collections_generic.Queue<Item>();
+    return enumerable.AsOrTo ( targetType, capacity, behavior );
+  }
 }

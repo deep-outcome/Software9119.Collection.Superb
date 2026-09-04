@@ -207,4 +207,25 @@ static public class system_collections_generic
     CanCast canCast = e => false;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1?view=net-10.0">
+  /// Queue&lt;Item&gt;</see>.
+  /// </summary>  
+  static public AsOrToTargetType<Queue<Item>> Queue<Item> ()
+  {
+    Ctor<Item, Queue<Item>> typedCtor = (e, c) =>
+    {
+      Queue<Item> result = c is int capacity ? new (capacity) : new ();
+
+      foreach(Item i in e)
+        result.Enqueue(i);
+
+      return result;
+    };
+
+    Empty<Queue<Item>> empty = () => new ();
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
 }

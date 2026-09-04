@@ -284,4 +284,23 @@ public class system_collections_generic_test
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Priority comparer not provided. (Parameter 'priorityComparer')", e.Message );
   }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void Queue ( int? capacity )
+  {
+    AsOrToTargetType<Queue<int>> targetType = system_collections_generic.Queue<int> ( );
+    Assert.HasCount ( 0, targetType.Empty () );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    Queue<int> target = targetType.Ctor(source, capacity);
+
+    Assert.AreEqual ( capacity ?? 16, target.Capacity );
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.SequenceEqual ( target ) );
+  }
 }

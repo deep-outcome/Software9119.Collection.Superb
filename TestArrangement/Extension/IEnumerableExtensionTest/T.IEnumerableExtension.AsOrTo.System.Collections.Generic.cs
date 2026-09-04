@@ -347,7 +347,33 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void AsOrToTypedQueue ( int? capacity )
+  {
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
+    Queue<int> test = capacity is int
+      ? source.AsOrToTypedQueue(capacity)!
+      : source.AsOrToTypedQueue()!;
 
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+    Assert.AreEqual ( capacity ?? 16, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToTypedQueue_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Queue<int>? test = returnsDefault
+      ? source.AsOrToTypedQueue(behavior: behavior!.Value)
+      : source.AsOrToTypedQueue();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 
 
   // readme
