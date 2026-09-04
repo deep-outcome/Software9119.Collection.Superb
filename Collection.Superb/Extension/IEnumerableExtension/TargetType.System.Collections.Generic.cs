@@ -182,4 +182,29 @@ static public class system_collections_generic
     Empty<OrderedDictionary<Key, Value>> empty = () => new (keyComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.priorityqueue-2?view=net-10.0">
+  /// PriorityQueue&lt;Item,Priority&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<PriorityQueue<Item, Priority>> PriorityQueue<Item, Priority> ( IComparer<Priority> priorityComparer )
+  {
+    if (priorityComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( priorityComparer ), "Priority comparer not provided." );
+
+    Ctor<(Item,Priority), PriorityQueue<Item,Priority>> typedCtor = (e, c) =>
+    {
+      PriorityQueue<Item,Priority> result = c is int capacity
+        ? new (capacity, priorityComparer)
+        : new (priorityComparer);
+
+      result.EnqueueRange(e);
+      return result;
+    };
+
+    Empty<PriorityQueue<Item,Priority>> empty = () => new ( priorityComparer );
+    CanCast canCast = e => false;
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+  }
 }

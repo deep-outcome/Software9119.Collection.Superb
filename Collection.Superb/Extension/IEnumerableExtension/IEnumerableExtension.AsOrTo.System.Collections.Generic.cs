@@ -200,4 +200,31 @@ static public partial class IEnumerableExtension
     );
     return enumerable.AsOrTo ( targetType, capacity, behavior );
   }
+
+  /// <summary>
+  /// Creates <see cref="PriorityQueue{Item, Priority}"/> with <paramref name="priorityComparer"/> from <paramref name="enumerable"/>.
+  /// </summary>
+  /// <remarks>  
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_generic.PriorityQueue{Item, Priority}(IComparer{Priority})"/>.  
+  /// </item>
+  /// <item>
+  /// When <paramref name="priorityComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Priority}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public PriorityQueue<Item, Priority>? IntoPriorityQueue<Item, Priority>
+  (
+    this IEnumerable<(Item, Priority)>? enumerable,
+    int? capacity = null,
+    IComparer<Priority>? priorityComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    priorityComparer ??= Comparer<Priority>.Default;
+    AsOrToTargetType<PriorityQueue<Item, Priority>> targetType = collections_generic.PriorityQueue<Item, Priority>(priorityComparer);
+    return enumerable.AsOrTo ( targetType, capacity, behavior );
+  }
 }

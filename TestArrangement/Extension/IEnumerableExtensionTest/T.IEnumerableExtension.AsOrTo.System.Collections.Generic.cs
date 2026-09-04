@@ -299,6 +299,57 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void IntoPriorityQueue ( int? capacity )
+  {
+    ReverseOrderComparer<int> priorityComparer = new ();
+    IEnumerable<(int, int)> source = Enumerable.Range(0, 10).Select(x => (x, x*2 ));
+    PriorityQueue<int, int> test = capacity is int
+      ? source.IntoPriorityQueue(capacity, priorityComparer: priorityComparer)!
+      : source.IntoPriorityQueue(priorityComparer: priorityComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( priorityComparer, test.Comparer ) );
+
+    List<int> list = [];
+    while (test.Count > 0)
+      list.Add ( test.Dequeue () );
+
+    Assert.IsTrue ( source.Select ( x => x.Item1 ).Reverse ().SequenceEqual ( list ) );
+    Assert.AreEqual ( capacity ?? 16, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoPriorityQueue_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<(int, int)> source = [];
+    PriorityQueue<int, int>? test = explicitNull
+      ? source.IntoPriorityQueue(priorityComparer: null)!
+      : source.IntoPriorityQueue()!;
+
+    Assert.IsTrue ( ReferenceEquals ( Comparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoPriorityQueue_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<(int, int)> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    PriorityQueue<int, int>? test = returnsDefault
+      ? source.IntoPriorityQueue(behavior: behavior!.Value)
+      : source.IntoPriorityQueue();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+
+
+
   // readme
 
   [TestMethod]

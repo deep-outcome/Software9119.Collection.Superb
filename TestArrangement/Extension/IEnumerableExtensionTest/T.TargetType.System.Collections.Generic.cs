@@ -248,4 +248,40 @@ public class system_collections_generic_test
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void PriorityQueue ( int? capacity )
+  {
+    ReverseOrderComparer<int> priorityComparer = new ();
+    AsOrToTargetType<PriorityQueue<int, int>> targetType = system_collections_generic.PriorityQueue<int, int>( priorityComparer );
+
+    PriorityQueue<int, int> empty = targetType.Empty ();
+    Assert.AreEqual ( 0, empty.Count );
+    Assert.IsTrue ( ReferenceEquals ( priorityComparer, empty.Comparer ) );
+
+    IEnumerable<(int Item, int Priority)> source = XEnumerable.RangeEnumerable(1, 10)
+      .Select ( x => new ValueTuple<int, int>(x, x *2));
+    PriorityQueue<int, int> target = targetType.Ctor(source, capacity);
+
+    Assert.IsTrue ( ReferenceEquals ( priorityComparer, target.Comparer ) );
+    Assert.AreEqual ( capacity ?? 16, target.Capacity );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    List<int> list = [];
+    while (target.Count > 0)
+      list.Add ( target.Dequeue () );
+    
+    Assert.IsTrue ( source.Select ( x => x.Item ).Reverse ().SequenceEqual ( list ) );
+  }
+
+  [TestMethod]
+  public void PriorityQueue_NullComparer ()
+  {
+    ReverseOrderComparer<int> priorityComparer = null!;
+    Action test = () => system_collections_generic.PriorityQueue<int, int> ( priorityComparer );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Priority comparer not provided. (Parameter 'priorityComparer')", e.Message );
+  }
 }
