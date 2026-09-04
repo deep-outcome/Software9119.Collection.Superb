@@ -202,4 +202,115 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  [DataRow ( 1000, 1103 )]
+  [DataRow ( null, 17 )]
+  public void IntoOrderedDictionary_KeySelectorOnly ( int? cap, int expCap )
+  {
+    Func<int, int> keySelector = x => x * 2;
+    TestComparer<int> keyComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    OrderedDictionary<int, int> test = cap is int
+      ? source.IntoOrderedDictionary(keySelector, keyComparer, cap)!
+      : source.IntoOrderedDictionary(keySelector, keyComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source.Select(x => new KeyValuePair<int, int>(keySelector(x), x));
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+    Assert.AreEqual ( expCap, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoOrderedDictionary_KeySelectorOnly_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    OrderedDictionary<int, int>? test = explicitNull
+    ? source.IntoOrderedDictionary(x => x, keyComparer: null)!
+    : source.IntoOrderedDictionary(x => x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoOrderedDictionary_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    OrderedDictionary<int, int>? test = returnsDefault
+    ? source.IntoOrderedDictionary(x => x, behavior: behavior!.Value)
+    : source.IntoOrderedDictionary(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( 1000, 1103 )]
+  [DataRow ( null, 17 )]
+  public void IntoOrderedDictionary ( int? cap, int expCap )
+  {
+    Func<int, int> keySelector = x => x * 2;
+    Func<int, int> valueSelector = x => x * 3;
+    TestComparer<int> keyComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    OrderedDictionary<int, int>? test = cap is int
+      ? source.IntoOrderedDictionary(keySelector, valueSelector, cap, keyComparer: keyComparer)!
+      : source.IntoOrderedDictionary(keySelector, valueSelector, keyComparer: keyComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.Comparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+    .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+    Assert.AreEqual ( expCap, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoOrderedDictionary_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    OrderedDictionary<int, int>? test = explicitNull
+    ? source.IntoOrderedDictionary(x => x, x => x, keyComparer: null)!
+    : source.IntoOrderedDictionary(x => x, x => x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoOrderedDictionary_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    OrderedDictionary<int, int>? test = returnsDefault
+    ? source.IntoOrderedDictionary(x => x, x => x, behavior: behavior!.Value)
+    : source.IntoOrderedDictionary(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  // readme
+
+  [TestMethod]
+  public void Generic_Sample ()
+  {
+    MyKeyComparer<int> comparer = new ();
+    Func<int, int> keySelector = x => x * 10;
+    Func<int, int> valueSelector = x => x * 20;
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+
+    OrderedDictionary<int, int> list = source.IntoOrderedDictionary(keySelector, valueSelector, keyComparer: comparer)!;
+    IEnumerable<KeyValuePair<int, int>> expectation = source.Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
+    Assert.IsTrue ( expectation.SequenceEqual ( list ) );
+  }
 }

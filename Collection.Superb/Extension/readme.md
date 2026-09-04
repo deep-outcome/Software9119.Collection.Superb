@@ -64,6 +64,14 @@ This namespace contains types with extension methods.
         */
         ```
     - <strong style="background-color:rgba(186 246 226 / 0.63)"><u>`AsOrTo` or `Into` for chosen [`System.Collections` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections?view=net-10.0) types</u></strong>
+        ```csharp
+        // sorted list example
+        Func<int, object> keySelector = x => x * 10;
+        Func<int, object> valueSelector = x => x * 20;
+        IEnumerable<int> source = Enumerable.Range(0, 10);
+        
+        SortedList list = source.IntoSortedList(keySelector, valueSelector, capacity: 1000)!;        
+        ```
         - [`ArrayList? AsOrToArrayList<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.cs#L17) – casts or copies `IEnumerable<T>` into array list.
         - [`ArrayList? AsOrToArrayList(IEnumerable?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.cs#L27) – casts or copies `IEnumerable` into array list.
         - [`Hashtable? IntoHashtable<Item>(IEnumerable<Item>?, int?, Func<Item, object>, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.cs#L39) – creates hash table from `IEnumerable<T>`
@@ -79,12 +87,31 @@ This namespace contains types with extension methods.
         - [`Stack? AsOrToStack<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.cs#L182) – casts or copies `IEnumerable<T>` into stack.
         - [`Stack? AsOrToStack(IEnumerable?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.cs#L192) – casts or copies `IEnumerable` into stack.
     - <strong style="background-color:rgba(186 246 226 / 0.63)"><u>`AsOrTo` or `Into` for chosen [`System.Collections.Frozen` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen?view=net-10.0) types</u></strong>
+        ```csharp
+        // frozen dictionary sample
+        Func<int, int> keySelector = x => x * 10;
+        Func<int, int> valueSelector = x => x * 20;
+        IEnumerable<int> source = Enumerable.Range(0, 10);
+
+        FrozenDictionary<int, int> list = source.IntoFrozenDictionary(keySelector, valueSelector, behavior: EnumerableNullBehavior.ReturnDefault)!;
+        ```
         - [`FrozenDictionary<Key, Item>? IntoFrozenDictionary<Item, Key> (IEnumerable<Item>?, Func<Item, Key>, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Frozen.cs#L27) – creates frozen dictionary from `IEnumerable<T>`
         - [`FrozenDictionary<Key, Value>? IntoFrozenDictionary<Item, Key, Value> (IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Frozen.cs#L54) – creates frozen dictionary from `IEnumerable<T>`
         - [`FrozenSet<Item>? AsOrToFrozenSet<Item>(IEnumerable<Item>?, IEqualityComparer<Item>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Frozen.cs#L90) – creates frozen set from `IEnumerable<T>`
     - <strong style="background-color:rgba(186 246 226 / 0.63)"><u>`AsOrTo` or `Into` for chosen [`System.Collections.Generic ` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic?view=net-10.0) types</u></strong>
+        ```csharp
+        // ordered dictionary sample
+        MyKeyComparer<int> comparer = new ();
+        Func<int, int> keySelector = x => x * 10;
+        Func<int, int> valueSelector = x => x * 20;
+        IEnumerable<int> source = Enumerable.Range(0, 10);
+
+        OrderedDictionary<int, int> list = source.IntoOrderedDictionary(keySelector, valueSelector, keyComparer: comparer)!;
+        ```
         - [`Dictionary<Key, Item>? IntoDictionary<Item, Key> (IEnumerable<Item>?, Func<Item, Key>, IEqualityComparer<Key>?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/ec020286c2079d2a6db621b2baa335e6d85c0e91/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Generic.cs#L26) – creates dictionary from `IEnumerable<T>`
         - [`Dictionary<Key, Value>? IntoDictionary<Item, Key, Value> (IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/ec020286c2079d2a6db621b2baa335e6d85c0e91/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Generic.cs#L54) – creates dictionary from `IEnumerable<T>`
         - [`HashSet<Item>? AsOrToHashSet<Item>(IEnumerable<Item>?, int?, IEqualityComparer<Item>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/ec020286c2079d2a6db621b2baa335e6d85c0e91/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Generic.cs#L91) – casts or copies `IEnumerable<T>` into hash set
         - [`LinkedList<Item>? AsOrToLinkedList<Item>(IEnumerable<Item>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/ec020286c2079d2a6db621b2baa335e6d85c0e91/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Generic.cs#L112) – casts or copies `IEnumerable<T>` into linked list
         - `List<Item>? AsOrToList<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)` – casts or copies IEnumerable<T> into list
+        - `OrderedDictionary<Key, Item>? IntoOrderedDictionary<Item, Key> (IEnumerable<Item>?, Func<Item, Key>, IEqualityComparer<Key>?, int?, EnumerableNullBehavior)` – creates ordered dictionary from `IEnumerable<T>`
+        - `OrderedDictionary<Key, Value>? IntoOrderedDictionary<Item, Key, Value> (IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates ordered dictionary from `IEnumerable<T>`

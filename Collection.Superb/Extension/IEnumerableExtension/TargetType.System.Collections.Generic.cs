@@ -67,7 +67,6 @@ static public class system_collections_generic
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
 
-
   /// <summary>
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.-ctor?view=net-10.0">
@@ -131,5 +130,56 @@ static public class system_collections_generic
 
     Empty<List<Item>> empty = () => new ();
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ordereddictionary-2?view=net-10.0">
+  /// OrderedDictionary&lt;Key, Item&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<OrderedDictionary<Key, Item>> OrderedDictionary<Item, Key>
+  (
+    Func<Item, Key> keySelector,
+    IEqualityComparer<Key> keyComparer
+  )
+  where Key : notnull
+    => OrderedDictionary ( keySelector, x => x, keyComparer );
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ordereddictionary-2?view=net-10.0">
+  /// OrderedDictionary&lt;Key, Value&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<OrderedDictionary<Key, Value>> OrderedDictionary<Item, Key, Value>
+  (
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
+    IEqualityComparer<Key> keyComparer
+  )
+  where Key : notnull
+  {
+    if (keySelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
+
+    if (valueSelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
+
+    if (keyComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
+
+    Ctor<Item, OrderedDictionary<Key,Value>> typedCtor = (e, c) =>
+    {
+      OrderedDictionary<Key, Value> result = c is int capacity
+        ? new  ( capacity, keyComparer )
+        : new(keyComparer);
+
+      foreach(Item i in e)
+        result.Add(keySelector(i), valueSelector(i));
+
+      return result;
+    };
+
+    Empty<OrderedDictionary<Key, Value>> empty = () => new (keyComparer);
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
 }

@@ -512,4 +512,18 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  // readme
+
+  [TestMethod]
+  public void Collections_Sample ()
+  {
+    Func<int, object> keySelector = x => x * 10;
+    Func<int, object> valueSelector = x => x * 20;
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+
+    SortedList list = source.IntoSortedList(keySelector, valueSelector, capacity: 1000)!;
+    IEnumerable<DictionaryEntry> expectation = source.Select(x => new DictionaryEntry(keySelector(x), valueSelector(x)));
+    Assert.IsTrue ( expectation.SequenceEqual ( list.Cast<DictionaryEntry> () ) );
+  }
 }

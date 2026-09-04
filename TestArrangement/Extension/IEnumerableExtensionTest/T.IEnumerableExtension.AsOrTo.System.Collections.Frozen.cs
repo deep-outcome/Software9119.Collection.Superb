@@ -4,6 +4,7 @@ using Software9119.Collection.Superb.Extension;
 using Software9119.Collection.Superb.TestArrangement.TestAide;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -140,4 +141,20 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  // readme
+
+#pragma warning disable IDE0001
+  [TestMethod]
+  public void Frozen_Sample ()
+  {
+    Func<int, int> keySelector = x => x * 10;
+    Func<int, int> valueSelector = x => x * 20;
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+
+    FrozenDictionary<int, int> list = source.IntoFrozenDictionary(keySelector, valueSelector, behavior: EnumerableNullBehavior.ReturnDefault)!;
+    IEnumerable<KeyValuePair<int, int>> expectation = source.Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
+    Assert.IsTrue ( expectation.SequenceEqual ( list ) );
+  }
+#pragma warning restore IDE0001
 }
