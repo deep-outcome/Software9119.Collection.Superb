@@ -490,7 +490,7 @@ public class system_collections_generic_test
     Assert.IsFalse ( targetType.CanCast ( new SortedSet<int> ( [], new ReverseOrderComparer<int> () ) ) );
     Assert.IsFalse ( targetType.CanCast ( new SortedSet<object> ( [] ) ) );
 
-    Assert.IsTrue ( source.Reverse().SequenceEqual ( target ) );
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( target ) );
   }
 
   [TestMethod]
@@ -500,6 +500,28 @@ public class system_collections_generic_test
     Action test = () => system_collections_generic.SortedSet ( itemComparer );
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Item comparer not provided. (Parameter 'itemComparer')", e.Message );
+  }
+
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void Stack ( int? capacity )
+  {
+    AsOrToTargetType<Stack<int>> targetType = system_collections_generic.Stack<int> ( );
+
+    Stack<int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    Stack<int> target = targetType.Ctor(source, capacity);
+
+    Assert.AreEqual ( capacity ?? 16, target.Capacity );
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.Reverse().SequenceEqual ( target) );
   }
 
 }

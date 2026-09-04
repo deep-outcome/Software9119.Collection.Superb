@@ -600,6 +600,33 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void AsOrToTypedStack ( int? capacity )
+  {
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
+    Stack<int> test = source.AsOrToTypedStack(capacity)!;
+
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( test ) );
+    Assert.AreEqual ( capacity ?? 16, test.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToTypedStack_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    Stack<int>? test = returnsDefault
+      ? source.AsOrToTypedStack(behavior: behavior!.Value)
+      : source.AsOrToTypedStack();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
   // readme
 
   [TestMethod]

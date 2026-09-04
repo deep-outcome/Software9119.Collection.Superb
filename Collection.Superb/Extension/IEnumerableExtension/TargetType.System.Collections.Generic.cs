@@ -344,4 +344,29 @@ static public class system_collections_generic
     CanCast canCast = e => e is SortedSet<Item> x && ReferenceEquals ( x.Comparer, itemComparer );
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1?view=net-10.0">
+  /// Stack&lt;Item&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<Stack<Item>> Stack<Item> ()
+  {
+    Ctor<Item, Stack<Item>> typedCtor = (e, c) =>
+    {
+      if (c is int capacity)
+      {
+        Stack<Item> result = new (capacity);
+        foreach (Item i in e)
+          result.Push(i);
+
+        return result;
+      }
+
+      return new(e);
+    };
+
+    Empty<Stack<Item>> empty = () => [];
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
 }

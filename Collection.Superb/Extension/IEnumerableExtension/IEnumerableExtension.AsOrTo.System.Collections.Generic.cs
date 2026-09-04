@@ -389,7 +389,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public SortedSet<Item>? AsOrToSortedSet<Item>
   (
-    this IEnumerable<Item>? enumerable,    
+    this IEnumerable<Item>? enumerable,
     IComparer<Item>? itemComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
@@ -398,5 +398,24 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<SortedSet<Item>> targetType = collections_generic.SortedSet(itemComparer);
 
     return enumerable.AsOrTo ( targetType, null, behavior );
+  }
+
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="Stack{Item}"/>.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_generic.Stack{Item}()"/>.  
+  /// </remarks>
+  static public Stack<Item>? AsOrToTypedStack<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    int? capacity = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<Stack<Item>> targetType = collections_generic.Stack<Item>();
+    return enumerable.AsOrTo ( targetType, capacity, behavior );
   }
 }

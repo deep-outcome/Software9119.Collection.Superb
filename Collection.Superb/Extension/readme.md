@@ -116,9 +116,10 @@ This namespace contains types with extension methods.
         - `OrderedDictionary<Key, Item>? IntoOrderedDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates ordered dictionary from `IEnumerable<T>`
         - `OrderedDictionary<Key, Value>? IntoOrderedDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates ordered dictionary from `IEnumerable<T>`
         - `PriorityQueue<Item, Priority>? IntoPriorityQueue<Item, Priority>(IEnumerable<(Item, Priority)>?, int?, IComparer<Priority>?, EnumerableNullBehavior)` – creates priority queue from `IEnumerable<(TElement,TPriority)>`
-        - `Queue<Item>? AsOrToTypedQueue<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into list
+        - `Queue<Item>? AsOrToTypedQueue<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into queue
         - `SortedDictionary<Key, Item>? IntoSortedDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, IComparer<Key>?, EnumerableNullBehavior)` – creates sorted dictionary from `IEnumerable<T>`
         - `SortedDictionary<Key, Value>? IntoSortedDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, IComparer<Key>?, EnumerableNullBehavior)` – creates sorted dictionary from `IEnumerable<T>`
         - `SortedList<Key, Item>? IntoTypedSortedList<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, int?, IComparer<Key>?, EnumerableNullBehavior)` – creates sorted list from `IEnumerable<T>`
         - `SortedList<Key, Value>? IntoTypedSortedList<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, IComparer<Key>?, EnumerableNullBehavior)` – creates sorted list from `IEnumerable<T>`
-        - `SortedSet<Item>? AsOrToSortedSet<Item>(IEnumerable<Item>?, IComparer<Item>?, EnumerableNullBehavior)` – creates sorted set from `IEnumerable<T>`
+        - `SortedSet<Item>? AsOrToSortedSet<Item>(IEnumerable<Item>?, IComparer<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into sorted set
+        - `Stack<Item>? AsOrToTypedStack<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into stack
