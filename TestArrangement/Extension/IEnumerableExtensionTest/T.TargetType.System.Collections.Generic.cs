@@ -114,7 +114,6 @@ public class system_collections_generic_test
     Assert.IsTrue ( source.SequenceEqual ( target.OrderBy ( x => x ) ) );
   }
 
-
   [TestMethod]
   public void HashSet_NullComparer ()
   {
@@ -139,7 +138,26 @@ public class system_collections_generic_test
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
 
-    Assert.IsTrue ( source.SequenceEqual ( target.OrderBy ( x => x ) ) );
+    Assert.IsTrue ( source.SequenceEqual ( target) );
+  }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void List ( int? capacity )
+  {
+    AsOrToTargetType<List<int>> targetType = system_collections_generic.List<int> ( );
+    Assert.HasCount ( 0, targetType.Empty () );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    List<int> target = targetType.Ctor(source, capacity);
+
+    Assert.AreEqual ( capacity ?? 16, target.Capacity );
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.SequenceEqual ( target ) );
   }
 }
 

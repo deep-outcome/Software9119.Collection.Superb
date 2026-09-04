@@ -19,7 +19,7 @@ public partial class IEnumerableExtensionTest
   [DataRow ( null )]
   public void AsOrToArrayList_IEnumerableOfT ( int? cap )
   {
-    IEnumerable<int> source = Enumerable.Range(0, 10);
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
     ArrayList test = cap is int
       ? source.AsOrToArrayList(cap)!
       : source.AsOrToArrayList()!;
@@ -82,7 +82,7 @@ public partial class IEnumerableExtensionTest
       ? source.IntoHashtable(keySelector, cap)!
       : source.IntoHashtable(keySelector)!;
 
-    IEnumerable<(int, int)> expectation = source.Select(x => ((int)keySelector(x), x)).OrderBy(x => x.Item1);
+    IEnumerable<(int, int)> expectation = source.Select(x => ((int)keySelector(x), x));
     IEnumerable<(int, int)> actual = test
       .Cast<DictionaryEntry>()
       .Select(x => ((int)x.Key, (int)x.Value!))
@@ -165,8 +165,7 @@ public partial class IEnumerableExtensionTest
       : source.IntoHashtable ( keySelector, valueSelector )!;
 
     IEnumerable<(int, int)> expectation = source
-      .Select(x => ((int)keySelector(x), (int)valueSelector(x)))
-      .OrderBy(x => x.Item1);
+      .Select(x => ((int)keySelector(x), (int)valueSelector(x)));
     IEnumerable<(int, int)> actual = test
       .Cast<DictionaryEntry>()
       .Select(x => ((int)x.Key, (int)x.Value!))
@@ -310,7 +309,7 @@ public partial class IEnumerableExtensionTest
       ? source.IntoSortedList(keySelector, cap)!
       : source.IntoSortedList(keySelector)!;
 
-    IEnumerable<(int, int)> expectation = source.Select(x => ((int)keySelector(x), x)).OrderBy(x => x.Item1);
+    IEnumerable<(int, int)> expectation = source.Select(x => ((int)keySelector(x), x));
     IEnumerable<(int, int)> actual = test
       .Cast<DictionaryEntry>()
       .Select(x => ((int)x.Key, (int)x.Value!))
@@ -389,8 +388,7 @@ public partial class IEnumerableExtensionTest
       : source.IntoSortedList(keySelector, valueSelector)!;
 
     IEnumerable<(int, int)> expectation = source
-      .Select(x => ((int)keySelector(x), (int)valueSelector(x)))
-      .OrderBy(x => x.Item1);
+      .Select(x => ((int)keySelector(x), (int)valueSelector(x)));
     IEnumerable<(int, int)> actual = test
       .Cast<DictionaryEntry>()
       .Select(x => ((int)x.Key, (int)x.Value!))

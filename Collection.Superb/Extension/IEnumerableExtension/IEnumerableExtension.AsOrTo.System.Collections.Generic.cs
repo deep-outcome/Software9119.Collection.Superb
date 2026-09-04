@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using collections_generic = Software9119.Collection.Superb.Extension.system_collections_generic;
 
@@ -117,5 +118,24 @@ static public partial class IEnumerableExtension
   {
     AsOrToTargetType<LinkedList<Item>> targetType = collections_generic.LinkedList<Item>();
     return enumerable.AsOrTo ( targetType, null, behavior );
+  }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="List{Item}"/>.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_generic.List{Item}()"/>.  
+  /// </remarks>
+  [SuppressMessage ( "Design", "CA1002:Do not expose generic lists", Justification = "No help in here." )]
+  static public List<Item>? AsOrToList<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    int? capacity = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<List<Item>> targetType = collections_generic.List<Item>();
+    return enumerable.AsOrTo ( targetType, capacity, behavior );
   }
 }

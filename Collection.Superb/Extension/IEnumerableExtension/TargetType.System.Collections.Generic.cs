@@ -83,9 +83,7 @@ static public class system_collections_generic
       if (c is int capacity)
       {
         HashSet<Item> result = new (capacity, itemComparer);
-        foreach (Item i in e )
-          _ = result.Add(i);
-
+        result.UnionWith(e);
         return result;
       }
 
@@ -107,6 +105,31 @@ static public class system_collections_generic
     Ctor<Item, LinkedList<Item>> typedCtor = (e, c) => new (e);
     Empty<LinkedList<Item>> empty = () => new ();
 
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-10.0">
+  /// List&lt;Item&gt;</see>.
+  /// </summary>
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Explication intent." )]
+  [SuppressMessage ( "Style", "IDE0306:Simplify collection initialization", Justification = "Explication intent." )]
+  static public AsOrToTargetType<List<Item>> List<Item> ()
+  {
+    Ctor<Item, List<Item>> typedCtor = (e, c) =>
+    {
+      if (c is int capacity)
+      {
+        List<Item> result = new (capacity);
+        result.AddRange(e);
+        return result;
+      }
+
+      return new(e);
+    };
+
+    Empty<List<Item>> empty = () => new ();
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 }
