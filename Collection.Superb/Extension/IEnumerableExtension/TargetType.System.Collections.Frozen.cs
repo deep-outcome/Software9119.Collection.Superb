@@ -3,6 +3,7 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
+using Frozen = System.Collections.Frozen;
 using FrozenDict = System.Collections.Frozen.FrozenDictionary;
 
 namespace Software9119.Collection.Superb.Extension;
@@ -71,11 +72,11 @@ static public class system_collections_frozen
 
     Ctor<Item, FrozenSet<Item>> typedCtor = (e, c) =>
     {
-      FrozenSet<Item> result = System.Collections.Frozen.FrozenSet.ToFrozenSet(e, itemComparer);
+      FrozenSet<Item> result = Frozen.FrozenSet.ToFrozenSet(e, itemComparer);
       return result;
     };
 
-    Empty<FrozenSet<Item>> empty = () => System.Collections.Frozen.FrozenSet.ToFrozenSet ( [], itemComparer );
+    Empty<FrozenSet<Item>> empty = () => Frozen.FrozenSet.ToFrozenSet ( [], itemComparer );
     CanCast canCast = e => e is FrozenSet<Item> x && ReferenceEquals(x.Comparer, itemComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }

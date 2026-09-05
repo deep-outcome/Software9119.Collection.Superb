@@ -369,7 +369,6 @@ static public class system_collections_generic
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
-
   /// <summary>
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.array?view=net-10.0">
