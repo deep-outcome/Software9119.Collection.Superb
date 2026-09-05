@@ -20,13 +20,16 @@ public class system_collections_frozen_test
     Func<int, int> keySelector = x => x *2;
 
     AsOrToTargetType<FrozenDictionary<int, int>> targetType = system_collections_frozen.FrozenDictionary ( keySelector, keyComparer );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    
     FrozenDictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     FrozenDictionary<int, int> target = targetType.Ctor(source, null);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
 
@@ -60,13 +63,16 @@ public class system_collections_frozen_test
       valueSelector,
       keyComparer
     );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    
     FrozenDictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     FrozenDictionary<int, int> target = targetType.Ctor(source, null);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
 

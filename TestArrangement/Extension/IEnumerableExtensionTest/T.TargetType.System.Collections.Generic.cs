@@ -21,13 +21,16 @@ public class system_collections_generic_test
     Func<int, int> keySelector = x => x *2;
 
     AsOrToTargetType<Dictionary<int, int>> targetType = system_collections_generic.Dictionary ( keySelector, keyComparer );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
     Dictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     Dictionary<int, int> target = targetType.Ctor(source, capacityRequested);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
     Assert.AreEqual ( capacityGotten, target.Capacity );
@@ -64,13 +67,16 @@ public class system_collections_generic_test
       valueSelector,
       keyComparer
     );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
     Dictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     Dictionary<int, int> target = targetType.Ctor(source, capacityRequested);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
     Assert.AreEqual ( capacityGotten, target.Capacity );
@@ -175,13 +181,16 @@ public class system_collections_generic_test
     Func<int, int> keySelector = x => x *2;
 
     AsOrToTargetType<OrderedDictionary<int, int>> targetType = system_collections_generic.OrderedDictionary ( keySelector, keyComparer );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
     OrderedDictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     OrderedDictionary<int, int> target = targetType.Ctor(source, capacityRequested);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
     Assert.AreEqual ( capacityGotten, target.Capacity );
@@ -218,13 +227,16 @@ public class system_collections_generic_test
       valueSelector,
       keyComparer
     );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
     OrderedDictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     OrderedDictionary<int, int> target = targetType.Ctor(source, capacityRequested);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
     Assert.AreEqual ( capacityGotten, target.Capacity );
@@ -268,6 +280,7 @@ public class system_collections_generic_test
     Assert.IsTrue ( ReferenceEquals ( priorityComparer, target.Comparer ) );
     Assert.AreEqual ( capacity ?? 16, target.Capacity );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( new int [ 0 ] ) );
 
     List<int> list = [];
     while (target.Count > 0)
@@ -311,13 +324,16 @@ public class system_collections_generic_test
     Func<int, int> keySelector = x => x *2;
 
     AsOrToTargetType<SortedDictionary<int, int>> targetType = system_collections_generic.SortedDictionary ( keySelector, keyComparer );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
     SortedDictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     SortedDictionary<int, int> target = targetType.Ctor(source, null);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
 
@@ -353,13 +369,16 @@ public class system_collections_generic_test
       valueSelector,
       keyComparer
     );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
     SortedDictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     SortedDictionary<int, int> target = targetType.Ctor(source, null);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
 
@@ -393,13 +412,16 @@ public class system_collections_generic_test
     Func<int, int> keySelector = x => x *2;
 
     AsOrToTargetType<SortedList<int, int>> targetType = system_collections_generic.SortedList ( keySelector, keyComparer );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
     SortedList<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     SortedList<int, int> target = targetType.Ctor(source, capacity);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
     Assert.AreEqual ( capacity ?? 16, target.Capacity );
@@ -438,13 +460,16 @@ public class system_collections_generic_test
       valueSelector,
       keyComparer
     );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
     SortedList<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     SortedList<int, int> target = targetType.Ctor(source, capacity);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.IsTrue ( ReferenceEquals ( keyComparer, target.Comparer ) );
     Assert.AreEqual ( capacity ?? 16, target.Capacity );

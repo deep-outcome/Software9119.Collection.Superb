@@ -64,11 +64,13 @@ public class system_collections_test
       ? system_collections.Hashtable ( keySelector)
       : system_collections.Hashtable(keySelector, valueSelector);
 
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
     Hashtable target = targetType.Ctor(source, capacity);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     int _loadsize = (int)Reflection.GetNonPublicFieldValue(target, "_loadsize");
     Assert.AreEqual ( loadSize, _loadsize );
@@ -166,11 +168,13 @@ public class system_collections_test
       ? system_collections.SortedList ( keySelector)
       : system_collections.SortedList(keySelector, valueSelector);
 
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
     SortedList target = targetType.Ctor(source, capacity);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
 
     Assert.AreEqual ( capacity ?? 16, target.Capacity );
 

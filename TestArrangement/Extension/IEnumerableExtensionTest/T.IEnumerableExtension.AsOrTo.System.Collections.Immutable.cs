@@ -44,7 +44,7 @@ public partial class IEnumerableExtensionTest
 
   [TestMethod]
   public void AsOrToImmutableArray_ExactLengthEnforcement ()
-  {    
+  {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
     Action test= () => _ = source.AsOrToImmutableArray ( 1000, enforceLengthCountMatch: true )!;
 
