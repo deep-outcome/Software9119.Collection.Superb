@@ -81,7 +81,7 @@ static public partial class IEnumerableExtension
   /// <see cref="collections_generic.HashSet{Item}(IEqualityComparer{Item})"/>.
   /// </item>
   /// <item>
-  /// When <paramref name="itemComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
+  /// When <paramref name="itemComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Item}.Default"/>.
   /// </item>
   /// <item>
   /// Cast is allowed only when source <see cref="IEnumerable"/> is <see cref="HashSet{Item}"/> and <paramref name="itemComparer"/>

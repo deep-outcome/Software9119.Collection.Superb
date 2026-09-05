@@ -51,4 +51,107 @@ public partial class IEnumerableExtensionTest
     Exception e = Assert.ThrowsExactly<InvalidOperationException> ( test );
     Assert.AreEqual ( "MoveToImmutable can only be performed when Count equals Capacity.", e.Message );
   }
+
+  [TestMethod]
+  public void IntoImmutableDictionary_KeySelectorOnly ()
+  {
+    Func<int, int> keySelector = x => x * 2;
+    TestComparer<int> keyComparer = new ();
+    TestComparer<int> itemComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ImmutableDictionary<int, int> test = source.IntoImmutableDictionary
+    (
+      keySelector,
+      keyComparer,
+      itemComparer
+    )!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, test.ValueComparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source.Select(x => new KeyValuePair<int, int>(keySelector(x), x));
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoImmutableDictionary_KeySelectorOnly_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    ImmutableDictionary<byte, int>? test = explicitNull
+    ? source.IntoImmutableDictionary(x => (byte)x, keyComparer: null, itemComparer: null)!
+    : source.IntoImmutableDictionary(x => (byte)x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<byte>.Default, test.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.ValueComparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoImmutableDictionary_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ImmutableDictionary<int, int>? test = returnsDefault
+    ? source.IntoImmutableDictionary(x => x, behavior: behavior!.Value)
+    : source.IntoImmutableDictionary(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  public void IntoImmutableDictionary ()
+  {
+    Func<int, int> keySelector = x => x * 2;
+    Func<int, int> valueSelector = x => x * 3;
+    TestComparer<int> keyComparer = new ();
+    TestComparer<int> valueComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ImmutableDictionary<int, int>? test = source.IntoImmutableDictionary
+    (
+      keySelector,
+      valueSelector,
+      keyComparer,
+      valueComparer
+    )!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( valueComparer, test.ValueComparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+    .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoImmutableDictionary_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    ImmutableDictionary<byte, short>? test = explicitNull
+    ? source.IntoImmutableDictionary(x => (byte)x, x => (short)x, keyComparer: null, valueComparer: null)!
+    : source.IntoImmutableDictionary(x => (byte)x, x => (short)x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<byte>.Default, test.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<short>.Default, test.ValueComparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoImmutableDictionary_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ImmutableDictionary<int, int>? test = returnsDefault
+    ? source.IntoImmutableDictionary(x => x, x => x, behavior: behavior!.Value)
+    : source.IntoImmutableDictionary(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }
