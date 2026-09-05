@@ -600,7 +600,6 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 
-
   [TestMethod]
   [DataRow ( 100 )]
   [DataRow ( null )]
@@ -625,6 +624,39 @@ public partial class IEnumerableExtensionTest
       : source.AsOrToTypedStack();
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void AsOrToArray ( int? capacity )
+  {
+    const int count = 10;
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(0, count);
+    int[] test = source.AsOrToArray(capacity)!;
+
+    Assert.HasCount ( capacity ?? count, test );
+
+    ArraySegment<int> testSegment = new (test, 0, count);
+    Assert.IsTrue ( source.SequenceEqual ( testSegment ) );
+
+    int index = count;
+    while (index < (capacity ?? count))
+      Assert.AreEqual ( 0, test [ index++ ] );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToArray_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    int[]? test = returnsDefault
+      ? source.AsOrToArray(behavior: behavior!.Value)
+      : source.AsOrToArray();
+
+    Assert.AreEqual ( test?.Length ?? -1, returnsDefault ? -1 : 0 );
   }
 
   // readme

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace Software9119.Collection.Superb.Extension;
 
@@ -60,7 +59,7 @@ static public class system_collections_generic
         return result;
       }
 
-      return e.ToDictionary(keySelector, valueSelector, keyComparer);
+      return System.Linq.Enumerable.ToDictionary(e, keySelector, valueSelector, keyComparer);
     };
 
     Empty<Dictionary<Key, Value>> empty = () => new (keyComparer);
@@ -367,6 +366,33 @@ static public class system_collections_generic
     };
 
     Empty<Stack<Item>> empty = () => [];
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
+
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.array?view=net-10.0">
+  /// Item[]</see>.
+  /// </summary>  
+  static public AsOrToTargetType<Item []> Array<Item> ()
+  {
+    Ctor<Item, Item[]> typedCtor = (e, c) =>
+    {
+      if (c is int capacity)
+      {
+        Item[] result = new Item[capacity];
+        int index = -1;
+        foreach (Item i in e)
+          result[++index] = i;
+
+        return result;
+      }
+
+      return System.Linq.Enumerable.ToArray(e);
+    };
+
+    Empty<Item[]> empty = System.Array.Empty<Item>;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 }

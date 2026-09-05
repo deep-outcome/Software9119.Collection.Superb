@@ -521,7 +521,33 @@ public class system_collections_generic_test
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
 
-    Assert.IsTrue ( source.Reverse().SequenceEqual ( target) );
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( target ) );
   }
 
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void Array ( int? capacity )
+  {
+    AsOrToTargetType<object[]> targetType = system_collections_generic.Array<object> ( );
+
+    object[] empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    const int count = 10;
+    IEnumerable<object> source = XEnumerable.RangeEnumerable(1, count).Select(x => (object)x);
+    object[] target = targetType.Ctor(source, capacity);
+
+    Assert.HasCount ( capacity ?? count, target );
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    ArraySegment<object> targetSegment = new (target, 0, count);
+    Assert.IsTrue ( source.SequenceEqual ( targetSegment ) );
+
+    int index = count;
+    while (index < (capacity ?? count))
+      Assert.IsNull ( target [ index++ ] );
+  }
 }

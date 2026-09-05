@@ -1,4 +1,8 @@
-- add methods' links
+- System.Collections.Immutable 
+- System.Collections.Concurrent
+- System.Collections.ObjectModel
+- System.Collections.Specialized
+
 - rework read-only extensions when finished with asOrTo (remove default capacities)
 - add other As read-only wrapper methods
 - add Capacitor

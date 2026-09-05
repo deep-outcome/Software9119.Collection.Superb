@@ -418,4 +418,22 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<Stack<Item>> targetType = collections_generic.Stack<Item>();
     return enumerable.AsOrTo ( targetType, capacity, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="Array"/>.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_generic.Array{Item}()"/>.  
+  /// </remarks>
+  static public Item []? AsOrToArray<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    int? length = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<Item[]> targetType = collections_generic.Array<Item>();
+    return enumerable.AsOrTo ( targetType, length, behavior );
+  }
 }
