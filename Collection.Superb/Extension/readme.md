@@ -134,3 +134,4 @@ This namespace contains types with extension methods.
         - `ImmutableSortedDictionary<Key, Item>? IntoImmutableSortedDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, IComparer<Key>?, IEqualityComparer<Item>?, EnumerableNullBehavior)` – creates immutable sorted dictionary from `IEnumerable<T>`
         - `ImmutableSortedDictionary<Key, Value>? IntoImmutableSortedDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, IComparer<Key>?, IEqualityComparer<Value>?, EnumerableNullBehavior)` – creates immutable sorted dictionary from `IEnumerable<T>`
         - `ImmutableSortedSet<Item>? AsOrToImmutableSortedSet<Item>(IEnumerable<Item>?, IComparer<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into immutable sorted set
+        - `ImmutableStack<Item>? AsOrToImmutableStack<Item>(IEnumerable<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into immutable stack

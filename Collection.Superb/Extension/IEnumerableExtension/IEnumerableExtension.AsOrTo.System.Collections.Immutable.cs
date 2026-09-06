@@ -289,4 +289,21 @@ static public partial class IEnumerableExtension
 
     return enumerable.AsOrTo ( targetType, null, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableStack {Item}"/>.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_immutable.ImmutableStack {Item}()"/>.  
+  /// </remarks>
+  static public ImmutableStack<Item>? AsOrToImmutableStack<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<ImmutableStack <Item>> targetType = collections_immutable.ImmutableStack<Item> ();
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
 }

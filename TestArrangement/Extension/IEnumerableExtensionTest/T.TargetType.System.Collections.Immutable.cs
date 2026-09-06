@@ -368,4 +368,21 @@ public class system_collections_immutable_test
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Item comparer not provided. (Parameter 'itemComparer')", e.Message );
   }
+
+  [TestMethod]
+  public void ImmutableStack ()
+  {
+    AsOrToTargetType<ImmutableStack <int>> targetType = collections_immutable.ImmutableStack<int>();
+
+    ImmutableStack <int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    ImmutableStack <int> target = targetType.Ctor(source, null);
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( target ) );
+  }
 }

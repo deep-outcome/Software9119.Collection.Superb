@@ -223,4 +223,20 @@ static public class system_collections_immutable
     CanCast canCast = e => e is ImmutableSortedSet<Item> x && ReferenceEquals(x.KeyComparer, itemComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableStack-1?view=net-10.0">
+  /// ImmutableStack&lt;Item&gt;</see>.
+  /// </summary>
+  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
+  [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ImmutableStack<Item>> ImmutableStack<Item> ()
+  {
+    Ctor<Item, ImmutableStack <Item>> typedCtor = (e, c) => Immutable.ImmutableStack.CreateRange (e);
+
+    Empty<ImmutableStack <Item>> empty = () => Immutable.ImmutableStack<Item>.Empty;
+    CanCast? canCast = null;
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+  }
 }

@@ -382,4 +382,27 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void AsOrToImmutableStack ()
+  {
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ImmutableStack<int> test = source.AsOrToImmutableStack()!;
+
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToImmutableStack_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ImmutableStack<int>? test = returnsDefault
+      ? source.AsOrToImmutableStack(behavior: behavior!.Value)
+      : source.AsOrToImmutableStack();
+
+    Assert.AreEqual ( test?.IsEmpty ?? false, returnsDefault == false );
+  }
 }
