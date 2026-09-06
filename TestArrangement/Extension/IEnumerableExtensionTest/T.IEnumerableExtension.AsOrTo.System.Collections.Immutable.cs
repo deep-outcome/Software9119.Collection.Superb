@@ -192,4 +192,27 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void AsOrToImmutableList ()
+  {
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ImmutableList<int> test = source.AsOrToImmutableList()!;
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToImmutableList_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ImmutableList<int>? test = returnsDefault
+      ? source.AsOrToImmutableList(behavior: behavior!.Value)
+      : source.AsOrToImmutableList();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

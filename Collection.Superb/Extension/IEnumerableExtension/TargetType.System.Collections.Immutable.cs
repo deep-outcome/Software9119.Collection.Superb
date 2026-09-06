@@ -117,4 +117,20 @@ static public class system_collections_immutable
     CanCast canCast = e => e is ImmutableHashSet<Item> x && ReferenceEquals(x.KeyComparer, itemComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableList-1?view=net-10.0">
+  /// ImmutableList&lt;Item&gt;</see>.
+  /// </summary>
+  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
+  [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ImmutableList<Item>> ImmutableList<Item> ()
+  {
+    Ctor<Item, ImmutableList <Item>> typedCtor = (e, c) => Immutable.ImmutableList.CreateRange (e);
+
+    Empty<ImmutableList <Item>> empty = () => Immutable.ImmutableList<Item>.Empty;
+    CanCast? canCast = null;
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+  }
 }
