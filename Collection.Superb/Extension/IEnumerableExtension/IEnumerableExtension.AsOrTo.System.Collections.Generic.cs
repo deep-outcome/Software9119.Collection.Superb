@@ -433,6 +433,9 @@ static public partial class IEnumerableExtension
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
+    if (length < 0)
+      throw new ArgumentOutOfRangeException ( paramName: nameof ( length ), "Array length must be non-negative." );
+
     AsOrToTargetType<Item[]> targetType = collections_generic.Array<Item>();
     return enumerable.AsOrTo ( targetType, length, behavior );
   }

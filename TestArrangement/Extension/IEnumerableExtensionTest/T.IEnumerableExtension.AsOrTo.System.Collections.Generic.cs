@@ -627,11 +627,11 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  [DataRow ( 100 )]
-  [DataRow ( null )]
-  public void AsOrToArray ( int? capacity )
+  [DataRow ( 100, 10 )]
+  [DataRow ( 0, 0 )]
+  [DataRow ( null, 10 )]
+  public void AsOrToArray ( int? capacity, int count )
   {
-    const int count = 10;
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, count);
     int[] test = source.AsOrToArray(capacity)!;
 
@@ -643,6 +643,16 @@ public partial class IEnumerableExtensionTest
     int index = count;
     while (index < (capacity ?? count))
       Assert.AreEqual ( 0, test [ index++ ] );
+  }
+
+
+  [TestMethod]
+  public void AsOrToArray_NegativeLength ()
+  {
+    IEnumerable<int> source = new int[0];
+    Action test = () => source.AsOrToArray(length: -1);
+    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
+    Assert.AreEqual ( "Array length must be non-negative. (Parameter 'length')", e.Message );
   }
 
   [TestMethod]
