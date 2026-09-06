@@ -133,4 +133,20 @@ static public class system_collections_immutable
     CanCast? canCast = null;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableQueue-1?view=net-10.0">
+  /// ImmutableQueue&lt;Item&gt;</see>.
+  /// </summary>
+  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
+  [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ImmutableQueue<Item>> ImmutableQueue<Item> ()
+  {
+    Ctor<Item, ImmutableQueue <Item>> typedCtor = (e, c) => Immutable.ImmutableQueue.CreateRange (e);
+
+    Empty<ImmutableQueue <Item>> empty = () => Immutable.ImmutableQueue<Item>.Empty;
+    CanCast? canCast = null;
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+  }
 }

@@ -208,4 +208,21 @@ public class system_collections_immutable_test
 
     Assert.IsTrue ( source.SequenceEqual ( target ) );
   }
+
+  [TestMethod]
+  public void ImmutableQueue ()
+  {
+    AsOrToTargetType<ImmutableQueue <int>> targetType = collections_immutable.ImmutableQueue<int>();
+
+    ImmutableQueue <int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    ImmutableQueue <int> target = targetType.Ctor(source, null);
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.SequenceEqual ( target ) );
+  }
 }

@@ -162,4 +162,21 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<ImmutableList <Item>> targetType = collections_immutable.ImmutableList<Item> ();
     return enumerable.AsOrTo ( targetType, null, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableQueue {Item}"/>.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_immutable.ImmutableQueue {Item}()"/>.  
+  /// </remarks>
+  static public ImmutableQueue<Item>? AsOrToImmutableQueue<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<ImmutableQueue <Item>> targetType = collections_immutable.ImmutableQueue<Item> ();
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
 }
