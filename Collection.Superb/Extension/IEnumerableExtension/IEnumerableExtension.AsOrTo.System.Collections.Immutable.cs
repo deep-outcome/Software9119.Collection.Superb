@@ -179,4 +179,83 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<ImmutableQueue <Item>> targetType = collections_immutable.ImmutableQueue<Item> ();
     return enumerable.AsOrTo ( targetType, null, behavior );
   }
+
+
+  /// <summary>
+  /// Creates <see cref="ImmutableSortedDictionary{Key, Value}"/> with <paramref name="keyComparer"/> and <paramref name="itemComparer"/>
+  /// from <paramref name="enumerable"/> using <paramref name="keySelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_immutable.ImmutableSortedDictionary{Item, Key}(Func{Item, Key}, IComparer{Key}, IEqualityComparer{Item})"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="itemComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Item}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ImmutableSortedDictionary<Key, Item>? IntoImmutableSortedDictionary<Item, Key> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
+    IComparer<Key>? keyComparer = null,
+    IEqualityComparer<Item>? itemComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    where Key : notnull
+  {
+    keyComparer ??= Comparer<Key>.Default;
+    itemComparer ??= EqualityComparer<Item>.Default;
+
+    AsOrToTargetType<ImmutableSortedDictionary<Key, Item>> targetType = collections_immutable.ImmutableSortedDictionary
+    (
+      keySelector,
+      keyComparer,
+      itemComparer
+    );
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="ImmutableSortedDictionary{Key, Value}"/> with <paramref name="keyComparer"/> and <paramref name="valueComparer"/>
+  /// from <paramref name="enumerable"/> using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_immutable.ImmutableSortedDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IComparer{Key}, IEqualityComparer{Value})"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="valueComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Value}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ImmutableSortedDictionary<Key, Value>? IntoImmutableSortedDictionary<Item, Key, Value> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
+    IComparer<Key>? keyComparer = null,
+    IEqualityComparer<Value>? valueComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    where Key : notnull
+  {
+    keyComparer ??= Comparer<Key>.Default;
+    valueComparer ??= EqualityComparer<Value>.Default;
+
+    AsOrToTargetType<ImmutableSortedDictionary<Key, Value>> targetType = collections_immutable.ImmutableSortedDictionary
+    (
+      keySelector,
+      valueSelector,
+      keyComparer,
+      valueComparer
+    );
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
 }

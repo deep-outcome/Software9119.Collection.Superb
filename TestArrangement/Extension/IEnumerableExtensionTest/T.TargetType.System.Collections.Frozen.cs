@@ -85,7 +85,7 @@ public class system_collections_frozen_test
   [DataRow ( "Key selector not provided. (Parameter 'keySelector')", 'k' )]
   [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", 'v' )]
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", 'c' )]
-  public void FrozenDictionaryNullParameter ( string errMsg, char whosNull )
+  public void FrozenDictionary_NullParameter ( string errMsg, char whosNull )
   {
     TestComparer<int> keyComparer  = whosNull is 'c' ? null! : new ();
     Func<int, int> keySelector        = whosNull == 'k' ? null! : x => x;

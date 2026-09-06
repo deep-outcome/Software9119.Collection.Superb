@@ -90,7 +90,7 @@ public class system_collections_generic_test
   [DataRow ( "Key selector not provided. (Parameter 'keySelector')", 'k' )]
   [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", 'v' )]
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", 'c' )]
-  public void DictionaryNullParameter ( string errMsg, char whosNull )
+  public void Dictionary_NullParameter ( string errMsg, char whosNull )
   {
     TestComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
     Func<int, int> keySelector    = whosNull == 'k' ? null! : x => x;
@@ -250,7 +250,7 @@ public class system_collections_generic_test
   [DataRow ( "Key selector not provided. (Parameter 'keySelector')", 'k' )]
   [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", 'v' )]
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", 'c' )]
-  public void OrderedDictionaryNullParameter ( string errMsg, char whosNull )
+  public void OrderedDictionary_NullParameter ( string errMsg, char whosNull )
   {
     TestComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
     Func<int, int> keySelector    = whosNull == 'k' ? null! : x => x;
@@ -392,7 +392,7 @@ public class system_collections_generic_test
   [DataRow ( "Key selector not provided. (Parameter 'keySelector')", 'k' )]
   [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", 'v' )]
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", 'c' )]
-  public void SortedDictionaryNullParameter ( string errMsg, char whosNull )
+  public void SortedDictionary_NullParameter ( string errMsg, char whosNull )
   {
     ReverseOrderComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
     Func<int, int> keySelector            = whosNull == 'k' ? null! : x => x;
@@ -484,7 +484,7 @@ public class system_collections_generic_test
   [DataRow ( "Key selector not provided. (Parameter 'keySelector')", 'k' )]
   [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", 'v' )]
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", 'c' )]
-  public void SortedListNullParameter ( string errMsg, char whosNull )
+  public void SortedList_NullParameter ( string errMsg, char whosNull )
   {
     ReverseOrderComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
     Func<int, int> keySelector            = whosNull == 'k' ? null! : x => x;

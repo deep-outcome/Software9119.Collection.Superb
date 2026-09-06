@@ -143,7 +143,7 @@ public class system_collections_immutable_test
   [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", "sv" )]
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", "ck" )]
   [DataRow ( "Value comparer not provided. (Parameter 'valueComparer')", "cv" )]
-  public void ImmutableDictionaryNullParameter ( string errMsg, string whosNull )
+  public void ImmutableDictionary_NullParameter ( string errMsg, string whosNull )
   {
     TestComparer<int> keyComparer   = whosNull is "ck" ? null! : new ();
     TestComparer<int> valueComparer = whosNull is "cv" ? null! : new ();
@@ -225,4 +225,118 @@ public class system_collections_immutable_test
 
     Assert.IsTrue ( source.SequenceEqual ( target ) );
   }
+
+  [TestMethod]
+  public void ImmutableSortedDictionary_KeySelectorOnly ()
+  {
+    Func<int, int> keySelector = x => x *2;
+    ReverseOrderComparer<int> keyComparer = new ();
+    TestComparer<int> itemComparer = new ();
+
+    AsOrToTargetType<ImmutableSortedDictionary<int, int>> targetType = collections_immutable.ImmutableSortedDictionary
+    (
+      keySelector,
+      keyComparer,
+      itemComparer
+    );
+
+    ImmutableSortedDictionary<int, int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.ValueComparer ) );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    ImmutableSortedDictionary<int, int> target = targetType.Ctor(source, null);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, target.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, target.ValueComparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+      .Select(x => new KeyValuePair<int, int>(keySelector(x), x))
+      .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( target ) );
+  }
+
+  [TestMethod]
+  [DataRow ( "Key selector not provided. (Parameter 'keySelector')", "sk" )]
+  [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", "ck" )]
+  [DataRow ( "Value comparer not provided. (Parameter 'valueComparer')", "ci" )]
+  public void ImmutableSortedDictionary_KeySelectorOnly_NullParameter ( string errMsg, string whosNull )
+  {
+    Func<int, int> keySelector            = whosNull == "sk" ? null! : x => x;
+    ReverseOrderComparer<int> keyComparer = whosNull == "ck" ? null! : new ();
+    TestComparer<int> itemComparer        = whosNull == "ci" ? null! : new ();
+
+    Action test = () => collections_immutable.ImmutableSortedDictionary
+    (
+      keySelector,
+      keyComparer,
+      itemComparer
+    );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
+
+  [TestMethod]
+  public void ImmutableSortedDictionary ()
+  {
+    Func<int, int> keySelector = x => x *2;
+    Func<int, int> valueSelector = x => x *3;
+    ReverseOrderComparer<int> keyComparer = new ();
+    TestComparer<int> valueComparer = new ();
+
+    AsOrToTargetType<ImmutableSortedDictionary<int, int>> targetType = collections_immutable.ImmutableSortedDictionary
+    (
+      keySelector,
+      valueSelector,
+      keyComparer,
+      valueComparer
+    );
+
+    ImmutableSortedDictionary<int, int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( valueComparer, empty.ValueComparer ) );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    ImmutableSortedDictionary<int, int> target = targetType.Ctor(source, null);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, target.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( valueComparer, target.ValueComparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+      .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)))
+      .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( target ) );
+  }
+
+  [TestMethod]
+  [DataRow ( "Key selector not provided. (Parameter 'keySelector')", "sk" )]
+  [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", "sv" )]
+  [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", "ck" )]
+  [DataRow ( "Value comparer not provided. (Parameter 'valueComparer')", "cv" )]
+  public void ImmutableSortedDictionary_NullParameter ( string errMsg, string whosNull )
+  {
+    Func<int, int> keySelector            = whosNull == "sk" ? null! : x => x;
+    Func<int, int> valueSelector          = whosNull == "sv" ? null! : x => x;
+    ReverseOrderComparer<int> keyComparer = whosNull is "ck" ? null! : new ();
+    TestComparer<int> valueComparer       = whosNull is "cv" ? null! : new ();    
+
+    Action test = () => collections_immutable.ImmutableSortedDictionary
+    (
+      keySelector,
+      valueSelector,
+      keyComparer,
+      valueComparer
+    );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
+
 }

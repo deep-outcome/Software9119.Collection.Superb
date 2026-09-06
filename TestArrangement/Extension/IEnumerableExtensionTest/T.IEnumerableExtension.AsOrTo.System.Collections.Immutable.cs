@@ -236,6 +236,112 @@ public partial class IEnumerableExtensionTest
       ? source.AsOrToImmutableQueue(behavior: behavior!.Value)
       : source.AsOrToImmutableQueue();
 
-    Assert.AreEqual ( test?.IsEmpty ?? false, returnsDefault == false);
+    Assert.AreEqual ( test?.IsEmpty ?? false, returnsDefault == false );
+  }
+
+  [TestMethod]
+  public void IntoImmutableSortedDictionary_KeySelectorOnly ()
+  {
+    Func<int, int> keySelector = x => x * 2;
+    ReverseOrderComparer<int> keyComparer = new ();
+    TestComparer<int> itemComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ImmutableSortedDictionary<int, int> test = source.IntoImmutableSortedDictionary
+    (
+      keySelector,
+      keyComparer,
+      itemComparer
+    )!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, test.ValueComparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+      .Select(x => new KeyValuePair<int, int>(keySelector(x), x))
+      .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoImmutableSortedDictionary_KeySelectorOnly_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    ImmutableSortedDictionary<byte, int>? test = explicitNull
+    ? source.IntoImmutableSortedDictionary(x => (byte)x, keyComparer: null, itemComparer: null)!
+    : source.IntoImmutableSortedDictionary(x => (byte)x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( Comparer<byte>.Default, test.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.ValueComparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoImmutableSortedDictionary_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ImmutableSortedDictionary<int, int>? test = returnsDefault
+    ? source.IntoImmutableSortedDictionary(x => x, behavior: behavior!.Value)
+    : source.IntoImmutableSortedDictionary(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  public void IntoImmutableSortedDictionary ()
+  {
+    Func<int, int> keySelector = x => x * 2;
+    Func<int, int> valueSelector = x => x * 3;
+    ReverseOrderComparer<int> keyComparer = new ();
+    TestComparer<int> valueComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ImmutableSortedDictionary<int, int>? test = source.IntoImmutableSortedDictionary
+    (
+      keySelector,
+      valueSelector,
+      keyComparer,
+      valueComparer
+    )!;
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, test.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( valueComparer, test.ValueComparer ) );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+    .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)))
+    .OrderByDescending(x => x.Key);
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoImmutableSortedDictionary_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    ImmutableSortedDictionary<byte, short>? test = explicitNull
+    ? source.IntoImmutableSortedDictionary(x => (byte)x, x => (short)x, keyComparer: null, valueComparer: null)!
+    : source.IntoImmutableSortedDictionary(x => (byte)x, x => (short)x)!;
+
+    Assert.IsTrue ( ReferenceEquals ( Comparer<byte>.Default, test.KeyComparer ) );
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<short>.Default, test.ValueComparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoImmutableSortedDictionary_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ImmutableSortedDictionary<int, int>? test = returnsDefault
+    ? source.IntoImmutableSortedDictionary(x => x, x => x, behavior: behavior!.Value)
+    : source.IntoImmutableSortedDictionary(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
 }

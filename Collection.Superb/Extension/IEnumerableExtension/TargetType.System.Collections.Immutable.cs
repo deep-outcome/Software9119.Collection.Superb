@@ -61,7 +61,7 @@ static public class system_collections_immutable
   /// <summary>
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.immutabledictionary-2?view=net-10.0">
-  /// ImmutableDictionary&lt;Item, Value&gt;</see>.
+  /// ImmutableDictionary&lt;Key, Value&gt;</see>.
   /// </summary>
   static public AsOrToTargetType<ImmutableDictionary<Key, Value>> ImmutableDictionary<Item, Key, Value>
   (
@@ -148,5 +148,62 @@ static public class system_collections_immutable
     Empty<ImmutableQueue <Item>> empty = () => Immutable.ImmutableQueue<Item>.Empty;
     CanCast? canCast = null;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableSortedDictionary-2?view=net-10.0">
+  /// ImmutableSortedDictionary&lt;Item, Value&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<ImmutableSortedDictionary<Key, Item>> ImmutableSortedDictionary<Item, Key>
+  (
+    Func<Item, Key> keySelector,
+    IComparer<Key> keyComparer,
+    IEqualityComparer<Item> itemComparer
+  )
+    where Key : notnull
+    => ImmutableSortedDictionary ( keySelector, x => x, keyComparer, itemComparer );
+
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableSortedDictionary-2?view=net-10.0">
+  /// ImmutableSortedDictionary&lt;Key, Value&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<ImmutableSortedDictionary<Key, Value>> ImmutableSortedDictionary<Item, Key, Value>
+  (
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
+    IComparer<Key> keyComparer,
+    IEqualityComparer<Value> valueComparer
+  )
+    where Key : notnull
+  {
+    if (keySelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
+
+    if (valueSelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
+
+    if (keyComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
+
+    if (valueComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( valueComparer ), "Value comparer not provided." );
+
+    Ctor<Item, ImmutableSortedDictionary<Key, Value>> typedCtor = (e, c) =>
+    {
+      return Immutable.ImmutableSortedDictionary.ToImmutableSortedDictionary
+      (
+        e,
+        keySelector,
+        valueSelector,
+        keyComparer,
+        valueComparer
+      );
+    };
+
+    Empty<ImmutableSortedDictionary<Key, Value>> empty = () => Immutable.ImmutableSortedDictionary.Create<Key, Value>(keyComparer, valueComparer);
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
 }
