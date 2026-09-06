@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
+using Immutable = System.Collections.Immutable;
+
 using collections_immutable = Software9119.Collection.Superb.Extension.system_collections_immutable;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
@@ -157,5 +159,36 @@ public class system_collections_immutable_test
     );
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
+  }
+
+  [TestMethod]
+  public void ImmutableHashSet ()
+  {
+    TestComparer<int> itemComparer = new ();
+    AsOrToTargetType<ImmutableHashSet<int>> targetType = collections_immutable.ImmutableHashSet ( itemComparer );
+
+    ImmutableHashSet<int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.KeyComparer ) );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    ImmutableHashSet<int> target = targetType.Ctor(source, null);
+
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, target.KeyComparer ) );
+
+    Assert.IsTrue ( targetType.CanCast ( Immutable.ImmutableHashSet.Create ( equalityComparer: itemComparer ) ) );
+    Assert.IsFalse ( targetType.CanCast ( Immutable.ImmutableHashSet.Create ( new TestComparer<int> () ) ) );
+    Assert.IsFalse ( targetType.CanCast ( Immutable.ImmutableHashSet.Create<object> () ) );
+
+    Assert.IsTrue ( source.SequenceEqual ( target.OrderBy ( x => x ) ) );
+  }
+
+  [TestMethod]
+  public void ImmutableHashSet_NullComparer ()
+  {
+    TestComparer<int> itemComparer = null!;
+    Action test = () => collections_immutable.ImmutableHashSet ( itemComparer );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Item comparer not provided. (Parameter 'itemComparer')", e.Message );
   }
 }

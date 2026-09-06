@@ -154,4 +154,42 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void AsOrToImmutableHashSet ()
+  {
+    TestComparer<int> itemComparer = new ();
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ImmutableHashSet<int> test = source.AsOrToImmutableHashSet(itemComparer: itemComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, test.KeyComparer ) );
+    Assert.IsTrue ( source.SequenceEqual ( test.OrderBy ( x => x ) ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void AsOrToImmutableHashSet_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    ImmutableHashSet<int>? test = explicitNull
+      ? source.AsOrToImmutableHashSet(itemComparer: null)!
+      : source.AsOrToImmutableHashSet()!;
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, test.KeyComparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToImmutableHashSet_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ImmutableHashSet<int>? test = returnsDefault
+      ? source.AsOrToImmutableHashSet(behavior: behavior!.Value)
+      : source.AsOrToImmutableHashSet();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

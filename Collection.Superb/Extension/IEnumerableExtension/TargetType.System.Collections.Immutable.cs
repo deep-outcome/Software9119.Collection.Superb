@@ -20,7 +20,7 @@ static public class system_collections_immutable
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.immutablearray-1?view=net-10.0">
   /// ImmutableArray&lt;Item&gt;</see>.
-  /// </summary>    
+  /// </summary>
   [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
   [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ImmutableArray<Item>> ImmutableArray<Item> ( bool strictLengthMatch )
@@ -47,7 +47,7 @@ static public class system_collections_immutable
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.immutabledictionary-2?view=net-10.0">
   /// ImmutableDictionary&lt;Item, Value&gt;</see>.
-  /// </summary>    
+  /// </summary>
   static public AsOrToTargetType<ImmutableDictionary<Key, Item>> ImmutableDictionary<Item, Key>
   (
     Func<Item, Key> keySelector,
@@ -62,7 +62,7 @@ static public class system_collections_immutable
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.immutabledictionary-2?view=net-10.0">
   /// ImmutableDictionary&lt;Item, Value&gt;</see>.
-  /// </summary>    
+  /// </summary>
   static public AsOrToTargetType<ImmutableDictionary<Key, Value>> ImmutableDictionary<Item, Key, Value>
   (
     Func<Item, Key> keySelector,
@@ -98,5 +98,23 @@ static public class system_collections_immutable
 
     Empty<ImmutableDictionary<Key, Value>> empty = () => Immutable.ImmutableDictionary.Create<Key, Value>(keyComparer, valueComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.immutablehashset-1?view=net-10.0">
+  /// ImmutableHashSet&lt;Item&gt;</see>.
+  /// </summary>
+  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ImmutableHashSet<Item>> ImmutableHashSet<Item> ( IEqualityComparer<Item> itemComparer )
+  {
+    if (itemComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
+
+    Ctor<Item, ImmutableHashSet<Item>> typedCtor = (e, c) => Immutable.ImmutableHashSet.ToImmutableHashSet(e, itemComparer);
+
+    Empty<ImmutableHashSet<Item>> empty = () => Immutable.ImmutableHashSet.Create (itemComparer);
+    CanCast canCast = e => e is ImmutableHashSet<Item> x && ReferenceEquals(x.KeyComparer, itemComparer);
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
 }
