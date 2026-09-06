@@ -344,4 +344,42 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void AsOrToImmutableSortedSet ()
+  {
+    ReverseOrderComparer<int> itemComparer = new ();
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ImmutableSortedSet<int> test = source.AsOrToImmutableSortedSet(itemComparer: itemComparer)!;
+
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, test.KeyComparer ) );
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void AsOrToImmutableSortedSet_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    ImmutableSortedSet<int>? test = explicitNull
+      ? source.AsOrToImmutableSortedSet(itemComparer: null)!
+      : source.AsOrToImmutableSortedSet()!;
+
+    Assert.IsTrue ( ReferenceEquals ( Comparer<int>.Default, test.KeyComparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToImmutableSortedSet_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ImmutableSortedSet<int>? test = returnsDefault
+      ? source.AsOrToImmutableSortedSet(behavior: behavior!.Value)
+      : source.AsOrToImmutableSortedSet();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

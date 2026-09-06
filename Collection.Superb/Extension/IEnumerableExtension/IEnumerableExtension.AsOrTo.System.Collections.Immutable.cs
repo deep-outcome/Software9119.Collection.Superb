@@ -258,4 +258,35 @@ static public partial class IEnumerableExtension
     );
     return enumerable.AsOrTo ( targetType, null, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableSortedSet{Item}"/> provided with <paramref name="itemComparer"/>.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// <see cref="collections_immutable.ImmutableSortedSet{Item}(IComparer{Item})"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="itemComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Item}.Default"/>.
+  /// </item>
+  /// <item>
+  /// Cast is allowed only when source <see cref="IEnumerable"/> is <see cref="ImmutableSortedSet{Item}"/> and <paramref name="itemComparer"/>
+  /// referentially equals to <see cref="ImmutableSortedSet{Item}.KeyComparer"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ImmutableSortedSet<Item>? AsOrToImmutableSortedSet<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    IComparer<Item>? itemComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    itemComparer ??= Comparer<Item>.Default;
+    AsOrToTargetType<ImmutableSortedSet<Item>> targetType = collections_immutable.ImmutableSortedSet(itemComparer);
+
+    return enumerable.AsOrTo ( targetType, null, behavior );
+  }
 }

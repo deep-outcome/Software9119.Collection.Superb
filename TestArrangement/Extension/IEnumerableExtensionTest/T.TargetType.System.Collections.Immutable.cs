@@ -8,9 +8,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-using Immutable = System.Collections.Immutable;
-
 using collections_immutable = Software9119.Collection.Superb.Extension.system_collections_immutable;
+using Immutable = System.Collections.Immutable;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
 
@@ -326,7 +325,7 @@ public class system_collections_immutable_test
     Func<int, int> keySelector            = whosNull == "sk" ? null! : x => x;
     Func<int, int> valueSelector          = whosNull == "sv" ? null! : x => x;
     ReverseOrderComparer<int> keyComparer = whosNull is "ck" ? null! : new ();
-    TestComparer<int> valueComparer       = whosNull is "cv" ? null! : new ();    
+    TestComparer<int> valueComparer       = whosNull is "cv" ? null! : new ();
 
     Action test = () => collections_immutable.ImmutableSortedDictionary
     (
@@ -339,4 +338,34 @@ public class system_collections_immutable_test
     Assert.AreEqual ( errMsg, e.Message );
   }
 
+  [TestMethod]
+  public void ImmutableSortedSet ()
+  {
+    ReverseOrderComparer<int> itemComparer = new ();
+    AsOrToTargetType<ImmutableSortedSet<int>> targetType = collections_immutable.ImmutableSortedSet ( itemComparer );
+
+    ImmutableSortedSet<int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.KeyComparer ) );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    ImmutableSortedSet<int> target = targetType.Ctor(source, null);
+
+    Assert.IsTrue ( ReferenceEquals ( itemComparer, target.KeyComparer ) );
+
+    Assert.IsTrue ( targetType.CanCast ( Immutable.ImmutableSortedSet.Create ( comparer: itemComparer ) ) );
+    Assert.IsFalse ( targetType.CanCast ( Immutable.ImmutableSortedSet.Create ( new TestComparer<int> () ) ) );
+    Assert.IsFalse ( targetType.CanCast ( Immutable.ImmutableSortedSet.Create<object> () ) );
+
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( target ) );
+  }
+
+  [TestMethod]
+  public void ImmutableSortedSet_NullComparer ()
+  {
+    ReverseOrderComparer<int> itemComparer = null!;
+    Action test = () => collections_immutable.ImmutableSortedSet ( itemComparer );
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Item comparer not provided. (Parameter 'itemComparer')", e.Message );
+  }
 }

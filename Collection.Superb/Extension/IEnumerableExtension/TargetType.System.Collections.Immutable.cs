@@ -206,4 +206,21 @@ static public class system_collections_immutable
     Empty<ImmutableSortedDictionary<Key, Value>> empty = () => Immutable.ImmutableSortedDictionary.Create<Key, Value>(keyComparer, valueComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableSortedSet-1?view=net-10.0">
+  /// ImmutableSortedSet&lt;Item&gt;</see>.
+  /// </summary>  
+  static public AsOrToTargetType<ImmutableSortedSet<Item>> ImmutableSortedSet<Item> ( IComparer<Item> itemComparer )
+  {
+    if (itemComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
+
+    Ctor<Item, ImmutableSortedSet<Item>> typedCtor = (e, c) => Immutable.ImmutableSortedSet.ToImmutableSortedSet(e, itemComparer);
+
+    Empty<ImmutableSortedSet<Item>> empty = () => Immutable.ImmutableSortedSet.Create (itemComparer);
+    CanCast canCast = e => e is ImmutableSortedSet<Item> x && ReferenceEquals(x.KeyComparer, itemComparer);
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+  }
 }
