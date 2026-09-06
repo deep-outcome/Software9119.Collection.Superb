@@ -123,9 +123,9 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="List{Item}"/>.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.List{Item}()"/>.  
+  /// <see cref="collections_generic.List{Item}()"/>.
   /// </remarks>
   [SuppressMessage ( "Design", "CA1002:Do not expose generic lists", Justification = "No help in here." )]
   static public List<Item>? AsOrToList<Item>
@@ -204,11 +204,11 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Creates <see cref="PriorityQueue{Item, Priority}"/> with <paramref name="priorityComparer"/> from <paramref name="enumerable"/>.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// <list type="bullet">
   /// <item>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.PriorityQueue{Item, Priority}(IComparer{Priority})"/>.  
+  /// <see cref="collections_generic.PriorityQueue{Item, Priority}(IComparer{Priority})"/>.
   /// </item>
   /// <item>
   /// When <paramref name="priorityComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Priority}.Default"/>.
@@ -231,10 +231,10 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="Queue{Item}"/>.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.Queue{Item}()"/>.  
-  /// </remarks>  
+  /// <see cref="collections_generic.Queue{Item}()"/>.
+  /// </remarks>
   static public Queue<Item>? AsOrToTypedQueue<Item>
   (
     this IEnumerable<Item>? enumerable,
@@ -404,9 +404,9 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="Stack{Item}"/>.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.Stack{Item}()"/>.  
+  /// <see cref="collections_generic.Stack{Item}()"/>.
   /// </remarks>
   static public Stack<Item>? AsOrToTypedStack<Item>
   (
@@ -422,9 +422,9 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="Array"/>.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.Array{Item}()"/>.  
+  /// <see cref="collections_generic.Array{Item}()"/>.
   /// </remarks>
   static public Item []? AsOrToArray<Item>
   (

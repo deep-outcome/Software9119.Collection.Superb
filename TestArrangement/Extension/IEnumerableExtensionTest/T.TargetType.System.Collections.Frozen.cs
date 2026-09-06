@@ -20,7 +20,7 @@ public class system_collections_frozen_test
     Func<int, int> keySelector = x => x *2;
 
     AsOrToTargetType<FrozenDictionary<int, int>> targetType = system_collections_frozen.FrozenDictionary ( keySelector, keyComparer );
-    
+
     FrozenDictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
@@ -63,7 +63,7 @@ public class system_collections_frozen_test
       valueSelector,
       keyComparer
     );
-    
+
     FrozenDictionary<int, int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );

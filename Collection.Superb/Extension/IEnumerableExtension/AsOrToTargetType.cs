@@ -109,7 +109,7 @@ public class AsOrToTargetType<Target>
   /// <summary>
   /// Empty instance of <typeparamref name="Target"/> constructor.
   /// </summary>
-  /// <exception cref="ArgumentNullException">When <see langword="value"/> is <see langword="null"/>.</exception>  
+  /// <exception cref="ArgumentNullException">When <see langword="value"/> is <see langword="null"/>.</exception>
   public Empty<Target> Empty
   {
     get => empty;
@@ -141,7 +141,7 @@ public class AsOrToTargetType<Target>
   /// <summary>
   /// Target type <typeparamref name="Target"/> constructor.
   /// </summary>
-  /// <exception cref="ArgumentNullException">When <see langword="value"/> is <see langword="null"/>.</exception>  
+  /// <exception cref="ArgumentNullException">When <see langword="value"/> is <see langword="null"/>.</exception>
   public Ctor<Target> Ctor
   {
     get => ctor;

@@ -12,19 +12,19 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableArray{Item}"/>.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// <list type="bullet">
   /// <item>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_immutable.ImmutableArray{Item}(bool)"/>.  
-  /// </item>  
+  /// <see cref="collections_immutable.ImmutableArray{Item}(bool)"/>.
+  /// </item>
   /// <item>
   /// When <paramref name="length"/> is specified and <paramref name="enforceLengthCountMatch"/> is set to <see langword="true"/>
   /// and <paramref name="enumerable"/> is not castable and its count does not equal to <paramref name="length"/>,
   /// <see cref="System.InvalidOperationException"/> is thrown from within infrastructure.
   /// </item>
   /// </list>
-  /// </remarks>  
+  /// </remarks>
   static public ImmutableArray<Item> AsOrToImmutableArray<Item>
   (
     this IEnumerable<Item>? enumerable,
@@ -87,7 +87,7 @@ static public partial class IEnumerableExtension
   /// </item>
   /// <item>
   /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
-  /// </item>  
+  /// </item>
   /// <item>
   /// When <paramref name="valueComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Value}.Default"/>.
   /// </item>

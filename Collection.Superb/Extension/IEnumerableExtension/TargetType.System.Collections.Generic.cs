@@ -211,7 +211,7 @@ static public class system_collections_generic
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1?view=net-10.0">
   /// Queue&lt;Item&gt;</see>.
-  /// </summary>  
+  /// </summary>
   static public AsOrToTargetType<Queue<Item>> Queue<Item> ()
   {
     Ctor<Item, Queue<Item>> typedCtor = (e, c) =>
@@ -373,7 +373,7 @@ static public class system_collections_generic
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.array?view=net-10.0">
   /// Item[]</see>.
-  /// </summary>  
+  /// </summary>
   static public AsOrToTargetType<Item []> Array<Item> ()
   {
     Ctor<Item, Item[]> typedCtor = (e, c) =>

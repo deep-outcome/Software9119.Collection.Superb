@@ -69,8 +69,8 @@ This namespace contains types with extension methods.
         Func<int, object> keySelector = x => x * 10;
         Func<int, object> valueSelector = x => x * 20;
         IEnumerable<int> source = Enumerable.Range(0, 10);
-        
-        SortedList list = source.IntoSortedList(keySelector, valueSelector, capacity: 1000)!;        
+
+        SortedList list = source.IntoSortedList(keySelector, valueSelector, capacity: 1000)!;
         ```
         - [`ArrayList? AsOrToArrayList<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.cs#L17) – casts or copies `IEnumerable<T>` into array list.
         - [`ArrayList? AsOrToArrayList(IEnumerable?, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.cs#L27) – casts or copies `IEnumerable` into array list.
