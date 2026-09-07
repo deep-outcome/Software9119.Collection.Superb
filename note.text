@@ -2,6 +2,6 @@
 - System.Collections.ObjectModel
 - System.Collections.Specialized
 
-- rework read-only extensions when finished with asOrTo (remove default capacities)
+- rework read-only extensions when finished with asOrTo (remove default capacities) + have a look at BlockingCollection<T>
 - add other As read-only wrapper methods
 - add Capacitor

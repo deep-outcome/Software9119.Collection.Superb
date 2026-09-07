@@ -112,4 +112,21 @@ public class system_collections_concurrent_tests
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
+
+  [TestMethod]
+  public void ConcurrentQueue ()
+  {
+    AsOrToTargetType<ConcurrentQueue <int>> targetType = collections_concurrent.ConcurrentQueue<int>();
+
+    ConcurrentQueue <int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    ConcurrentQueue <int> target = targetType.Ctor(source);
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.SequenceEqual ( target ) );
+  }
 }

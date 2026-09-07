@@ -145,3 +145,4 @@ This namespace contains types with extension methods.
         - `ConcurrentBag<Item>? AsOrToConcurrentBag<Item>(IEnumerable<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into concurrent bag
         - `ConcurrentDictionary<Key, Item>? IntoConcurrentDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, int?, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates concurrent dictionary from `IEnumerable<T>`
         - `ConcurrentDictionary<Key, Value>? IntoConcurrentDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates concurrent dictionary from `IEnumerable<T>`
+        - `ConcurrentQueue<Item>? AsOrToConcurrentQueue<Item>(IEnumerable<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into concurrent queue

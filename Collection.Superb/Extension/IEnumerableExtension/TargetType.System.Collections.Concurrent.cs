@@ -86,4 +86,19 @@ static public class system_collections_concurrent
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
 
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.ConcurrentQueue-1?view=net-10.0">
+  /// ConcurrentQueue&lt;Item&gt;</see>.
+  /// </summary>
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
+  [SuppressMessage ( "Style", "IDE0306:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ConcurrentQueue<Item>> ConcurrentQueue<Item> ()
+  {
+    Ctor<Item, ConcurrentQueue <Item>> typedCtor = (e) => new (e);
+
+    Empty<ConcurrentQueue <Item>> empty = () => new ();
+    CanCast? canCast = null;
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+  }
 }
