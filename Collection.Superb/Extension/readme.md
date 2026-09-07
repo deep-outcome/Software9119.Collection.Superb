@@ -6,9 +6,9 @@ This namespace contains types with extension methods.
 
 - [`ObjectExtension`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/ObjectExtension.cs) – banal _object_ extension methods, barely noteworthy.
 - `IEnumerableExtension`
-    - `As` prefixed stands for:
-        - Trying source enumerable cast to target type first, `AsOrTo` methods only.
-        - If target type is wrapper-like, method tries casting to necessary type first, e.g. `IEnumerable<Item>` -> `IList<Item>` -> `ReadOnlyCollection<Item>`, `AsOrTo` methods only.
+    - `As` prefix of method expresses its casting and wrapping behavior, i.e:
+        - Trying source enumerable cast to target type before actual enumeration is done.
+        - If target type is wrapper-like, method tries casting to expected intermediate type before enumeration, e.g. `IEnumerable<Item>` -> `IList<Item>` -> `ReadOnlyCollection<Item>`.
         - 'Putting' source enumerable into target type, like `IDictionary<Key, Value>` into `ReadOnlyDictionary<Key, Value>`.
     - `Into` prefixed method implies source enumerable enumeration (copying, transforming) into target type.
     - `AsOrTo` methods do `As` and `Into` both as described above.

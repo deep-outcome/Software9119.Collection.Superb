@@ -462,4 +462,26 @@ public partial class IEnumerableExtensionTest
     ReadOnlyDictionary<int, int> test = source.AsReadOnlyDictionary()!;
     Assert.IsTrue ( ReferenceEquals ( source, Dictionary ( test ) ) );
   }
+
+  [TestMethod]
+  public void AsReadOnlyDictionary_ReadOnlyDictionaryAlready ()
+  {
+    ReadOnlyDictionary<int, int> source = new [] { 1,2,3 }.ToDictionary(x => x).AsReadOnly();
+    ReadOnlyDictionary<int, int> test = source.AsReadOnlyDictionary()!;
+    Assert.IsTrue ( ReferenceEquals ( source, test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsReadOnlyDictionary_NullBehavior ( NullBehavior? behavior )
+  {
+    Dictionary<int, int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ReadOnlyDictionary<int, int>? test = returnsDefault
+      ? source.AsReadOnlyDictionary(behavior: behavior!.Value)
+      : source.AsReadOnlyDictionary();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

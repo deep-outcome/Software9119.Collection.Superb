@@ -183,6 +183,9 @@ static public partial class IEnumerableExtension
       };
     }
 
+    if (dict is ReadOnlyDictionary<Key, Value> ro)
+      return ro;
+
     return new ReadOnlyDictionary<Key, Value> ( dict );
   }
 }
