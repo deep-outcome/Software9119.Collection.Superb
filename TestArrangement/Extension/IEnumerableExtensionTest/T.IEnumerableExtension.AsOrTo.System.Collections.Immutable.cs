@@ -405,4 +405,17 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.IsEmpty ?? false, returnsDefault == false );
   }
+
+  // readme
+
+  [TestMethod]
+  public void Immutable_Sample ()
+  {
+    // immutable array sample
+    const int count = 10;
+    IEnumerable<int> source = Enumerable.Range(0, count);
+    ImmutableArray<int>? test = source.AsOrToImmutableArray(length: count, enforceLengthCountMatch: true);
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
 }
