@@ -210,9 +210,8 @@ static public class system_collections_generic
       return result;
     };
 
-    Empty<PriorityQueue<Item,Priority>> empty = () => new ( priorityComparer );
-    CanCast canCast = e => false;
-    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+    Empty<PriorityQueue<Item,Priority>> empty = () => new ( priorityComparer );    
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
 
   /// <summary>

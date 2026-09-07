@@ -26,8 +26,7 @@ static public class system_collections_concurrent
     Ctor<Item, ConcurrentBag <Item>> typedCtor = (e) => new (e);
 
     Empty<ConcurrentBag <Item>> empty = () => new ();
-    CanCast? canCast = null;
-    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
   /// <summary>
@@ -98,8 +97,7 @@ static public class system_collections_concurrent
     Ctor<Item, ConcurrentQueue <Item>> typedCtor = (e) => new (e);
 
     Empty<ConcurrentQueue <Item>> empty = () => new ();
-    CanCast? canCast = null;
-    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
   /// <summary>
@@ -114,8 +112,7 @@ static public class system_collections_concurrent
     Ctor<Item, ConcurrentStack <Item>> typedCtor = (e) => new (e);
 
     Empty<ConcurrentStack <Item>> empty = () => new ();
-    CanCast? canCast = null;
-    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
   /// <summary>

@@ -72,8 +72,6 @@ sealed class Program
     IEnumerable<int> sourceOfT = Enumerable.Range(1, 10);
     IEnumerable source = Enumerable.Range(1, 10);
 
-    //sourceOfT.IntoTypedSortedList
-
     // UnsupportedNullBehaviorException
     // Software9119.Collection.Superb.Extension.system_collections.Queue
     //Software9119.Collection.Superb.Extension.AsOrToTargetType

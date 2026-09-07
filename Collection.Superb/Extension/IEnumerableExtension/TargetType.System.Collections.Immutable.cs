@@ -129,9 +129,8 @@ static public class system_collections_immutable
   {
     Ctor<Item, ImmutableList <Item>> typedCtor = (e) => Immutable.ImmutableList.CreateRange (e);
 
-    Empty<ImmutableList <Item>> empty = () => Immutable.ImmutableList<Item>.Empty;
-    CanCast? canCast = null;
-    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+    Empty<ImmutableList <Item>> empty = () => Immutable.ImmutableList<Item>.Empty;    
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
   /// <summary>
@@ -145,9 +144,8 @@ static public class system_collections_immutable
   {
     Ctor<Item, ImmutableQueue <Item>> typedCtor = (e) => Immutable.ImmutableQueue.CreateRange (e);
 
-    Empty<ImmutableQueue <Item>> empty = () => Immutable.ImmutableQueue<Item>.Empty;
-    CanCast? canCast = null;
-    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+    Empty<ImmutableQueue <Item>> empty = () => Immutable.ImmutableQueue<Item>.Empty;    
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
   /// <summary>
@@ -235,8 +233,7 @@ static public class system_collections_immutable
   {
     Ctor<Item, ImmutableStack <Item>> typedCtor = (e) => Immutable.ImmutableStack.CreateRange (e);
 
-    Empty<ImmutableStack <Item>> empty = () => Immutable.ImmutableStack<Item>.Empty;
-    CanCast? canCast = null;
-    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+    Empty<ImmutableStack <Item>> empty = () => Immutable.ImmutableStack<Item>.Empty;    
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 }
