@@ -15,8 +15,8 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_immutable.ImmutableArray{Item}(bool)"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_immutable.ImmutableArray{Item}(bool, int?)"/>.
   /// </item>
   /// <item>
   /// When <paramref name="length"/> is specified and <paramref name="enforceLengthCountMatch"/> is set to <see langword="true"/>
@@ -33,8 +33,8 @@ static public partial class IEnumerableExtension
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
-    AsOrToTargetType<ImmutableArray<Item>> targetType = collections_immutable.ImmutableArray<Item>(enforceLengthCountMatch);
-    return enumerable.AsOrTo ( targetType, length, behavior );
+    AsOrToTargetType<ImmutableArray<Item>> targetType = collections_immutable.ImmutableArray<Item>(enforceLengthCountMatch, length);
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -44,7 +44,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_immutable.ImmutableDictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key}, IEqualityComparer{Item})"/>.
   /// </item>
   /// <item>
@@ -72,7 +72,7 @@ static public partial class IEnumerableExtension
       keyComparer,
       itemComparer
     );
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -82,7 +82,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_immutable.ImmutableDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key}, IEqualityComparer{Value})"/>.
   /// </item>
   /// <item>
@@ -112,7 +112,7 @@ static public partial class IEnumerableExtension
       keyComparer,
       valueComparer
     );
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -121,7 +121,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_immutable.ImmutableHashSet{Item}(IEqualityComparer{Item})"/>.
   /// </item>
   /// <item>
@@ -143,14 +143,14 @@ static public partial class IEnumerableExtension
     itemComparer ??= EqualityComparer<Item>.Default;
     AsOrToTargetType<ImmutableHashSet<Item>> targetType = collections_immutable.ImmutableHashSet(itemComparer);
 
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableList {Item}"/>.
   /// </summary>
   /// <remarks>  
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_immutable.ImmutableList {Item}()"/>.  
   /// </remarks>
   static public ImmutableList<Item>? AsOrToImmutableList<Item>
@@ -160,14 +160,14 @@ static public partial class IEnumerableExtension
   )
   {
     AsOrToTargetType<ImmutableList <Item>> targetType = collections_immutable.ImmutableList<Item> ();
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableQueue {Item}"/>.
   /// </summary>
   /// <remarks>  
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_immutable.ImmutableQueue {Item}()"/>.  
   /// </remarks>
   static public ImmutableQueue<Item>? AsOrToImmutableQueue<Item>
@@ -177,7 +177,7 @@ static public partial class IEnumerableExtension
   )
   {
     AsOrToTargetType<ImmutableQueue <Item>> targetType = collections_immutable.ImmutableQueue<Item> ();
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
 
@@ -188,7 +188,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_immutable.ImmutableSortedDictionary{Item, Key}(Func{Item, Key}, IComparer{Key}, IEqualityComparer{Item})"/>.
   /// </item>
   /// <item>
@@ -216,7 +216,7 @@ static public partial class IEnumerableExtension
       keyComparer,
       itemComparer
     );
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -226,7 +226,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_immutable.ImmutableSortedDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IComparer{Key}, IEqualityComparer{Value})"/>.
   /// </item>
   /// <item>
@@ -256,7 +256,7 @@ static public partial class IEnumerableExtension
       keyComparer,
       valueComparer
     );
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -265,7 +265,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_immutable.ImmutableSortedSet{Item}(IComparer{Item})"/>.
   /// </item>
   /// <item>
@@ -287,14 +287,14 @@ static public partial class IEnumerableExtension
     itemComparer ??= Comparer<Item>.Default;
     AsOrToTargetType<ImmutableSortedSet<Item>> targetType = collections_immutable.ImmutableSortedSet(itemComparer);
 
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableStack {Item}"/>.
   /// </summary>
   /// <remarks>  
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_immutable.ImmutableStack {Item}()"/>.  
   /// </remarks>
   static public ImmutableStack<Item>? AsOrToImmutableStack<Item>
@@ -304,6 +304,6 @@ static public partial class IEnumerableExtension
   )
   {
     AsOrToTargetType<ImmutableStack <Item>> targetType = collections_immutable.ImmutableStack<Item> ();
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 }

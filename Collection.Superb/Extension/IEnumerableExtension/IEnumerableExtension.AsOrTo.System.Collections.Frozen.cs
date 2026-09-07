@@ -16,7 +16,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_frozen.FrozenDictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -33,7 +33,7 @@ static public partial class IEnumerableExtension
   {
     keyComparer ??= EqualityComparer<Key>.Default;
     AsOrToTargetType<FrozenDictionary<Key, Item>> targetType = collections_frozen.FrozenDictionary ( keySelector, keyComparer );
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -43,7 +43,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_frozen.FrozenDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -66,7 +66,7 @@ static public partial class IEnumerableExtension
       valueSelector,
       keyComparer
     );
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -75,7 +75,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_frozen.FrozenSet{Item}(IEqualityComparer{Item})"/>.
   /// </item>
   /// <item>
@@ -97,6 +97,6 @@ static public partial class IEnumerableExtension
     itemComparer ??= EqualityComparer<Item>.Default;
     AsOrToTargetType<FrozenSet<Item>> targetType = collections_frozen.FrozenSet(itemComparer);
 
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 }

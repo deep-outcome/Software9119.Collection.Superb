@@ -50,7 +50,7 @@ static public class system_collections_frozen
     if (keyComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
 
-    Ctor<Item, FrozenDictionary<Key,Value>> typedCtor = (e, c) =>
+    Ctor<Item, FrozenDictionary<Key,Value>> typedCtor = (e) =>
     {
       FrozenDictionary<Key,Value> result = FrozenDict.ToFrozenDictionary(e, keySelector, valueSelector, keyComparer);
       return result;
@@ -70,7 +70,7 @@ static public class system_collections_frozen
     if (itemComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
 
-    Ctor<Item, FrozenSet<Item>> typedCtor = (e, c) =>
+    Ctor<Item, FrozenSet<Item>> typedCtor = (e) =>
     {
       FrozenSet<Item> result = Frozen.FrozenSet.ToFrozenSet(e, itemComparer);
       return result;

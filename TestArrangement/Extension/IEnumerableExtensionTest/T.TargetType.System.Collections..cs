@@ -19,12 +19,12 @@ public class system_collections_test
   [DataRow ( null )]
   public void ArrayList ( int? capacity )
   {
-    AsOrToTargetType<ArrayList> targetType = system_collections.ArrayList();
+    AsOrToTargetType<ArrayList> targetType = system_collections.ArrayList(capacity);
 
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
-    ArrayList target = targetType.Ctor(source, capacity);
+    ArrayList target = targetType.Ctor(source);
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
@@ -38,11 +38,11 @@ public class system_collections_test
   [DataRow ( null )]
   public void ArrayList_ICollection ( int? capacity )
   {
-    AsOrToTargetType<ArrayList> targetType = system_collections.ArrayList();
+    AsOrToTargetType<ArrayList> targetType = system_collections.ArrayList(capacity);
 
     ICollection source = XEnumerable.ObjectsEnumerable(2).ToList();
 
-    ArrayList target = targetType.Ctor(source, capacity);
+    ArrayList target = targetType.Ctor(source);
     Assert.IsTrue ( source.Cast<object> ().SequenceEqual ( target.Cast<object> () ) );
 
     Assert.AreEqual ( capacity ?? target.Count, target.Capacity );
@@ -61,13 +61,13 @@ public class system_collections_test
       : x => x.GetHashCode() * 2;
 
     AsOrToTargetType<Hashtable> targetType = keySelectorOnly
-      ? system_collections.Hashtable ( keySelector)
-      : system_collections.Hashtable(keySelector, valueSelector);
+      ? system_collections.Hashtable ( keySelector, capacity)
+      : system_collections.Hashtable(keySelector, valueSelector, capacity);
 
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
-    Hashtable target = targetType.Ctor(source, capacity);
+    Hashtable target = targetType.Ctor(source);
 
     Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.IsFalse ( targetType.CanCast ( target ) );
@@ -95,8 +95,8 @@ public class system_collections_test
     Func<object, object> valueSelector = x => x;
 
     Action test = keySelectorOnly
-      ? () => system_collections.Hashtable ( keySelector)
-      : () => system_collections.Hashtable(keySelector, valueSelector);
+      ? () => system_collections.Hashtable ( keySelector, null)
+      : () => system_collections.Hashtable(keySelector, valueSelector, null);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
     Assert.AreEqual ( "Key selector not provided. (Parameter 'keySelector')", e.Message );
@@ -108,7 +108,7 @@ public class system_collections_test
     Func<object, object> keySelector = x => x;
     Func<object, object> valueSelector = null!;
 
-    Action test = () => system_collections.Hashtable(keySelector, valueSelector);
+    Action test = () => system_collections.Hashtable(keySelector, valueSelector, null);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
     Assert.AreEqual ( "Value selector not provided. (Parameter 'valueSelector')", e.Message );
@@ -119,13 +119,13 @@ public class system_collections_test
   [DataRow ( null )]
   public void Queue ( int? capacity )
   {
-    AsOrToTargetType<Queue> targetType = system_collections.Queue();
+    AsOrToTargetType<Queue> targetType = system_collections.Queue(capacity);
 
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
 
-    Queue target = targetType.Ctor(source, capacity);
+    Queue target = targetType.Ctor(source);
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
@@ -141,11 +141,11 @@ public class system_collections_test
   [DataRow ( null )]
   public void Queue_ICollection ( int? capacity )
   {
-    AsOrToTargetType<Queue> targetType = system_collections.Queue();
+    AsOrToTargetType<Queue> targetType = system_collections.Queue(capacity);
 
     ICollection source = XEnumerable.ObjectsEnumerable(2).ToList();
 
-    Queue target = targetType.Ctor(source, capacity);
+    Queue target = targetType.Ctor(source);
     Assert.IsTrue ( source.Cast<object> ().SequenceEqual ( target.Cast<object> () ) );
 
     Array storage = (Array)Reflection.GetNonPublicFieldValue(target, "_array");
@@ -165,13 +165,13 @@ public class system_collections_test
       : x => x.GetHashCode() * 2;
 
     AsOrToTargetType<SortedList> targetType = keySelectorOnly
-      ? system_collections.SortedList ( keySelector)
-      : system_collections.SortedList(keySelector, valueSelector);
+      ? system_collections.SortedList ( keySelector, capacity)
+      : system_collections.SortedList(keySelector, valueSelector, capacity);
 
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(2);
-    SortedList target = targetType.Ctor(source, capacity);
+    SortedList target = targetType.Ctor(source);
 
     Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.IsFalse ( targetType.CanCast ( target ) );
@@ -198,8 +198,8 @@ public class system_collections_test
     Func<object, object> valueSelector = x => x;
 
     Action test = keySelectorOnly
-      ? () => system_collections.SortedList ( keySelector)
-      : () => system_collections.SortedList(keySelector, valueSelector);
+      ? () => system_collections.SortedList ( keySelector, null)
+      : () => system_collections.SortedList(keySelector, valueSelector, null);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
     Assert.AreEqual ( "Key selector not provided. (Parameter 'keySelector')", e.Message );
@@ -211,7 +211,7 @@ public class system_collections_test
     Func<object, object> keySelector = x => x;
     Func<object, object> valueSelector = null!;
 
-    Action test = () => system_collections.SortedList(keySelector, valueSelector);
+    Action test = () => system_collections.SortedList(keySelector, valueSelector, null);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
     Assert.AreEqual ( "Value selector not provided. (Parameter 'valueSelector')", e.Message );
@@ -222,13 +222,13 @@ public class system_collections_test
   [DataRow ( null )]
   public void Stack ( int? capacity )
   {
-    AsOrToTargetType<Stack> targetType = system_collections.Stack();
+    AsOrToTargetType<Stack> targetType = system_collections.Stack(capacity);
 
     Assert.HasCount ( 0, targetType.Empty () );
 
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(4);
 
-    Stack target = targetType.Ctor(source, capacity);
+    Stack target = targetType.Ctor(source);
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
@@ -245,11 +245,11 @@ public class system_collections_test
   [SuppressMessage ( "Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "Obviousity." )]
   public void Stack_ICollection ( int? capacity )
   {
-    AsOrToTargetType<Stack> targetType = system_collections.Stack();
+    AsOrToTargetType<Stack> targetType = system_collections.Stack(capacity);
 
     ICollection source = XEnumerable.ObjectsEnumerable(12).ToList();
 
-    Stack target = targetType.Ctor(source, capacity);
+    Stack target = targetType.Ctor(source);
     Assert.IsTrue ( source.Cast<object> ().SequenceEqual ( target.Cast<object> ().Reverse () ) );
 
     Array storage = (Array)Reflection.GetNonPublicFieldValue(target, "_array");

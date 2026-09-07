@@ -21,7 +21,7 @@ static public class system_collections_concurrent
   [SuppressMessage ( "Style", "IDE0306:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ConcurrentBag<Item>> ConcurrentBag<Item> ()
   {
-    Ctor<Item, ConcurrentBag <Item>> typedCtor = (e, c) => new (e);
+    Ctor<Item, ConcurrentBag <Item>> typedCtor = (e) => new (e);
 
     Empty<ConcurrentBag <Item>> empty = () => new ();
     CanCast? canCast = null;

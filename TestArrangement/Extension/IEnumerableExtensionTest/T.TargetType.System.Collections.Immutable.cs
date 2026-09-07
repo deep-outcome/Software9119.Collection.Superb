@@ -21,14 +21,14 @@ public class system_collections_immutable_test
   [DataRow ( null )]
   public void ImmutableArray ( int? capacity )
   {
-    AsOrToTargetType<ImmutableArray<int>> targetType = collections_immutable.ImmutableArray<int> ( false );
+    AsOrToTargetType<ImmutableArray<int>> targetType = collections_immutable.ImmutableArray<int> ( false, capacity );
 
     ImmutableArray<int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
 
     const int count = 10;
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, count);
-    ImmutableArray<int> target = targetType.Ctor(source, capacity);
+    ImmutableArray<int> target = targetType.Ctor(source);
 
     Assert.HasCount ( count, target );
 
@@ -41,10 +41,10 @@ public class system_collections_immutable_test
   [TestMethod]
   public void ImmutableArray_ExactLengthEnforcement ()
   {
-    AsOrToTargetType<ImmutableArray<int>> targetType = collections_immutable.ImmutableArray<int> ( true );
+    AsOrToTargetType<ImmutableArray<int>> targetType = collections_immutable.ImmutableArray<int> ( true, 1000 );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    Action test = () => _ = targetType.Ctor(source, 1000);
+    Action test = () => _ = targetType.Ctor(source);
 
     Exception e = Assert.ThrowsExactly<InvalidOperationException> ( test );
     Assert.AreEqual ( "MoveToImmutable can only be performed when Count equals Capacity.", e.Message );
@@ -70,7 +70,7 @@ public class system_collections_immutable_test
     Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.ValueComparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    ImmutableDictionary<int, int> target = targetType.Ctor(source, null);
+    ImmutableDictionary<int, int> target = targetType.Ctor(source);
 
     Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.IsFalse ( targetType.CanCast ( target ) );
@@ -124,7 +124,7 @@ public class system_collections_immutable_test
     Assert.IsTrue ( ReferenceEquals ( valueComparer, empty.ValueComparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    ImmutableDictionary<int, int> target = targetType.Ctor(source, null);
+    ImmutableDictionary<int, int> target = targetType.Ctor(source);
 
     Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.IsFalse ( targetType.CanCast ( target ) );
@@ -171,7 +171,7 @@ public class system_collections_immutable_test
     Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.KeyComparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    ImmutableHashSet<int> target = targetType.Ctor(source, null);
+    ImmutableHashSet<int> target = targetType.Ctor(source);
 
     Assert.IsTrue ( ReferenceEquals ( itemComparer, target.KeyComparer ) );
 
@@ -200,7 +200,7 @@ public class system_collections_immutable_test
     Assert.HasCount ( 0, empty );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    ImmutableList <int> target = targetType.Ctor(source, null);
+    ImmutableList <int> target = targetType.Ctor(source);
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
@@ -217,7 +217,7 @@ public class system_collections_immutable_test
     Assert.HasCount ( 0, empty );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    ImmutableQueue <int> target = targetType.Ctor(source, null);
+    ImmutableQueue <int> target = targetType.Ctor(source);
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
@@ -245,7 +245,7 @@ public class system_collections_immutable_test
     Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.ValueComparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    ImmutableSortedDictionary<int, int> target = targetType.Ctor(source, null);
+    ImmutableSortedDictionary<int, int> target = targetType.Ctor(source);
 
     Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.IsFalse ( targetType.CanCast ( target ) );
@@ -301,7 +301,7 @@ public class system_collections_immutable_test
     Assert.IsTrue ( ReferenceEquals ( valueComparer, empty.ValueComparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    ImmutableSortedDictionary<int, int> target = targetType.Ctor(source, null);
+    ImmutableSortedDictionary<int, int> target = targetType.Ctor(source);
 
     Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.IsFalse ( targetType.CanCast ( target ) );
@@ -349,7 +349,7 @@ public class system_collections_immutable_test
     Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.KeyComparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    ImmutableSortedSet<int> target = targetType.Ctor(source, null);
+    ImmutableSortedSet<int> target = targetType.Ctor(source);
 
     Assert.IsTrue ( ReferenceEquals ( itemComparer, target.KeyComparer ) );
 
@@ -378,7 +378,7 @@ public class system_collections_immutable_test
     Assert.HasCount ( 0, empty );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    ImmutableStack <int> target = targetType.Ctor(source, null);
+    ImmutableStack <int> target = targetType.Ctor(source);
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );

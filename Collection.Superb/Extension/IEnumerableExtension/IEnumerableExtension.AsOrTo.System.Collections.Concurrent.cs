@@ -12,7 +12,7 @@ static public partial class IEnumerableExtension
   /// Casts or copies <paramref name="enumerable"/> into <see cref="ConcurrentBag {Item}"/>.
   /// </summary>
   /// <remarks>  
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_concurrent.ConcurrentBag {Item}()"/>.  
   /// </remarks>
   static public ConcurrentBag<Item>? AsOrToConcurrentBag<Item>
@@ -22,6 +22,6 @@ static public partial class IEnumerableExtension
   )
   {
     AsOrToTargetType<ConcurrentBag <Item>> targetType = collections_concurrent.ConcurrentBag<Item> ();
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 }

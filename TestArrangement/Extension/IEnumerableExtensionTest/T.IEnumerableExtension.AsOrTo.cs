@@ -17,19 +17,15 @@ public partial class IEnumerableExtensionTest
 {
   static public AsOrToTargetType<List<int>> TargetClass ( bool canCast )
   {
-    Ctor<int, List<int>> ctor = ( e, c ) =>
-    {
-      List<int> output = c is int capacity ? new (10 * capacity) : new();
-      output.AddRange(e);
-      return output;
-    };
+    Ctor<int, List<int>> ctor = ( e ) => [ .. e ];
+
     AsOrToTargetType<List<int>> targetType = AsOrToTargetType.FromTypedCtor(ctor, e => canCast, () => []);
     return targetType;
   }
 
   static public AsOrToTargetType<ArraySegment<int>> TargetStruct ()
   {
-    Ctor<int, ArraySegment<int>> ctor = (e, c) => new ([ .. e ]);
+    Ctor<int, ArraySegment<int>> ctor = (e) => new ([ .. e ]);
     AsOrToTargetType<ArraySegment<int>> targetType = AsOrToTargetType.FromTypedCtor(ctor, e => default, () => default);
     return targetType;
   }
@@ -106,19 +102,6 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  [DataRow ( 4, 40 )]
-  [DataRow ( null, 4 )]
-  public void AsOrTo_Capacity ( int capacity, int listCapacity )
-  {
-    AsOrToTargetType<List<int>> targetType = TargetClass(default);
-
-    int [] source = [0,1,2,3 ];
-    List<int> test = source.AsOrTo ( targetType, capacity: capacity )!;
-    Assert.IsTrue ( source.SequenceEqual ( test ) );
-    Assert.AreEqual ( listCapacity, test.Capacity );
-  }
-
-  [TestMethod]
   public void AsOrTo_Enumeration ()
   {
     AsOrToTargetType<List<int>> targetType = TargetClass(default);
@@ -140,10 +123,10 @@ public partial class IEnumerableExtensionTest
   [SuppressMessage ( "Style", "IDE0040:Remove accessibility modifiers", Justification = "Readme style." )]
   private static AsOrToTargetType<string> CreateConstructor ()
   {
-    Ctor<int, string> builder = (e, c) =>
+    Ctor<int, string> builder = (e) =>
     {
       const int defaultCapacity = 1000;
-      StringBuilder builder = new ( c ?? defaultCapacity);
+      StringBuilder builder = new (defaultCapacity);
 
       int order = 1;
       foreach(int i in e)

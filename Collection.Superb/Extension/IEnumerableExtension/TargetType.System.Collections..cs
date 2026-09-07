@@ -16,12 +16,12 @@ static public class system_collections
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.arraylist?view=net-10.0">ArrayList</see>.
   /// </summary>
-  static public AsOrToTargetType<ArrayList> ArrayList ()
+  static public AsOrToTargetType<ArrayList> ArrayList ( int? capacity )
   {
-    Ctor<ArrayList> ctor = (e, c) =>
+    Ctor<ArrayList> ctor = (e) =>
     {
       ArrayList? result = null;
-      if(c is int cap)
+      if(capacity is int cap)
         result = new (cap);
       else if (e is ICollection coll)
         return new ArrayList ( coll);
@@ -40,13 +40,14 @@ static public class system_collections
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable?view=net-10.0">Hashtable</see>.
   /// </summary>
-  static public AsOrToTargetType<Hashtable> Hashtable<Item> ( Func<Item, object> keySelector ) => Hashtable ( keySelector, x => x );
+  static public AsOrToTargetType<Hashtable> Hashtable<Item> ( Func<Item, object> keySelector, int? capacity )
+    => Hashtable ( keySelector, x => x, capacity );
 
   /// <summary>
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable?view=net-10.0">Hashtable</see>.
   /// </summary>
-  static public AsOrToTargetType<Hashtable> Hashtable<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector )
+  static public AsOrToTargetType<Hashtable> Hashtable<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector, int? capacity )
   {
     if (keySelector == null)
       throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
@@ -54,9 +55,9 @@ static public class system_collections
     if (valueSelector == null)
       throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
 
-    Ctor<Hashtable> ctor = (e, c) =>
+    Ctor<Hashtable> ctor = (e) =>
     {
-      Hashtable result =  c is int cap ? new Hashtable ( cap ) : [];
+      Hashtable result =  capacity is int cap ? new Hashtable ( cap ) : [];
       foreach (Item item in e)
         result.Add ( keySelector(item), valueSelector(item) );
 
@@ -70,12 +71,12 @@ static public class system_collections
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.queue?view=net-10.0">Queue</see>.
   /// </summary>
-  static public AsOrToTargetType<Queue> Queue ()
+  static public AsOrToTargetType<Queue> Queue ( int? capacity )
   {
-    Ctor<Queue > ctor = (e, c) =>
+    Ctor<Queue > ctor = (e) =>
     {
       Queue? result = null;
-      if(c is int cap)
+      if(capacity is int cap)
         result = new (cap);
       else if (e is ICollection coll)
         return new Queue ( coll);
@@ -94,13 +95,14 @@ static public class system_collections
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-10.0">SortedList</see>.
   /// </summary>
-  static public AsOrToTargetType<SortedList> SortedList<Item> ( Func<Item, object> keySelector ) => SortedList ( keySelector, x => x );
+  static public AsOrToTargetType<SortedList> SortedList<Item> ( Func<Item, object> keySelector, int? capacity )
+    => SortedList ( keySelector, x => x, capacity );
 
   /// <summary>
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-10.0">SortedList</see>.
   /// </summary>
-  static public AsOrToTargetType<SortedList> SortedList<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector )
+  static public AsOrToTargetType<SortedList> SortedList<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector, int? capacity )
   {
     if (keySelector == null)
       throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
@@ -108,9 +110,9 @@ static public class system_collections
     if (valueSelector == null)
       throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
 
-    Ctor<SortedList> ctor = (e, c) =>
+    Ctor<SortedList> ctor = (e) =>
     {
-      SortedList result =  c is int cap ? new SortedList ( cap ) : [];
+      SortedList result =  capacity is int cap ? new SortedList ( cap ) : [];
       foreach (Item item in e)
         result.Add ( keySelector(item), valueSelector(item) );
 
@@ -124,12 +126,12 @@ static public class system_collections
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.stack.-ctor?view=net-10.0">Stack</see>.
   /// </summary>
-  static public AsOrToTargetType<Stack> Stack ()
+  static public AsOrToTargetType<Stack> Stack ( int? capacity )
   {
-    Ctor<Stack > ctor = (e, c) =>
+    Ctor<Stack > ctor = (e) =>
     {
       Stack ? result = null;
-      if(c is int cap)
+      if(capacity is int cap)
         result = new (cap);
       else if (e is ICollection coll)
         return new Stack  ( coll);

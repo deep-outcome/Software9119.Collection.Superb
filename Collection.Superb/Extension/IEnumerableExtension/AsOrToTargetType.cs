@@ -13,12 +13,12 @@ public delegate bool CanCast ( IEnumerable e );
 /// <summary>
 /// Target type typed constructor delegate.
 /// </summary>
-public delegate Target Ctor<Item, Target> ( IEnumerable<Item> e, int? capacity );
+public delegate Target Ctor<Item, Target> ( IEnumerable<Item> e );
 
 /// <summary>
 /// Target type constructor delegate.
 /// </summary>
-public delegate Target Ctor<Target> ( IEnumerable e, int? capacity );
+public delegate Target Ctor<Target> ( IEnumerable e );
 
 /// <summary>
 /// Empty target type constructor delegate.
@@ -39,11 +39,11 @@ static public class AsOrToTargetType
   /// Notice:
   /// <br/>
   /// - <paramref name="canCast"/> is used by
-  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, EnumerableNullBehavior)"/>
   /// for checking whether source enumerable can be cast to target type. Defaults to <c>e => e is Target</c>.
   /// <br/>
   /// - <paramref name="empty"/> is used by
-  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, EnumerableNullBehavior)"/>
   /// to solve <see cref="EnumerableNullBehavior.ReturnEmpty"/> null case.
   /// </remarks>
   static public AsOrToTargetType<Target> FromTypedCtor<Item, Target>
@@ -59,10 +59,10 @@ static public class AsOrToTargetType
     if (empty is null)
       throw new ArgumentNullException ( paramName: nameof ( empty ), "Empty constructor must be provided." );
 
-    Ctor<Target> conversion = ( x, c ) =>
+    Ctor<Target> conversion = (x) =>
     {
       IEnumerable<Item> e = (IEnumerable<Item>) x;
-      return ctor ( e, c );
+      return ctor ( e);
     };
 
     return new AsOrToTargetType<Target> ( conversion, canCast, empty );
@@ -70,7 +70,7 @@ static public class AsOrToTargetType
 }
 
 /// <summary>
-/// Used by <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>.
+/// Used by <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, EnumerableNullBehavior)"/>.
 /// </summary>
 public class AsOrToTargetType<Target>
 {
@@ -83,11 +83,11 @@ public class AsOrToTargetType<Target>
   /// Notice:
   /// <br/>
   /// - <paramref name="canCast"/> is used by
-  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, EnumerableNullBehavior)"/>
   /// for checking whether source enumerable can be cast to target type. Defaults to <c>e => e is Target</c>.
   /// <br/>
   /// - <paramref name="empty"/> is used by
-  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, EnumerableNullBehavior)"/>
+  /// <see cref="IEnumerableExtension.AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, EnumerableNullBehavior)"/>
   /// to solve <see cref="EnumerableNullBehavior.ReturnEmpty"/> null case.
   /// </remarks>
   public AsOrToTargetType ( Ctor<Target> ctor, CanCast? canCast, Empty<Target> empty )

@@ -16,8 +16,8 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.Dictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key})"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.Dictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key}, int?)"/>.
   /// </item>
   /// <item>
   /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
@@ -33,8 +33,8 @@ static public partial class IEnumerableExtension
     where Key : notnull
   {
     keyComparer ??= EqualityComparer<Key>.Default;
-    AsOrToTargetType<Dictionary<Key, Item>> targetType = collections_generic.Dictionary ( keySelector, keyComparer );
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    AsOrToTargetType<Dictionary<Key, Item>> targetType = collections_generic.Dictionary ( keySelector, keyComparer, capacity );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -44,8 +44,8 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.Dictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key})"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.Dictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key}, int?)"/>.
   /// </item>
   /// <item>
   /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
@@ -66,9 +66,10 @@ static public partial class IEnumerableExtension
     (
       keySelector,
       valueSelector,
-      keyComparer
+      keyComparer,
+      capacity
     );
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -77,8 +78,8 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.HashSet{Item}(IEqualityComparer{Item})"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.HashSet{Item}(IEqualityComparer{Item}, int?)"/>.
   /// </item>
   /// <item>
   /// When <paramref name="itemComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Item}.Default"/>.
@@ -98,16 +99,16 @@ static public partial class IEnumerableExtension
   )
   {
     itemComparer ??= EqualityComparer<Item>.Default;
-    AsOrToTargetType<HashSet<Item>> targetType = collections_generic.HashSet(itemComparer);
+    AsOrToTargetType<HashSet<Item>> targetType = collections_generic.HashSet(itemComparer, capacity );
 
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="LinkedList{Item}"/>.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_generic.LinkedList{Item}()"/>.
   /// </remarks>
   static public LinkedList<Item>? AsOrToLinkedList<Item>
@@ -117,15 +118,15 @@ static public partial class IEnumerableExtension
   )
   {
     AsOrToTargetType<LinkedList<Item>> targetType = collections_generic.LinkedList<Item>();
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="List{Item}"/>.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.List{Item}()"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.List{Item}(int?)"/>.
   /// </remarks>
   [SuppressMessage ( "Design", "CA1002:Do not expose generic lists", Justification = "No help in here." )]
   static public List<Item>? AsOrToList<Item>
@@ -135,8 +136,8 @@ static public partial class IEnumerableExtension
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
-    AsOrToTargetType<List<Item>> targetType = collections_generic.List<Item>();
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    AsOrToTargetType<List<Item>> targetType = collections_generic.List<Item>( capacity );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -146,8 +147,8 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.OrderedDictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key})"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.OrderedDictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key}, int?)"/>.
   /// </item>
   /// <item>
   /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
@@ -163,8 +164,8 @@ static public partial class IEnumerableExtension
     where Key : notnull
   {
     keyComparer ??= EqualityComparer<Key>.Default;
-    AsOrToTargetType<OrderedDictionary<Key, Item>> targetType = collections_generic.OrderedDictionary ( keySelector, keyComparer );
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    AsOrToTargetType<OrderedDictionary<Key, Item>> targetType = collections_generic.OrderedDictionary ( keySelector, keyComparer, capacity  );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -174,8 +175,8 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.OrderedDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key})"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.OrderedDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key}, int?)"/>.
   /// </item>
   /// <item>
   /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
@@ -196,9 +197,10 @@ static public partial class IEnumerableExtension
     (
       keySelector,
       valueSelector,
-      keyComparer
+      keyComparer,
+      capacity
     );
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -207,8 +209,8 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.PriorityQueue{Item, Priority}(IComparer{Priority})"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.PriorityQueue{Item, Priority}(IComparer{Priority}, int?)"/>.
   /// </item>
   /// <item>
   /// When <paramref name="priorityComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Priority}.Default"/>.
@@ -224,16 +226,16 @@ static public partial class IEnumerableExtension
   )
   {
     priorityComparer ??= Comparer<Priority>.Default;
-    AsOrToTargetType<PriorityQueue<Item, Priority>> targetType = collections_generic.PriorityQueue<Item, Priority>(priorityComparer);
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    AsOrToTargetType<PriorityQueue<Item, Priority>> targetType = collections_generic.PriorityQueue<Item, Priority>(priorityComparer, capacity );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="Queue{Item}"/>.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.Queue{Item}()"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.Queue{Item}(int?)"/>.
   /// </remarks>
   static public Queue<Item>? AsOrToTypedQueue<Item>
   (
@@ -242,8 +244,8 @@ static public partial class IEnumerableExtension
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
-    AsOrToTargetType<Queue<Item>> targetType = collections_generic.Queue<Item>();
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    AsOrToTargetType<Queue<Item>> targetType = collections_generic.Queue<Item>( capacity );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -253,7 +255,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_generic.SortedDictionary{Item, Key}(Func{Item, Key}, IComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -270,7 +272,7 @@ static public partial class IEnumerableExtension
   {
     keyComparer ??= Comparer<Key>.Default;
     AsOrToTargetType<SortedDictionary<Key, Item>> targetType = collections_generic.SortedDictionary ( keySelector, keyComparer );
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -280,7 +282,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_generic.SortedDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IComparer{Key})"/>.
   /// </item>
   /// <item>
@@ -303,7 +305,7 @@ static public partial class IEnumerableExtension
       valueSelector,
       keyComparer
     );
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -313,8 +315,8 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.SortedList{Item, Key}(Func{Item, Key}, IComparer{Key})"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.SortedList{Item, Key}(Func{Item, Key}, IComparer{Key}, int?)"/>.
   /// </item>
   /// <item>
   /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
@@ -330,8 +332,8 @@ static public partial class IEnumerableExtension
     where Key : notnull
   {
     keyComparer ??= Comparer<Key>.Default;
-    AsOrToTargetType<SortedList<Key, Item>> targetType = collections_generic.SortedList ( keySelector, keyComparer );
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    AsOrToTargetType<SortedList<Key, Item>> targetType = collections_generic.SortedList ( keySelector, keyComparer, capacity  );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
@@ -341,8 +343,8 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.SortedList{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IComparer{Key})"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.SortedList{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IComparer{Key}, int?)"/>.
   /// </item>
   /// <item>
   /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
@@ -363,9 +365,10 @@ static public partial class IEnumerableExtension
     (
       keySelector,
       valueSelector,
-      keyComparer
+      keyComparer,
+      capacity
     );
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
 
@@ -375,7 +378,7 @@ static public partial class IEnumerableExtension
   /// <remarks>
   /// <list type="bullet">
   /// <item>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_generic.SortedSet{Item}(IComparer{Item})"/>.
   /// </item>
   /// <item>
@@ -397,7 +400,7 @@ static public partial class IEnumerableExtension
     itemComparer ??= Comparer<Item>.Default;
     AsOrToTargetType<SortedSet<Item>> targetType = collections_generic.SortedSet(itemComparer);
 
-    return enumerable.AsOrTo ( targetType, null, behavior );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
 
@@ -405,8 +408,8 @@ static public partial class IEnumerableExtension
   /// Casts or copies <paramref name="enumerable"/> into <see cref="Stack{Item}"/>.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.Stack{Item}()"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.Stack{Item}(int?)"/>.
   /// </remarks>
   static public Stack<Item>? AsOrToTypedStack<Item>
   (
@@ -415,16 +418,16 @@ static public partial class IEnumerableExtension
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
-    AsOrToTargetType<Stack<Item>> targetType = collections_generic.Stack<Item>();
-    return enumerable.AsOrTo ( targetType, capacity, behavior );
+    AsOrToTargetType<Stack<Item>> targetType = collections_generic.Stack<Item>( capacity );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="Array"/>.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, int?, NullBehavior)"/> with
-  /// <see cref="collections_generic.Array{Item}()"/>.
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.Array{Item}(int?)"/>.
   /// </remarks>
   static public Item []? AsOrToArray<Item>
   (
@@ -436,7 +439,7 @@ static public partial class IEnumerableExtension
     if (length < 0)
       throw new ArgumentOutOfRangeException ( paramName: nameof ( length ), "Array length must be non-negative." );
 
-    AsOrToTargetType<Item[]> targetType = collections_generic.Array<Item>();
-    return enumerable.AsOrTo ( targetType, length, behavior );
+    AsOrToTargetType<Item[]> targetType = collections_generic.Array<Item>( length );
+    return enumerable.AsOrTo ( targetType, behavior );
   }
 }

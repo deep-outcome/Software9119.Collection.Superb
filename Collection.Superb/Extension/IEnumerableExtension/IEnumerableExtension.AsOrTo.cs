@@ -7,7 +7,7 @@ namespace Software9119.Collection.Superb.Extension;
 static public partial class IEnumerableExtension
 {
   /// <summary>
-  /// Engine behind <c>AsOrTo</c> methods consuming <see cref="IEnumerable"/> and <see cref="IEnumerable{T}"/> .
+  /// Engine behind <c>AsOrTo</c> and <c>Into</c> methods consuming <see cref="IEnumerable"/> and <see cref="IEnumerable{T}"/> .
   /// </summary>
   /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
   /// <exception cref="ArgumentNullException">
@@ -16,26 +16,14 @@ static public partial class IEnumerableExtension
   /// </exception>
   /// <exception cref="ArgumentNullException">When <paramref name="asOrToType"/> is <see langword="null"/>.</exception>
   /// <remarks>
-  /// <list type="bullet">
-  /// <item>
-  /// <paramref name="capacity"/> is passed to <see cref="AsOrToTargetType{Target}.Ctor"/>.
-  /// </item>
-  /// <item>
-  /// This means it is client code responsibility to ensure correct behavior of constructor with capacity provided, e.g.
-  /// its suffieciency or  non-exceedance.
-  /// </item>
-  /// <item>
   /// When <paramref name="behavior"/> is <see cref="NullBehavior.ReturnEmpty"/>
   /// and <paramref name="enumerable"/> is <see langword="null"/>, <see cref="AsOrToTargetType{Target}.Empty"/> result
   /// is returned.
-  /// </item>
-  /// </list>
   /// </remarks>
   static public Target? AsOrTo<Target>
   (
     this IEnumerable? enumerable,
     AsOrToTargetType<Target> asOrToType,
-    int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
@@ -58,9 +46,9 @@ static public partial class IEnumerableExtension
     }
 
     if (asOrToType.CanCast ( enumerable ))
-        return (Target) enumerable;
+      return (Target) enumerable;
 
-    return asOrToType.Ctor ( enumerable, capacity );
+    return asOrToType.Ctor ( enumerable );
   }
 }
 

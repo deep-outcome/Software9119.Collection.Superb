@@ -29,19 +29,19 @@ This namespace contains types with extension methods.
 
         private static AsOrToTargetType<string> CreateConstructor ()
         {
-          Ctor<int, string> builder = (e, c) =>
+          Ctor<int, string> builder = (e) =>
           {
             const int defaultCapacity = 1000;
-            StringBuilder builder = new ( c ?? defaultCapacity);
+            StringBuilder builder = new (defaultCapacity);
 
             int order = 1;
             foreach(int i in e)
               builder.AppendLine(CultureInfo.InvariantCulture, $"{order++}: {i}");
 
             return builder.ToString();
-           };
+          };
 
-           return AsOrToTargetType.FromTypedCtor ( builder, canCast: e => false, empty: () => "" );
+          return AsOrToTargetType.FromTypedCtor ( builder, canCast: e => false, empty: () => "" );
         }
 
         public static string ToNumberStringList ( this IEnumerable<int>? enumerable )

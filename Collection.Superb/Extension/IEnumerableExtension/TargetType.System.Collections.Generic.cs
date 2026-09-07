@@ -21,10 +21,11 @@ static public class system_collections_generic
   static public AsOrToTargetType<Dictionary<Key, Item>> Dictionary<Item, Key>
   (
     Func<Item, Key> keySelector,
-    IEqualityComparer<Key> keyComparer
+    IEqualityComparer<Key> keyComparer,
+    int? capacity
   )
   where Key : notnull
-    => Dictionary ( keySelector, x => x, keyComparer );
+    => Dictionary ( keySelector, x => x, keyComparer, capacity );
 
   /// <summary>
   /// Target type for
@@ -35,7 +36,8 @@ static public class system_collections_generic
   (
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
-    IEqualityComparer<Key> keyComparer
+    IEqualityComparer<Key> keyComparer,
+    int? capacity
   )
   where Key : notnull
   {
@@ -48,11 +50,11 @@ static public class system_collections_generic
     if (keyComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
 
-    Ctor<Item, Dictionary<Key,Value>> typedCtor = (e, c) =>
+    Ctor<Item, Dictionary<Key,Value>> typedCtor = (e) =>
     {
-      if (c is int capacity)
+      if (capacity is int cap)
       {
-        Dictionary<Key, Value> result = new  ( capacity, keyComparer );
+        Dictionary<Key, Value> result = new  ( cap, keyComparer );
         foreach (Item i in e )
           result.Add(keySelector(i), valueSelector(i));
 
@@ -71,16 +73,16 @@ static public class system_collections_generic
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1.-ctor?view=net-10.0">
   /// HashSet&lt;Item&gt;</see>.
   /// </summary>
-  static public AsOrToTargetType<HashSet<Item>> HashSet<Item> ( IEqualityComparer<Item> itemComparer )
+  static public AsOrToTargetType<HashSet<Item>> HashSet<Item> ( IEqualityComparer<Item> itemComparer, int? capacity )
   {
     if (itemComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
 
-    Ctor<Item, HashSet<Item>> typedCtor = (e, c) =>
+    Ctor<Item, HashSet<Item>> typedCtor = (e) =>
     {
-      if (c is int capacity)
+      if (capacity is int cap)
       {
-        HashSet<Item> result = new (capacity, itemComparer);
+        HashSet<Item> result = new (cap, itemComparer);
         result.UnionWith(e);
         return result;
       }
@@ -100,7 +102,7 @@ static public class system_collections_generic
   /// </summary>
   static public AsOrToTargetType<LinkedList<Item>> LinkedList<Item> ()
   {
-    Ctor<Item, LinkedList<Item>> typedCtor = (e, c) => new (e);
+    Ctor<Item, LinkedList<Item>> typedCtor = (e) => new (e);
     Empty<LinkedList<Item>> empty = () => new ();
 
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
@@ -113,13 +115,13 @@ static public class system_collections_generic
   /// </summary>
   [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Explication intent." )]
   [SuppressMessage ( "Style", "IDE0306:Simplify collection initialization", Justification = "Explication intent." )]
-  static public AsOrToTargetType<List<Item>> List<Item> ()
+  static public AsOrToTargetType<List<Item>> List<Item> ( int? capacity )
   {
-    Ctor<Item, List<Item>> typedCtor = (e, c) =>
+    Ctor<Item, List<Item>> typedCtor = (e) =>
     {
-      if (c is int capacity)
+      if (capacity is int cap)
       {
-        List<Item> result = new (capacity);
+        List<Item> result = new (cap);
         result.AddRange(e);
         return result;
       }
@@ -139,10 +141,11 @@ static public class system_collections_generic
   static public AsOrToTargetType<OrderedDictionary<Key, Item>> OrderedDictionary<Item, Key>
   (
     Func<Item, Key> keySelector,
-    IEqualityComparer<Key> keyComparer
+    IEqualityComparer<Key> keyComparer,
+    int? capacity
   )
   where Key : notnull
-    => OrderedDictionary ( keySelector, x => x, keyComparer );
+    => OrderedDictionary ( keySelector, x => x, keyComparer, capacity );
 
   /// <summary>
   /// Target type for
@@ -153,7 +156,8 @@ static public class system_collections_generic
   (
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
-    IEqualityComparer<Key> keyComparer
+    IEqualityComparer<Key> keyComparer,
+    int? capacity
   )
   where Key : notnull
   {
@@ -166,10 +170,10 @@ static public class system_collections_generic
     if (keyComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
 
-    Ctor<Item, OrderedDictionary<Key,Value>> typedCtor = (e, c) =>
+    Ctor<Item, OrderedDictionary<Key,Value>> typedCtor = (e) =>
     {
-      OrderedDictionary<Key, Value> result = c is int capacity
-        ? new  ( capacity, keyComparer )
+      OrderedDictionary<Key, Value> result = capacity is int cap
+        ? new  ( cap, keyComparer )
         : new(keyComparer);
 
       foreach(Item i in e)
@@ -187,15 +191,19 @@ static public class system_collections_generic
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.priorityqueue-2?view=net-10.0">
   /// PriorityQueue&lt;Item,Priority&gt;</see>.
   /// </summary>
-  static public AsOrToTargetType<PriorityQueue<Item, Priority>> PriorityQueue<Item, Priority> ( IComparer<Priority> priorityComparer )
+  static public AsOrToTargetType<PriorityQueue<Item, Priority>> PriorityQueue<Item, Priority>
+  (
+    IComparer<Priority> priorityComparer,
+    int? capacity
+  )
   {
     if (priorityComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( priorityComparer ), "Priority comparer not provided." );
 
-    Ctor<(Item,Priority), PriorityQueue<Item,Priority>> typedCtor = (e, c) =>
+    Ctor<(Item,Priority), PriorityQueue<Item,Priority>> typedCtor = (e) =>
     {
-      PriorityQueue<Item,Priority> result = c is int capacity
-        ? new (capacity, priorityComparer)
+      PriorityQueue<Item,Priority> result = capacity is int cap
+        ? new (cap, priorityComparer)
         : new (priorityComparer);
 
       result.EnqueueRange(e);
@@ -212,11 +220,11 @@ static public class system_collections_generic
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.queue-1?view=net-10.0">
   /// Queue&lt;Item&gt;</see>.
   /// </summary>
-  static public AsOrToTargetType<Queue<Item>> Queue<Item> ()
+  static public AsOrToTargetType<Queue<Item>> Queue<Item> ( int? capacity )
   {
-    Ctor<Item, Queue<Item>> typedCtor = (e, c) =>
+    Ctor<Item, Queue<Item>> typedCtor = (e) =>
     {
-      Queue<Item> result = c is int capacity ? new (capacity) : new ();
+      Queue<Item> result = capacity is int cap ? new (cap) : new ();
 
       foreach(Item i in e)
         result.Enqueue(i);
@@ -263,7 +271,7 @@ static public class system_collections_generic
     if (keyComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
 
-    Ctor<Item, SortedDictionary<Key,Value>> typedCtor = (e, c) =>
+    Ctor<Item, SortedDictionary<Key,Value>> typedCtor = (e) =>
     {
 
       SortedDictionary<Key, Value> result = new  ( keyComparer );
@@ -285,10 +293,11 @@ static public class system_collections_generic
   static public AsOrToTargetType<SortedList<Key, Item>> SortedList<Item, Key>
   (
     Func<Item, Key> keySelector,
-    IComparer<Key> keyComparer
+    IComparer<Key> keyComparer,
+    int? capacity
   )
   where Key : notnull
-    => SortedList ( keySelector, x => x, keyComparer );
+    => SortedList ( keySelector, x => x, keyComparer, capacity );
 
   /// <summary>
   /// Target type for
@@ -299,7 +308,8 @@ static public class system_collections_generic
   (
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
-    IComparer<Key> keyComparer
+    IComparer<Key> keyComparer,
+    int? capacity
   )
   where Key : notnull
   {
@@ -312,10 +322,10 @@ static public class system_collections_generic
     if (keyComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
 
-    Ctor<Item, SortedList<Key,Value>> typedCtor = (e, c) =>
+    Ctor<Item, SortedList<Key,Value>> typedCtor = (e) =>
     {
-      SortedList<Key, Value> result = c is int capacity
-        ? new  (capacity, keyComparer )
+      SortedList<Key, Value> result = capacity is int cap
+        ? new  (cap, keyComparer )
         : new (keyComparer);
 
       foreach (Item i in e )
@@ -338,7 +348,7 @@ static public class system_collections_generic
     if (itemComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
 
-    Ctor<Item, SortedSet<Item>> typedCtor = (e, c) => new ( e, itemComparer );
+    Ctor<Item, SortedSet<Item>> typedCtor = (e) => new ( e, itemComparer );
     Empty<SortedSet<Item>> empty = () => new (itemComparer );
     CanCast canCast = e => e is SortedSet<Item> x && ReferenceEquals ( x.Comparer, itemComparer );
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
@@ -349,13 +359,13 @@ static public class system_collections_generic
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1?view=net-10.0">
   /// Stack&lt;Item&gt;</see>.
   /// </summary>
-  static public AsOrToTargetType<Stack<Item>> Stack<Item> ()
+  static public AsOrToTargetType<Stack<Item>> Stack<Item> ( int? capacity )
   {
-    Ctor<Item, Stack<Item>> typedCtor = (e, c) =>
+    Ctor<Item, Stack<Item>> typedCtor = (e) =>
     {
-      if (c is int capacity)
+      if (capacity is int cap)
       {
-        Stack<Item> result = new (capacity);
+        Stack<Item> result = new (cap);
         foreach (Item i in e)
           result.Push(i);
 
@@ -374,13 +384,13 @@ static public class system_collections_generic
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.array?view=net-10.0">
   /// Item[]</see>.
   /// </summary>
-  static public AsOrToTargetType<Item []> Array<Item> ()
+  static public AsOrToTargetType<Item []> Array<Item> ( int? length )
   {
-    Ctor<Item, Item[]> typedCtor = (e, c) =>
+    Ctor<Item, Item[]> typedCtor = (e) =>
     {
-      if (c is int capacity)
+      if (length is int len)
       {
-        Item[] result = new Item[capacity];
+        Item[] result = new Item[len];
         int index = -1;
         foreach (Item i in e)
           result[++index] = i;

@@ -23,14 +23,14 @@ static public class system_collections_immutable
   /// </summary>
   [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
   [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
-  static public AsOrToTargetType<ImmutableArray<Item>> ImmutableArray<Item> ( bool strictLengthMatch )
+  static public AsOrToTargetType<ImmutableArray<Item>> ImmutableArray<Item> ( bool strictLengthMatch, int? capacity )
   {
-    Ctor<Item, ImmutableArray<Item>> typedCtor = (e, c) =>
+    Ctor<Item, ImmutableArray<Item>> typedCtor = (e) =>
     {
-      if (c is int capacity)
+      if (capacity is int cap)
       {
         ImmutableArray<Item>.Builder builder = Immutable.ImmutableArray.CreateBuilder<Item>();
-        builder.Capacity = capacity;
+        builder.Capacity = cap;
         builder.AddRange(e);
 
         return strictLengthMatch ? builder.MoveToImmutable() : builder.DrainToImmutable();
@@ -84,7 +84,7 @@ static public class system_collections_immutable
     if (valueComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( valueComparer ), "Value comparer not provided." );
 
-    Ctor<Item, ImmutableDictionary<Key, Value>> typedCtor = (e, c) =>
+    Ctor<Item, ImmutableDictionary<Key, Value>> typedCtor = (e) =>
     {
       return Immutable.ImmutableDictionary.ToImmutableDictionary
       (
@@ -111,7 +111,7 @@ static public class system_collections_immutable
     if (itemComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
 
-    Ctor<Item, ImmutableHashSet<Item>> typedCtor = (e, c) => Immutable.ImmutableHashSet.ToImmutableHashSet(e, itemComparer);
+    Ctor<Item, ImmutableHashSet<Item>> typedCtor = (e) => Immutable.ImmutableHashSet.ToImmutableHashSet(e, itemComparer);
 
     Empty<ImmutableHashSet<Item>> empty = () => Immutable.ImmutableHashSet.Create (itemComparer);
     CanCast canCast = e => e is ImmutableHashSet<Item> x && ReferenceEquals(x.KeyComparer, itemComparer);
@@ -127,7 +127,7 @@ static public class system_collections_immutable
   [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ImmutableList<Item>> ImmutableList<Item> ()
   {
-    Ctor<Item, ImmutableList <Item>> typedCtor = (e, c) => Immutable.ImmutableList.CreateRange (e);
+    Ctor<Item, ImmutableList <Item>> typedCtor = (e) => Immutable.ImmutableList.CreateRange (e);
 
     Empty<ImmutableList <Item>> empty = () => Immutable.ImmutableList<Item>.Empty;
     CanCast? canCast = null;
@@ -143,7 +143,7 @@ static public class system_collections_immutable
   [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ImmutableQueue<Item>> ImmutableQueue<Item> ()
   {
-    Ctor<Item, ImmutableQueue <Item>> typedCtor = (e, c) => Immutable.ImmutableQueue.CreateRange (e);
+    Ctor<Item, ImmutableQueue <Item>> typedCtor = (e) => Immutable.ImmutableQueue.CreateRange (e);
 
     Empty<ImmutableQueue <Item>> empty = () => Immutable.ImmutableQueue<Item>.Empty;
     CanCast? canCast = null;
@@ -191,7 +191,7 @@ static public class system_collections_immutable
     if (valueComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( valueComparer ), "Value comparer not provided." );
 
-    Ctor<Item, ImmutableSortedDictionary<Key, Value>> typedCtor = (e, c) =>
+    Ctor<Item, ImmutableSortedDictionary<Key, Value>> typedCtor = (e) =>
     {
       return Immutable.ImmutableSortedDictionary.ToImmutableSortedDictionary
       (
@@ -217,7 +217,7 @@ static public class system_collections_immutable
     if (itemComparer == null)
       throw new ArgumentNullException ( paramName: nameof ( itemComparer ), "Item comparer not provided." );
 
-    Ctor<Item, ImmutableSortedSet<Item>> typedCtor = (e, c) => Immutable.ImmutableSortedSet.ToImmutableSortedSet(e, itemComparer);
+    Ctor<Item, ImmutableSortedSet<Item>> typedCtor = (e) => Immutable.ImmutableSortedSet.ToImmutableSortedSet(e, itemComparer);
 
     Empty<ImmutableSortedSet<Item>> empty = () => Immutable.ImmutableSortedSet.Create (itemComparer);
     CanCast canCast = e => e is ImmutableSortedSet<Item> x && ReferenceEquals(x.KeyComparer, itemComparer);
@@ -233,7 +233,7 @@ static public class system_collections_immutable
   [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ImmutableStack<Item>> ImmutableStack<Item> ()
   {
-    Ctor<Item, ImmutableStack <Item>> typedCtor = (e, c) => Immutable.ImmutableStack.CreateRange (e);
+    Ctor<Item, ImmutableStack <Item>> typedCtor = (e) => Immutable.ImmutableStack.CreateRange (e);
 
     Empty<ImmutableStack <Item>> empty = () => Immutable.ImmutableStack<Item>.Empty;
     CanCast? canCast = null;

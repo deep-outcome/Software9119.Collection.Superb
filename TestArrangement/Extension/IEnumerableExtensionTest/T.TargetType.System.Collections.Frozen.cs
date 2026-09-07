@@ -26,7 +26,7 @@ public class system_collections_frozen_test
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    FrozenDictionary<int, int> target = targetType.Ctor(source, null);
+    FrozenDictionary<int, int> target = targetType.Ctor(source);
 
     Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.IsFalse ( targetType.CanCast ( target ) );
@@ -69,7 +69,7 @@ public class system_collections_frozen_test
     Assert.IsTrue ( ReferenceEquals ( keyComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    FrozenDictionary<int, int> target = targetType.Ctor(source, null);
+    FrozenDictionary<int, int> target = targetType.Ctor(source);
 
     Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.IsFalse ( targetType.CanCast ( target ) );
@@ -107,7 +107,7 @@ public class system_collections_frozen_test
     Assert.IsTrue ( ReferenceEquals ( itemComparer, empty.Comparer ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
-    FrozenSet<int> target = targetType.Ctor(source, null);
+    FrozenSet<int> target = targetType.Ctor(source);
 
     Assert.IsTrue ( ReferenceEquals ( itemComparer, target.Comparer ) );
 
