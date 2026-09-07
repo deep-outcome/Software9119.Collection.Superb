@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-using collections_concurrent = Software9119.Collection.Superb.Extension.system_collections_concurrent;
+using c_concurrent = Software9119.Collection.Superb.Extension.system_collections_concurrent;
 
 namespace Software9119.Collection.Superb.Extension;
 
@@ -13,7 +14,7 @@ static public partial class IEnumerableExtension
   /// </summary>
   /// <remarks>  
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="collections_concurrent.ConcurrentBag {Item}()"/>.  
+  /// <see cref="c_concurrent.ConcurrentBag {Item}()"/>.  
   /// </remarks>
   static public ConcurrentBag<Item>? AsOrToConcurrentBag<Item>
   (
@@ -21,7 +22,80 @@ static public partial class IEnumerableExtension
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
-    AsOrToTargetType<ConcurrentBag <Item>> targetType = collections_concurrent.ConcurrentBag<Item> ();
+    AsOrToTargetType<ConcurrentBag <Item>> targetType = c_concurrent.ConcurrentBag<Item> ();
+    return enumerable.AsOrTo ( targetType, behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="ConcurrentDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="c_concurrent.ConcurrentDictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key}, int?, int?)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ConcurrentDictionary<Key, Item>? IntoConcurrentDictionary<Item, Key> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
+    int? capacity = null,
+    int? concurrencyLevel = null,
+    IEqualityComparer<Key>? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    where Key : notnull
+  {
+    keyComparer ??= EqualityComparer<Key>.Default;
+    AsOrToTargetType<ConcurrentDictionary<Key, Item>> targetType = c_concurrent.ConcurrentDictionary
+    (
+      keySelector,
+      keyComparer,
+      capacity: capacity,
+      concurrencyLevel
+    );
+    return enumerable.AsOrTo ( targetType, behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="ConcurrentDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="c_concurrent.ConcurrentDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key}, int?, int?)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ConcurrentDictionary<Key, Value>? IntoConcurrentDictionary<Item, Key, Value> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
+    int? capacity = null,
+    int? concurrencyLevel = null,
+    IEqualityComparer<Key>? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    where Key : notnull
+  {
+    keyComparer ??= EqualityComparer<Key>.Default;
+    AsOrToTargetType<ConcurrentDictionary<Key, Value>> targetType = c_concurrent.ConcurrentDictionary
+    (
+      keySelector,
+      valueSelector,
+      keyComparer,
+      capacity: capacity,
+      concurrencyLevel
+    );
+
     return enumerable.AsOrTo ( targetType, behavior );
   }
 }
