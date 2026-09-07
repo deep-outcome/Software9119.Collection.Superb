@@ -129,4 +129,21 @@ public class system_collections_concurrent_tests
 
     Assert.IsTrue ( source.SequenceEqual ( target ) );
   }
+
+  [TestMethod]
+  public void ConcurrentStack ()
+  {
+    AsOrToTargetType<ConcurrentStack <int>> targetType = collections_concurrent.ConcurrentStack<int>();
+
+    ConcurrentStack <int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    ConcurrentStack <int> target = targetType.Ctor(source);
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( target ) );
+  }
 }

@@ -137,4 +137,28 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.IsEmpty ?? false, returnsDefault == false );
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void AsOrToConcurrentStack ()
+  {
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ConcurrentStack<int> test = source.AsOrToConcurrentStack()!;
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToConcurrentStack_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ConcurrentStack<int>? test = returnsDefault
+      ? source.AsOrToConcurrentStack(behavior: behavior!.Value)
+      : source.AsOrToConcurrentStack();
+
+    Assert.AreEqual ( test?.IsEmpty ?? false, returnsDefault == false );
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

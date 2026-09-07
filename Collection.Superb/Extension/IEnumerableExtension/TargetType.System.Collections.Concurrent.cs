@@ -101,4 +101,20 @@ static public class system_collections_concurrent
     CanCast? canCast = null;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.ConcurrentStack-1?view=net-10.0">
+  /// ConcurrentStack&lt;Item&gt;</see>.
+  /// </summary>
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
+  [SuppressMessage ( "Style", "IDE0306:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ConcurrentStack<Item>> ConcurrentStack<Item> ()
+  {
+    Ctor<Item, ConcurrentStack <Item>> typedCtor = (e) => new (e);
+
+    Empty<ConcurrentStack <Item>> empty = () => new ();
+    CanCast? canCast = null;
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
+  }
 }

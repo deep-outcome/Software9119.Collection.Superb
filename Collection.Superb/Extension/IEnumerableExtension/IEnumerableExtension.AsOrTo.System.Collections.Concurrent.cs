@@ -115,4 +115,21 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<ConcurrentQueue <Item>> targetType = c_concurrent.ConcurrentQueue<Item> ();
     return enumerable.AsOrTo ( targetType, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ConcurrentStack {Item}"/>.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="c_concurrent.ConcurrentStack {Item}()"/>.  
+  /// </remarks>
+  static public ConcurrentStack<Item>? AsOrToConcurrentStack<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<ConcurrentStack <Item>> targetType = c_concurrent.ConcurrentStack<Item> ();
+    return enumerable.AsOrTo ( targetType, behavior );
+  }
 }
