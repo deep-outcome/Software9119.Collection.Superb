@@ -151,9 +151,9 @@ public partial class IEnumerableExtensionTest
     Func<int, int> valueSelector = x => x * 20;
     IEnumerable<int> source = Enumerable.Range(0, 10);
 
-    FrozenDictionary<int, int> list = source.IntoFrozenDictionary(keySelector, valueSelector, behavior: EnumerableNullBehavior.ReturnDefault)!;
+    FrozenDictionary<int, int> dict = source.IntoFrozenDictionary(keySelector, valueSelector, behavior: EnumerableNullBehavior.ReturnDefault)!;
     IEnumerable<KeyValuePair<int, int>> expectation = source.Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
-    Assert.IsTrue ( expectation.SequenceEqual ( list ) );
+    Assert.IsTrue ( expectation.SequenceEqual ( dict ) );
   }
 #pragma warning restore IDE0001
 }

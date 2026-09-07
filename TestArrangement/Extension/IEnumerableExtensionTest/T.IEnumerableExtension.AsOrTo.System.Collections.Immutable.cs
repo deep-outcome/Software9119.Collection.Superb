@@ -414,8 +414,8 @@ public partial class IEnumerableExtensionTest
     // immutable array sample
     const int count = 10;
     IEnumerable<int> source = Enumerable.Range(0, count);
-    ImmutableArray<int>? test = source.AsOrToImmutableArray(length: count, enforceLengthCountMatch: true);
+    ImmutableArray<int>? array = source.AsOrToImmutableArray(length: count, enforceLengthCountMatch: true);
 
-    Assert.IsTrue ( source.SequenceEqual ( test ) );
+    Assert.IsTrue ( source.SequenceEqual ( array ) );
   }
 }

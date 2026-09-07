@@ -60,4 +60,21 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.GetPartitions ( 1 ).Single ().MoveNext () ?? true, returnsDefault );
   }
+
+  // readme
+
+  long MyComplexComputation ( int x ) => x;
+
+  [TestMethod]
+  public void Concurrent_Sample ()
+  {
+    // orderable partitioner sample
+    IEnumerable<long> source = Enumerable.Range(0, 1000_000).Select(MyComplexComputation);
+    OrderablePartitioner<long> partitioner = source.AsOrderablePartitioner()!;
+
+    IEnumerable<IEnumerator<long>> partions = partitioner.GetPartitions(100);
+
+    IEnumerable<EnumerableEnumerator<long>> enumerables = partions.Select(x => new EnumerableEnumerator<long>(x));
+    Assert.AreEqual ( source.Sum (), enumerables.SelectMany ( x => x ).Sum () );
+  }
 }

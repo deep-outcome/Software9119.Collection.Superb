@@ -679,8 +679,8 @@ public partial class IEnumerableExtensionTest
     Func<int, int> valueSelector = x => x * 20;
     IEnumerable<int> source = Enumerable.Range(0, 10);
 
-    OrderedDictionary<int, int> list = source.IntoOrderedDictionary(keySelector, valueSelector, keyComparer: comparer)!;
+    OrderedDictionary<int, int> dict = source.IntoOrderedDictionary(keySelector, valueSelector, keyComparer: comparer)!;
     IEnumerable<KeyValuePair<int, int>> expectation = source.Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
-    Assert.IsTrue ( expectation.SequenceEqual ( list ) );
+    Assert.IsTrue ( expectation.SequenceEqual ( dict ) );
   }
 }

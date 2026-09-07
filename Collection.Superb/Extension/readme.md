@@ -93,7 +93,7 @@ This namespace contains types with extension methods.
         Func<int, int> valueSelector = x => x * 20;
         IEnumerable<int> source = Enumerable.Range(0, 10);
 
-        FrozenDictionary<int, int> list = source.IntoFrozenDictionary(keySelector, valueSelector, behavior: EnumerableNullBehavior.ReturnDefault)!;
+        FrozenDictionary<int, int> dict = source.IntoFrozenDictionary(keySelector, valueSelector, behavior: EnumerableNullBehavior.ReturnDefault)!;
         ```
         - [`FrozenDictionary<Key, Item>? IntoFrozenDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Frozen.cs#L27) – creates frozen dictionary from `IEnumerable<T>`
         - [`FrozenDictionary<Key, Value>? IntoFrozenDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Frozen.cs#L54) – creates frozen dictionary from `IEnumerable<T>`
@@ -106,7 +106,7 @@ This namespace contains types with extension methods.
         Func<int, int> valueSelector = x => x * 20;
         IEnumerable<int> source = Enumerable.Range(0, 10);
 
-        OrderedDictionary<int, int> list = source.IntoOrderedDictionary(keySelector, valueSelector, keyComparer: comparer)!;
+        OrderedDictionary<int, int> dict = source.IntoOrderedDictionary(keySelector, valueSelector, keyComparer: comparer)!;
         ```
         - [`Dictionary<Key, Item>? IntoDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Generic.cs#L27) – creates dictionary from `IEnumerable<T>`
         - [`Dictionary<Key, Value>? IntoDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Generic.cs#L55) – creates dictionary from `IEnumerable<T>`
@@ -129,7 +129,7 @@ This namespace contains types with extension methods.
         // immutable array sample
         const int count = 10;
         IEnumerable<int> source = Enumerable.Range(0, count);
-        ImmutableArray<int>? test = source.AsOrToImmutableArray(length: count, enforceLengthCountMatch: true);
+        ImmutableArray<int>? array = source.AsOrToImmutableArray(length: count, enforceLengthCountMatch: true);
         ```
         - [`ImmutableArray<Item> AsOrToImmutableArray<Item>(IEnumerable<Item>?, int?, bool, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Immutable.cs#L28) – casts or copies `IEnumerable<T>` into immutable array
         - [`ImmutableDictionary<Key, Item>? IntoImmutableDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, IEqualityComparer<Key>?, IEqualityComparer<Item>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Immutable.cs#L58) – creates immutable dictionary from `IEnumerable<T>`
@@ -142,6 +142,13 @@ This namespace contains types with extension methods.
         - [`ImmutableSortedSet<Item>? AsOrToImmutableSortedSet<Item>(IEnumerable<Item>?, IComparer<Item>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Immutable.cs#L280) – casts or copies `IEnumerable<T>` into immutable sorted set
         - [`ImmutableStack<Item>? AsOrToImmutableStack<Item>(IEnumerable<Item>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Immutable.cs#L300) – casts or copies `IEnumerable<T>` into immutable stack
     - <strong style="background-color:rgba(186 246 226 / 0.63)"><u>`AsOrTo` or `Into` for chosen [`System.Collections.Concurrent` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent?view=net-10.0) types</u></strong>
+        ```csharp
+        // orderable partitioner sample
+        IEnumerable<long> source = Enumerable.Range(0, 1000_000).Select(MyComplexComputation);
+        OrderablePartitioner<long> partitioner = source.AsOrderablePartitioner()!;
+
+        IEnumerable<IEnumerator<long>> partions = partitioner.GetPartitions(100);
+        ```
         - [`ConcurrentBag<Item>? AsOrToConcurrentBag<Item>(IEnumerable<Item>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Concurrent.cs#L19) – casts or copies `IEnumerable<T>` into concurrent bag
         - [`ConcurrentDictionary<Key, Item>? IntoConcurrentDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, int?, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Concurrent.cs#L44) – creates concurrent dictionary from `IEnumerable<T>`
         - [`ConcurrentDictionary<Key, Value>? IntoConcurrentDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Concurrent.cs#L79) – creates concurrent dictionary from `IEnumerable<T>`
