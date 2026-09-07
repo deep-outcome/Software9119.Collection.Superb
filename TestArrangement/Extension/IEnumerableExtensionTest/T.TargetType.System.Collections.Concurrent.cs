@@ -146,4 +146,76 @@ public class system_collections_concurrent_tests
 
     Assert.IsTrue ( source.Reverse ().SequenceEqual ( target ) );
   }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void OrderablePartitioner_Array ( bool loadBalance )
+  {
+    AsOrToTargetType<OrderablePartitioner <int>> targetType = collections_concurrent.OrderablePartitioner<int>(default, loadBalance);
+
+    OrderablePartitioner <int> empty = targetType.Empty ();
+    Assert.IsFalse ( empty.GetPartitions ( 1 ).Single ().MoveNext () );
+
+    int[] source = [ .. XEnumerable.RangeEnumerable(1, 10) ];
+    OrderablePartitioner <int> target = targetType.Ctor(source);
+
+    string typeName = target.GetType().Name;
+    Assert.StartsWith ( loadBalance ? "DynamicPartitionerForArray" : "StaticIndexRangePartitionerForArray", typeName );
+
+    Assert.IsFalse ( targetType.CanCast ( source ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    IEnumerable<EnumerableEnumerator<int>> partions = target.GetPartitions(2).Select(x => new EnumerableEnumerator<int>(x));
+    Assert.IsTrue ( partions.SelectMany ( x => x ).SequenceEqual ( source ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void OrderablePartitioner_IList ( bool loadBalance )
+  {
+    AsOrToTargetType<OrderablePartitioner <int>> targetType = collections_concurrent.OrderablePartitioner<int>(default, loadBalance);
+
+    OrderablePartitioner <int> empty = targetType.Empty ();
+    Assert.IsFalse ( empty.GetPartitions ( 1 ).Single ().MoveNext () );
+
+    List<int> source = [ .. XEnumerable.RangeEnumerable(1, 10) ];
+    OrderablePartitioner <int> target = targetType.Ctor(source);
+
+    string typeName = target.GetType().Name;
+    Assert.StartsWith ( loadBalance ? "DynamicPartitionerForIList" : "StaticIndexRangePartitionerForIList", typeName );
+
+    Assert.IsFalse ( targetType.CanCast ( source ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    IEnumerable<EnumerableEnumerator<int>> partions = target.GetPartitions(2).Select(x => new EnumerableEnumerator<int>(x));
+    Assert.IsTrue ( partions.SelectMany ( x => x ).SequenceEqual ( source ) );
+  }
+
+  [TestMethod]
+  [DataRow ( EnumerablePartitionerOptions.None )]
+  [DataRow ( EnumerablePartitionerOptions.NoBuffering )]
+  public void OrderablePartitioner_Enumerable ( EnumerablePartitionerOptions opts )
+  {
+    AsOrToTargetType<OrderablePartitioner <int>> targetType = collections_concurrent.OrderablePartitioner<int>(opts, default);
+
+    OrderablePartitioner <int> empty = targetType.Empty ();
+    Assert.IsFalse ( empty.GetPartitions ( 1 ).Single ().MoveNext () );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    OrderablePartitioner <int> target = targetType.Ctor(source);
+
+    string typeName = target.GetType().Name;
+    Assert.StartsWith ( "DynamicPartitionerForIEnumerable", typeName );
+
+    Assert.IsFalse ( targetType.CanCast ( source ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    bool _useSingleChunking = (bool)Reflection.GetNonPublicFieldValue(target, "_useSingleChunking");
+    Assert.AreEqual ( opts == EnumerablePartitionerOptions.NoBuffering, _useSingleChunking );
+
+    IEnumerable<EnumerableEnumerator<int>> partions = target.GetPartitions(2).Select(x => new EnumerableEnumerator<int>(x));
+    Assert.IsTrue ( partions.SelectMany ( x => x ).SequenceEqual ( source ) );
+  }
 }

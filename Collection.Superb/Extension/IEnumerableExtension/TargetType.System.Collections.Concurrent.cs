@@ -117,4 +117,30 @@ static public class system_collections_concurrent
     CanCast? canCast = null;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, canCast, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.OrderablePartitioner-1?view=net-10.0">
+  /// OrderablePartitioner&lt;Item&gt;</see>.
+  /// </summary>  
+  static public AsOrToTargetType<OrderablePartitioner<Item>> OrderablePartitioner<Item>
+  (
+    EnumerablePartitionerOptions opts,
+    bool loadBalancing
+  )
+  {
+    Ctor<Item, OrderablePartitioner <Item>> typedCtor = ( e ) =>
+    {
+      if (e is Item[] a)
+        return Partitioner.Create ( a, loadBalancing);
+
+      if (e is IList<Item> l)
+        return Partitioner.Create ( l, loadBalancing);
+
+      return Partitioner.Create ( e, opts);
+    };
+
+    Empty<OrderablePartitioner <Item>> empty = () => Partitioner.Create (Array.Empty<Item> ());
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
+  }
 }

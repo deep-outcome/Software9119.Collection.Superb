@@ -147,3 +147,4 @@ This namespace contains types with extension methods.
         - `ConcurrentDictionary<Key, Value>? IntoConcurrentDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)` – creates concurrent dictionary from `IEnumerable<T>`
         - `ConcurrentQueue<Item>? AsOrToConcurrentQueue<Item>(IEnumerable<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into concurrent queue
         - `ConcurrentStack<Item>? AsOrToConcurrentStack<Item>(IEnumerable<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into concurrent stack
+        - `OrderablePartitioner<Item>? AsOrderablePartitioner<Item>(IEnumerable<Item>?, bool, EnumerablePartitionerOptions, EnumerableNullBehavior)` – wraps `IEnumerable<T>` into orderable partitioner

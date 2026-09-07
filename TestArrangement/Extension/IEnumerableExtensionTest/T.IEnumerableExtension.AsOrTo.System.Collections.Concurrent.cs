@@ -144,7 +144,7 @@ public partial class IEnumerableExtensionTest
     IEnumerable<int> source = Enumerable.Range(0, 10);
     ConcurrentStack<int> test = source.AsOrToConcurrentStack()!;
 
-    Assert.IsTrue ( source.SequenceEqual ( test ) );
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( test ) );
   }
 
   [TestMethod]
