@@ -1,10 +1,10 @@
-- System.Collections.Concurrent
+- finish BlockingCollection
+
 - System.Collections.ObjectModel
 - System.Collections.Specialized
 
 - rework read-only extensions when finished with asOrTo:
-	- (remove default capacities)
-	- have a look at BlockingCollection<T>
+	- (remove default capacities)	
 	- add target type casting, if possible
 	- add target type requiring type-cast first
 	- add other As read-only wrapper methods
