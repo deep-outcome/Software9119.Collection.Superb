@@ -140,4 +140,26 @@ static public class system_collections_concurrent
     Empty<OrderablePartitioner <Item>> empty = () => Partitioner.Create (Array.Empty<Item> ());
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.BlockingCollection-1?view=net-10.0">
+  /// BlockingCollection&lt;Item&gt;</see>.
+  /// </summary>  
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<BlockingCollection<Item>> BlockingCollection<Item> ( int? boundedCapacity )
+  {
+    Ctor<Item, BlockingCollection <Item>> typedCtor = ( e ) =>
+    {
+      IProducerConsumerCollection<Item> pcc = ( IProducerConsumerCollection<Item>)e;
+
+      if (boundedCapacity is int cap)
+        return new BlockingCollection<Item>(pcc, cap);
+
+      return new BlockingCollection<Item>(pcc);
+    };
+
+    Empty<BlockingCollection <Item>> empty = () => new BlockingCollection<Item>();
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
+  }
 }

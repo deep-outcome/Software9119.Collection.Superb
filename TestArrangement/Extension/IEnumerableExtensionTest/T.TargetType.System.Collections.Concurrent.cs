@@ -8,17 +8,17 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-using collections_concurrent = Software9119.Collection.Superb.Extension.system_collections_concurrent;
+using c_concurrent = Software9119.Collection.Superb.Extension.system_collections_concurrent;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
 
 [TestClass]
-public class system_collections_concurrent_tests
+public class system_c_concurrent_tests
 {
   [TestMethod]
   public void ConcurrentBag ()
   {
-    AsOrToTargetType<ConcurrentBag <int>> targetType = collections_concurrent.ConcurrentBag<int>();
+    AsOrToTargetType<ConcurrentBag <int>> targetType = c_concurrent.ConcurrentBag<int>();
 
     ConcurrentBag <int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
@@ -52,9 +52,9 @@ public class system_collections_concurrent_tests
       : x => x * 3;
 
     AsOrToTargetType<ConcurrentDictionary<int, int>> targetType = keySelectorOnly
-      ? collections_concurrent.ConcurrentDictionary
+      ? c_concurrent.ConcurrentDictionary
         (keySelector, keyComparer, capacity: cap, concurrency)
-      : collections_concurrent.ConcurrentDictionary
+      : c_concurrent.ConcurrentDictionary
         (keySelector, valueSelector, keyComparer, capacity: cap, concurrency);
 
     ConcurrentDictionary<int, int> empty = targetType.Empty ();
@@ -92,7 +92,7 @@ public class system_collections_concurrent_tests
     TestComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
     Func<int, int> keySelector    = whosNull == 'k' ? null! : x => x;
 
-    Action test = () => collections_concurrent.ConcurrentDictionary(keySelector, keyComparer, null, null);
+    Action test = () => c_concurrent.ConcurrentDictionary(keySelector, keyComparer, null, null);
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
@@ -107,7 +107,7 @@ public class system_collections_concurrent_tests
     Func<int, int> keySelector    = whosNull == 'k' ? null! : x => x;
     Func<int, int> valueSelector  = whosNull == 'v' ? null! : x => x;
 
-    Action test = () => collections_concurrent.ConcurrentDictionary
+    Action test = () => c_concurrent.ConcurrentDictionary
       (keySelector, valueSelector, keyComparer, null, null);
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
@@ -116,7 +116,7 @@ public class system_collections_concurrent_tests
   [TestMethod]
   public void ConcurrentQueue ()
   {
-    AsOrToTargetType<ConcurrentQueue <int>> targetType = collections_concurrent.ConcurrentQueue<int>();
+    AsOrToTargetType<ConcurrentQueue <int>> targetType = c_concurrent.ConcurrentQueue<int>();
 
     ConcurrentQueue <int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
@@ -133,7 +133,7 @@ public class system_collections_concurrent_tests
   [TestMethod]
   public void ConcurrentStack ()
   {
-    AsOrToTargetType<ConcurrentStack <int>> targetType = collections_concurrent.ConcurrentStack<int>();
+    AsOrToTargetType<ConcurrentStack <int>> targetType = c_concurrent.ConcurrentStack<int>();
 
     ConcurrentStack <int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
@@ -152,7 +152,7 @@ public class system_collections_concurrent_tests
   [DataRow ( false )]
   public void OrderablePartitioner_Array ( bool loadBalance )
   {
-    AsOrToTargetType<OrderablePartitioner <int>> targetType = collections_concurrent.OrderablePartitioner<int>(default, loadBalance);
+    AsOrToTargetType<OrderablePartitioner <int>> targetType = c_concurrent.OrderablePartitioner<int>(default, loadBalance);
 
     OrderablePartitioner <int> empty = targetType.Empty ();
     Assert.IsFalse ( empty.GetPartitions ( 1 ).Single ().MoveNext () );
@@ -175,7 +175,7 @@ public class system_collections_concurrent_tests
   [DataRow ( false )]
   public void OrderablePartitioner_IList ( bool loadBalance )
   {
-    AsOrToTargetType<OrderablePartitioner <int>> targetType = collections_concurrent.OrderablePartitioner<int>(default, loadBalance);
+    AsOrToTargetType<OrderablePartitioner <int>> targetType = c_concurrent.OrderablePartitioner<int>(default, loadBalance);
 
     OrderablePartitioner <int> empty = targetType.Empty ();
     Assert.IsFalse ( empty.GetPartitions ( 1 ).Single ().MoveNext () );
@@ -198,7 +198,7 @@ public class system_collections_concurrent_tests
   [DataRow ( EnumerablePartitionerOptions.NoBuffering )]
   public void OrderablePartitioner_Enumerable ( EnumerablePartitionerOptions opts )
   {
-    AsOrToTargetType<OrderablePartitioner <int>> targetType = collections_concurrent.OrderablePartitioner<int>(opts, default);
+    AsOrToTargetType<OrderablePartitioner <int>> targetType = c_concurrent.OrderablePartitioner<int>(opts, default);
 
     OrderablePartitioner <int> empty = targetType.Empty ();
     Assert.IsFalse ( empty.GetPartitions ( 1 ).Single ().MoveNext () );
@@ -217,5 +217,26 @@ public class system_collections_concurrent_tests
 
     IEnumerable<EnumerableEnumerator<int>> partions = target.GetPartitions(2).Select(x => new EnumerableEnumerator<int>(x));
     Assert.IsTrue ( partions.SelectMany ( x => x ).SequenceEqual ( source ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void BlockingCollection_Array ( int? capacityLimit )
+  {
+    AsOrToTargetType<BlockingCollection <int>> targetType = c_concurrent.BlockingCollection<int>(capacityLimit);
+
+    BlockingCollection <int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    ConcurrentQueue<int>? source = XEnumerable.RangeEnumerable(1, 10).AsOrToConcurrentQueue()!;
+    BlockingCollection <int> target = targetType.Ctor(source);
+
+    Assert.IsFalse ( targetType.CanCast ( source ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.AreEqual ( capacityLimit ?? -1, target.BoundedCapacity );
+
+    Assert.IsTrue ( target.SequenceEqual ( source ) );
   }
 }

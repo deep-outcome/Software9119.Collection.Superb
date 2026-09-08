@@ -149,6 +149,7 @@ This namespace contains types with extension methods.
 
         IEnumerable<IEnumerator<long>> partions = partitioner.GetPartitions(100);
         ```
+        - `BlockingCollection<Item>? AsBlockingCollection<Item>(IProducerConsumerCollection<Item>, int?, EnumerableNullBehavior)` – wraps `IProducerConsumerCollection<T>` into blocking collection
         - [`ConcurrentBag<Item>? AsOrToConcurrentBag<Item>(IEnumerable<Item>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Concurrent.cs#L19) – casts or copies `IEnumerable<T>` into concurrent bag
         - [`ConcurrentDictionary<Key, Item>? IntoConcurrentDictionary<Item, Key>(IEnumerable<Item>?, Func<Item, Key>, int?, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Concurrent.cs#L44) – creates concurrent dictionary from `IEnumerable<T>`
         - [`ConcurrentDictionary<Key, Value>? IntoConcurrentDictionary<Item, Key, Value>(IEnumerable<Item>?, Func<Item, Key>, Func<Item, Value>, int?, int?, IEqualityComparer<Key>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.Concurrent.cs#L79) – creates concurrent dictionary from `IEnumerable<T>`

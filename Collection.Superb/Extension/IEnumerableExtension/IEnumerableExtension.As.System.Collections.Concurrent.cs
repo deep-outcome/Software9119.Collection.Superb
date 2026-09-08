@@ -36,4 +36,22 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<OrderablePartitioner <Item>> targetType = c_concurrent.OrderablePartitioner<Item> (options, dynamicLoadBalancing);
     return enumerable.AsOrTo ( targetType, behavior );
   }
+
+  /// <summary>
+  /// Wraps <paramref name="collection"/> into <see cref="BlockingCollection {Item}"/>.
+  /// </summary>
+  /// <remarks> 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="c_concurrent.BlockingCollection{Item}(int?)"/>.
+  /// </remarks>
+  static public BlockingCollection<Item>? AsBlockingCollection<Item>
+  (
+    this IProducerConsumerCollection<Item> collection,
+    int? boundedCapacity = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<BlockingCollection <Item>> targetType = c_concurrent.BlockingCollection<Item> (boundedCapacity);
+    return collection.AsOrTo ( targetType, behavior );
+  }
 }
