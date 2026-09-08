@@ -67,7 +67,9 @@ public partial class IEnumerableExtensionTest
   public void AsBlockingCollection ( int? capacityLimit )
   {
     ConcurrentBag<int>? source = Enumerable.Range(0, 10).AsOrToConcurrentBag()!;
-    BlockingCollection<int> test = source.AsBlockingCollection(capacityLimit)!;
+    BlockingCollection<int> test = capacityLimit is int
+      ? source.AsBlockingCollection(capacityLimit)!
+      : source.AsBlockingCollection()!;
 
     Assert.AreEqual ( capacityLimit ?? -1, test.BoundedCapacity );
     Assert.IsTrue ( test.SequenceEqual ( source ) );

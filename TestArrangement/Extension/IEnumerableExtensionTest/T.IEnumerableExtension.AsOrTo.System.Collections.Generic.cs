@@ -606,7 +606,9 @@ public partial class IEnumerableExtensionTest
   public void AsOrToTypedStack ( int? capacity )
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
-    Stack<int> test = source.AsOrToTypedStack(capacity)!;
+    Stack<int> test = capacity is int
+      ?source.AsOrToTypedStack(capacity)!
+      : source.AsOrToTypedStack()!;
 
     Assert.IsTrue ( source.Reverse ().SequenceEqual ( test ) );
     Assert.AreEqual ( capacity ?? 16, test.Capacity );
@@ -633,7 +635,9 @@ public partial class IEnumerableExtensionTest
   public void AsOrToArray ( int? capacity, int count )
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, count);
-    int[] test = source.AsOrToArray(capacity)!;
+    int[] test = capacity is int
+      ? source.AsOrToArray(capacity)!
+      : source.AsOrToArray()!;
 
     Assert.HasCount ( capacity ?? count, test );
 
@@ -675,7 +679,9 @@ public partial class IEnumerableExtensionTest
   public void AsOrToIList ( int? capacity )
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
-    IList<int> test = source.AsOrToIList(capacity)!;
+    IList<int> test = capacity is int 
+      ? source.AsOrToIList(capacity)!
+      : source.AsOrToIList()!;
 
     Assert.AreEqual ( capacity ?? 16, ((List<int>) test).Capacity );
     Assert.IsTrue ( source.SequenceEqual ( test ) );
