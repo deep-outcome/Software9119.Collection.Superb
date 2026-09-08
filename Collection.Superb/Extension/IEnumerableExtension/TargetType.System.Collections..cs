@@ -16,6 +16,7 @@ static public class system_collections
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.arraylist?view=net-10.0">ArrayList</see>.
   /// </summary>
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ArrayList> ArrayList ( int? capacity )
   {
     Ctor<ArrayList> ctor = (e) =>
@@ -33,7 +34,8 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, null, () => [] );
+    Empty<ArrayList> empty = () => new();
+    return new ( ctor, null, empty );
   }
 
   /// <summary>
@@ -47,6 +49,7 @@ static public class system_collections
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.hashtable?view=net-10.0">Hashtable</see>.
   /// </summary>
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<Hashtable> Hashtable<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector, int? capacity )
   {
     if (keySelector == null)
@@ -64,7 +67,8 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, e => false, () => [] );
+    Empty<Hashtable> empty = () => new();
+    return new ( ctor, e => false, empty );
   }
 
   /// <summary>
@@ -88,7 +92,8 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, null, () => [] );
+    Empty<Queue> empty = () => new();
+    return new ( ctor, null, empty );
   }
 
   /// <summary>
@@ -102,6 +107,7 @@ static public class system_collections
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-10.0">SortedList</see>.
   /// </summary>
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<SortedList> SortedList<Item> ( Func<Item, object> keySelector, Func<Item, object?> valueSelector, int? capacity )
   {
     if (keySelector == null)
@@ -119,7 +125,8 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, e => false, () => [] );
+    Empty<SortedList> empty = () => new();
+    return new ( ctor, e => false, empty );
   }
 
   /// <summary>
@@ -143,6 +150,7 @@ static public class system_collections
       return result;
     };
 
-    return new ( ctor, null, () => [] );
+    Empty<Stack> empty = () => new();
+    return new ( ctor, null, empty );
   }
 }

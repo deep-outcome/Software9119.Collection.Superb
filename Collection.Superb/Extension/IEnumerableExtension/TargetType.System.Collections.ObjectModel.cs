@@ -67,6 +67,7 @@ static public class system_collections_objectmodel
   /// Uses <see cref="c_generic.IList{Item}(int?)"/> for <see cref="IList{Item}"/> production.
   /// </remarks>
   [SuppressMessage ( "Style", "IDE0028:Simplify ReadOnlyCollection initialization", Justification = "Obviousity." )]
+  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ReadOnlyCollection<Item>> ReadOnlyCollection<Item> ( int? capacity )
   {
     Ctor<Item, ReadOnlyCollection<Item>> typedCtor = (e) =>
@@ -75,7 +76,7 @@ static public class system_collections_objectmodel
       return new(ilist);
     };
 
-    Empty<ReadOnlyCollection<Item>> empty = () => new (Array.Empty<Item>());
+    Empty<ReadOnlyCollection<Item>> empty = () => ObjectModel.ReadOnlyCollection<Item>.Empty;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
@@ -142,11 +143,7 @@ static public class system_collections_objectmodel
       return new (dict);
     };
 
-    Empty<ReadOnlyDictionary<Key, Value>> empty = () =>
-    {
-      Dictionary<Key, Value> dict = new();
-      return new ( dict );
-    };
+    Empty<ReadOnlyDictionary<Key, Value>> empty = () => ObjectModel.ReadOnlyDictionary<Key, Value>.Empty;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
 
@@ -170,7 +167,7 @@ static public class system_collections_objectmodel
       return new(oc);
     };
 
-    Empty<ReadOnlyObservableCollection<Item>> empty = () => new (new());
+    Empty<ReadOnlyObservableCollection<Item>> empty = () => ObjectModel.ReadOnlyObservableCollection<Item>.Empty;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 }

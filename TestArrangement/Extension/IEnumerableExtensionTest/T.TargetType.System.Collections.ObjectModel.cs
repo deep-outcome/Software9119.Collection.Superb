@@ -74,9 +74,7 @@ public class system_collections_objectmodel_test
     AsOrToTargetType<ReadOnlyCollection<int>> targetType = c_objectmodel.ReadOnlyCollection<int> (capacity );
 
     ReadOnlyCollection<int> empty = targetType.Empty ();
-    Assert.HasCount ( 0, empty );
-    int[] emptyList = (int[]) Reflection.GetNonPublicFieldValue ( empty, "list" );
-    Assert.IsTrue ( ReferenceEquals ( emptyList, Array.Empty<int> () ) );
+    Assert.IsTrue ( ReferenceEquals ( ReadOnlyCollection<int>.Empty, empty ) );
 
     const int count = 10;
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, count);
@@ -99,7 +97,7 @@ public class system_collections_objectmodel_test
     AsOrToTargetType<ReadOnlyDictionary<object, int>> targetType = c_objectmodel.ReadOnlyDictionary<object, int> ( );
 
     ReadOnlyDictionary<object, int> empty = targetType.Empty ();
-    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( ReadOnlyDictionary<object, int>.Empty, empty ) );
 
     Dictionary<object, int> source = new ()
     {
@@ -137,7 +135,7 @@ public class system_collections_objectmodel_test
         (keySelector, valueSelector, keyComparer, capacityRequested);
 
     ReadOnlyDictionary<int, int> empty = targetType.Empty ();
-    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( ReadOnlyDictionary<int, int>.Empty, empty ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     ReadOnlyDictionary<int, int> target = targetType.Ctor(source);
@@ -164,7 +162,7 @@ public class system_collections_objectmodel_test
     AsOrToTargetType<ReadOnlyObservableCollection<int>> targetType = c_objectmodel.ReadOnlyObservableCollection<int> ( );
 
     ReadOnlyObservableCollection<int> empty = targetType.Empty ();
-    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( ReadOnlyObservableCollection<int>.Empty, empty ) );
 
     const int count = 10;
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, count);

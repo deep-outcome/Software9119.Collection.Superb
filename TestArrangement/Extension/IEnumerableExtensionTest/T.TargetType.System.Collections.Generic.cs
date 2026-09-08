@@ -565,7 +565,7 @@ public class system_collections_generic_test
     AsOrToTargetType<object[]> targetType = system_collections_generic.Array<object> (capacity );
 
     object[] empty = targetType.Empty ();
-    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( System.Array.Empty<object> (), empty ) );
 
     const int count = 10;
     IEnumerable<object> source = XEnumerable.RangeEnumerable(1, count).Select(x => (object)x);

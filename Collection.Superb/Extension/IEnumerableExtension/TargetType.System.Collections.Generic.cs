@@ -374,7 +374,7 @@ static public class system_collections_generic
       return new(e);
     };
 
-    Empty<Stack<Item>> empty = () => [];
+    Empty<Stack<Item>> empty = () => new ();
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 

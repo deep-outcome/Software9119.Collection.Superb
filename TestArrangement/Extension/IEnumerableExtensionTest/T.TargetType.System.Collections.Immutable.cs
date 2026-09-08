@@ -197,7 +197,7 @@ public class system_collections_immutable_test
     AsOrToTargetType<ImmutableList <int>> targetType = collections_immutable.ImmutableList<int>();
 
     ImmutableList <int> empty = targetType.Empty ();
-    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( ImmutableList<int>.Empty, empty ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     ImmutableList <int> target = targetType.Ctor(source);
@@ -214,7 +214,7 @@ public class system_collections_immutable_test
     AsOrToTargetType<ImmutableQueue <int>> targetType = collections_immutable.ImmutableQueue<int>();
 
     ImmutableQueue <int> empty = targetType.Empty ();
-    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( ImmutableQueue<int>.Empty, empty ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     ImmutableQueue <int> target = targetType.Ctor(source);
@@ -375,7 +375,7 @@ public class system_collections_immutable_test
     AsOrToTargetType<ImmutableStack <int>> targetType = collections_immutable.ImmutableStack<int>();
 
     ImmutableStack <int> empty = targetType.Empty ();
-    Assert.HasCount ( 0, empty );
+    Assert.IsTrue ( ReferenceEquals ( ImmutableStack<int>.Empty, empty ) );
 
     IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
     ImmutableStack <int> target = targetType.Ctor(source);
