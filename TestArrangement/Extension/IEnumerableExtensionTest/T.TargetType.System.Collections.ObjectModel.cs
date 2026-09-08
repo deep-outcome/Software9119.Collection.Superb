@@ -65,4 +65,32 @@ public class system_collections_objectmodel_test
 
     Assert.IsTrue ( source.SequenceEqual ( target ) );
   }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void ReadOnlyCollection ( int? capacity )
+  {
+    AsOrToTargetType<ReadOnlyCollection<int>> targetType = c_objectmodel.ReadOnlyCollection<int> (capacity );
+
+    ReadOnlyCollection<int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    int[] emptyList = (int[]) Reflection.GetNonPublicFieldValue ( empty, "list" );
+    Assert.IsTrue ( ReferenceEquals ( emptyList, Array.Empty<int> () ) );
+
+    const int count = 10;
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, count);
+    ReadOnlyCollection<int> target = targetType.Ctor(source);
+
+    Assert.HasCount ( count, target );
+
+    List<int> targetList = (List<int>) Reflection.GetNonPublicFieldValue ( target, "list" );
+    Assert.AreEqual ( capacity ?? 16, targetList.Capacity );
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.SequenceEqual ( target ) );
+  }
+
 }

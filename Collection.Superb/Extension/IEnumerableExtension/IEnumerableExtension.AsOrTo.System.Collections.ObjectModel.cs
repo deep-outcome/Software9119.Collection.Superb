@@ -51,4 +51,32 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<ObservableCollection<Item>> targetType = collections_objectmodel.ObservableCollection<Item>( );
     return enumerable.AsOrTo ( targetType, behavior );
   }
+
+
+  /// <summary>
+  /// Casts <paramref name="enumerable"/> directly into <see cref="ReadOnlyCollection{Item}"/>, or casts or copies <paramref name="enumerable"/>
+  /// into intermediate <see cref="IList{Item}"/> before wrapping it into <see cref="ReadOnlyCollection{Item}"/>.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_objectmodel.ReadOnlyCollection{Item}(int?)"/>.
+  /// </item>
+  /// <item>
+  /// <paramref name="capacity"/> can be used for <see cref="List{Item}"/> pre-capacitation,
+  /// see <see cref="AsOrToIList{Item}(IEnumerable{Item}, int?, NullBehavior)"/> for details.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ReadOnlyCollection<Item>? AsOrToReadOnlyCollection<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    int? capacity = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<ReadOnlyCollection<Item>> targetType = collections_objectmodel.ReadOnlyCollection<Item>( capacity );
+    return enumerable.AsOrTo ( targetType, behavior );
+  }
 }

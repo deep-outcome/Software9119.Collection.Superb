@@ -159,3 +159,4 @@ This namespace contains types with extension methods.
     - <strong style="background-color:rgba(186 246 226 / 0.63)"><u>`AsOrTo` or `Into` for chosen [`System.Collections.ObjectModel` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel?view=net-10.0) types</u></strong>
         - `Collection<Item>? AsOrToCollection<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)` – casts `IEnumerable<T>` into collection, or casts or copies it into intemediate `IList<T>` before wrapping to collection
         - `ObservableCollection<Item>? AsOrToObservableCollection<Item>(IEnumerable<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into observable collection
+        - `ReadOnlyCollection<Item>? AsOrToReadOnlyCollection<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)` – casts `IEnumerable<T>` into read-only collection, or casts or copies it into intemediate `IList<T>` before wrapping to read-only collection

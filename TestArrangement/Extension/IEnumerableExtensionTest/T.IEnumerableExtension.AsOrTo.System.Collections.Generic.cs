@@ -679,7 +679,7 @@ public partial class IEnumerableExtensionTest
   public void AsOrToIList ( int? capacity )
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
-    IList<int> test = capacity is int 
+    IList<int> test = capacity is int
       ? source.AsOrToIList(capacity)!
       : source.AsOrToIList()!;
 

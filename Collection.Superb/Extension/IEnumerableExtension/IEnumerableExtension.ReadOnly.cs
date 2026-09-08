@@ -10,37 +10,13 @@ namespace Software9119.Collection.Superb.Extension;
 static public partial class IEnumerableExtension
 {
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-  public const int DefaultListCapacity = 8;
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member  
   public const int DefaultDictCapacity = 8;
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 
   static internal ArgumentNullException EnumerableNull ( string paramName ) => new ( paramName: paramName, "Null source enumerable encounter." );
   static internal ArgumentNullException DictionaryNull ( string paramName ) => new ( paramName: paramName, "Null source dictionary encounter." );
-
-
-
-  /// <summary>
-  /// <see cref="ReadOnlyCollection{Item}"/> from any enumerable.
-  /// </summary>
-  /// <remarks>
-  /// Casts <paramref name="enumerable"/> into <see cref="ReadOnlyCollection{Item}"/> or delegates it
-  /// to <see cref="AsOrToIList"/> for processing and then puts result into
-  /// <see cref="ReadOnlyCollection{Item}"/>.
-  /// </remarks>
-  static public ReadOnlyCollection<Item>? AsOrToReadOnlyCollection<Item> (
-    this IEnumerable<Item>? enumerable,
-    NullBehavior behavior = NullBehavior.ReturnEmpty,
-    int capacity = DefaultListCapacity )
-  {
-    if (enumerable is ReadOnlyCollection<Item> coll)
-      return coll;
-
-    IList<Item>? ilist = enumerable.AsOrToIList ( capacity, behavior );
-    return ilist is null ? null : new ReadOnlyCollection<Item> ( ilist );
-  }
-
 
   /// <summary>
   /// Creates <see cref="ReadOnlyDictionary{Key,Value}"/> from <paramref name="enumerable"/>.

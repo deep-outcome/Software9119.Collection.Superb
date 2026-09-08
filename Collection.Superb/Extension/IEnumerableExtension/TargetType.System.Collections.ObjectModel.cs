@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
@@ -51,6 +52,27 @@ static public class system_collections_objectmodel
     };
 
     Empty<ObservableCollection<Item>> empty = () => new ();
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.ReadOnlyCollection-1?view=net-10.0">
+  /// ReadOnlyCollection&lt;Item&gt;</see>.
+  /// </summary>
+  /// <remarks>
+  /// Uses <see cref="system_collections_generic.IList{Item}(int?)"/> for <see cref="IList{Item}"/> production.
+  /// </remarks>
+  [SuppressMessage ( "Style", "IDE0028:Simplify ReadOnlyCollection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ReadOnlyCollection<Item>> ReadOnlyCollection<Item> ( int? capacity )
+  {
+    Ctor<Item, ReadOnlyCollection<Item>> typedCtor = (e) =>
+    {
+      IList<Item> ilist = system_collections_generic.IList<Item>( capacity ).Ctor( e );
+      return new(ilist);
+    };
+
+    Empty<ReadOnlyCollection<Item>> empty = () => new (Array.Empty<Item>());
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Software9119.Collection.Superb.Extension;
-using Software9119.Collection.Superb.TestArrangement.TestAide;
 
 using System;
 using System.Collections.Generic;
@@ -21,7 +20,6 @@ public partial class IEnumerableExtensionTest
   [SuppressMessage ( "Design", "MSTEST0032:Assertion condition is always true", Justification = "Intentional" )]
   public void DefaultCapacities ()
   {
-    Assert.AreEqual ( 8, IEnumerableExtension.DefaultListCapacity );
     Assert.AreEqual ( 8, IEnumerableExtension.DefaultDictCapacity );
   }
 
@@ -39,69 +37,6 @@ public partial class IEnumerableExtensionTest
     const string expectation = "Null source dictionary encounter. (Parameter 'test')";
     string test = IEnumerableExtension.DictionaryNull ( "test" ).Message;
     Assert.AreEqual ( expectation, test );
-  }
-
-  [TestMethod]
-  public void AsOrToReadOnlyCollection_NullSource_ReturnEmpty ()
-  {
-    ReadOnlyCollection<int> test = ((IEnumerable<int>?) null).AsOrToReadOnlyCollection ( EnumerableNullBehavior.ReturnEmpty )!;
-    Assert.HasCount ( 0, test );
-  }
-
-  [TestMethod]
-  public void AsOrToReadOnlyCollection_NullSource_ReturnDefault ()
-  {
-    ReadOnlyCollection<int> test = ((IEnumerable<int>?) null).AsOrToReadOnlyCollection ( EnumerableNullBehavior.ReturnDefault )!;
-    Assert.IsNull ( test );
-  }
-
-  [TestMethod]
-  public void AsOrToReadOnlyCollection_NullSource_ThrowException ()
-  {
-    const string expectation = "Null source enumerable encounter. (Parameter 'enumerable')";
-    Action test = () => ((IEnumerable<int>?) null).AsOrToReadOnlyCollection ( EnumerableNullBehavior.ThrowException );
-    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
-    Assert.AreEqual ( expectation, e.Message );
-  }
-
-  [TestMethod]
-  public void AsOrToReadOnlyCollection_UknownBehavior ()
-  {
-    const string expectation = "Unsupported behavior, '793'. (Parameter 'behavior')";
-    Action test = () => ((IEnumerable<int>?) null).AsOrToReadOnlyCollection ( (EnumerableNullBehavior) 793 );
-    UnsupportedNullBehaviorException e = Assert.ThrowsExactly<UnsupportedNullBehaviorException> ( test );
-    Assert.AreEqual ( expectation, e.Message );
-  }
-
-  [TestMethod]
-  public void AsOrToReadOnlyCollection ()
-  {
-    IEnumerable<int> enumerable = XEnumerable.RangeEnumerable(1, 9);
-    ReadOnlyCollection<int> coll = enumerable.AsOrToReadOnlyCollection()!;
-    IList<int> test = Items(coll);
-    Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
-    Assert.AreEqual ( 16, ((List<int>) test).Capacity );
-    Assert.IsTrue ( enumerable.SequenceEqual ( coll ) );
-  }
-
-  [TestMethod]
-  public void AsOrToReadOnlyCollection_ReadOnlyCollectionAlready ()
-  {
-    IEnumerable<int> enumerable = new ReadOnlyCollection<int>(new int[0]);
-    ReadOnlyCollection<int> test = enumerable.AsOrToReadOnlyCollection()!;
-    Assert.IsTrue ( ReferenceEquals ( enumerable, test ) );
-  }
-
-  [TestMethod]
-  public void AsOrToReadOnlyCollection_ExactCapacity ()
-  {
-    const int count = 3;
-    IEnumerable<int> enumerable = XEnumerable.RangeEnumerable(1, count);
-    ReadOnlyCollection<int> coll = enumerable.AsOrToReadOnlyCollection(capacity: count)!;
-    IList<int> test = Items(coll);
-    Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
-    Assert.AreEqual ( count, ((List<int>) test).Capacity );
-    Assert.IsTrue ( enumerable.SequenceEqual ( coll ) );
   }
 
   [TestMethod]
@@ -326,13 +261,6 @@ public partial class IEnumerableExtensionTest
 
     Dictionary<int, int> dict = Dictionary(test);
     Assert.AreEqual ( count, dict.Capacity );
-  }
-
-  static IList<int> Items ( ReadOnlyCollection<int> coll )
-  {
-    PropertyInfo property = NonPublicInstanceProperty(coll.GetType(), "Items");
-    IList<int> items = (IList<int>)property.GetValue(coll)!;
-    return items;
   }
 
   static Dictionary<int, int> Dictionary ( ReadOnlyDictionary<int, int> dict )

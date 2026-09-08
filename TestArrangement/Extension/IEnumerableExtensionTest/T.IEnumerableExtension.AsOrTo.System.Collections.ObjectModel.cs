@@ -66,4 +66,34 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void AsOrToReadOnlyCollection ( int? capacity )
+  {
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
+    ReadOnlyCollection<int> test = capacity is int
+      ? source.AsOrToReadOnlyCollection(capacity)!
+      : source.AsOrToReadOnlyCollection()!;
+
+    List<int> list = (List<int>) Reflection.GetNonPublicFieldValue ( test, "list" );
+    Assert.AreEqual ( capacity ?? 16, list.Capacity );
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToReadOnlyCollection_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ReadOnlyCollection<int>? test = returnsDefault
+      ? source.AsOrToReadOnlyCollection(behavior: behavior!.Value)
+      : source.AsOrToReadOnlyCollection();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }
