@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Software9119.Collection.Superb.Extension;
 
+/// <summary>
+/// Extension methods for comfortable and ergonomic creating of well-known .NET collections.
+/// </summary>
 static public partial class IEnumerableExtension
 {
   // array list

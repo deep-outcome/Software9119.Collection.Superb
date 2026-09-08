@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
+using c_generic = Software9119.Collection.Superb.Extension.system_collections_generic;
 using ObjectModel = System.Collections.ObjectModel;
 
 namespace Software9119.Collection.Superb.Extension;
@@ -22,14 +23,14 @@ static public class system_collections_objectmodel
   /// Collection&lt;Item&gt;</see>.
   /// </summary>
   /// <remarks>
-  /// Uses <see cref="system_collections_generic.IList{Item}(int?)"/> for <see cref="IList{Item}"/> production.
+  /// Uses <see cref="c_generic.IList{Item}(int?)"/> for <see cref="IList{Item}"/> production.
   /// </remarks>
   [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<Collection<Item>> Collection<Item> ( int? capacity )
   {
     Ctor<Item, Collection<Item>> typedCtor = (e) =>
     {
-      IList<Item> ilist = system_collections_generic.IList<Item>( capacity ).Ctor( e );
+      IList<Item> ilist = c_generic.IList<Item>( capacity ).Ctor( e );
       return new(ilist);
     };
 
@@ -63,14 +64,14 @@ static public class system_collections_objectmodel
   /// ReadOnlyCollection&lt;Item&gt;</see>.
   /// </summary>
   /// <remarks>
-  /// Uses <see cref="system_collections_generic.IList{Item}(int?)"/> for <see cref="IList{Item}"/> production.
+  /// Uses <see cref="c_generic.IList{Item}(int?)"/> for <see cref="IList{Item}"/> production.
   /// </remarks>
   [SuppressMessage ( "Style", "IDE0028:Simplify ReadOnlyCollection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ReadOnlyCollection<Item>> ReadOnlyCollection<Item> ( int? capacity )
   {
     Ctor<Item, ReadOnlyCollection<Item>> typedCtor = (e) =>
     {
-      IList<Item> ilist = system_collections_generic.IList<Item>( capacity ).Ctor( e );
+      IList<Item> ilist = c_generic.IList<Item>( capacity ).Ctor( e );
       return new(ilist);
     };
 
@@ -95,4 +96,57 @@ static public class system_collections_objectmodel
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlydictionary-2?view=net-10.0">
+  /// ReadOnlyDictionary&lt;Key, Item&gt;</see>.
+  /// </summary>
+  /// <remarks>Calls to <see cref="ReadOnlyDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key}, int?)"/>.</remarks>
+  static public AsOrToTargetType<ReadOnlyDictionary<Key, Item>> ReadOnlyDictionary<Item, Key>
+  (
+    Func<Item, Key> keySelector,
+    IEqualityComparer<Key> keyComparer,
+    int? capacity
+  )
+  where Key : notnull
+    => ReadOnlyDictionary ( keySelector, x => x, keyComparer, capacity );
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlydictionary-2?view=net-10.0">
+  /// ReadOnlyDictionary&lt;Key, Value&gt;</see>.
+  /// </summary>
+  /// <remarks>
+  /// Uses
+  /// <see cref="c_generic.Dictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key}, int?)"/> for
+  /// intermediate <see cref="Dictionary{Key, Value}"/> production.
+  /// </remarks>
+  [SuppressMessage ( "Style", "IDE0028:Simplify ReadOnlyCollection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ReadOnlyDictionary<Key, Value>> ReadOnlyDictionary<Item, Key, Value>
+  (
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
+    IEqualityComparer<Key> keyComparer,
+    int? capacity
+  )
+  where Key : notnull
+  {
+
+    Ctor<Item, ReadOnlyDictionary<Key,Value>> typedCtor = (e) =>
+    {
+      Dictionary<Key, Value> dict = c_generic
+      .Dictionary(keySelector, valueSelector, keyComparer, capacity)
+      .Ctor(e);
+
+      return new (dict);
+    };
+
+    Empty<ReadOnlyDictionary<Key, Value>> empty = () =>
+    {
+      Dictionary<Key, Value> dict = new();
+      return new ( dict );
+    };
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
+  }
 }

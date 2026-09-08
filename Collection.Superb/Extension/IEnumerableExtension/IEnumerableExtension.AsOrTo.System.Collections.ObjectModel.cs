@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -77,6 +78,69 @@ static public partial class IEnumerableExtension
   )
   {
     AsOrToTargetType<ReadOnlyCollection<Item>> targetType = collections_objectmodel.ReadOnlyCollection<Item>( capacity );
+    return enumerable.AsOrTo ( targetType, behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="ReadOnlyDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_objectmodel.ReadOnlyDictionary{Item, Key}(Func{Item, Key}, IEqualityComparer{Key}, int?)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ReadOnlyDictionary<Key, Item>? IntoReadOnlyDictionary<Item, Key> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
+    int? capacity = null,
+    IEqualityComparer<Key>? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    where Key : notnull
+  {
+    keyComparer ??= EqualityComparer<Key>.Default;
+    AsOrToTargetType<ReadOnlyDictionary<Key, Item>> targetType = collections_objectmodel.ReadOnlyDictionary ( keySelector, keyComparer, capacity );
+    return enumerable.AsOrTo ( targetType, behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="ReadOnlyDictionary{Key, Value}"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_objectmodel.ReadOnlyDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key}, int?)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="EqualityComparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ReadOnlyDictionary<Key, Value>? IntoReadOnlyDictionary<Item, Key, Value> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, Key> keySelector,
+    Func<Item, Value> valueSelector,
+    int? capacity = null,
+    IEqualityComparer<Key>? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    where Key : notnull
+  {
+    keyComparer ??= EqualityComparer<Key>.Default;
+    AsOrToTargetType<ReadOnlyDictionary<Key, Value>> targetType = collections_objectmodel.ReadOnlyDictionary
+    (
+      keySelector,
+      valueSelector,
+      keyComparer,
+      capacity
+    );
     return enumerable.AsOrTo ( targetType, behavior );
   }
 }

@@ -118,4 +118,41 @@ public class system_collections_objectmodel_test
     Assert.HasCount ( source.Count, target );
     Assert.IsTrue ( source.SequenceEqual ( target ) );
   }
+
+  [TestMethod]
+  [DataRow ( 100, 107, true )]
+  [DataRow ( 100, 107, false )]
+  [DataRow ( null, 11, true )]
+  [DataRow ( null, 11, false )]
+  public void ReadOnlyDictionary ( int? capacityRequested, int capacityGotten, bool keySelectorOnly )
+  {
+    TestComparer<int> keyComparer = new ();
+    Func<int, int> keySelector = x => x *2;
+    Func<int, int> valueSelector = keySelectorOnly ? x => x : x => x *3;
+
+    AsOrToTargetType<ReadOnlyDictionary<int, int>> targetType = keySelectorOnly
+      ? c_objectmodel.ReadOnlyDictionary
+        (keySelector, keyComparer, capacityRequested)
+      : c_objectmodel.ReadOnlyDictionary
+        (keySelector, valueSelector, keyComparer, capacityRequested);
+
+    ReadOnlyDictionary<int, int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, 10);
+    ReadOnlyDictionary<int, int> target = targetType.Ctor(source);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
+
+    Dictionary<int, int> innerDict = (Dictionary<int, int>)Reflection
+      .GetNonPublicFieldValue ( target, "m_dictionary" );
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, innerDict.Comparer ) );
+    Assert.AreEqual ( capacityGotten, innerDict.Capacity );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+      .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
+    Assert.IsTrue ( expectation.SequenceEqual ( target ) );
+  }
 }

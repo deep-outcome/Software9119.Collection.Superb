@@ -6,6 +6,8 @@ namespace Software9119.Collection.Superb.Extension;
 
 static public partial class IEnumerableExtension
 {
+  static ArgumentNullException EnumerableNull ( string paramName ) => new ( paramName: paramName, "Null source enumerable encounter." );
+
   /// <summary>
   /// Engine behind <c>AsOrTo</c> and <c>Into</c> methods consuming <see cref="IEnumerable"/> and <see cref="IEnumerable{T}"/> .
   /// </summary>

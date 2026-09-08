@@ -96,4 +96,95 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  [DataRow ( 100, 107, true )]
+  [DataRow ( 100, 107, false )]
+  [DataRow ( null, 11, true )]
+  [DataRow ( null, 11, false )]
+  public void IntoReadOnlyDictionary ( int? cap, int expCap, bool keySelectorOnly )
+  {
+    Func<int, int> keySelector = x => x * 2;
+    Func<int, int> valueSelector = keySelectorOnly ? x => x: x => x * 3;
+    TestComparer<int> keyComparer = new ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ReadOnlyDictionary<int, int>? test = cap is int
+      ? keySelectorOnly
+        ? source.IntoReadOnlyDictionary(keySelector, cap, keyComparer: keyComparer)!
+        : source.IntoReadOnlyDictionary(keySelector, valueSelector, cap, keyComparer: keyComparer)!
+      : keySelectorOnly
+        ? source.IntoReadOnlyDictionary ( keySelector, keyComparer: keyComparer )!
+        : source.IntoReadOnlyDictionary ( keySelector, valueSelector, keyComparer: keyComparer )!;
+
+    Dictionary<int, int> innerDict = (Dictionary<int, int>)Reflection
+      .GetNonPublicFieldValue ( test, "m_dictionary" );
+
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, innerDict.Comparer ) );
+    Assert.AreEqual ( expCap, innerDict.Capacity );
+
+    IEnumerable<KeyValuePair<int, int>> expectation = source
+    .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoReadOnlyDictionary_KeySelectorOnly_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    ReadOnlyDictionary<int, int>? test = explicitNull
+    ? source.IntoReadOnlyDictionary(x => x, keyComparer: null)!
+    : source.IntoReadOnlyDictionary(x => x)!;
+
+    Dictionary<int, int> innerDict = (Dictionary<int, int>)Reflection
+      .GetNonPublicFieldValue ( test, "m_dictionary" );
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, innerDict.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoReadOnlyDictionary_KeySelectorOnly_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ReadOnlyDictionary<int, int>? test = returnsDefault
+    ? source.IntoReadOnlyDictionary(x => x, behavior: behavior!.Value)
+    : source.IntoReadOnlyDictionary(x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoReadOnlyDictionary_DefaultComparer ( bool explicitNull )
+  {
+    IEnumerable<int> source = [];
+    ReadOnlyDictionary<int, int>? test = explicitNull
+    ? source.IntoReadOnlyDictionary(x => x, x => x, keyComparer: null)!
+    : source.IntoReadOnlyDictionary(x => x, x => x)!;
+
+    Dictionary<int, int> innerDict = (Dictionary<int, int>)Reflection
+      .GetNonPublicFieldValue ( test, "m_dictionary" );
+
+    Assert.IsTrue ( ReferenceEquals ( EqualityComparer<int>.Default, innerDict.Comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoReadOnlyDictionary_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ReadOnlyDictionary<int, int>? test = returnsDefault
+    ? source.IntoReadOnlyDictionary(x => x, x => x, behavior: behavior!.Value)
+    : source.IntoReadOnlyDictionary(x => x, x => x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }
