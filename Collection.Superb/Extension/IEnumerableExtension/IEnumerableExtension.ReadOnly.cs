@@ -79,35 +79,5 @@ static public partial class IEnumerableExtension
     return new ReadOnlyDictionary<Key, Value> ( dict );
   }
 
-  /// <summary>
-  /// Puts see <paramref name="dict"/> into <see cref="ReadOnlyDictionary{Key,Value}"/>.
-  /// </summary>
-  /// <exception cref="ArgumentNullException">
-  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="dict"/> is
-  /// <see langword="null"/>.
-  /// </exception>
-  /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
-  static public ReadOnlyDictionary<Key, Value>? AsReadOnlyDictionary<Key, Value>
-  (
-    this IDictionary<Key, Value>? dict,
-    NullBehavior behavior = NullBehavior.ReturnEmpty
-  )
-    where Key : notnull
-  {
-    if (dict.IsNull ())
-    {
-      return behavior switch
-      {
-        NullBehavior.ReturnEmpty => ReadOnlyDictionary<Key, Value>.Empty,
-        NullBehavior.ReturnDefault => null,
-        NullBehavior.ThrowException => throw DictionaryNull ( nameof ( dict ) ),
-        _ => throw new UnsupportedNullBehaviorException ( behavior ),
-      };
-    }
-
-    if (dict is ReadOnlyDictionary<Key, Value> ro)
-      return ro;
-
-    return new ReadOnlyDictionary<Key, Value> ( dict );
-  }
+  
 }

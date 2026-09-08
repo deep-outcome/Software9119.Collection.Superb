@@ -9,7 +9,7 @@ namespace Software9119.Collection.Superb.Extension;
 static public partial class IEnumerableExtension
 {
   /// <summary>
-  /// Wraps <paramref name="enumerable"/> into <see cref="OrderablePartitioner {Item}"/>.
+  /// Wraps <paramref name="enumerable"/> into <see cref="OrderablePartitioner{Item}"/>.
   /// </summary>
   /// <remarks>
   /// <list type="bullet">
@@ -38,7 +38,7 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Wraps <paramref name="collection"/> into <see cref="BlockingCollection {Item}"/>.
+  /// Wraps <paramref name="collection"/> into <see cref="BlockingCollection{Item}"/>.
   /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with

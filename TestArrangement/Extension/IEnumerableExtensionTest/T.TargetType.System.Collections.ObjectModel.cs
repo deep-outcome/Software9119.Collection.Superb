@@ -93,4 +93,29 @@ public class system_collections_objectmodel_test
     Assert.IsTrue ( source.SequenceEqual ( target ) );
   }
 
+  [TestMethod]
+  public void ReadOnlyDictionary_AsOnly ()
+  {
+    AsOrToTargetType<ReadOnlyDictionary<object, int>> targetType = c_objectmodel.ReadOnlyDictionary<object, int> ( );
+
+    ReadOnlyDictionary<object, int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    Dictionary<object, int> source = new ()
+    {
+      [new object()] = 1,
+      [new object()] = 2,
+      [new object()] = 3,
+    };
+
+    ReadOnlyDictionary<object, int> target = targetType.Ctor(source);
+    object innerDict = Reflection.GetNonPublicFieldValue ( target, "m_dictionary" );
+    Assert.IsTrue ( ReferenceEquals ( source, innerDict ) );
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.HasCount ( source.Count, target );
+    Assert.IsTrue ( source.SequenceEqual ( target ) );
+  }
 }

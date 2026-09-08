@@ -10,11 +10,11 @@ namespace Software9119.Collection.Superb.Extension;
 static public partial class IEnumerableExtension
 {
   /// <summary>
-  /// Casts or copies <paramref name="enumerable"/> into <see cref="ConcurrentBag {Item}"/>.
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ConcurrentBag{Item}"/>.
   /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="c_concurrent.ConcurrentBag {Item}()"/>.
+  /// <see cref="c_concurrent.ConcurrentBag{Item}()"/>.
   /// </remarks>
   static public ConcurrentBag<Item>? AsOrToConcurrentBag<Item>
   (
@@ -100,11 +100,11 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Casts or copies <paramref name="enumerable"/> into <see cref="ConcurrentQueue {Item}"/>.
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ConcurrentQueue{Item}"/>.
   /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="c_concurrent.ConcurrentQueue {Item}()"/>.
+  /// <see cref="c_concurrent.ConcurrentQueue{Item}()"/>.
   /// </remarks>
   static public ConcurrentQueue<Item>? AsOrToConcurrentQueue<Item>
   (
@@ -117,11 +117,11 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Casts or copies <paramref name="enumerable"/> into <see cref="ConcurrentStack {Item}"/>.
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ConcurrentStack{Item}"/>.
   /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="c_concurrent.ConcurrentStack {Item}()"/>.
+  /// <see cref="c_concurrent.ConcurrentStack{Item}()"/>.
   /// </remarks>
   static public ConcurrentStack<Item>? AsOrToConcurrentStack<Item>
   (

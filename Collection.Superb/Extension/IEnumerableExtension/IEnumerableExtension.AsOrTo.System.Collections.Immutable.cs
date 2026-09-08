@@ -147,11 +147,11 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableList {Item}"/>.
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableList{Item}"/>.
   /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="collections_immutable.ImmutableList {Item}()"/>.
+  /// <see cref="collections_immutable.ImmutableList{Item}()"/>.
   /// </remarks>
   static public ImmutableList<Item>? AsOrToImmutableList<Item>
   (
@@ -164,11 +164,11 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableQueue {Item}"/>.
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableQueue{Item}"/>.
   /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="collections_immutable.ImmutableQueue {Item}()"/>.
+  /// <see cref="collections_immutable.ImmutableQueue{Item}()"/>.
   /// </remarks>
   static public ImmutableQueue<Item>? AsOrToImmutableQueue<Item>
   (
@@ -291,11 +291,11 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableStack {Item}"/>.
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ImmutableStack{Item}"/>.
   /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="collections_immutable.ImmutableStack {Item}()"/>.
+  /// <see cref="collections_immutable.ImmutableStack{Item}()"/>.
   /// </remarks>
   static public ImmutableStack<Item>? AsOrToImmutableStack<Item>
   (

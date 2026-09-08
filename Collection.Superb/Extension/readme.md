@@ -160,3 +160,4 @@ This namespace contains types with extension methods.
         - `Collection<Item>? AsOrToCollection<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)` – casts `IEnumerable<T>` into collection, or casts or copies it into intemediate `IList<T>` before wrapping to collection
         - `ObservableCollection<Item>? AsOrToObservableCollection<Item>(IEnumerable<Item>?, EnumerableNullBehavior)` – casts or copies `IEnumerable<T>` into observable collection
         - `ReadOnlyCollection<Item>? AsOrToReadOnlyCollection<Item>(IEnumerable<Item>?, int?, EnumerableNullBehavior)` – casts `IEnumerable<T>` into read-only collection, or casts or copies it into intemediate `IList<T>` before wrapping to read-only collection
+        - `ReadOnlyDictionary<Key, Value>? AsReadOnlyDictionary<Key, Value>(IDictionary<Key, Value>?, EnumerableNullBehavior)` – wraps `IDictionary<Key, Value>` into read-only dictionary

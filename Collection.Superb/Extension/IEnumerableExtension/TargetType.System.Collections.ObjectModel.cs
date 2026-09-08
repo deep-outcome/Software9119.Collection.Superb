@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
+using ObjectModel = System.Collections.ObjectModel;
+
 namespace Software9119.Collection.Superb.Extension;
 
 /// <summary>
@@ -75,4 +77,22 @@ static public class system_collections_objectmodel
     Empty<ReadOnlyCollection<Item>> empty = () => new (Array.Empty<Item>());
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlydictionary-2?view=net-10.0">
+  /// ReadOnlyDictionary&lt;Key, Item&gt;</see>.
+  /// </summary>
+  /// <remarks>
+  /// <c>As</c>-only.
+  /// </remarks>
+  static public AsOrToTargetType<ReadOnlyDictionary<Key, Value>> ReadOnlyDictionary<Key, Value> ()
+    where Key : notnull
+  {
+    Ctor<KeyValuePair<Key, Value>, ReadOnlyDictionary<Key,Value>> typedCtor = (e) => new ( ( IDictionary<Key, Value>) e );
+
+    Empty<ReadOnlyDictionary<Key, Value>> empty = () => ObjectModel.ReadOnlyDictionary<Key, Value>.Empty;
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
+
 }
