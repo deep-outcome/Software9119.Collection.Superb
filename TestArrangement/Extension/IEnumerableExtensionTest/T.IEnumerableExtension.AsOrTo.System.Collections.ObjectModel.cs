@@ -187,4 +187,27 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void AsOrToReadOnlyObservableCollection ()
+  {
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ReadOnlyObservableCollection<int> test = source.AsOrToReadOnlyObservableCollection()!;
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToReadOnlyObservableCollection_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ReadOnlyObservableCollection<int>? test = returnsDefault
+      ? source.AsOrToReadOnlyObservableCollection(behavior!.Value)
+      : source.AsOrToReadOnlyObservableCollection();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

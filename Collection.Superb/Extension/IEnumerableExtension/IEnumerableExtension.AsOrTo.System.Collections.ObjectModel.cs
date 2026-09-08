@@ -53,7 +53,6 @@ static public partial class IEnumerableExtension
     return enumerable.AsOrTo ( targetType, behavior );
   }
 
-
   /// <summary>
   /// Casts <paramref name="enumerable"/> directly into <see cref="ReadOnlyCollection{Item}"/>, or casts or copies <paramref name="enumerable"/>
   /// into intermediate <see cref="IList{Item}"/> before wrapping it into <see cref="ReadOnlyCollection{Item}"/>.
@@ -141,6 +140,25 @@ static public partial class IEnumerableExtension
       keyComparer,
       capacity
     );
+    return enumerable.AsOrTo ( targetType, behavior );
+  }
+
+  /// <summary>
+  /// Casts <paramref name="enumerable"/> directly into <see cref="ReadOnlyObservableCollection{Item}"/>, or casts or copies 
+  /// <paramref name="enumerable"/> into intermediate <see cref="ObservableCollection{Item}"/> before wrapping it into 
+  /// <see cref="ReadOnlyObservableCollection{Item}"/>.
+  /// </summary>
+  /// <remarks>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_objectmodel.ReadOnlyObservableCollection{Item}()"/>.
+  /// </remarks>
+  static public ReadOnlyObservableCollection<Item>? AsOrToReadOnlyObservableCollection<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<ReadOnlyObservableCollection<Item>> targetType = collections_objectmodel.ReadOnlyObservableCollection<Item>( );
     return enumerable.AsOrTo ( targetType, behavior );
   }
 }

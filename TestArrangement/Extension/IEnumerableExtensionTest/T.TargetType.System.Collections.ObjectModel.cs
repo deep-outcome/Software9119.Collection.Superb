@@ -155,4 +155,32 @@ public class system_collections_objectmodel_test
       .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
     Assert.IsTrue ( expectation.SequenceEqual ( target ) );
   }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void ReadOnlyObservableCollection ( bool observableCollectionAlready )
+  {
+    AsOrToTargetType<ReadOnlyObservableCollection<int>> targetType = c_objectmodel.ReadOnlyObservableCollection<int> ( );
+
+    ReadOnlyObservableCollection<int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    const int count = 10;
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, count);
+    if (observableCollectionAlready)
+      source = source.AsOrToObservableCollection ()!;
+
+    ReadOnlyObservableCollection<int> target = targetType.Ctor(source);
+
+    IList<int> list  = (IList<int>)Reflection.GetNonPublicFieldValue<ReadOnlyCollection<int>> ( target, "list" );
+    Assert.AreEqual ( observableCollectionAlready, ReferenceEquals ( source, list ) );
+
+    Assert.HasCount ( count, target );
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.IsTrue ( source.SequenceEqual ( target ) );
+  }
 }

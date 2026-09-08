@@ -149,4 +149,28 @@ static public class system_collections_objectmodel
     };
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.ReadOnlyObservableCollection-1?view=net-10.0">
+  /// ReadOnlyObservableCollection&lt;Item&gt;</see>.
+  /// </summary>
+  /// <remarks>
+  ///  Uses
+  /// <see cref="ObservableCollection{Item}"/> for intermediate <see cref="ObservableCollection{Item}"/> production.
+  /// </remarks>
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ReadOnlyObservableCollection<Item>> ReadOnlyObservableCollection<Item> ()
+  {
+    Ctor<Item, ReadOnlyObservableCollection<Item>> typedCtor = (e) =>
+    {
+      ObservableCollection<Item> oc = e is ObservableCollection<Item> x ? x
+        : ObservableCollection<Item>().Ctor(e);
+
+      return new(oc);
+    };
+
+    Empty<ReadOnlyObservableCollection<Item>> empty = () => new (new());
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
 }
