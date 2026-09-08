@@ -129,7 +129,7 @@ static public class system_collections_immutable
   {
     Ctor<Item, ImmutableList <Item>> typedCtor = (e) => Immutable.ImmutableList.CreateRange (e);
 
-    Empty<ImmutableList <Item>> empty = () => Immutable.ImmutableList<Item>.Empty;    
+    Empty<ImmutableList <Item>> empty = () => Immutable.ImmutableList<Item>.Empty;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
@@ -144,7 +144,7 @@ static public class system_collections_immutable
   {
     Ctor<Item, ImmutableQueue <Item>> typedCtor = (e) => Immutable.ImmutableQueue.CreateRange (e);
 
-    Empty<ImmutableQueue <Item>> empty = () => Immutable.ImmutableQueue<Item>.Empty;    
+    Empty<ImmutableQueue <Item>> empty = () => Immutable.ImmutableQueue<Item>.Empty;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 
@@ -209,7 +209,7 @@ static public class system_collections_immutable
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableSortedSet-1?view=net-10.0">
   /// ImmutableSortedSet&lt;Item&gt;</see>.
-  /// </summary>  
+  /// </summary>
   static public AsOrToTargetType<ImmutableSortedSet<Item>> ImmutableSortedSet<Item> ( IComparer<Item> itemComparer )
   {
     if (itemComparer == null)
@@ -233,7 +233,7 @@ static public class system_collections_immutable
   {
     Ctor<Item, ImmutableStack <Item>> typedCtor = (e) => Immutable.ImmutableStack.CreateRange (e);
 
-    Empty<ImmutableStack <Item>> empty = () => Immutable.ImmutableStack<Item>.Empty;    
+    Empty<ImmutableStack <Item>> empty = () => Immutable.ImmutableStack<Item>.Empty;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 }

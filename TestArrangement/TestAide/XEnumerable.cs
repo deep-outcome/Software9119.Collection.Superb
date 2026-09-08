@@ -14,7 +14,7 @@ static class XEnumerable
     IEnumerable<int> e = count == 0
       ? new EmptyEnumerable<int>()
       : Enumerable.Range(start, count).Select(x => x);
-    
+
     ValidateEnumerable ( e );
     return e;
   }

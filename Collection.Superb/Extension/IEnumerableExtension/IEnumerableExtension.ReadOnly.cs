@@ -20,7 +20,7 @@ static public partial class IEnumerableExtension
   static internal ArgumentNullException EnumerableNull ( string paramName ) => new ( paramName: paramName, "Null source enumerable encounter." );
   static internal ArgumentNullException DictionaryNull ( string paramName ) => new ( paramName: paramName, "Null source dictionary encounter." );
 
-  
+
 
   /// <summary>
   /// <see cref="ReadOnlyCollection{Item}"/> from any enumerable.

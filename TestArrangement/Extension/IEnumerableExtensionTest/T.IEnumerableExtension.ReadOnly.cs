@@ -40,7 +40,7 @@ public partial class IEnumerableExtensionTest
     string test = IEnumerableExtension.DictionaryNull ( "test" ).Message;
     Assert.AreEqual ( expectation, test );
   }
-  
+
   [TestMethod]
   public void AsOrToReadOnlyCollection_NullSource_ReturnEmpty ()
   {

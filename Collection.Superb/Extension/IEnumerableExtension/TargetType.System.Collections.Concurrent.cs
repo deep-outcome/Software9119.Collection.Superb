@@ -119,7 +119,7 @@ static public class system_collections_concurrent
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.OrderablePartitioner-1?view=net-10.0">
   /// OrderablePartitioner&lt;Item&gt;</see>.
-  /// </summary>  
+  /// </summary>
   static public AsOrToTargetType<OrderablePartitioner<Item>> OrderablePartitioner<Item>
   (
     EnumerablePartitionerOptions opts,
@@ -145,7 +145,7 @@ static public class system_collections_concurrent
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.BlockingCollection-1?view=net-10.0">
   /// BlockingCollection&lt;Item&gt;</see>.
-  /// </summary>  
+  /// </summary>
   [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<BlockingCollection<Item>> BlockingCollection<Item> ( int? boundedCapacity )
   {

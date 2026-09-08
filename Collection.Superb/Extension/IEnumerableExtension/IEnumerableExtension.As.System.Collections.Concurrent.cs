@@ -11,11 +11,11 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Wraps <paramref name="enumerable"/> into <see cref="OrderablePartitioner {Item}"/>.
   /// </summary>
-  /// <remarks> 
+  /// <remarks>
   /// <list type="bullet">
   /// <item>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="c_concurrent.OrderablePartitioner{Item}(EnumerablePartitionerOptions, bool)"/>.  
+  /// <see cref="c_concurrent.OrderablePartitioner{Item}(EnumerablePartitionerOptions, bool)"/>.
   /// </item>
   /// <item>
   /// <paramref name="dynamicLoadBalancing"/> is applied for <paramref name="enumerable"/> which is <see cref="IList{Item}"/> implementation.
@@ -40,7 +40,7 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Wraps <paramref name="collection"/> into <see cref="BlockingCollection {Item}"/>.
   /// </summary>
-  /// <remarks> 
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="c_concurrent.BlockingCollection{Item}(int?)"/>.
   /// </remarks>

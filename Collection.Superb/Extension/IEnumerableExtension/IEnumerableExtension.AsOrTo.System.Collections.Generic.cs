@@ -456,7 +456,7 @@ static public partial class IEnumerableExtension
   /// ║ ICollection&lt;T&gt; ║ T []     ║ Copy   ║
   /// ║ IList&lt;T&gt;       ║ IList&lt;T&gt; ║ Cast   ║
   /// ╚════════════════╩══════════╩════════╝
-  /// </code>  
+  /// </code>
   /// <list type="bullet">
   /// <item>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with

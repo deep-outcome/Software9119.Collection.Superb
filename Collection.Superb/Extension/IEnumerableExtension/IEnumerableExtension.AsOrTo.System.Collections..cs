@@ -12,7 +12,7 @@ static public partial class IEnumerableExtension
   /// Casts or copies <paramref name="enumerable"/> into <see cref="ArrayList"/>.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="system_collections.ArrayList(int?)"/>.
   /// </remarks>
   static public ArrayList? AsOrToArrayList<Item> ( this IEnumerable<Item>? enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
@@ -96,7 +96,7 @@ static public partial class IEnumerableExtension
   /// Casts or copies <paramref name="enumerable"/> into <see cref="Queue"/>.
   /// </summary>
   /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with 
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="system_collections.Queue(int?)"/>.
   /// </remarks>
   static public Queue? AsOrToQueue<Item> ( this IEnumerable<Item>? enumerable, int? capacity = null, NullBehavior behavior = NullBehavior.ReturnEmpty )
