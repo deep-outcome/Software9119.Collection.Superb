@@ -13,7 +13,7 @@ This namespace contains types with extension methods.
     - `Into` prefixed method implies source enumerable enumeration (copying, transforming) into target type.
     - `AsOrTo` methods do `As` and `Into` both as described above.
     - Methods expose `int?` capacity parameter that can be used for target type pre-capacitation, optional parameter.
-    - All methods expose [`EnumerableNullBehavior`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/EnumerableNullBehavior.cs) for driving `null` source enumerable behavior, optional parameter.    
+    - All methods expose [`EnumerableNullBehavior`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/EnumerableNullBehavior.cs) for driving `null` source enumerable behavior, optional parameter.
     - <strong style="background-color:rgba(186 246 226 / 0.63)"><u>`AsOrTo` core method</u></strong>
         - [`Target? AsOrTo<Target>(IEnumerable?, AsOrToTargetType<Target>, int?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.cs#L34)
         - Open to user extension method declarations.

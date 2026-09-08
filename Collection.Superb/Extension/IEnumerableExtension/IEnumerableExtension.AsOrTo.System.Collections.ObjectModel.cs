@@ -39,7 +39,7 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts or copies <paramref name="enumerable"/> into <see cref="ObservableCollection{Item}"/>.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="collections_objectmodel.ObservableCollection{Item}()"/>.
   /// </remarks>

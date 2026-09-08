@@ -21,7 +21,7 @@ public partial class IEnumerableExtensionTest
   {
     const int count = 10;
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, count);
-    ImmutableArray<int>? test = capacity is int 
+    ImmutableArray<int>? test = capacity is int
       ? source.AsOrToImmutableArray(capacity)!
       : source.AsOrToImmutableArray()!;
 

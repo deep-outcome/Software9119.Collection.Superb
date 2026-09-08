@@ -42,7 +42,7 @@ static public class system_collections_objectmodel
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.observablecollection-1?view=net-10.0">
   /// ObservableCollection&lt;Item&gt;</see>.
-  /// </summary>  
+  /// </summary>
   [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ObservableCollection<Item>> ObservableCollection<Item> ()
   {
