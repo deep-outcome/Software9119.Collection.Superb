@@ -210,7 +210,7 @@ static public class system_collections_generic
       return result;
     };
 
-    Empty<PriorityQueue<Item,Priority>> empty = () => new ( priorityComparer );    
+    Empty<PriorityQueue<Item,Priority>> empty = () => new ( priorityComparer );
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
 
@@ -401,6 +401,34 @@ static public class system_collections_generic
     };
 
     Empty<Item[]> empty = System.Array.Empty<Item>;
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1?view=net-10.0">
+  /// IList&lt;Item&gt;</see>.
+  /// </summary>
+  static public AsOrToTargetType<IList<Item>> IList<Item> ( int? capacity )
+  {
+    Ctor<Item, IList<Item>> typedCtor = (e) =>
+    {
+      if (e is IList<Item> ilist)
+        return ilist;
+
+      if (e is ICollection<Item> collection)
+      {
+        Item[] array = new Item[collection.Count];
+        collection.CopyTo ( array, 0 );
+        return array;
+      }
+
+      List<Item> list = capacity is int cap ? new(cap) : new();
+      list.AddRange ( e );
+      return list;
+    };
+
+    Empty<IList<Item>> empty = System.Array.Empty<Item>;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
 }

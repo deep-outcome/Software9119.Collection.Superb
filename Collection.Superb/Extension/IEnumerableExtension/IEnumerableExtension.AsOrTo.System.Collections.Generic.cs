@@ -442,4 +442,40 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<Item[]> targetType = collections_generic.Array<Item>( length );
     return enumerable.AsOrTo ( targetType, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="IList{Item}"/>.
+  /// </summary>
+  /// <remarks>
+  /// Cast/Copy Table
+  /// <code>
+  /// ╔════════════════╦══════════╦════════╗
+  /// ║   enumerable   ║  result  ║ action ║
+  /// ╠════════════════╬══════════╬════════╣
+  /// ║ IEnumerable&lt;T&gt; ║ List&lt;T&gt;  ║ Copy   ║
+  /// ║ ICollection&lt;T&gt; ║ T []     ║ Copy   ║
+  /// ║ IList&lt;T&gt;       ║ IList&lt;T&gt; ║ Cast   ║
+  /// ╚════════════════╩══════════╩════════╝
+  /// </code>  
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_generic.IList{Item}(int?)"/>.
+  /// </item>
+  /// <item>
+  /// <paramref name="capacity"/> can be used for <see cref="List{Item}"/> pre-capacitation.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
+  static public IList<Item>? AsOrToIList<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    int? capacity = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<IList<Item>> targetType = collections_generic.IList<Item>( capacity );
+    return enumerable.AsOrTo ( targetType, behavior );
+  }
 }

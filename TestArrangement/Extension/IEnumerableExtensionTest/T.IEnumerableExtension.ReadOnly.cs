@@ -40,78 +40,7 @@ public partial class IEnumerableExtensionTest
     string test = IEnumerableExtension.DictionaryNull ( "test" ).Message;
     Assert.AreEqual ( expectation, test );
   }
-
-  [TestMethod]
-  public void AsOrToIList_NullSource_ReturnEmpty ()
-  {
-    IList<int>? test = ((IEnumerable<int>?) null).AsOrToIList ( EnumerableNullBehavior.ReturnEmpty );
-    Assert.IsTrue ( test is int [] );
-    Assert.HasCount ( 0, test );
-  }
-
-  [TestMethod]
-  public void AsOrToIList_NullSource_ReturnDefault ()
-  {
-    IList<int>? test = ((IEnumerable<int>?) null).AsOrToIList ( EnumerableNullBehavior.ReturnDefault );
-    Assert.IsNull ( test );
-  }
-
-  [TestMethod]
-  public void AsOrToIList_NullSource_ThrowException ()
-  {
-    const string expectation = "Null source enumerable encounter. (Parameter 'enumerable')";
-    Action test = () => ((IEnumerable<int>?) null).AsOrToIList ( EnumerableNullBehavior.ThrowException );
-    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
-    Assert.AreEqual ( expectation, e.Message );
-  }
-
-  [TestMethod]
-  public void AsOrToIList_NullSource_UknownBehavior ()
-  {
-    const string expectation = "Unsupported behavior, '793'. (Parameter 'behavior')";
-    Action test = () => ((IEnumerable<int>?) null).AsOrToIList ( (EnumerableNullBehavior) 793 );
-    UnsupportedNullBehaviorException e = Assert.ThrowsExactly<UnsupportedNullBehaviorException> ( test );
-    Assert.AreEqual ( expectation, e.Message );
-  }
-
-  [TestMethod]
-  public void AsOrToIList_EnumerableIsIListOfT ()
-  {
-    int [] ilist = [];
-    IList<int>? test = ilist.AsOrToIList();
-    Assert.IsTrue ( ReferenceEquals ( ilist, test ) );
-  }
-
-  [TestMethod]
-  public void AsOrToIList_EnumerableIsICollectionOfT ()
-  {
-    HashSet<int> set = [1 ,2, 3];
-    IList<int> test = set.AsOrToIList()!;
-    Assert.AreEqual ( typeof ( int [] ), test.GetType () );
-    Assert.IsTrue ( set.SequenceEqual ( test ) );
-  }
-
-  [TestMethod]
-  public void AsOrToIList_EnumerableIsEnumerable ()
-  {
-    IEnumerable<int> enumerable = XEnumerable.RangeEnumerable(1, 9);
-    IList<int> test = enumerable.AsOrToIList()!;
-    Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
-    Assert.AreEqual ( 16, ((List<int>) test).Capacity );
-    Assert.IsTrue ( enumerable.SequenceEqual ( test ) );
-  }
-
-  [TestMethod]
-  public void AsOrToIList_ExactCapacity ()
-  {
-    const int count = 3;
-    IEnumerable<int> enumerable = XEnumerable.RangeEnumerable(1, count);
-    IList<int> test = enumerable.AsOrToIList(capacity: count)!;
-    Assert.AreEqual ( typeof ( List<int> ), test.GetType () );
-    Assert.AreEqual ( count, ((List<int>) test).Capacity );
-    Assert.IsTrue ( enumerable.SequenceEqual ( test ) );
-  }
-
+  
   [TestMethod]
   public void AsOrToReadOnlyCollection_NullSource_ReturnEmpty ()
   {

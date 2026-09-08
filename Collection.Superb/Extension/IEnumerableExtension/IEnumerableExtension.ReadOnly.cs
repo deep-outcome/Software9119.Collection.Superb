@@ -20,60 +20,7 @@ static public partial class IEnumerableExtension
   static internal ArgumentNullException EnumerableNull ( string paramName ) => new ( paramName: paramName, "Null source enumerable encounter." );
   static internal ArgumentNullException DictionaryNull ( string paramName ) => new ( paramName: paramName, "Null source dictionary encounter." );
 
-  /// <summary>
-  /// Copies or casts <paramref name="enumerable"/> into <see cref="IList{Item}"/>.
-  /// </summary>
-  /// <remarks>
-  /// Cast/Copy Table
-  /// <code>
-  /// ╔════════════════╦══════════╦════════╗
-  /// ║   enumerable   ║  result  ║ action ║
-  /// ╠════════════════╬══════════╬════════╣
-  /// ║ IEnumerable&lt;T&gt; ║ List&lt;T&gt;  ║ Copy   ║
-  /// ║ ICollection&lt;T&gt; ║ T []     ║ Copy   ║
-  /// ║ IList&lt;T&gt;       ║ IList&lt;T&gt; ║ Cast   ║
-  /// ╚════════════════╩══════════╩════════╝
-  /// </code>
-  /// <paramref name="capacity"/> can be used to capacitate <see cref="List{Item}"/> sufficiently before population from <paramref name="enumerable"/>.
-  /// </remarks>
-  /// <exception cref="ArgumentNullException">
-  /// When <paramref name="behavior"/> is <see cref="NullBehavior.ThrowException"/> and <paramref name="enumerable"/> is
-  /// <see langword="null"/>.
-  /// </exception>
-  /// <exception cref="UnsupportedNullBehaviorException">When <paramref name="behavior"/> is unsupported behavior.</exception>
-  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
-  static public IList<Item>? AsOrToIList<Item>
-  (
-    this IEnumerable<Item>? enumerable,
-    NullBehavior behavior = NullBehavior.ReturnEmpty,
-    int capacity = DefaultListCapacity
-  )
-  {
-    if (enumerable.IsNull ())
-    {
-      return behavior switch
-      {
-        NullBehavior.ReturnEmpty => Array.Empty<Item> (),
-        NullBehavior.ReturnDefault => null,
-        NullBehavior.ThrowException => throw EnumerableNull ( nameof ( enumerable ) ),
-        _ => throw new UnsupportedNullBehaviorException ( behavior ),
-      };
-    }
-
-    if (enumerable is IList<Item> ilist)
-      return ilist;
-
-    if (enumerable is ICollection<Item> collection)
-    {
-      Item[] array = new Item[collection.Count];
-      collection.CopyTo ( array, 0 );
-      return array;
-    }
-
-    List<Item> list = new(capacity);
-    list.AddRange ( enumerable );
-    return list;
-  }
+  
 
   /// <summary>
   /// <see cref="ReadOnlyCollection{Item}"/> from any enumerable.
@@ -91,7 +38,7 @@ static public partial class IEnumerableExtension
     if (enumerable is ReadOnlyCollection<Item> coll)
       return coll;
 
-    IList<Item>? ilist = enumerable.AsOrToIList ( behavior, capacity );
+    IList<Item>? ilist = enumerable.AsOrToIList ( capacity, behavior );
     return ilist is null ? null : new ReadOnlyCollection<Item> ( ilist );
   }
 
