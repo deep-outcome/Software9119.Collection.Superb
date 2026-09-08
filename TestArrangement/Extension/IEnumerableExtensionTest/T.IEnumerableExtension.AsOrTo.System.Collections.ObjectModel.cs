@@ -43,4 +43,27 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void AsOrToObservableCollection ()
+  {
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ObservableCollection<int> test = source.AsOrToObservableCollection()!;
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToObservableCollection_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ObservableCollection<int>? test = returnsDefault
+      ? source.AsOrToObservableCollection(behavior!.Value)
+      : source.AsOrToObservableCollection();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

@@ -34,4 +34,21 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<Collection<Item>> targetType = collections_objectmodel.Collection<Item>( capacity );
     return enumerable.AsOrTo ( targetType, behavior );
   }
+
+  /// <summary>
+  /// Casts or copies <paramref name="enumerable"/> into <see cref="ObservableCollection{Item}"/>.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
+  /// <see cref="collections_objectmodel.ObservableCollection{Item}()"/>.
+  /// </remarks>
+  static public ObservableCollection<Item>? AsOrToObservableCollection<Item>
+  (
+    this IEnumerable<Item>? enumerable,
+    NullBehavior behavior = NullBehavior.ReturnEmpty
+  )
+  {
+    AsOrToTargetType<ObservableCollection<Item>> targetType = collections_objectmodel.ObservableCollection<Item>( );
+    return enumerable.AsOrTo ( targetType, behavior );
+  }
 }

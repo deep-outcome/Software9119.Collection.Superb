@@ -33,4 +33,24 @@ static public class system_collections_objectmodel
     Empty<Collection<Item>> empty = () => new ();
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.observablecollection-1?view=net-10.0">
+  /// ObservableCollection&lt;Item&gt;</see>.
+  /// </summary>  
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ObservableCollection<Item>> ObservableCollection<Item> ()
+  {
+    Ctor<Item, ObservableCollection<Item>> typedCtor = (e) =>
+    {
+      if (e is IList<Item> list)
+        return new ObservableCollection<Item>(list);
+
+      return new(e);
+    };
+
+    Empty<ObservableCollection<Item>> empty = () => new ();
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
 }
