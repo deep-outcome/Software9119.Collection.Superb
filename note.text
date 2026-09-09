@@ -1,9 +1,7 @@
-- System.Collections.ObjectModel
-- System.Collections.Specialized
+- add As for read-only set
+- add methods' links and verify line numbers for relevant
+- check changes for weirdo
 
-- rework read-only extensions when finished with asOrTo:
-	- (remove default capacities)	
-	- add target type casting, if possible
-	- add target type requiring type-cast first
-	- add other As read-only wrapper methods
+
+- System.Collections.Specialized
 - add Capacitor

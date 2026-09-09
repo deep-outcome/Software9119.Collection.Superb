@@ -13,12 +13,12 @@ public delegate bool CanCast ( IEnumerable e );
 /// <summary>
 /// Target type typed constructor delegate.
 /// </summary>
-public delegate Target Ctor<Item, Target> ( IEnumerable<Item> e );
+public delegate Target Ctor<Item, out Target> ( IEnumerable<Item> e );
 
 /// <summary>
 /// Target type constructor delegate.
 /// </summary>
-public delegate Target Ctor<Target> ( IEnumerable e );
+public delegate Target Ctor<out Target> ( IEnumerable e );
 
 /// <summary>
 /// Empty target type constructor delegate.

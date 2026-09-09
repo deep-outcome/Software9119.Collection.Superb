@@ -181,4 +181,51 @@ public class system_collections_objectmodel_test
 
     Assert.IsTrue ( source.SequenceEqual ( target ) );
   }
+
+  [TestMethod]
+  public void ReadOnlySet_CustomConstructor ()
+  {
+    Ctor<ISet<int>> ctor = x =>
+    {
+      IEnumerable<int> e = (IEnumerable<int>) x;
+      HashSet<int> set = new (1000 );
+      set.UnionWith(e );
+      return set;
+    };
+
+    AsOrToTargetType<ReadOnlySet<int>> targetType = c_objectmodel.ReadOnlySet<int> (ctor );
+
+    Assert.IsTrue ( ReferenceEquals ( ReadOnlySet<int>.Empty, targetType.Empty () ) );
+
+    const int count = 10;
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(1, count);
+    ReadOnlySet<int> target = targetType.Ctor(source);
+
+    HashSet<int> set = ( HashSet<int>)Reflection.GetNonPublicFieldValue ( target, "_set" );
+    Assert.AreEqual ( 1103, set.Capacity );
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.HasCount ( count, target );
+    Assert.IsTrue ( source.SequenceEqual ( target ) );
+  }
+
+  [TestMethod]
+  public void ReadOnlySet_ISetAlready ()
+  {
+    Ctor<ISet<int>> ctor = x => default!;
+    AsOrToTargetType<ReadOnlySet<int>> targetType = c_objectmodel.ReadOnlySet (ctor );
+
+    Assert.IsTrue ( ReferenceEquals ( ReadOnlySet<int>.Empty, targetType.Empty () ) );
+
+    SortedSet<int> source = XEnumerable.RangeEnumerable(1, 10).AsOrToSortedSet()!;
+    ReadOnlySet<int> target = targetType.Ctor(source);
+
+    object set = Reflection.GetNonPublicFieldValue ( target, "_set" );
+    Assert.IsTrue ( ReferenceEquals ( source, set ) );
+
+    Assert.IsTrue ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+  }
 }

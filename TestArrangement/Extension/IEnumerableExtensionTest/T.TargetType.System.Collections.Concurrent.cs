@@ -222,7 +222,7 @@ public class system_c_concurrent_tests
   [TestMethod]
   [DataRow ( 100 )]
   [DataRow ( null )]
-  public void BlockingCollection_Array ( int? capacityLimit )
+  public void BlockingCollection ( int? capacityLimit )
   {
     AsOrToTargetType<BlockingCollection <int>> targetType = c_concurrent.BlockingCollection<int>(capacityLimit);
 

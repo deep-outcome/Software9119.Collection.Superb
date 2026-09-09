@@ -85,7 +85,7 @@ public partial class IEnumerableExtensionTest
   {
     AsOrToTargetType<List<int>> targetType = TargetClass(default);
 
-    Action test = () => _ = ((int []?) null)!.AsOrTo ( targetType, behavior: (EnumerableNullBehavior)999 )!;
+    Action test = () => _ = ((int []?) null).AsOrTo ( targetType, behavior: (EnumerableNullBehavior)999 );
     UnsupportedNullBehaviorException e = Assert.ThrowsExactly<UnsupportedNullBehaviorException> ( test );
     Assert.AreEqual ( "Unsupported behavior, '999'. (Parameter 'behavior')", e.Message );
   }

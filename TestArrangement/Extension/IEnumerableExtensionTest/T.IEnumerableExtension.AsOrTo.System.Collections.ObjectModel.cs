@@ -4,7 +4,9 @@ using Software9119.Collection.Superb.Extension;
 using Software9119.Collection.Superb.TestArrangement.TestAide;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -209,5 +211,134 @@ public partial class IEnumerableExtensionTest
       : source.AsOrToReadOnlyObservableCollection();
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( false, 1000 )]
+  [DataRow ( true, null )]
+  public void AsOrToReadOnlySet_HashSet ( bool defaultComparer, int? capacity )
+  {
+    IEqualityComparer<int> comparer = defaultComparer
+      ? EqualityComparer<int>.Default
+      : new TestComparer<int> ();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ReadOnlySet<int>? test = defaultComparer
+      ? source.AsOrToReadOnlySet()!
+      : source.AsOrToReadOnlySet(capacity, equalityComparer: comparer)!;
+
+    HashSet<int> set = (HashSet<int>)Reflection.GetNonPublicFieldValue ( test, "_set" );
+    Assert.IsTrue ( ReferenceEquals ( comparer, set.Comparer ) );
+    Assert.AreEqual ( capacity is int ? 1103 : 11, set.Capacity );
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( false )]
+  [DataRow ( true )]
+  public void AsOrToReadOnlySet_FrozenSet ( bool defaultComparer )
+  {
+    IEqualityComparer<int> comparer = defaultComparer
+      ? EqualityComparer<int>.Default
+      : new TestComparer<int> ();
+
+    ReadOnlySetType setType = ReadOnlySetType.FrozenSet;
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ReadOnlySet<int>? test = defaultComparer
+      ? source.AsOrToReadOnlySet(setType: setType)!
+      : source.AsOrToReadOnlySet(equalityComparer: comparer, setType: setType)!;
+
+    FrozenSet<int> set = (FrozenSet<int>)Reflection.GetNonPublicFieldValue ( test, "_set" );
+    Assert.IsTrue ( ReferenceEquals ( comparer, set.Comparer ) ); ;
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( false )]
+  [DataRow ( true )]
+  public void AsOrToReadOnlySet_ImmutableHashSet ( bool defaultComparer )
+  {
+    IEqualityComparer<int> comparer = defaultComparer
+      ? EqualityComparer<int>.Default
+      : new TestComparer<int> ();
+
+    ReadOnlySetType setType = ReadOnlySetType.ImmutableHashSet;
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ReadOnlySet<int>? test = defaultComparer
+      ? source.AsOrToReadOnlySet(setType: setType)!
+      : source.AsOrToReadOnlySet(equalityComparer: comparer, setType: setType)!;
+
+    ImmutableHashSet<int> set = (ImmutableHashSet<int>)Reflection.GetNonPublicFieldValue ( test, "_set" );
+    Assert.IsTrue ( ReferenceEquals ( comparer, set.KeyComparer ) ); ;
+
+    Assert.IsTrue ( source.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( false )]
+  [DataRow ( true )]
+  public void AsOrToReadOnlySet_ImmutableSortedSet ( bool defaultComparer )
+  {
+    IComparer<int> comparer = defaultComparer
+      ? Comparer<int>.Default
+      : new ReverseOrderComparer<int> ();
+
+    ReadOnlySetType setType = ReadOnlySetType.ImmutableSortedSet;
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ReadOnlySet<int>? test = defaultComparer
+      ? source.AsOrToReadOnlySet(setType: setType)!
+      : source.AsOrToReadOnlySet(sortingComparer: comparer, setType: setType)!;
+
+    ImmutableSortedSet<int> set = (ImmutableSortedSet<int>)Reflection.GetNonPublicFieldValue ( test, "_set" );
+    Assert.IsTrue ( ReferenceEquals ( comparer, set.KeyComparer ) ); ;
+
+    IEnumerable<int> expectation = defaultComparer ? source : source.Reverse();
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( false )]
+  [DataRow ( true )]
+  public void AsOrToReadOnlySet_SortedSet ( bool defaultComparer )
+  {
+    IComparer<int> comparer = defaultComparer
+      ? Comparer<int>.Default
+      : new ReverseOrderComparer<int> ();
+
+    ReadOnlySetType setType = ReadOnlySetType.SortedSet;
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    ReadOnlySet<int>? test = defaultComparer
+      ? source.AsOrToReadOnlySet(setType: setType)!
+      : source.AsOrToReadOnlySet(sortingComparer: comparer, setType: setType)!;
+
+    SortedSet<int> set = (SortedSet<int>)Reflection.GetNonPublicFieldValue ( test, "_set" );
+    Assert.IsTrue ( ReferenceEquals ( comparer, set.Comparer ) ); ;
+
+    IEnumerable<int> expectation = defaultComparer ? source : source.Reverse();
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToReadOnlySet_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ReadOnlySet<int>? test = returnsDefault
+      ? source.AsOrToReadOnlySet(behavior: behavior!.Value)
+      : source.AsOrToReadOnlySet();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  public void AsOrToReadOnlySet_UnsupportedReadOnlySetType ()
+  {
+    Action test = () => _ = ((int []?) null).AsOrToReadOnlySet ( setType: (ReadOnlySetType)999);
+    UnsupportedReadOnlySetTypeException e = Assert.ThrowsExactly<UnsupportedReadOnlySetTypeException> ( test );
+    Assert.AreEqual ( "Unsupported set type, '999'. (Parameter 'setType')", e.Message );
   }
 }

@@ -170,4 +170,23 @@ static public class system_collections_objectmodel
     Empty<ReadOnlyObservableCollection<Item>> empty = () => ObjectModel.ReadOnlyObservableCollection<Item>.Empty;
     return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
   }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlyset-1?view=net-10.0">
+  /// ReadOnlySet&lt;Item&gt;</see>.
+  /// </summary>  
+  [SuppressMessage ( "Style", "IDE0028:Simplify ReadOnlySet initialization", Justification = "Obviousity." )]
+  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<ReadOnlySet<Item>> ReadOnlySet<Item> ( Ctor<ISet<Item>> setCtor )
+  {
+    Ctor<Item, ReadOnlySet<Item>> typedCtor = (e) =>
+    {
+      ISet<Item> set = e is ISet<Item> s ? s : setCtor(e);
+      return new(set);
+    };
+
+    Empty<ReadOnlySet<Item>> empty = () => ObjectModel.ReadOnlySet<Item>.Empty;
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, null, empty );
+  }
 }
