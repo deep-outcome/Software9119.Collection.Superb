@@ -40,4 +40,28 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void AsReadOnlySet ()
+  {
+    HashSet<int> source = [];
+    ReadOnlySet<int> test = source.AsReadOnlySet()!;
+
+    object set = Reflection.GetNonPublicFieldValue ( test, "_set" );
+    Assert.IsTrue ( ReferenceEquals ( source, set ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsReadOnlySet_NullBehavior ( NullBehavior? behavior )
+  {
+    HashSet<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    ReadOnlySet<int> test = returnsDefault
+      ? source.AsReadOnlySet(behavior: behavior!.Value)!
+      : source.AsReadOnlySet()!;
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

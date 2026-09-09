@@ -46,7 +46,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public BlockingCollection<Item>? AsBlockingCollection<Item>
   (
-    this IProducerConsumerCollection<Item> collection,
+    this IProducerConsumerCollection<Item>? collection,
     int? boundedCapacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
