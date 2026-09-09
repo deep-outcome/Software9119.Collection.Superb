@@ -175,7 +175,7 @@ static public class system_collections_objectmodel
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlyset-1?view=net-10.0">
   /// ReadOnlySet&lt;Item&gt;</see>.
-  /// </summary>  
+  /// </summary>
   [SuppressMessage ( "Style", "IDE0028:Simplify ReadOnlySet initialization", Justification = "Obviousity." )]
   [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ReadOnlySet<Item>> ReadOnlySet<Item> ( Ctor<ISet<Item>> setCtor )

@@ -133,10 +133,10 @@ static public partial class IEnumerableExtension
     return enumerable.AsOrTo ( targetType, behavior );
   }
 
-  /// <summary>  
-  /// Casts <paramref name="enumerable"/> directly into <see cref="BlockingCollection{Item}"/>, or casts or copies 
-  /// <paramref name="enumerable"/> into intermediate <see cref="IProducerConsumerCollection{Item}"/> before wrapping it into 
-  /// <see cref="BlockingCollection{Item}"/>.  
+  /// <summary>
+  /// Casts <paramref name="enumerable"/> directly into <see cref="BlockingCollection{Item}"/>, or casts or copies
+  /// <paramref name="enumerable"/> into intermediate <see cref="IProducerConsumerCollection{Item}"/> before wrapping it into
+  /// <see cref="BlockingCollection{Item}"/>.
   /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with

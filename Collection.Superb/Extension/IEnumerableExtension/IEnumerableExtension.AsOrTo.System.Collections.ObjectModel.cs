@@ -147,8 +147,8 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Casts <paramref name="enumerable"/> directly into <see cref="ReadOnlyObservableCollection{Item}"/>, or casts or copies 
-  /// <paramref name="enumerable"/> into intermediate <see cref="ObservableCollection{Item}"/> before wrapping it into 
+  /// Casts <paramref name="enumerable"/> directly into <see cref="ReadOnlyObservableCollection{Item}"/>, or casts or copies
+  /// <paramref name="enumerable"/> into intermediate <see cref="ObservableCollection{Item}"/> before wrapping it into
   /// <see cref="ReadOnlyObservableCollection{Item}"/>.
   /// </summary>
   /// <remarks>
@@ -168,8 +168,8 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// <list type="bullet">
   /// <item>
-  /// Casts <paramref name="enumerable"/> directly into <see cref="ReadOnlySet{Item}"/>, or casts or copies 
-  /// <paramref name="enumerable"/> into intermediate <see cref="ISet{Item}"/> before wrapping it into 
+  /// Casts <paramref name="enumerable"/> directly into <see cref="ReadOnlySet{Item}"/>, or casts or copies
+  /// <paramref name="enumerable"/> into intermediate <see cref="ISet{Item}"/> before wrapping it into
   /// <see cref="ReadOnlySet{Item}"/>.
   /// </item>
   /// <item><paramref name="equalityComparer"/> defaults to <see cref="EqualityComparer{T}.Default"/> when <see langword="null"/>.</item>

@@ -210,8 +210,8 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( capacityLimit ?? -1, test.BoundedCapacity );
     Assert.IsTrue ( test.Reverse ().SequenceEqual ( source ) );
-    
-    object _collection = Reflection.GetNonPublicFieldValue ( test, "_collection" );    
+
+    object _collection = Reflection.GetNonPublicFieldValue ( test, "_collection" );
     Assert.AreEqual ( typeof ( ConcurrentStack<int> ), _collection.GetType () );
   }
 
