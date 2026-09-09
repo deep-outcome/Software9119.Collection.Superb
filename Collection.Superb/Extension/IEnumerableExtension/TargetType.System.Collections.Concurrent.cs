@@ -147,12 +147,18 @@ static public class system_collections_concurrent
   /// BlockingCollection&lt;Item&gt;</see>.
   /// </summary>
   [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
-  static public AsOrToTargetType<BlockingCollection<Item>> BlockingCollection<Item> ( int? boundedCapacity )
+  static public AsOrToTargetType<BlockingCollection<Item>> BlockingCollection<Item>
+  (
+    int? boundedCapacity,
+    Ctor<IProducerConsumerCollection<Item>> ctor
+  )
   {
+    if (ctor == null)
+      throw new ArgumentNullException ( paramName: nameof ( ctor ), "Constructor must be provided." );
+
     Ctor<Item, BlockingCollection <Item>> typedCtor = ( e ) =>
     {
-      IProducerConsumerCollection<Item> pcc = ( IProducerConsumerCollection<Item>)e;
-
+      IProducerConsumerCollection<Item> pcc = e is IProducerConsumerCollection<Item> x ? x : ctor(e);
       if (boundedCapacity is int cap)
         return new BlockingCollection<Item>(pcc, cap);
 

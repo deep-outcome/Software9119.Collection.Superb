@@ -224,7 +224,8 @@ public class system_c_concurrent_tests
   [DataRow ( null )]
   public void BlockingCollection ( int? capacityLimit )
   {
-    AsOrToTargetType<BlockingCollection <int>> targetType = c_concurrent.BlockingCollection<int>(capacityLimit);
+    Ctor<IProducerConsumerCollection<int>> ctor = e => default!;
+    AsOrToTargetType<BlockingCollection <int>> targetType = c_concurrent.BlockingCollection(capacityLimit, ctor);
 
     BlockingCollection <int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
@@ -232,11 +233,41 @@ public class system_c_concurrent_tests
     ConcurrentQueue<int>? source = XEnumerable.RangeEnumerable(1, 10).AsOrToConcurrentQueue()!;
     BlockingCollection <int> target = targetType.Ctor(source);
 
-    Assert.IsFalse ( targetType.CanCast ( source ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
 
     Assert.AreEqual ( capacityLimit ?? -1, target.BoundedCapacity );
 
-    Assert.IsTrue ( target.SequenceEqual ( source ) );
+    Assert.IsTrue ( source.SequenceEqual ( target ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void BlockingCollection_CustomCtor ( int? capacityLimit )
+  {
+    Ctor<IProducerConsumerCollection<int>> ctor = e => new ConcurrentStack<int>((IEnumerable<int>)e);
+    AsOrToTargetType<BlockingCollection <int>> targetType = c_concurrent.BlockingCollection(capacityLimit, ctor);
+
+    BlockingCollection <int> empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    IEnumerable<int>? source = XEnumerable.RangeEnumerable(1, 10);
+    BlockingCollection <int> target = targetType.Ctor(source);
+
+    Assert.IsFalse ( targetType.CanCast ( target ) );
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+
+    Assert.AreEqual ( capacityLimit ?? -1, target.BoundedCapacity );
+
+    Assert.IsTrue ( source.Reverse ().SequenceEqual ( target ) );
+  }
+
+  [TestMethod]
+  public void BlockingCollection_NullConstructor ()
+  {
+    Action test = () => c_concurrent.BlockingCollection<int>(null, null!);
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Constructor must be provided. (Parameter 'ctor')", e.Message );
   }
 }

@@ -24,21 +24,4 @@ static public partial class IEnumerableExtension
     AsOrToTargetType<ReadOnlyDictionary<Key, Value>> targetType = collections_objectmodel.ReadOnlyDictionary<Key, Value>();
     return dictionary.AsOrTo ( targetType, behavior );
   }
-
-  /// <summary>
-  /// Wraps <paramref name="set"/> into <see cref="ReadOnlySet{Item}"/>.
-  /// </summary>
-  /// <remarks>
-  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="collections_objectmodel.ReadOnlySet{Item}()"/>.
-  /// </remarks>
-  static public ReadOnlySet<Item>? AsReadOnlySet<Item>
-  (
-    this ISet<Item>? set,
-    NullBehavior behavior = NullBehavior.ReturnEmpty
-  )
-  {
-    AsOrToTargetType<ReadOnlySet <Item>> targetType = collections_objectmodel.ReadOnlySet<Item> ();
-    return set.AsOrTo ( targetType, behavior );
-  }
 }

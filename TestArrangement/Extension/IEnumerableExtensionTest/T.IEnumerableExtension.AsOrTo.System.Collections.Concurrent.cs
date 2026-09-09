@@ -161,4 +161,80 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.IsEmpty ?? false, returnsDefault == false );
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void AsOrToBlockingCollection_ConcurrentBag ( int? capacityLimit )
+  {
+    IEnumerable<int>? source = Enumerable.Range(0, 10);
+    BlockingCollection<int> test = capacityLimit is int
+      ? source.AsOrToBlockingCollection(capacityLimit)!
+      : source.AsOrToBlockingCollection()!;
+
+    Assert.AreEqual ( capacityLimit ?? -1, test.BoundedCapacity );
+    Assert.IsTrue ( test.Order ().SequenceEqual ( source ) );
+
+    object _collection = Reflection.GetNonPublicFieldValue ( test, "_collection" );
+    Assert.AreEqual ( typeof ( ConcurrentBag<int> ), _collection.GetType () );
+  }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void AsOrToBlockingCollection_ConcurrentQueue ( int? capacityLimit )
+  {
+    BlockingCollectionType type = BlockingCollectionType.ConcurrentQueue;
+    IEnumerable<int>? source = Enumerable.Range(0, 10);
+    BlockingCollection<int> test = capacityLimit is int
+      ? source.AsOrToBlockingCollection(capacityLimit, type: type)!
+      : source.AsOrToBlockingCollection(type: type)!;
+
+    Assert.AreEqual ( capacityLimit ?? -1, test.BoundedCapacity );
+    Assert.IsTrue ( test.SequenceEqual ( source ) );
+
+    object _collection = Reflection.GetNonPublicFieldValue ( test, "_collection" );
+    Assert.AreEqual ( typeof ( ConcurrentQueue<int> ), _collection.GetType () );
+  }
+
+  [TestMethod]
+  [DataRow ( 100 )]
+  [DataRow ( null )]
+  public void AsOrToBlockingCollection_ConcurrentStack ( int? capacityLimit )
+  {
+    BlockingCollectionType type = BlockingCollectionType.ConcurrentStack;
+    IEnumerable<int>? source = Enumerable.Range(0, 10);
+    BlockingCollection<int> test = capacityLimit is int
+      ? source.AsOrToBlockingCollection(capacityLimit, type: type)!
+      : source.AsOrToBlockingCollection(type: type)!;
+
+    Assert.AreEqual ( capacityLimit ?? -1, test.BoundedCapacity );
+    Assert.IsTrue ( test.Reverse ().SequenceEqual ( source ) );
+    
+    object _collection = Reflection.GetNonPublicFieldValue ( test, "_collection" );    
+    Assert.AreEqual ( typeof ( ConcurrentStack<int> ), _collection.GetType () );
+  }
+
+  [TestMethod]
+  public void AsOrToBlockingCollection_UnsupportedBlockingCollectionType ()
+  {
+    Action test = () => _ = ((int []?) null).AsOrToBlockingCollection ( type: (BlockingCollectionType)999);
+    UnsupportedBlockingCollectionTypeException e = Assert
+      .ThrowsExactly<UnsupportedBlockingCollectionTypeException> ( test );
+    Assert.AreEqual ( "Unsupported blocking collection type, '999'. (Parameter 'type')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void AsOrToBlockingCollection_NullBehavior ( NullBehavior? behavior )
+  {
+    IProducerConsumerCollection<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    BlockingCollection<int>? test = returnsDefault
+      ? source.AsOrToBlockingCollection(behavior: behavior!.Value)
+      : source.AsOrToBlockingCollection();
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

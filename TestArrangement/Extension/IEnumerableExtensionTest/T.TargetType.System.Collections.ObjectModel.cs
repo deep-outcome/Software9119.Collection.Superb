@@ -183,22 +183,6 @@ public class system_collections_objectmodel_test
   }
 
   [TestMethod]
-  public void ReadOnlySet_AsOnly ()
-  {
-    AsOrToTargetType<ReadOnlySet<int>> targetType = c_objectmodel.ReadOnlySet<int> ();
-    Assert.IsTrue ( ReferenceEquals ( ReadOnlySet<int>.Empty, targetType.Empty () ) );
-
-    HashSet<int> source = [];
-    ReadOnlySet<int> target = targetType.Ctor(source);
-
-    object set = Reflection.GetNonPublicFieldValue ( target, "_set" );
-    Assert.IsTrue ( ReferenceEquals ( source, set ) );
-
-    Assert.IsTrue ( targetType.CanCast ( target ) );
-    Assert.IsFalse ( targetType.CanCast ( null! ) );
-  }
-
-  [TestMethod]
   public void ReadOnlySet_CustomConstructor ()
   {
     Ctor<ISet<int>> ctor = x =>
@@ -243,5 +227,13 @@ public class system_collections_objectmodel_test
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
+  }
+
+  [TestMethod]
+  public void ReadOnlySet_NullConstructor ()
+  {
+    Action test = () => c_objectmodel.ReadOnlySet<int> (null!);
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Set constructor must be provided. (Parameter 'setCtor')", e.Message );
   }
 }

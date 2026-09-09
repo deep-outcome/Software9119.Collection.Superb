@@ -61,34 +61,6 @@ public partial class IEnumerableExtensionTest
     Assert.AreEqual ( test?.GetPartitions ( 1 ).Single ().MoveNext () ?? true, returnsDefault );
   }
 
-  [TestMethod]
-  [DataRow ( 100 )]
-  [DataRow ( null )]
-  public void AsBlockingCollection ( int? capacityLimit )
-  {
-    ConcurrentBag<int>? source = Enumerable.Range(0, 10).AsOrToConcurrentBag()!;
-    BlockingCollection<int> test = capacityLimit is int
-      ? source.AsBlockingCollection(capacityLimit)!
-      : source.AsBlockingCollection()!;
-
-    Assert.AreEqual ( capacityLimit ?? -1, test.BoundedCapacity );
-    Assert.IsTrue ( test.SequenceEqual ( source ) );
-  }
-
-  [TestMethod]
-  [DataRow ( NullBehavior.ReturnDefault )]
-  [DataRow ( null )]
-  public void AsBlockingCollection_NullBehavior ( NullBehavior? behavior )
-  {
-    IProducerConsumerCollection<int> source = null!;
-    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
-    BlockingCollection<int>? test = returnsDefault
-      ? source.AsBlockingCollection(behavior: behavior!.Value)
-      : source.AsBlockingCollection();
-
-    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
-  }
-
   // readme
 
   long MyComplexComputation ( int x ) => x;
