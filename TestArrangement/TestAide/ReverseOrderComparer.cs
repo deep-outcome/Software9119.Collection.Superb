@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Software9119.Collection.Superb.TestArrangement.TestAide;
 
-sealed class ReverseOrderComparer<T> : IComparer<T>
+class ReverseOrderComparer<T> : IComparer<T>
 {
   readonly Comparer<T> comparer = Comparer<T>.Default;
   public int Compare ( T? x, T? y )
@@ -17,3 +17,5 @@ sealed class ReverseOrderComparer<T> : IComparer<T>
     };
   }
 }
+
+sealed class MyOrderingComparer<T> : ReverseOrderComparer<T>;

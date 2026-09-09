@@ -704,7 +704,7 @@ public partial class IEnumerableExtensionTest
   // readme
 
   [TestMethod]
-  public void Generic_Sample ()
+  public void Sample_Generic()
   {
     MyKeyComparer<int> comparer = new ();
     Func<int, int> keySelector = x => x * 10;

@@ -147,7 +147,7 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ReadMeSample ()
+  public void Sample_ReadMe()
   {
     int[] numbers = [24, 34, 5, 15434, 26546, 13, 4];
     string result = ToNumberStringList(numbers)!;

@@ -145,7 +145,7 @@ public partial class IEnumerableExtensionTest
 
 #pragma warning disable IDE0001
   [TestMethod]
-  public void Frozen_Sample ()
+  public void Sample_Frozen ()
   {
     Func<int, int> keySelector = x => x * 10;
     Func<int, int> valueSelector = x => x * 20;

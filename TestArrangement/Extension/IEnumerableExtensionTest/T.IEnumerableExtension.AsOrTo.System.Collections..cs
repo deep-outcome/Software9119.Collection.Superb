@@ -516,7 +516,7 @@ public partial class IEnumerableExtensionTest
   // readme
 
   [TestMethod]
-  public void Collections_Sample ()
+  public void Sample_Collections()
   {
     Func<int, object> keySelector = x => x * 10;
     Func<int, object> valueSelector = x => x * 20;

@@ -341,4 +341,18 @@ public partial class IEnumerableExtensionTest
     UnsupportedReadOnlySetTypeException e = Assert.ThrowsExactly<UnsupportedReadOnlySetTypeException> ( test );
     Assert.AreEqual ( "Unsupported set type, '999'. (Parameter 'setType')", e.Message );
   }
+
+  // readme
+  [TestMethod]
+  public void Sample_ObjectModel ()
+  {
+    // read-only set sample
+    IComparer<int> comparer = new MyOrderingComparer<int>();
+    ReadOnlySetType setType = ReadOnlySetType.SortedSet;
+    ReadOnlySet<int> readOnlySet = Enumerable.Range(0, 10)
+      .AsOrToReadOnlySet(setType: setType, sortingComparer: comparer)!;
+
+    IEnumerable<int> expectation = Enumerable.Range(0, 10).Reverse();
+    Assert.IsTrue ( expectation.SequenceEqual ( readOnlySet ) );
+  }
 }

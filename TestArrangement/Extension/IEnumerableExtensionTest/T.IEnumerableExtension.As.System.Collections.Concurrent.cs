@@ -94,7 +94,7 @@ public partial class IEnumerableExtensionTest
   long MyComplexComputation ( int x ) => x;
 
   [TestMethod]
-  public void Concurrent_Sample ()
+  public void Sample_Concurrent()
   {
     // orderable partitioner sample
     IEnumerable<long> source = Enumerable.Range(0, 1000_000).Select(MyComplexComputation);

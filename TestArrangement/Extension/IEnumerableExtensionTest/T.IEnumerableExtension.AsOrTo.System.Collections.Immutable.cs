@@ -411,7 +411,7 @@ public partial class IEnumerableExtensionTest
   // readme
 
   [TestMethod]
-  public void Immutable_Sample ()
+  public void Sample_Immutable()
   {
     // immutable array sample
     const int count = 10;
