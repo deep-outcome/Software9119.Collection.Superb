@@ -4,6 +4,7 @@ using Software9119.Collection.Superb.Extension;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -164,5 +165,43 @@ public partial class IEnumerableExtensionTest
 ";
 
     Assert.AreEqual ( expectation.TrimStart (), result );
+  }
+
+  [SuppressMessage ( "Style", "IDE0036:Order modifiers", Justification = "Readme style" )]
+  [SuppressMessage ( "Style", "IDE0040:Remove accessibility modifiers", Justification = "Readme style." )]
+  private readonly static AsOrToTargetType<StringCollection> _populator = CreatePopulator();
+
+  [SuppressMessage ( "Style", "IDE0036:Order modifiers", Justification = "Readme style" )]
+  [SuppressMessage ( "Style", "IDE0058:Expression value is never used", Justification = "Readme style." )]
+  [SuppressMessage ( "Style", "IDE0040:Remove accessibility modifiers", Justification = "Readme style." )]
+  private static AsOrToTargetType<StringCollection> CreatePopulator ()
+  {
+    Ctor<string, StringCollection> builder = (e) =>
+    {
+      StringCollection collection = [];
+      foreach(string one in e)
+        collection.Add(one);
+
+      return collection;
+    };
+
+    Empty<StringCollection> emptyCtor = () => [];
+    return AsOrToTargetType.FromTypedCtor ( builder, canCast: e => false, emptyCtor );
+  }
+
+  [SuppressMessage ( "Style", "IDE0036:Order modifiers", Justification = "Readme style" )]
+  public static StringCollection ToStringCollection ( IEnumerable<string>? enumerable )
+  {
+    AsOrToTargetType<StringCollection> populator = _populator;
+    return enumerable.AsOrTo ( populator )!;
+  }
+
+  [TestMethod]
+  public void Sample_ReadMe2 ()
+  {
+    string[] capitals = ["A", "B", "C", "D"];
+    StringCollection result = ToStringCollection(capitals)!;
+
+    Assert.IsTrue ( capitals.SequenceEqual ( result.Cast<string> () ) );
   }
 }

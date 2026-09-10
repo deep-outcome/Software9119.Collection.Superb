@@ -666,6 +666,7 @@ public partial class IEnumerableExtensionTest
   [SuppressMessage ( "Globalization", "CA1305:Specify IFormatProvider", Justification = "Ok." )]
   public void Sample_Specialized ()
   {
+    // string collection sample
     Func<object, string> selector = x => Path.Combine
     (
       ((Func<object>)x) ().GetHashCode ().ToString (),

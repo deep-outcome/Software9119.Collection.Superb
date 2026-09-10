@@ -57,6 +57,30 @@ This namespace contains types with extension methods.
         7: 4
         */
         ```
+        - Or you can implement `ToStringCollection` method for any `IEnumerable<string>`
+        ```csharp
+        private readonly static AsOrToTargetType<StringCollection> _populator = CreatePopulator();
+        private static AsOrToTargetType<StringCollection> CreatePopulator ()
+        {
+            Ctor<string, StringCollection> builder = (e) =>
+            {
+                StringCollection collection = [];
+                foreach(string one in e)
+                    collection.Add(one);
+
+                return collection;
+            };
+
+            Empty<StringCollection> emptyCtor = () => [];
+            return AsOrToTargetType.FromTypedCtor ( builder, canCast: e => false, emptyCtor );
+        }
+
+        public static StringCollection ToStringCollection ( this IEnumerable<string>? enumerable )
+        {
+            AsOrToTargetType<StringCollection> populator = _populator;
+            return enumerable.AsOrTo ( populator )!;
+        }
+        ```
     - <strong style="background-color:rgba(186 246 226 / 0.63)"><u>`AsOrTo` or `Into` for chosen [`System.Collections` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections?view=net-10.0) types</u></strong>
         ```csharp
         // sorted list example
@@ -168,6 +192,7 @@ This namespace contains types with extension methods.
         - [`ReadOnlySet<Item>? AsOrToReadOnlySet<Item>(IEnumerable<Item>?, int?, IComparer<Item>?, IEqualityComparer<Item>?, ReadOnlySetType, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.ObjectModel.cs#L192) – casts `IEnumerable<T>` into read-only set, or casts or copies it into intermediate set before wrapping to read-only set
     - <strong style="background-color:rgba(186 246 226 / 0.63)"><u>`Into` for chosen [`System.Collections.Specialized` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized?view=net-10.0) types</u></strong>
         ```csharp
+        // string collection sample
         Func<object, string> selector = x => Path.Combine
         (
             ((Func<object>)x) ().GetHashCode ().ToString (),
