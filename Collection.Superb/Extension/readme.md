@@ -167,6 +167,16 @@ This namespace contains types with extension methods.
         - [`ReadOnlyObservableCollection<Item>? AsOrToReadOnlyObservableCollection<Item>(IEnumerable<Item>?, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.ObjectModel.cs#L158) – casts `IEnumerable<T>` into read-only observable collection, or casts or copies it into intermediate observable collection before wrapping to read-only observable collection
         - [`ReadOnlySet<Item>? AsOrToReadOnlySet<Item>(IEnumerable<Item>?, int?, IComparer<Item>?, IEqualityComparer<Item>?, ReadOnlySetType, EnumerableNullBehavior)`](https://github.com/deep-outcome/Software9119.Collection.Superb/blob/HEAD/Collection.Superb/Extension/IEnumerableExtension/IEnumerableExtension.AsOrTo.System.Collections.ObjectModel.cs#L192) – casts `IEnumerable<T>` into read-only set, or casts or copies it into intermediate set before wrapping to read-only set
     - <strong style="background-color:rgba(186 246 226 / 0.63)"><u>`AsOrTo` or `Into` for chosen [`System.Collections.Specialized` Namespace](https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized?view=net-10.0) types</u></strong>
+        ```csharp
+        Func<object, string> selector = x => Path.Combine
+        (
+            ((Func<object>)x) ().GetHashCode ().ToString (),
+            Path.GetRandomFileName ()
+        );
+
+        IEnumerable source = Enumerable.Repeat(() => new object(), 1000);
+        StringCollection test = source.IntoStringCollection (selector)!;
+        ```
         - `HybridDictionary? IntoHybridDictionary<Item>(IEnumerable<Item>?, Func<Item, object>, int?, bool, EnumerableNullBehavior)` – creates hybrid dictionary from `IEnumerable<T>`
         - `HybridDictionary? IntoHybridDictionary<Item>(IEnumerable<Item>?, Func<Item, object>, Func<Item, object?>, int?, bool, EnumerableNullBehavior)` – creates hybrid dictionary from `IEnumerable<T>`
         - `HybridDictionary? IntoHybridDictionary(IEnumerable?, Func<object, object>, int?, bool, EnumerableNullBehavior)` – creates hybrid dictionary from `IEnumerable`

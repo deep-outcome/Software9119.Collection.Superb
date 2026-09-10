@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
@@ -657,5 +658,21 @@ public partial class IEnumerableExtensionTest
         : source.IntoStringDictionary(keySelector, valueSelector);
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  // readme
+
+  [TestMethod]
+  [SuppressMessage ( "Globalization", "CA1305:Specify IFormatProvider", Justification = "Ok." )]
+  public void Sample_Specialized ()
+  {
+    Func<object, string> selector = x => Path.Combine
+    (
+      ((Func<object>)x) ().GetHashCode ().ToString (),
+      Path.GetRandomFileName ()
+    );
+
+    IEnumerable source = Enumerable.Repeat(() => new object(), 1000);
+    StringCollection test = source.IntoStringCollection (selector)!;
   }
 }
