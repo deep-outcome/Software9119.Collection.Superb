@@ -50,7 +50,7 @@ static public partial class IEnumerableExtension
   static public HybridDictionary? IntoHybridDictionary<Item> (
     this IEnumerable<Item>? enumerable,
     Func<Item, object> keySelector,
-    Func<Item, object> valueSelector,
+    Func<Item, object?> valueSelector,
     int? capacity = null,
     bool caseSensitive = true,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
@@ -67,7 +67,7 @@ static public partial class IEnumerableExtension
   static public HybridDictionary? IntoHybridDictionary (
     this IEnumerable? enumerable,
     Func<object, object> keySelector,
-    Func<object, object> valueSelector,
+    Func<object, object?> valueSelector,
     int? capacity = null,
     bool caseSensitive = true,
     NullBehavior behavior = NullBehavior.ReturnEmpty )

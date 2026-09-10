@@ -72,7 +72,7 @@ static public partial class IEnumerableExtension
   static public Hashtable? IntoHashtable<Item> (
     this IEnumerable<Item>? enumerable,
     Func<Item, object> keySelector,
-    Func<Item, object> valueSelector,
+    Func<Item, object?> valueSelector,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( system_collections.Hashtable ( keySelector, valueSelector, capacity ), behavior );
@@ -88,7 +88,7 @@ static public partial class IEnumerableExtension
   static public Hashtable? IntoHashtable (
     this IEnumerable? enumerable,
     Func<object, object> keySelector,
-    Func<object, object> valueSelector,
+    Func<object, object?> valueSelector,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( system_collections.Hashtable ( keySelector, valueSelector, capacity ), behavior );
@@ -155,7 +155,7 @@ static public partial class IEnumerableExtension
   static public SortedList? IntoSortedList<Item> (
     this IEnumerable<Item>? enumerable,
     Func<Item, object> keySelector,
-    Func<Item, object> valueSelector,
+    Func<Item, object?> valueSelector,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( system_collections.SortedList ( keySelector, valueSelector, capacity ), behavior );
@@ -171,7 +171,7 @@ static public partial class IEnumerableExtension
   static public SortedList? IntoSortedList (
     this IEnumerable? enumerable,
     Func<object, object> keySelector,
-    Func<object, object> valueSelector,
+    Func<object, object?> valueSelector,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( system_collections.SortedList ( keySelector, valueSelector, capacity ), behavior );
