@@ -344,7 +344,7 @@ public class system_collections_specialized_test
   [DataRow ( "Key selector not provided. (Parameter 'keySelector')", "k" )]
   [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", "v" )]
   public void StringDictionary_NullParameter ( string errMsg, string whosNull )
-  {    
+  {
     Func<int, string> keySelector    = whosNull == "k" ? null! : x => "";
     Func<int, string?> valueSelector = whosNull == "v" ? null! : x => "";
 

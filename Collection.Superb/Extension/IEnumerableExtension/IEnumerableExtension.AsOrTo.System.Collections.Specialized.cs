@@ -231,9 +231,9 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="OrderedDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> provided.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
-  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, int?, IEqualityComparer)"/>.  
+  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, int?, IEqualityComparer)"/>.
   /// </remarks>
   static public OrderedDictionary? IntoOrderedDictionary<Item> (
     this IEnumerable<Item>? enumerable,
@@ -247,9 +247,9 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="OrderedDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> provided.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
-  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, int?, IEqualityComparer)"/>.  
+  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, int?, IEqualityComparer)"/>.
   /// </remarks>
   static public OrderedDictionary? IntoOrderedDictionary (
     this IEnumerable? enumerable,
@@ -263,9 +263,9 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="OrderedDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
-  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, Func{Item, object?}, int?, IEqualityComparer)"/>.  
+  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, Func{Item, object?}, int?, IEqualityComparer)"/>.
   /// </remarks>
   static public OrderedDictionary? IntoOrderedDictionary<Item> (
     this IEnumerable<Item>? enumerable,
@@ -280,9 +280,9 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="OrderedDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
-  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, Func{Item, object?}, int?, IEqualityComparer)"/>.  
+  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, Func{Item, object?}, int?, IEqualityComparer)"/>.
   /// </remarks>
   static public OrderedDictionary? IntoOrderedDictionary (
     this IEnumerable? enumerable,
@@ -296,9 +296,9 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Creates <see cref="StringCollection"/> from <paramref name="enumerable"/> using <paramref name="selector"/> provided.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
-  /// with <see cref="c_specialized.StringCollection{Item}(Func{Item, string})"/>.  
+  /// with <see cref="c_specialized.StringCollection{Item}(Func{Item, string})"/>.
   /// </remarks>
   static public StringCollection? IntoStringCollection<Item> (
     this IEnumerable<Item>? enumerable,
@@ -309,7 +309,7 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Creates <see cref="StringCollection"/> from <paramref name="enumerable"/> using <paramref name="selector"/> provided.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
   /// with <see cref="c_specialized.StringCollection{Item}(Func{Item, string})"/>.
   /// </remarks>
@@ -323,9 +323,9 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="StringDictionary"/> from <paramref name="enumerable"/> using
   /// <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
-  /// with <see cref="c_specialized.StringDictionary{Item}(Func{Item, string}, Func{Item, string?})"/>.  
+  /// with <see cref="c_specialized.StringDictionary{Item}(Func{Item, string}, Func{Item, string?})"/>.
   /// </remarks>
   static public StringDictionary? IntoStringDictionary<Item> (
     this IEnumerable<Item>? enumerable,
@@ -338,9 +338,9 @@ static public partial class IEnumerableExtension
   /// Creates <see cref="StringDictionary"/> from <paramref name="enumerable"/> using
   /// <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
-  /// <remarks>  
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
-  /// with <see cref="c_specialized.StringDictionary{Item}(Func{Item, string}, Func{Item, string?})"/>.  
+  /// with <see cref="c_specialized.StringDictionary{Item}(Func{Item, string}, Func{Item, string?})"/>.
   /// </remarks>
   static public StringDictionary? IntoStringDictionary (
     this IEnumerable? enumerable,
