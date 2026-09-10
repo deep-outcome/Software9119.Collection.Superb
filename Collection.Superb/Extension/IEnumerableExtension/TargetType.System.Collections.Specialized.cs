@@ -104,7 +104,7 @@ static public class system_collections_specialized
 
   /// <summary>
   /// Target type for
-  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.NameValueCollection ?view=net-10.0">
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.NameValueCollection?view=net-10.0">
   /// NameValueCollection</see>.
   /// </summary>  
   static public AsOrToTargetType<NameValueCollection> NameValueCollection<Item>
@@ -121,16 +121,16 @@ static public class system_collections_specialized
     if (valueSelector == null)
       throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
 
-    Ctor<NameValueCollection > ctor = (e) =>
+    Ctor<NameValueCollection> ctor = (e) =>
     {
-      NameValueCollection  result = capacity is int cap ? new ( cap, keyComparer ) : new(keyComparer);
+      NameValueCollection result = capacity is int cap ? new ( cap, keyComparer ) : new(keyComparer);
       foreach (Item i in e)
         result.Add ( keySelector(i), valueSelector(i) );
 
       return result;
     };
 
-    Empty<NameValueCollection > empty = () => new(keyComparer);
+    Empty<NameValueCollection> empty = () => new(keyComparer);
     return new ( ctor, e => false, empty );
   }
 
@@ -138,7 +138,7 @@ static public class system_collections_specialized
   /// <summary>
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.OrderedDictionary?view=net-10.0">
-  /// OrderedDictionary </see>.
+  /// OrderedDictionary</see>.
   /// </summary>  
   static public AsOrToTargetType<OrderedDictionary> OrderedDictionary<Item>
   (
@@ -151,7 +151,7 @@ static public class system_collections_specialized
   /// <summary>
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.OrderedDictionary?view=net-10.0">
-  /// OrderedDictionary </see>.
+  /// OrderedDictionary</see>.
   /// </summary>  
   static public AsOrToTargetType<OrderedDictionary> OrderedDictionary<Item>
   (
@@ -167,16 +167,40 @@ static public class system_collections_specialized
     if (valueSelector == null)
       throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
 
-    Ctor<OrderedDictionary  > ctor = (e) =>
+    Ctor<OrderedDictionary> ctor = (e) =>
     {
-      OrderedDictionary   result = capacity is int cap ? new ( cap, keyComparer ) : new(keyComparer);
+      OrderedDictionary result = capacity is int cap ? new ( cap, keyComparer ) : new(keyComparer);
       foreach (Item i in e)
         result.Add ( keySelector(i), valueSelector(i) );
 
       return result;
     };
 
-    Empty<OrderedDictionary  > empty = () => new(keyComparer);
+    Empty<OrderedDictionary> empty = () => new(keyComparer);
+    return new ( ctor, e => false, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.stringcollection?view=net-10.0">
+  /// StringCollection</see>.
+  /// </summary>  
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<StringCollection> StringCollection<Item> ( Func<Item, string> selector )
+  {
+    if (selector == null)
+      throw new ArgumentNullException ( paramName: nameof ( selector ), "Selector not provided." );
+
+    Ctor<StringCollection> ctor = (e) =>
+    {
+      StringCollection result = new ();
+      foreach (Item i in e)
+        _ = result.Add ( selector(i) );
+
+      return result;
+    };
+
+    Empty<StringCollection> empty = () => new();
     return new ( ctor, e => false, empty );
   }
 }

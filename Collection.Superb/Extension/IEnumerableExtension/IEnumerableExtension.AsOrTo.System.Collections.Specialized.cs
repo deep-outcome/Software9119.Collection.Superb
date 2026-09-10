@@ -292,4 +292,30 @@ static public partial class IEnumerableExtension
     IEqualityComparer? keyComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( c_specialized.OrderedDictionary ( keySelector, valueSelector, capacity, keyComparer ), behavior );
+
+  /// <summary>
+  /// Creates <see cref="StringCollection "/> from <paramref name="enumerable"/> using <paramref name="selector"/> provided.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.StringCollection{Item}(Func{Item, string})"/>.  
+  /// </remarks>
+  static public StringCollection? IntoStringCollection<Item> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, string> selector,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    => enumerable.AsOrTo ( c_specialized.StringCollection ( selector ), behavior );
+
+  /// <summary>
+  /// Creates <see cref="StringCollection "/> from <paramref name="enumerable"/> using <paramref name="selector"/> provided.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.StringCollection{Item}(Func{Item, string})"/>.
+  /// </remarks>
+  static public StringCollection? IntoStringCollection (
+    this IEnumerable? enumerable,
+    Func<object, string> selector,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    => enumerable.AsOrTo ( c_specialized.StringCollection ( selector ), behavior );
 }

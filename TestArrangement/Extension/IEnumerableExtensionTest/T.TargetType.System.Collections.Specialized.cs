@@ -284,4 +284,36 @@ public class system_collections_specialized_test
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
+
+  [TestMethod]
+  [SuppressMessage ( "Globalization", "CA1305:Specify IFormatProvider", Justification = "Ok." )]
+  public void StringCollection ()
+  {
+    Func<object, string> selector = x => x.GetHashCode().ToString();
+    AsOrToTargetType<StringCollection > targetType = c_specialized.StringCollection (selector);
+
+    StringCollection  empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    IEnumerable<object> source = XEnumerable.ObjectsEnumerable(200);
+    StringCollection target = targetType.Ctor(source);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
+
+    IEnumerable<string> expectation = source.Select(selector);
+
+    Assert.IsTrue ( expectation.SequenceEqual ( target.Cast<string> () ) );
+  }
+
+  [TestMethod]
+  [DataRow ( "Selector not provided. (Parameter 'selector')", "s" )]
+  public void StringCollection_NullParameter ( string errMsg, string whosNull )
+  {    
+    Func<int, string> selector = whosNull == "s" ? null! : x => "";
+    Action test = () => c_specialized.StringCollection (selector);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
 }

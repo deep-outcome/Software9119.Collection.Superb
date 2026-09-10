@@ -536,4 +536,62 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void IntoStringCollection_IEnumerableOfT ()
+  {
+    Func<int, string> selector = x => $"{x * 2}";
+
+    IEnumerable<int> source = Enumerable.Range(0, 1000);
+    StringCollection test = source.IntoStringCollection (selector)!;
+
+    IEnumerable<string> expectation = source.Select(x => (selector(x)));
+    IEnumerable<string> actual = test.Cast<string>();
+
+    Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoStringCollection_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
+  {
+    Func<int, string> selector = x => "";
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    StringCollection? test = returnsDefault
+        ? source.IntoStringCollection(selector, behavior: behavior!.Value)
+        : source.IntoStringCollection(selector);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  public void IntoStringCollection_IEnumerable ()
+  {
+    Func<object, string> selector = x => $"{(int)x * 2}";
+
+    IEnumerable source = Enumerable.Range(0, 1000);
+    StringCollection test = source.IntoStringCollection (selector)!;
+
+    IEnumerable<string> expectation = source.Cast<int>().Select(x => (selector(x)));
+    IEnumerable<string> actual = test.Cast<string>();
+
+    Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoStringCollection_IEnumerable_NullBehavior ( NullBehavior? behavior )
+  {
+    Func<object, string> selector = x => "";
+    IEnumerable source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    StringCollection? test = returnsDefault
+        ? source.IntoStringCollection(selector, behavior: behavior!.Value)
+        : source.IntoStringCollection(selector);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }
