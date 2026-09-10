@@ -176,7 +176,7 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Creates <see cref="NameValueCollection "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// Creates <see cref="NameValueCollection"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>
@@ -202,7 +202,7 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Creates <see cref="NameValueCollection "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// Creates <see cref="NameValueCollection"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>
@@ -228,7 +228,7 @@ static public partial class IEnumerableExtension
   }
 
   /// <summary>
-  /// Creates <see cref="OrderedDictionary "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// Creates <see cref="OrderedDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> provided.
   /// </summary>
   /// <remarks>  
@@ -244,7 +244,7 @@ static public partial class IEnumerableExtension
     => enumerable.AsOrTo ( c_specialized.OrderedDictionary ( keySelector, capacity, keyComparer ), behavior );
 
   /// <summary>
-  /// Creates <see cref="OrderedDictionary "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// Creates <see cref="OrderedDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> provided.
   /// </summary>
   /// <remarks>  
@@ -260,7 +260,7 @@ static public partial class IEnumerableExtension
     => enumerable.AsOrTo ( c_specialized.OrderedDictionary ( keySelector, capacity, keyComparer ), behavior );
 
   /// <summary>
-  /// Creates <see cref="OrderedDictionary "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// Creates <see cref="OrderedDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>  
@@ -277,7 +277,7 @@ static public partial class IEnumerableExtension
     => enumerable.AsOrTo ( c_specialized.OrderedDictionary ( keySelector, valueSelector, capacity, keyComparer ), behavior );
 
   /// <summary>
-  /// Creates <see cref="OrderedDictionary "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// Creates <see cref="OrderedDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
   /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
   /// </summary>
   /// <remarks>  
@@ -294,7 +294,7 @@ static public partial class IEnumerableExtension
     => enumerable.AsOrTo ( c_specialized.OrderedDictionary ( keySelector, valueSelector, capacity, keyComparer ), behavior );
 
   /// <summary>
-  /// Creates <see cref="StringCollection "/> from <paramref name="enumerable"/> using <paramref name="selector"/> provided.
+  /// Creates <see cref="StringCollection"/> from <paramref name="enumerable"/> using <paramref name="selector"/> provided.
   /// </summary>
   /// <remarks>  
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
@@ -302,12 +302,12 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public StringCollection? IntoStringCollection<Item> (
     this IEnumerable<Item>? enumerable,
-    Func<Item, string> selector,
+    Func<Item, string?> selector,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( c_specialized.StringCollection ( selector ), behavior );
 
   /// <summary>
-  /// Creates <see cref="StringCollection "/> from <paramref name="enumerable"/> using <paramref name="selector"/> provided.
+  /// Creates <see cref="StringCollection"/> from <paramref name="enumerable"/> using <paramref name="selector"/> provided.
   /// </summary>
   /// <remarks>  
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
@@ -315,7 +315,37 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public StringCollection? IntoStringCollection (
     this IEnumerable? enumerable,
-    Func<object, string> selector,
+    Func<object, string?> selector,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( c_specialized.StringCollection ( selector ), behavior );
+
+  /// <summary>
+  /// Creates <see cref="StringDictionary"/> from <paramref name="enumerable"/> using
+  /// <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.StringDictionary{Item}(Func{Item, string}, Func{Item, string?})"/>.  
+  /// </remarks>
+  static public StringDictionary? IntoStringDictionary<Item> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, string> keySelector,
+    Func<Item, string?> valueSelector,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    => enumerable.AsOrTo ( c_specialized.StringDictionary ( keySelector, valueSelector ), behavior );
+
+  /// <summary>
+  /// Creates <see cref="StringDictionary"/> from <paramref name="enumerable"/> using
+  /// <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.StringDictionary{Item}(Func{Item, string}, Func{Item, string?})"/>.  
+  /// </remarks>
+  static public StringDictionary? IntoStringDictionary (
+    this IEnumerable? enumerable,
+    Func<object, string> keySelector,
+    Func<object, string?> valueSelector,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    => enumerable.AsOrTo ( c_specialized.StringDictionary ( keySelector, valueSelector ), behavior );
 }

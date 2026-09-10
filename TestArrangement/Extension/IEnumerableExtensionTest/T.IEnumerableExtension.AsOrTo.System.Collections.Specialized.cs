@@ -594,4 +594,68 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  public void IntoStringDictionary_IEnumerableOfT ()
+  {
+    Func<int, string> keySelector = x => $"{x * 2}";
+    Func<int, string> valueSelector = x => $"{x * 3}";
+
+    const int count = 1000;
+    IEnumerable<int> source = Enumerable.Range(0, 1000);
+    StringDictionary test = source.IntoStringDictionary (keySelector, valueSelector)!;
+
+    Assert.HasCount ( count, test );
+    bool expectation = source.All ( x => test [ keySelector ( x ) ] == valueSelector ( x ) );
+    Assert.IsTrue ( expectation );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoStringDictionary_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
+  {
+    Func<int, string> keySelector = x => "";
+    Func<int, string> valueSelector = x => "";
+
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    StringDictionary? test = returnsDefault
+        ? source.IntoStringDictionary(keySelector, valueSelector, behavior: behavior!.Value)
+        : source.IntoStringDictionary(keySelector, valueSelector);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  public void IntoStringDictionary_IEnumerable ()
+  {
+    Func<object, string> keySelector = x => $"{(int)x * 2}";
+    Func<object, string> valueSelector = x => $"{(int)x * 3}";
+
+    const int count = 1000;
+    IEnumerable source = Enumerable.Range(0, 1000);
+    StringDictionary test = source.IntoStringDictionary (keySelector, valueSelector)!;
+
+    Assert.HasCount ( count, test );
+    bool expectation = source.Cast<object>().All ( x => test [ keySelector ( x ) ] == valueSelector ( x ) );
+    Assert.IsTrue ( expectation );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoStringDictionary_IEnumerable_NullBehavior ( NullBehavior? behavior )
+  {
+    Func<object, string> keySelector = x => "";
+    Func<object, string> valueSelector = x => "";
+
+    IEnumerable source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    StringDictionary? test = returnsDefault
+        ? source.IntoStringDictionary(keySelector, valueSelector, behavior: behavior!.Value)
+        : source.IntoStringDictionary(keySelector, valueSelector);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

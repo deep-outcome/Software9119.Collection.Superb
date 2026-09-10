@@ -309,9 +309,46 @@ public class system_collections_specialized_test
   [TestMethod]
   [DataRow ( "Selector not provided. (Parameter 'selector')", "s" )]
   public void StringCollection_NullParameter ( string errMsg, string whosNull )
-  {    
+  {
     Func<int, string> selector = whosNull == "s" ? null! : x => "";
     Action test = () => c_specialized.StringCollection (selector);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Globalization", "CA1305:Specify IFormatProvider", Justification = "Ok." )]
+  public void StringDictionary ()
+  {
+    Func<object, string> keySelector = x => x.GetHashCode().ToString();
+    Func<object, string> valueSelector = x => (x.GetHashCode() *2).ToString();
+    AsOrToTargetType<StringDictionary> targetType = c_specialized.StringDictionary(keySelector, valueSelector);
+
+    StringDictionary empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+
+    const int count = 2000;
+    IEnumerable<object> source = XEnumerable.ObjectsEnumerable(count);
+    StringDictionary target = targetType.Ctor(source);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
+
+    Assert.HasCount ( count, target );
+    bool expectation = source.All ( x => target [ keySelector ( x ) ] == valueSelector ( x ) );
+    Assert.IsTrue ( expectation );
+  }
+
+  [TestMethod]
+  [DataRow ( "Key selector not provided. (Parameter 'keySelector')", "k" )]
+  [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", "v" )]
+  public void StringDictionary_NullParameter ( string errMsg, string whosNull )
+  {    
+    Func<int, string> keySelector    = whosNull == "k" ? null! : x => "";
+    Func<int, string?> valueSelector = whosNull == "v" ? null! : x => "";
+
+    Action test = () => c_specialized.StringDictionary(keySelector, valueSelector);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
     Assert.AreEqual ( errMsg, e.Message );

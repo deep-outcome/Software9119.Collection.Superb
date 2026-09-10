@@ -186,7 +186,7 @@ static public class system_collections_specialized
   /// StringCollection</see>.
   /// </summary>  
   [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
-  static public AsOrToTargetType<StringCollection> StringCollection<Item> ( Func<Item, string> selector )
+  static public AsOrToTargetType<StringCollection> StringCollection<Item> ( Func<Item, string?> selector )
   {
     if (selector == null)
       throw new ArgumentNullException ( paramName: nameof ( selector ), "Selector not provided." );
@@ -201,6 +201,33 @@ static public class system_collections_specialized
     };
 
     Empty<StringCollection> empty = () => new();
+    return new ( ctor, e => false, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.StringDictionary?view=net-10.0">
+  /// StringDictionary</see>.
+  /// </summary>  
+  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
+  static public AsOrToTargetType<StringDictionary> StringDictionary<Item> ( Func<Item, string> keySelector, Func<Item, string?> valueSelector )
+  {
+    if (keySelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
+
+    if (valueSelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
+
+    Ctor<StringDictionary> ctor = (e) =>
+    {
+      StringDictionary result = new ();
+      foreach (Item i in e)
+        result.Add ( keySelector(i), valueSelector(i) );
+
+      return result;
+    };
+
+    Empty<StringDictionary> empty = () => new();
     return new ( ctor, e => false, empty );
   }
 }
