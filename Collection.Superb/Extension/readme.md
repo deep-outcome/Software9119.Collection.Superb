@@ -175,3 +175,5 @@ This namespace contains types with extension methods.
         - `ListDictionary? IntoListDictionary<Item>(IEnumerable<Item>?, Func<Item, object>, Func<Item, object?>, IComparer?, EnumerableNullBehavior)` – creates list dictionary from `IEnumerable<T>`
         - `ListDictionary? IntoListDictionary(IEnumerable?, Func<object, object>, IComparer?, EnumerableNullBehavior)` – creates list dictionary from `IEnumerable`
         - `ListDictionary? IntoListDictionary(IEnumerable?, Func<object, object>, Func<object, object?>, IComparer?, EnumerableNullBehavior)` – creates list dictionary from `IEnumerable`
+        - `NameValueCollection? IntoNameValueCollection<Item>(IEnumerable<Item>?, Func<Item, string>, Func<Item, string?>, int?, IEqualityComparer?, EnumerableNullBehavior)` – creates name value collection from `IEnumerable<T>`
+        - `NameValueCollection? IntoNameValueCollection(IEnumerable?, Func<object, string>, Func<object, string?>, int?, IEqualityComparer?, EnumerableNullBehavior)` – creates name value collection from `IEnumerable`

@@ -174,4 +174,56 @@ static public partial class IEnumerableExtension
     keyComparer ??= Comparer.Default;
     return enumerable.AsOrTo ( c_specialized.ListDictionary ( keySelector, valueSelector, keyComparer ), behavior );
   }
+
+  /// <summary>
+  /// Creates <see cref="NameValueCollection "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.NameValueCollection{Item}(Func{Item, string}, Func{Item, string?}, int?, IEqualityComparer)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults default comparer of <see cref="NameValueCollection"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public NameValueCollection? IntoNameValueCollection<Item> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, string> keySelector,
+    Func<Item, string?> valueSelector,
+    int? capacity = null,
+    IEqualityComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+  {
+    return enumerable.AsOrTo ( c_specialized.NameValueCollection ( keySelector, valueSelector, capacity, keyComparer ), behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="NameValueCollection "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.NameValueCollection{Item}(Func{Item, string}, Func{Item, string?}, int?, IEqualityComparer)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults default comparer of <see cref="NameValueCollection"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public NameValueCollection? IntoNameValueCollection (
+    this IEnumerable? enumerable,
+    Func<object, string> keySelector,
+    Func<object, string?> valueSelector,
+    int? capacity = null,
+    IEqualityComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+  {
+    return enumerable.AsOrTo ( c_specialized.NameValueCollection ( keySelector, valueSelector, capacity, keyComparer ), behavior );
+  }
 }

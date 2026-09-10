@@ -56,7 +56,6 @@ static public class system_collections_specialized
     return new ( ctor, e => false, empty );
   }
 
-
   /// <summary>
   /// Target type for
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.listdictionary?view=net-10.0">
@@ -101,5 +100,37 @@ static public class system_collections_specialized
 
     Empty<ListDictionary> empty = () => new (keyComparer);
     return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
+  }
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.NameValueCollection ?view=net-10.0">
+  /// NameValueCollection</see>.
+  /// </summary>  
+  static public AsOrToTargetType<NameValueCollection> NameValueCollection<Item>
+  (
+    Func<Item, string> keySelector,
+    Func<Item, string?> valueSelector,
+    int? capacity,
+    IEqualityComparer? keyComparer
+  )
+  {
+    if (keySelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
+
+    if (valueSelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
+
+    Ctor<NameValueCollection > ctor = (e) =>
+    {
+      NameValueCollection  result = capacity is int cap ? new ( cap, keyComparer ) : new(keyComparer);
+      foreach (Item item in e)
+        result.Add ( keySelector(item), valueSelector(item) );
+
+      return result;
+    };
+
+    Empty<NameValueCollection > empty = () => new(keyComparer);
+    return new ( ctor, e => false, empty );
   }
 }

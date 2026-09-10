@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using c_specialized = Software9119.Collection.Superb.Extension.system_collections_specialized;
@@ -149,6 +150,64 @@ public class system_collections_specialized_test
     Func<int, object> valueSelector  = whosNull == "v" ? null! : x => x;
 
     Action test = () => c_specialized.ListDictionary(keySelector, valueSelector, keyComparer);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 1000 )]
+  [DataRow ( null )]
+  [SuppressMessage ( "Globalization", "CA1305:Specify IFormatProvider", Justification = "Ok." )]
+  public void NameValueCollection ( int? capacity )
+  {
+    TestComparer keyComparer = new ();
+
+    Func<int, string> keySelector = x => (x * 2).ToString();
+    Func<int, string> valueSelector = x => (x *3).ToString();
+
+    AsOrToTargetType<NameValueCollection > targetType = c_specialized.NameValueCollection
+    (
+      keySelector,
+      valueSelector,
+      capacity,
+      keyComparer
+    );
+
+    NameValueCollection  empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    object _comparer = Reflection.GetNonPublicFieldValue<NameObjectCollectionBase>  ( empty, "_keyComparer" );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, _comparer ) );
+
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
+    NameValueCollection  target = targetType.Ctor(source);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
+
+    _comparer = Reflection.GetNonPublicFieldValue<NameObjectCollectionBase> ( target, "_keyComparer" );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, _comparer ) );
+
+    ArrayList _entriesArray = (ArrayList)Reflection.GetNonPublicFieldValue<NameObjectCollectionBase> ( target, "_entriesArray" );
+    Assert.AreEqual ( capacity ?? 16, _entriesArray.Capacity );
+
+    IEnumerable<(string, string)> expectation = source
+      .Select(x => (keySelector(x), valueSelector(x)));
+
+    IEnumerable<(string, string?)> actual = target.Cast<string> ().Select(x => (x, target[x]));
+
+    Assert.IsTrue ( expectation.SequenceEqual ( actual! ) );
+  }
+
+  [TestMethod]
+  [DataRow ( "Key selector not provided. (Parameter 'keySelector')", "k" )]
+  [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", "v" )]
+  public void NameValueCollection_NullParameter ( string errMsg, string whosNull )
+  {
+    Func<int, string> keySelector   = whosNull == "k" ? null! : x => "";
+    Func<int, string> valueSelector = whosNull == "v" ? null! : x => "";
+
+    Action test = () => c_specialized.NameValueCollection (keySelector, valueSelector, null, null);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
     Assert.AreEqual ( errMsg, e.Message );

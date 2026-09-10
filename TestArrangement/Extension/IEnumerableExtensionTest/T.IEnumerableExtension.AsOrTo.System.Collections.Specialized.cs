@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
@@ -280,6 +281,113 @@ public partial class IEnumerableExtensionTest
       : keySelectorOnly
         ? source.IntoListDictionary(x => x)
         : source.IntoListDictionary(x => x, x=> x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( true, 1000 )]
+  [DataRow ( false, 1000 )]
+  [DataRow ( true, null )]
+  [DataRow ( false, null )]
+  [SuppressMessage ( "Globalization", "CA1305:Specify IFormatProvider", Justification = "Ok." )]
+  public void IntoNameValueCollection_IEnumerableOfT ( bool defaultComparer, int? capacity )
+  {
+    IEqualityComparer keyComparer = new TestComparer ();
+    Func<int, string> keySelector = x => (x * 2).ToString();
+    Func<int, string> valueSelector = x => (x *3).ToString();
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    NameValueCollection test = capacity is int
+      ? defaultComparer
+        ? source.IntoNameValueCollection(keySelector,valueSelector, capacity)!
+        : source.IntoNameValueCollection(keySelector,valueSelector, capacity, keyComparer)!
+      : defaultComparer
+        ? source.IntoNameValueCollection ( keySelector, valueSelector)!
+        : source.IntoNameValueCollection ( keySelector, valueSelector, keyComparer: keyComparer)!;
+
+    object _comparer = Reflection.GetNonPublicFieldValue<NameObjectCollectionBase>  ( test, "_keyComparer" );
+
+    if (defaultComparer)
+      Assert.AreEqual ( "CultureAwareComparer", _comparer.GetType ().Name );
+    else
+      Assert.IsTrue ( ReferenceEquals ( keyComparer, _comparer ) );
+
+    ArrayList _entriesArray = (ArrayList)Reflection.GetNonPublicFieldValue<NameObjectCollectionBase> ( test, "_entriesArray" );
+    Assert.AreEqual ( capacity ?? 16, _entriesArray.Capacity );
+
+    IEnumerable<(string, string)> expectation = source
+      .Select(x => (keySelector(x), valueSelector(x)));
+
+    IEnumerable<(string, string?)> actual = test.Cast<string> ().Select(x => (x, test[x]));
+
+    Assert.IsTrue ( expectation.SequenceEqual ( actual! ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoNameValueCollection_IEnumerableOfT_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    NameValueCollection? test = returnsDefault
+        ? source.IntoNameValueCollection(x => "", x => "", behavior: behavior!.Value)
+        : source.IntoNameValueCollection(x => "", x => "");
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( true, 1000 )]
+  [DataRow ( false, 1000 )]
+  [DataRow ( true, null )]
+  [DataRow ( false, null )]
+  [SuppressMessage ( "Globalization", "CA1305:Specify IFormatProvider", Justification = "Ok." )]
+  public void IntoNameValueCollection_IEnumerable ( bool defaultComparer, int? capacity )
+  {
+    IEqualityComparer keyComparer = new TestComparer ();
+    Func<object, string> keySelector = x => ((int)x * 2).ToString();
+    Func<object, string> valueSelector = x => ((int)x *3).ToString();
+
+    IEnumerable source = Enumerable.Range(0, 10).Cast<object>();
+    NameValueCollection test = capacity is int
+      ? defaultComparer
+        ? source.IntoNameValueCollection(keySelector,valueSelector, capacity)!
+        : source.IntoNameValueCollection(keySelector,valueSelector, capacity, keyComparer)!
+      : defaultComparer
+        ? source.IntoNameValueCollection ( keySelector, valueSelector)!
+        : source.IntoNameValueCollection ( keySelector, valueSelector, keyComparer: keyComparer)!;
+
+    object _comparer = Reflection.GetNonPublicFieldValue<NameObjectCollectionBase>  ( test, "_keyComparer" );
+
+    if (defaultComparer)
+      Assert.AreEqual ( "CultureAwareComparer", _comparer.GetType ().Name );
+    else
+      Assert.IsTrue ( ReferenceEquals ( keyComparer, _comparer ) );
+
+    ArrayList _entriesArray = (ArrayList)Reflection.GetNonPublicFieldValue<NameObjectCollectionBase> ( test, "_entriesArray" );
+    Assert.AreEqual ( capacity ?? 16, _entriesArray.Capacity );
+
+    IEnumerable<(string, string)> expectation = source
+      .Cast<object>()
+      .Select(x => (keySelector(x), valueSelector(x)));
+
+    IEnumerable<(string, string?)> actual = test.Cast<string> ().Select(x => (x, test[x]));
+
+    Assert.IsTrue ( expectation.SequenceEqual ( actual! ) );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault )]
+  [DataRow ( null )]
+  public void IntoNameValueCollection_IEnumerable_NullBehavior ( NullBehavior? behavior )
+  {
+    IEnumerable source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    NameValueCollection? test = returnsDefault
+        ? source.IntoNameValueCollection(x => "", x => "", behavior: behavior!.Value)
+        : source.IntoNameValueCollection(x => "", x => "");
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
