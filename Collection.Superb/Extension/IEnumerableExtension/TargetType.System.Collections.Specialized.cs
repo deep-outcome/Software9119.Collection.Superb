@@ -46,8 +46,8 @@ static public class system_collections_specialized
     Ctor<HybridDictionary> ctor = (e) =>
     {
       HybridDictionary result =  capacity is int cap ? new ( cap, caseInsensitive ) : new(caseInsensitive);
-      foreach (Item item in e)
-        result.Add ( keySelector(item), valueSelector(item) );
+      foreach (Item i in e)
+        result.Add ( keySelector(i), valueSelector(i) );
 
       return result;
     };
@@ -124,13 +124,59 @@ static public class system_collections_specialized
     Ctor<NameValueCollection > ctor = (e) =>
     {
       NameValueCollection  result = capacity is int cap ? new ( cap, keyComparer ) : new(keyComparer);
-      foreach (Item item in e)
-        result.Add ( keySelector(item), valueSelector(item) );
+      foreach (Item i in e)
+        result.Add ( keySelector(i), valueSelector(i) );
 
       return result;
     };
 
     Empty<NameValueCollection > empty = () => new(keyComparer);
+    return new ( ctor, e => false, empty );
+  }
+
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.OrderedDictionary?view=net-10.0">
+  /// OrderedDictionary </see>.
+  /// </summary>  
+  static public AsOrToTargetType<OrderedDictionary> OrderedDictionary<Item>
+  (
+    Func<Item, object> keySelector,
+    int? capacity,
+    IEqualityComparer? keyComparer
+  )
+    => OrderedDictionary ( keySelector, x => x, capacity, keyComparer );
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.OrderedDictionary?view=net-10.0">
+  /// OrderedDictionary </see>.
+  /// </summary>  
+  static public AsOrToTargetType<OrderedDictionary> OrderedDictionary<Item>
+  (
+    Func<Item, object> keySelector,
+    Func<Item, object?> valueSelector,
+    int? capacity,
+    IEqualityComparer? keyComparer
+  )
+  {
+    if (keySelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
+
+    if (valueSelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
+
+    Ctor<OrderedDictionary  > ctor = (e) =>
+    {
+      OrderedDictionary   result = capacity is int cap ? new ( cap, keyComparer ) : new(keyComparer);
+      foreach (Item i in e)
+        result.Add ( keySelector(i), valueSelector(i) );
+
+      return result;
+    };
+
+    Empty<OrderedDictionary  > empty = () => new(keyComparer);
     return new ( ctor, e => false, empty );
   }
 }

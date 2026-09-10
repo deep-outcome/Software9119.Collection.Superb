@@ -212,4 +212,76 @@ public class system_collections_specialized_test
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
+
+  [TestMethod]
+  [DataRow ( 1000, true )]
+  [DataRow ( 1000, false )]
+  [DataRow ( null, true )]
+  [DataRow ( null, false )]
+  public void OrderedDictionary ( int? capacity, bool keySelectorOnly )
+  {
+    TestComparer keyComparer = new ();
+
+    Func<object, object> keySelector = x => x.GetHashCode();
+    Func<object, object> valueSelector = keySelectorOnly
+      ? x => x
+      : x => x.GetHashCode() * 2;
+
+    AsOrToTargetType<OrderedDictionary > targetType = keySelectorOnly
+      ? c_specialized.OrderedDictionary (keySelector, capacity, keyComparer)
+      : c_specialized.OrderedDictionary (keySelector, valueSelector, capacity, keyComparer);
+
+    OrderedDictionary  empty = targetType.Empty ();
+    Assert.HasCount ( 0, empty );
+    object _comparer = Reflection.GetNonPublicFieldValue ( empty, "_comparer" );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, _comparer ) );
+
+    IEnumerable<object> source = XEnumerable.ObjectsEnumerable(200);
+    OrderedDictionary  target = targetType.Ctor(source);
+
+    Assert.IsFalse ( targetType.CanCast ( null! ) );
+    Assert.IsFalse ( targetType.CanCast ( target ) );
+
+    _comparer = Reflection.GetNonPublicFieldValue ( target, "_comparer" );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, _comparer ) );
+
+    int _initialCapacity = (int)Reflection.GetNonPublicFieldValue ( target, "_initialCapacity" );
+    Assert.AreEqual ( capacity ?? 0, _initialCapacity );
+
+    IEnumerable<(int, object)> expectation = source
+      .Select(x => ((int) keySelector(x), valueSelector(x)));
+
+    IEnumerable<(int, object)> actual = target
+      .Cast<DictionaryEntry> ()
+      .Select(x => ((int)x.Key, x.Value!));
+
+    Assert.IsTrue ( expectation.SequenceEqual ( actual ) );
+  }
+
+  [TestMethod]
+  [DataRow ( "Key selector not provided. (Parameter 'keySelector')", "k" )]
+  public void OrderedDictionary_KeySelectorOnly_NullParameter ( string errMsg, string whosNull )
+  {
+    TestComparer keyComparer = new();
+    Func<int, object> keySelector = whosNull == "k" ? null! : x => x;
+    Action test = () => c_specialized.OrderedDictionary (keySelector, null, keyComparer);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( "Key selector not provided. (Parameter 'keySelector')", "k" )]
+  [DataRow ( "Value selector not provided. (Parameter 'valueSelector')", "v" )]
+  public void OrderedDictionary_NullParameter ( string errMsg, string whosNull )
+  {
+    TestComparer keyComparer = new();
+    Func<int, object> keySelector   = whosNull == "k" ? null! : x => x;
+    Func<int, object> valueSelector = whosNull == "v" ? null! : x => x;
+
+    Action test = () => c_specialized.OrderedDictionary (keySelector, valueSelector, null, keyComparer);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException>( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
 }

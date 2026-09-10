@@ -226,4 +226,70 @@ static public partial class IEnumerableExtension
   {
     return enumerable.AsOrTo ( c_specialized.NameValueCollection ( keySelector, valueSelector, capacity, keyComparer ), behavior );
   }
+
+  /// <summary>
+  /// Creates <see cref="OrderedDictionary "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> provided.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, int?, IEqualityComparer)"/>.  
+  /// </remarks>
+  static public OrderedDictionary? IntoOrderedDictionary<Item> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, object> keySelector,
+    int? capacity = null,
+    IEqualityComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    => enumerable.AsOrTo ( c_specialized.OrderedDictionary ( keySelector, capacity, keyComparer ), behavior );
+
+  /// <summary>
+  /// Creates <see cref="OrderedDictionary "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> provided.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, int?, IEqualityComparer)"/>.  
+  /// </remarks>
+  static public OrderedDictionary? IntoOrderedDictionary (
+    this IEnumerable? enumerable,
+    Func<object, object> keySelector,
+    int? capacity = null,
+    IEqualityComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    => enumerable.AsOrTo ( c_specialized.OrderedDictionary ( keySelector, capacity, keyComparer ), behavior );
+
+  /// <summary>
+  /// Creates <see cref="OrderedDictionary "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, Func{Item, object?}, int?, IEqualityComparer)"/>.  
+  /// </remarks>
+  static public OrderedDictionary? IntoOrderedDictionary<Item> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, object> keySelector,
+    Func<Item, object?> valueSelector,
+    int? capacity = null,
+    IEqualityComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    => enumerable.AsOrTo ( c_specialized.OrderedDictionary ( keySelector, valueSelector, capacity, keyComparer ), behavior );
+
+  /// <summary>
+  /// Creates <see cref="OrderedDictionary "/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>  
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, Func{Item, object?}, int?, IEqualityComparer)"/>.  
+  /// </remarks>
+  static public OrderedDictionary? IntoOrderedDictionary (
+    this IEnumerable? enumerable,
+    Func<object, object> keySelector,
+    Func<object, object?> valueSelector,
+    int? capacity = null,
+    IEqualityComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+    => enumerable.AsOrTo ( c_specialized.OrderedDictionary ( keySelector, valueSelector, capacity, keyComparer ), behavior );
 }

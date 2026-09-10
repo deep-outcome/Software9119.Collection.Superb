@@ -61,8 +61,8 @@ static public class system_collections
     Ctor<Hashtable> ctor = (e) =>
     {
       Hashtable result =  capacity is int cap ? new Hashtable ( cap ) : [];
-      foreach (Item item in e)
-        result.Add ( keySelector(item), valueSelector(item) );
+      foreach (Item i in e)
+        result.Add ( keySelector(i), valueSelector(i) );
 
       return result;
     };
@@ -119,8 +119,8 @@ static public class system_collections
     Ctor<SortedList> ctor = (e) =>
     {
       SortedList result =  capacity is int cap ? new SortedList ( cap ) : [];
-      foreach (Item item in e)
-        result.Add ( keySelector(item), valueSelector(item) );
+      foreach (Item i in e)
+        result.Add ( keySelector(i), valueSelector(i) );
 
       return result;
     };

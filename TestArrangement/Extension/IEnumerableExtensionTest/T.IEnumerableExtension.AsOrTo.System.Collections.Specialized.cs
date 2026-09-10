@@ -391,4 +391,149 @@ public partial class IEnumerableExtensionTest
 
     Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
   }
+
+  [TestMethod]
+  [DataRow ( true, 1000 )]
+  [DataRow ( false, 1000 )]
+  [DataRow ( true, null )]
+  [DataRow ( false, null )]
+  public void IntoOrderedDictionary_IEnumerableOfT ( bool keySelectorOnly, int? capacity )
+  {
+    IEqualityComparer keyComparer = new TestComparer ();
+    Func<int, object> keySelector = x => x * 2;
+    Func<int, object> valueSelector = keySelectorOnly ? x => x : x => x *3;
+
+    IEnumerable<int> source = Enumerable.Range(0, 10);
+    OrderedDictionary test = capacity is int
+      ? keySelectorOnly
+        ? source.IntoOrderedDictionary (keySelector, capacity, keyComparer)!
+        : source.IntoOrderedDictionary (keySelector,valueSelector, capacity, keyComparer)!
+      : keySelectorOnly
+        ? source.IntoOrderedDictionary (keySelector, keyComparer: keyComparer)!
+        : source.IntoOrderedDictionary (keySelector,valueSelector, keyComparer: keyComparer)!;
+
+    object _comparer = Reflection.GetNonPublicFieldValue ( test, "_comparer" );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, _comparer ) );
+
+    int _initialCapacity = (int)Reflection.GetNonPublicFieldValue ( test, "_initialCapacity" );
+    Assert.AreEqual ( capacity ?? 0, _initialCapacity );
+
+    IEnumerable<(int, object)> expectation = source
+      .Select(x => ((int)keySelector(x), valueSelector(x)));
+
+    IEnumerable<(int, object?)> actual = test
+      .Cast<DictionaryEntry> ()
+      .Select(x => ((int)x.Key, x.Value));
+
+    Assert.IsTrue ( expectation.SequenceEqual ( actual! ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoOrderedDictionary_IEnumerableOfT_DefaultComparer ( bool keySelectorOnly )
+  {
+    Func<int, object> selector = x => x;
+
+    IEnumerable<int> source = [];
+    OrderedDictionary  test = keySelectorOnly
+        ? source.IntoOrderedDictionary (selector, capacity: null)!
+        : source.IntoOrderedDictionary (selector, selector, capacity: null)!;
+
+    object _comparer = Reflection.GetNonPublicFieldValue ( test, "_comparer" );
+    Assert.IsNull ( _comparer );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault, true )]
+  [DataRow ( NullBehavior.ReturnDefault, false )]
+  [DataRow ( null, true )]
+  [DataRow ( null, false )]
+  public void IntoOrderedDictionary_IEnumerableOfT_NullBehavior ( NullBehavior? behavior, bool keySelectorOnly )
+  {
+    IEnumerable<int> source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    OrderedDictionary ? test = returnsDefault
+      ? keySelectorOnly
+        ? source.IntoOrderedDictionary (x => null!, behavior: behavior!.Value)
+        : source.IntoOrderedDictionary (x => null!, x=> null!, behavior: behavior!.Value)
+      : keySelectorOnly
+        ? source.IntoOrderedDictionary (x => null!)
+        : source.IntoOrderedDictionary (x => null!, x=> null!);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( true, 1000 )]
+  [DataRow ( false, 1000 )]
+  [DataRow ( true, null )]
+  [DataRow ( false, null )]
+  public void IntoOrderedDictionary_IEnumerable ( bool keySelectorOnly, int? capacity )
+  {
+    IEqualityComparer keyComparer = new TestComparer ();
+    Func<object, object> keySelector = x => (int)x * 2;
+    Func<object, object> valueSelector = keySelectorOnly ? x => x : x => (int)x *3;
+
+    IEnumerable source = Enumerable.Range(0, 10);
+    OrderedDictionary  test = capacity is int
+      ? keySelectorOnly
+        ? source.IntoOrderedDictionary (keySelector, capacity, keyComparer)!
+        : source.IntoOrderedDictionary (keySelector,valueSelector, capacity, keyComparer)!
+      : keySelectorOnly
+        ? source.IntoOrderedDictionary (keySelector, keyComparer: keyComparer)!
+        : source.IntoOrderedDictionary (keySelector,valueSelector, keyComparer: keyComparer)!;
+
+    object _comparer = Reflection.GetNonPublicFieldValue ( test, "_comparer" );
+    Assert.IsTrue ( ReferenceEquals ( keyComparer, _comparer ) );
+
+    int _initialCapacity = (int)Reflection.GetNonPublicFieldValue ( test, "_initialCapacity" );
+    Assert.AreEqual ( capacity ?? 0, _initialCapacity );
+
+    IEnumerable<(int, object)> expectation = source
+      .Cast<int>()
+      .Select(x => ((int)keySelector(x), valueSelector(x)));
+
+    IEnumerable<(int, object?)> actual = test
+      .Cast<DictionaryEntry> ()
+      .Select(x => ((int)x.Key, x.Value));
+
+    Assert.IsTrue ( expectation.SequenceEqual ( actual! ) );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void IntoOrderedDictionary_IEnumerable_DefaultComparer ( bool keySelectorOnly )
+  {
+    Func<object, object> selector = x => x;
+
+    IEnumerable source = Enumerable.Range(0, 10);
+    OrderedDictionary  test = keySelectorOnly
+        ? source.IntoOrderedDictionary (selector, capacity: null)!
+        : source.IntoOrderedDictionary (selector, selector, capacity: null)!;
+
+    object _comparer = Reflection.GetNonPublicFieldValue ( test, "_comparer" );
+    Assert.IsNull ( _comparer );
+  }
+
+  [TestMethod]
+  [DataRow ( NullBehavior.ReturnDefault, true )]
+  [DataRow ( NullBehavior.ReturnDefault, false )]
+  [DataRow ( null, true )]
+  [DataRow ( null, false )]
+  public void IntoOrderedDictionary_IEnumerable_NullBehavior ( NullBehavior? behavior, bool keySelectorOnly )
+  {
+    IEnumerable source = null!;
+    bool returnsDefault = behavior is NullBehavior.ReturnDefault;
+    OrderedDictionary? test = returnsDefault
+      ? keySelectorOnly
+        ? source.IntoOrderedDictionary(x => x, behavior: behavior!.Value)
+        : source.IntoOrderedDictionary(x => x, x=> x, behavior: behavior!.Value)
+      : keySelectorOnly
+        ? source.IntoOrderedDictionary(x => x)
+        : source.IntoOrderedDictionary(x => x, x=> x);
+
+    Assert.AreEqual ( test?.Count ?? -1, returnsDefault ? -1 : 0 );
+  }
 }

@@ -177,3 +177,7 @@ This namespace contains types with extension methods.
         - `ListDictionary? IntoListDictionary(IEnumerable?, Func<object, object>, Func<object, object?>, IComparer?, EnumerableNullBehavior)` – creates list dictionary from `IEnumerable`
         - `NameValueCollection? IntoNameValueCollection<Item>(IEnumerable<Item>?, Func<Item, string>, Func<Item, string?>, int?, IEqualityComparer?, EnumerableNullBehavior)` – creates name value collection from `IEnumerable<T>`
         - `NameValueCollection? IntoNameValueCollection(IEnumerable?, Func<object, string>, Func<object, string?>, int?, IEqualityComparer?, EnumerableNullBehavior)` – creates name value collection from `IEnumerable`
+        - `OrderedDictionary? IntoOrderedDictionary<Item>(IEnumerable<Item>?, Func<Item, object>, int?, IEqualityComparer?, EnumerableNullBehavior)` – creates ordered dictionary from `IEnumerable<T>`
+        - `OrderedDictionary? IntoOrderedDictionary<Item>(IEnumerable<Item>?, Func<Item, object>, Func<Item, object?>, int?, IEqualityComparer?, EnumerableNullBehavior)` – creates ordered dictionary from `IEnumerable<T>`
+        - `OrderedDictionary? IntoOrderedDictionary(IEnumerable?, Func<object, object>, int?, IEqualityComparer?, EnumerableNullBehavior)` – creates ordered dictionary from `IEnumerable`
+        - `OrderedDictionary? IntoOrderedDictionary(IEnumerable?, Func<object, object>, Func<object, object?>, int?, IEqualityComparer?, EnumerableNullBehavior)` – creates ordered dictionary from `IEnumerable`
