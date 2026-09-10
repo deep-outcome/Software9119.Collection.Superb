@@ -171,3 +171,7 @@ This namespace contains types with extension methods.
         - `HybridDictionary? IntoHybridDictionary<Item>(IEnumerable<Item>?, Func<Item, object>, Func<Item, object?>, int?, bool, EnumerableNullBehavior)` – creates hybrid dictionary from `IEnumerable<T>`
         - `HybridDictionary? IntoHybridDictionary(IEnumerable?, Func<object, object>, int?, bool, EnumerableNullBehavior)` – creates hybrid dictionary from `IEnumerable`
         - `HybridDictionary? IntoHybridDictionary(IEnumerable?, Func<object, object>, Func<object, object?>, int?, bool, EnumerableNullBehavior)` – creates hybrid dictionary from `IEnumerable`
+        - `ListDictionary? IntoListDictionary<Item>(IEnumerable<Item>?, Func<Item, object>, IComparer?, EnumerableNullBehavior)` – creates list dictionary from `IEnumerable<T>`
+        - `ListDictionary? IntoListDictionary<Item>(IEnumerable<Item>?, Func<Item, object>, Func<Item, object?>, IComparer?, EnumerableNullBehavior)` – creates list dictionary from `IEnumerable<T>`
+        - `ListDictionary? IntoListDictionary(IEnumerable?, Func<object, object>, IComparer?, EnumerableNullBehavior)` – creates list dictionary from `IEnumerable`
+        - `ListDictionary? IntoListDictionary(IEnumerable?, Func<object, object>, Func<object, object?>, IComparer?, EnumerableNullBehavior)` – creates list dictionary from `IEnumerable`

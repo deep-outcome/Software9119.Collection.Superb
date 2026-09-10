@@ -1,7 +1,21 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace Software9119.Collection.Superb.TestArrangement.TestAide;
+
+sealed class ReverseOrderComparer : IComparer
+{
+  readonly Comparer comparer = Comparer.Default;
+  public int Compare ( object? x, object? y )
+  {
+    return comparer.Compare ( x, y ) switch
+    {
+      1 => -1,
+      -1 => 1,
+      _ => 0,
+    };
+  }
+}
 
 class ReverseOrderComparer<T> : IComparer<T>
 {
@@ -11,9 +25,8 @@ class ReverseOrderComparer<T> : IComparer<T>
     return comparer.Compare ( x, y ) switch
     {
       1 => -1,
-      0 => 0,
       -1 => 1,
-      _ => throw new InvalidOperationException ( "Impossible happened." )
+      _ => 0,
     };
   }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 
@@ -53,5 +54,52 @@ static public class system_collections_specialized
 
     Empty<HybridDictionary> empty = () => new();
     return new ( ctor, e => false, empty );
+  }
+
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.listdictionary?view=net-10.0">
+  /// ListDictionary</see>.
+  /// </summary>
+  static public AsOrToTargetType<ListDictionary> ListDictionary<Item>
+  (
+    Func<Item, object> keySelector,
+    IComparer keyComparer
+  )
+    => ListDictionary ( keySelector, x => x, keyComparer );
+
+  /// <summary>
+  /// Target type for
+  /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.listdictionary?view=net-10.0">
+  /// ListDictionary</see>.
+  /// </summary>
+  static public AsOrToTargetType<ListDictionary> ListDictionary<Item>
+  (
+    Func<Item, object> keySelector,
+    Func<Item, object?> valueSelector,
+    IComparer keyComparer
+  )
+  {
+    if (keySelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( keySelector ), "Key selector not provided." );
+
+    if (valueSelector == null)
+      throw new ArgumentNullException ( paramName: nameof ( valueSelector ), "Value selector not provided." );
+
+    if (keyComparer == null)
+      throw new ArgumentNullException ( paramName: nameof ( keyComparer ), "Key comparer not provided." );
+
+    Ctor<Item, ListDictionary> typedCtor = (e) =>
+    {
+      ListDictionary result = new  ( keyComparer );
+      foreach (Item i in e )
+        result.Add(keySelector(i), valueSelector(i));
+
+      return result;
+    };
+
+    Empty<ListDictionary> empty = () => new (keyComparer);
+    return AsOrToTargetType.FromTypedCtor ( typedCtor, e => false, empty );
   }
 }

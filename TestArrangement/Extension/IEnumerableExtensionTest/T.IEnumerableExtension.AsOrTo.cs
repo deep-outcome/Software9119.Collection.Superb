@@ -12,6 +12,7 @@ using System.Text;
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
 
 [TestClass]
+[SuppressMessage ( "Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Not excessive in core." )]
 #pragma warning disable CA1724
 public partial class IEnumerableExtensionTest
 #pragma warning restore CA1724
@@ -147,7 +148,7 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void Sample_ReadMe()
+  public void Sample_ReadMe ()
   {
     int[] numbers = [24, 34, 5, 15434, 26546, 13, 4];
     string result = ToNumberStringList(numbers)!;

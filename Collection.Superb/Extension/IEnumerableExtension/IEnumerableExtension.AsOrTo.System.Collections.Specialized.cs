@@ -72,4 +72,106 @@ static public partial class IEnumerableExtension
     bool caseSensitive = true,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( c_specialized.HybridDictionary ( keySelector, valueSelector, capacity, !caseSensitive ), behavior );
+
+  /// <summary>
+  /// Creates <see cref="ListDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.ListDictionary{Item}(Func{Item, object}, IComparer)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ListDictionary? IntoListDictionary<Item> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, object> keySelector,
+    IComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+  {
+    keyComparer ??= Comparer.Default;
+    return enumerable.AsOrTo ( c_specialized.ListDictionary ( keySelector, keyComparer ), behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="ListDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.ListDictionary{Item}(Func{Item, object}, IComparer)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ListDictionary? IntoListDictionary (
+    this IEnumerable? enumerable,
+    Func<object, object> keySelector,
+    IComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+  {
+    keyComparer ??= Comparer.Default;
+    return enumerable.AsOrTo ( c_specialized.ListDictionary ( keySelector, keyComparer ), behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="ListDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.ListDictionary{Item}(Func{Item, object}, Func{Item, object?}, IComparer)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ListDictionary? IntoListDictionary<Item> (
+    this IEnumerable<Item>? enumerable,
+    Func<Item, object> keySelector,
+    Func<Item, object?> valueSelector,
+    IComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+  {
+    keyComparer ??= Comparer.Default;
+    return enumerable.AsOrTo ( c_specialized.ListDictionary ( keySelector, valueSelector, keyComparer ), behavior );
+  }
+
+  /// <summary>
+  /// Creates <see cref="ListDictionary"/> with <paramref name="keyComparer"/> from <paramref name="enumerable"/>
+  /// using <paramref name="keySelector"/> and <paramref name="valueSelector"/> provided.
+  /// </summary>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>
+  /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/>
+  /// with <see cref="c_specialized.ListDictionary{Item}(Func{Item, object}, Func{Item, object?}, IComparer)"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="keyComparer"/> is <see langword="null"/>, it defaults to <see cref="Comparer{Key}.Default"/>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public ListDictionary? IntoListDictionary (
+    this IEnumerable? enumerable,
+    Func<object, object> keySelector,
+    Func<object, object?> valueSelector,
+    IComparer? keyComparer = null,
+    NullBehavior behavior = NullBehavior.ReturnEmpty )
+  {
+    keyComparer ??= Comparer.Default;
+    return enumerable.AsOrTo ( c_specialized.ListDictionary ( keySelector, valueSelector, keyComparer ), behavior );
+  }
 }
