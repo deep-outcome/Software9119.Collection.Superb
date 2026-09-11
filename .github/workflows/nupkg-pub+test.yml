@@ -10,13 +10,26 @@ permissions:
   contents: read
 
 jobs:
-  nupkg-pub-job:
+  cfg-val-job:
+    name: Validation (${{matrix.tfm }}-${{ matrix.configuration }})
     runs-on: windows-latest
-
     environment: nupkg-pub
     strategy:
+      fail-fast: false
       matrix:
-        configuration: [Debug, Release]
+       include:
+          - tfm: net10.0
+            sdk: 10.0.x
+            configuration: Debug
+          - tfm: net10.0
+            sdk: 10.0.x
+            configuration: Release
+          - tfm: net9.0
+            sdk: 9.0.x
+            configuration: Debug
+          - tfm: net9.0
+            sdk: 9.0.x
+            configuration: Release
 
     steps:
     - name: Checkout
@@ -25,7 +38,42 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
+        dotnet-version: ${{ matrix.sdk }}
+
+    - name: Remove TestProject
+      run: dotnet sln Software9119.Collection.Superb.slnx remove ./TestProject/TestProject.csproj
+
+    - name: Restore
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration ${{ matrix.configuration }} -f ${{ matrix.tfm }} --no-restore
+
+    - name: Test
+      run: dotnet test --configuration ${{ matrix.configuration }} -f ${{ matrix.tfm }} --no-restore
+
+  nupkg-pub-job:
+    runs-on: windows-latest
+    environment: nupkg-pub
+    needs: cfg-val-job
+    if: github.ref == 'refs/heads/prong' && github.event_name != 'pull_request'
+    name: Publication
+    strategy:
+      fail-fast: true
+      matrix:
+        configuration: [Debug, Release]
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
         dotnet-version: 10.0.x
+
+    - name: Remove TestProject
+      run: dotnet sln Software9119.Collection.Superb.slnx remove ./TestProject/TestProject.csproj
 
     - name: Restore
       run: dotnet restore
@@ -33,11 +81,8 @@ jobs:
     - name: Build
       run: dotnet build --configuration ${{ matrix.configuration }} --no-restore
 
-    - name: Test
-      run: dotnet test --configuration ${{ matrix.configuration }} --no-restore
-    
     - name: Pack
-      run: dotnet pack ./Collection.Superb/Collection.Superb.csproj --configuration ${{ matrix.configuration }} --no-restore --no-build --output ${{ github.workspace }}/nupkgs
+      run: dotnet pack ./Collection.Superb/Collection.Superb.csproj --no-restore --no-build --configuration ${{ matrix.configuration }} --output ${{ github.workspace }}/nupkgs
 
     - name: Upload to artifacts
       uses: actions/upload-artifact@v4
@@ -51,7 +96,7 @@ jobs:
       id: login
       with:
         user: that-deepfelt
-    
+
     - name: Push
       shell: pwsh
       run: |

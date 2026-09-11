@@ -317,7 +317,13 @@ public partial class IEnumerableExtensionTest
       list.Add ( test.Dequeue () );
 
     Assert.IsTrue ( source.Select ( x => x.Item1 ).Reverse ().SequenceEqual ( list ) );
+
+#if NET10_0_OR_GREATER
     Assert.AreEqual ( capacity ?? 16, test.Capacity );
+#else
+    Array _nodes = (Array)Reflection.GetNonPublicFieldValue(test, "_nodes");
+    Assert.HasCount ( capacity ?? 16, _nodes );
+#endif
   }
 
   [TestMethod]

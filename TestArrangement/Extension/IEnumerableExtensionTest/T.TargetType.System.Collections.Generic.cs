@@ -285,7 +285,12 @@ public class system_collections_generic_test
     PriorityQueue<int, int> target = targetType.Ctor(source);
 
     Assert.IsTrue ( ReferenceEquals ( priorityComparer, target.Comparer ) );
+#if NET10_0_OR_GREATER
     Assert.AreEqual ( capacity ?? 16, target.Capacity );
+#else
+    Array _nodes = (Array)Reflection.GetNonPublicFieldValue(target, "_nodes");
+    Assert.HasCount ( capacity ?? 16, _nodes );
+#endif
     Assert.IsFalse ( targetType.CanCast ( null! ) );
     Assert.IsFalse ( targetType.CanCast ( new int [ 0 ] ) );
 

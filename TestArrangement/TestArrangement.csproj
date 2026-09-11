@@ -3,6 +3,7 @@
   <Import Project="../SharedProjectConfiguration.props" />
 
   <PropertyGroup>
+    <TargetFrameworks>net10.0;net9.0</TargetFrameworks>
     <UseVSTest>true</UseVSTest>
     <RootNamespace>Software9119.Collection.Superb.TestArrangement</RootNamespace>
     <AssemblyName>Software9119.Collection.Superb.TestArrangement</AssemblyName>

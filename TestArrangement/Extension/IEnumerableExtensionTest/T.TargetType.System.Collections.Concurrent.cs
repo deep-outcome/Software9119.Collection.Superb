@@ -75,8 +75,13 @@ public class system_c_concurrent_tests
     Assert.AreNotEqual ( Environment.ProcessorCount, concurrency ?? 0 );
     Assert.HasCount ( concurrency ?? Environment.ProcessorCount, _locks );
 
+#if NET10_0_OR_GREATER
     int _initialCapacity = (int)Reflection.GetNonPublicFieldValue(target, "_initialCapacity");
     Assert.AreEqual ( expCap, _initialCapacity );
+#else
+    Array _buckets = (Array)Reflection.GetNonPublicFieldValue(_tables, "_buckets");
+    Assert.HasCount ( expCap, _buckets );
+#endif
 
     IEnumerable<KeyValuePair<int, int>> expectation = source
       .Select(x => new KeyValuePair<int, int>(keySelector(x), valueSelector(x)));
