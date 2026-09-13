@@ -50,10 +50,7 @@ public ref struct IListRefSegment<T, U>
   /// <summary>
   /// Basic constructor.
   /// </summary>
-  /// <param name="equalityComparer">
-  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{U}.Default"/>
-  /// will be used. See <see cref="EqualityComparer"/> for more.
-  /// </param>
+  /// <param name="equalityComparer"> defaults to <see cref="EqualityComparer{T}.Default"/>.</param>
   public IListRefSegment ( T list, IEqualityComparer<U>? equalityComparer = null )
   {
     this.list = list;
@@ -66,10 +63,7 @@ public ref struct IListRefSegment<T, U>
   /// <summary>
   /// Offset constructor.
   /// </summary>
-  /// <param name="equalityComparer">
-  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{U}.Default"/>
-  /// will be used. See <see cref="EqualityComparer"/> for more.
-  /// </param>
+  /// <param name="equalityComparer"> defaults to <see cref="EqualityComparer{T}.Default"/>.</param>
   /// <param name="offset">Starting index of segment.</param>
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
@@ -87,11 +81,9 @@ public ref struct IListRefSegment<T, U>
     EqualityComparer = equalityComparer!;
   }
 
-
   /// <summary>
-  /// Equality comparer used in <see cref="Contains(U?)"/> and <see cref="IndexOf(U?)"/> methods.
+  /// Equality comparer used by <see cref="Contains(U?)"/> and <see cref="IndexOf(U?)"/> methods.
   /// </summary>
-  /// <remarks>Cannot be set to <see langword="null"/> because it defaults to <see cref="EqualityComparer{U}.Default"/>.</remarks>
   public IEqualityComparer<U> EqualityComparer
   {
     readonly get
@@ -100,7 +92,7 @@ public ref struct IListRefSegment<T, U>
     }
 
     [MemberNotNull ( nameof ( equalityComparer ) )]
-    set => equalityComparer = (value ?? EqualityComparer<U>.Default);
+    private set => equalityComparer = (value ?? EqualityComparer<U>.Default);
   }
 
 
@@ -147,7 +139,16 @@ public ref struct IListRefSegment<T, U>
 
   /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>.
   /// Otherwise, returns <see langword="false"/>.</returns>
-  readonly public bool Contains ( U? item ) => IndexOf ( item ) != -1;
+  readonly public bool Contains ( U? item )
+    => IndexOf ( item, EqualityComparer ) != -1;
+
+  /// <returns>
+  /// Returns <see langword="true"/> on first equality encounter using <paramref name="comparer"/>.
+  /// Otherwise, returns <see langword="false"/>.
+  /// </returns>
+  /// <param name="comparer"> defaults to <see cref="EqualityComparer"/>.</param>
+  readonly public bool Contains ( U? item, IEqualityComparer<U> comparer )
+    => IndexOf ( item, comparer ?? EqualityComparer ) != -1;
 
   /// <summary>
   /// Copies segment into destination array.
@@ -176,11 +177,17 @@ public ref struct IListRefSegment<T, U>
   }
 
   /// <returns>
-  /// Returns index of item, if found in segment. <c>-1</c> otherwise.
+  /// Returns index of first item occurence, if found in segment. <c>-1</c> otherwise.
   /// </returns>
-  readonly public int IndexOf ( U? item )
+  readonly public int IndexOf ( U? item ) => IndexOf ( item, EqualityComparer );
+
+  /// <returns>
+  /// Returns index of first item occurence, if found in segment. <c>-1</c> otherwise.
+  /// </returns>
+  /// <param name="comparer"> defaults to <see cref="EqualityComparer"/>.</param>
+  readonly public int IndexOf ( U? item, IEqualityComparer<U> comparer )
   {
-    IEqualityComparer<U> comparer = EqualityComparer;
+    comparer ??= EqualityComparer;
     T list = this.list;
     for (int i = offset ; i < limit ; ++i)
       if (comparer.Equals ( item, list [ i ] ))

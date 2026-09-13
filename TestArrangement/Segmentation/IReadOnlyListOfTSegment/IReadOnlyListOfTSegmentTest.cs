@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Software9119.Collection.Superb.Segmentation;
+using Software9119.Collection.Superb.TestArrangement.TestAide;
 
 using System;
 using System.Collections;
@@ -38,9 +39,10 @@ public class IReadOnlyListOfTSegmentTest
   [TestMethod]
   public void DefaultCtor ()
   {
+    TestComparer<string> comparer = new();
     List<string?> list = ["a", "b", "c", "d", "e",];
 
-    IReadOnlyListSegment<string> segment = new ( list );
+    IReadOnlyListSegment<string> segment = new ( list, comparer );
     Assert.AreEqual ( list.Count, segment.Count );
     Assert.AreEqual ( list.Count, segment.limit );
     Assert.AreEqual ( 0, segment.Offset );
@@ -48,7 +50,7 @@ public class IReadOnlyListOfTSegmentTest
     Assert.AreEqual ( list, segment.list );
     Assert.AreEqual ( list, segment.List );
 
-    Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
+    Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
   }
 
   [TestMethod]
@@ -70,9 +72,10 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 4, 0 )]
   public void OffsetCtor ( int offset, int count )
   {
+    TestComparer<string> comparer = new();
     List<string?> list = ["a", "b", "c", "d", "e",];
 
-    IReadOnlyListSegment<string> segment = new ( list, offset: offset, count );
+    IReadOnlyListSegment<string> segment = new ( list, offset: offset, count, comparer );
     Assert.AreEqual ( count, segment.Count );
     Assert.AreEqual ( SegmentationValidator.LimitOutOf ( offset: offset, count ), segment.limit );
     Assert.AreEqual ( offset, segment.Offset );
@@ -80,7 +83,7 @@ public class IReadOnlyListOfTSegmentTest
     Assert.AreEqual ( list, segment.list );
     Assert.AreEqual ( list, segment.List );
 
-    Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
+    Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
   }
 
   [TestMethod]
@@ -106,16 +109,6 @@ public class IReadOnlyListOfTSegmentTest
     Func<object> test =() => new IReadOnlyListSegment<string> ( list, offset: offset, count );
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
-  }
-
-  [TestMethod]
-  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "Not particularly useful." )]
-  public void EqualityComparer ()
-  {
-    IReadOnlyListSegmentEqualityComparer<int> comparer = new();
-    IReadOnlyListSegment<IReadOnlyListSegment<int>> segment = new([]);
-    segment.EqualityComparer = comparer;
-    Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
   }
 
   [TestMethod]
@@ -209,8 +202,8 @@ public class IReadOnlyListOfTSegmentTest
   public void Contains_DefaultEqualityComparer ( int offset, int count, int value, bool contains )
   {
     IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
-    bool result = segment.Contains(value);
-    Assert.AreEqual ( contains, result );
+    Assert.AreEqual ( contains, segment.Contains ( value ) );
+    Assert.AreEqual ( contains, segment.Contains ( value, null! ) );
   }
 
   sealed class SixEqualsFiveEqualityComparer : IEqualityComparer<int>
@@ -232,6 +225,18 @@ public class IReadOnlyListOfTSegmentTest
     IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], new SixEqualsFiveEqualityComparer());
     bool result = segment.Contains(6);
     Assert.IsTrue ( result );
+  }
+
+  [TestMethod]
+  public void Contains_WithEqualityComparerParameter ()
+  {
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5]);
+    Assert.IsTrue ( segment.Contains ( 5, null! ) );
+    Assert.IsFalse ( segment.Contains ( 6, null! ) );
+
+    SixEqualsFiveEqualityComparer comparer = new ();
+    Assert.IsTrue ( segment.Contains ( 6, comparer ) );
+    Assert.IsFalse ( segment.Contains ( 7, comparer ) );
   }
 
   [TestMethod]
@@ -331,8 +336,8 @@ public class IReadOnlyListOfTSegmentTest
   public void IndexOf_DefaultEqualityComparer ( int offset, int count, int value, int index )
   {
     IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
-    int result = segment.IndexOf(value);
-    Assert.AreEqual ( index, result );
+    Assert.AreEqual ( index, segment.IndexOf ( value ) );
+    Assert.AreEqual ( index, segment.IndexOf ( value, null! ) );
   }
 
   [TestMethod]
@@ -341,6 +346,19 @@ public class IReadOnlyListOfTSegmentTest
     IReadOnlyListSegment<int> segment = new ([1,2,3,4,5], new SixEqualsFiveEqualityComparer());
     int result = segment.IndexOf(6);
     Assert.AreEqual ( 4, result );
+  }
+
+  [TestMethod]
+  public void IndexOf_WithEqualityComparerParameter ()
+  {
+    IReadOnlyListSegment<int> segment = new ([1,2,3,4,5]);
+
+    Assert.AreEqual ( 4, segment.IndexOf ( 5, null! ) );
+    Assert.AreEqual ( -1, segment.IndexOf ( 6, null! ) );
+
+    SixEqualsFiveEqualityComparer comparer = new ();
+    Assert.AreEqual ( 4, segment.IndexOf ( 6, comparer ) );
+    Assert.AreEqual ( -1, segment.IndexOf ( 7, comparer ) );
   }
 
   [TestMethod]

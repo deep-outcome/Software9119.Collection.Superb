@@ -47,10 +47,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// <summary>
   /// Basic constructor.
   /// </summary>
-  /// <param name="equalityComparer">
-  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
-  /// will be used. See <see cref="EqualityComparer"/> for more.
-  /// </param>
+  /// <param name="equalityComparer"> defaults to <see cref="EqualityComparer{T}.Default"/>.</param>
   public IListSegment ( IList<T?> list, IEqualityComparer<T>? equalityComparer = null )
   {
 
@@ -70,10 +67,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// <summary>
   /// Offset constructor.
   /// </summary>
-  /// <param name="equalityComparer">
-  /// If <see langword="null"/> passed-in, the <see cref="EqualityComparer{T}.Default"/>
-  /// will be used. See <see cref="EqualityComparer"/> for more.
-  /// </param>
+  /// <param name="equalityComparer"> defaults to <see cref="EqualityComparer{T}.Default"/>.</param>
   /// <param name="offset">Starting index of segment.</param>
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
@@ -95,11 +89,9 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
     EqualityComparer = equalityComparer!;
   }
 
-
   /// <summary>
-  /// Equality comparer used in <see cref="Contains(T?)"/> and <see cref="IndexOf(T?)"/> methods.
+  /// Equality comparer used by <see cref="Contains(T?)"/> and <see cref="IndexOf(T?)"/> methods.
   /// </summary>
-  /// <remarks>Cannot be set to <see langword="null"/> because it defaults to <see cref="EqualityComparer{T}.Default"/>.</remarks>
   public IEqualityComparer<T> EqualityComparer
   {
     readonly get
@@ -108,7 +100,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
     }
 
     [MemberNotNull ( nameof ( equalityComparer ) )]
-    set => equalityComparer = (value ?? EqualityComparer<T>.Default);
+    private set => equalityComparer = (value ?? EqualityComparer<T>.Default);
   }
 
 
@@ -161,7 +153,16 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
   /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>.
   /// Otherwise, returns <see langword="false"/>.</returns>
-  readonly public bool Contains ( T? item ) => IndexOf ( item ) != -1;
+  readonly public bool Contains ( T? item ) 
+    => IndexOf ( item, EqualityComparer ) != -1;
+
+  /// <returns>
+  /// Returns <see langword="true"/> on first equality encounter using <paramref name="comparer"/>.
+  /// Otherwise, returns <see langword="false"/>.
+  /// </returns>
+  /// <param name="comparer"> defaults to <see cref="EqualityComparer"/>.</param>
+  readonly public bool Contains ( T? item, IEqualityComparer<T> comparer )
+    => IndexOf ( item, comparer ?? EqualityComparer ) != -1;
 
   /// <summary>
   /// Copies segment into destination array.
@@ -196,11 +197,17 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   }
 
   /// <returns>
-  /// Returns index of item, if found in segment. <c>-1</c> otherwise.
+  /// Returns index of first item occurence, if found in segment. <c>-1</c> otherwise.
   /// </returns>
-  readonly public int IndexOf ( T? item )
+  readonly public int IndexOf ( T? item ) => IndexOf ( item, EqualityComparer );
+
+  /// <returns>
+  /// Returns index of first item occurence, if found in segment. <c>-1</c> otherwise.
+  /// </returns>
+  /// <param name="comparer"> defaults to <see cref="EqualityComparer"/>.</param>
+  readonly public int IndexOf ( T? item, IEqualityComparer<T> comparer )
   {
-    IEqualityComparer<T> comparer = EqualityComparer;
+    comparer ??= EqualityComparer;
     IList<T?> list = this.list;
     for (int i = offset ; i < limit ; ++i)
       if (comparer.Equals ( item, list [ i ] ))

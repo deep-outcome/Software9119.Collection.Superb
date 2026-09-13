@@ -2,6 +2,7 @@
 
 using Software9119.Collection.Superb.Segmentation;
 using Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
+using Software9119.Collection.Superb.TestArrangement.TestAide;
 
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,10 @@ public class IReadOnlyListOfTRefSegmentTest
   [TestMethod]
   public void DefaultCtor ()
   {
+    TestComparer<string> comparer = new();
     ArraySegment<string> list = new (["a", "b", "c", "d", "e",]);
 
-    IReadOnlyListRefSegment<ArraySegment<string>,string> segment = new ( list );
+    IReadOnlyListRefSegment<ArraySegment<string>,string> segment = new ( list, comparer );
     Assert.AreEqual ( list.Count, segment.Count );
     Assert.AreEqual ( list.Count, segment.limit );
     Assert.AreEqual ( 0, segment.Offset );
@@ -26,7 +28,7 @@ public class IReadOnlyListOfTRefSegmentTest
     Assert.AreEqual ( list, segment.list );
     Assert.AreEqual ( list, segment.List );
 
-    Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
+    Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
   }
 
   [TestMethod]
@@ -48,9 +50,10 @@ public class IReadOnlyListOfTRefSegmentTest
   [DataRow ( 4, 0 )]
   public void OffsetCtor ( int offset, int count )
   {
+    TestComparer<string> comparer = new();
     ArraySegment<string> list = new (["a", "b", "c", "d", "e",]);
 
-    IReadOnlyListRefSegment<ArraySegment<string>,string> segment = new ( list, offset: offset, count );
+    IReadOnlyListRefSegment<ArraySegment<string>,string> segment = new ( list, offset: offset, count, comparer );
     Assert.AreEqual ( count, segment.Count );
     Assert.AreEqual ( SegmentationValidator.LimitOutOf ( offset: offset, count ), segment.limit );
     Assert.AreEqual ( offset, segment.Offset );
@@ -58,7 +61,7 @@ public class IReadOnlyListOfTRefSegmentTest
     Assert.AreEqual ( list, segment.list );
     Assert.AreEqual ( list, segment.List );
 
-    Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
+    Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
   }
 
   [TestMethod]
@@ -84,17 +87,6 @@ public class IReadOnlyListOfTRefSegmentTest
     Action test =() => _ = new IReadOnlyListRefSegment<ArraySegment<string>, string> ( list, offset: offset, count );
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
-  }
-
-  [TestMethod]
-  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "Not particularly useful." )]
-  public void EqualityComparer ()
-  {
-    IEqualityComparer<int> comparer = new SixEqualsFiveEqualityComparer();
-    ReadRefList<int> list = new ([]);
-    IReadOnlyListRefSegment<ReadRefList<int>,int> segment = new( list );
-    segment.EqualityComparer = comparer;
-    Assert.IsTrue ( ReferenceEquals ( comparer, segment.EqualityComparer ) );
   }
 
   [TestMethod]
@@ -189,8 +181,8 @@ public class IReadOnlyListOfTRefSegmentTest
   {
     ReadRefList<int> list = new ([1,2,3,4,5]);
     IReadOnlyListRefSegment<ReadRefList<int>,int> segment = new ( list, offset, count: count);
-    bool result = segment.Contains(value);
-    Assert.AreEqual ( contains, result );
+    Assert.AreEqual ( contains, segment.Contains ( value ) );
+    Assert.AreEqual ( contains, segment.Contains ( value, null! ) );
   }
 
   sealed class SixEqualsFiveEqualityComparer : IEqualityComparer<int>
@@ -216,6 +208,19 @@ public class IReadOnlyListOfTRefSegmentTest
   }
 
   [TestMethod]
+  public void Contains_WithEqualityComparerParameter ()
+  {
+    ReadRefList<int> list = new ([1,2,3,4,5]);
+    IReadOnlyListRefSegment<ReadRefList<int>, int> segment = new (list);
+    Assert.IsTrue ( segment.Contains ( 5, null! ) );
+    Assert.IsFalse ( segment.Contains ( 6, null! ) );
+
+    SixEqualsFiveEqualityComparer comparer = new ();
+    Assert.IsTrue ( segment.Contains ( 6, comparer ) );
+    Assert.IsFalse ( segment.Contains ( 7, comparer ) );
+  }
+
+  [TestMethod]
   public void CopyTo_NullArray ()
   {
     ReadRefList<int> list = new ([]);
@@ -237,7 +242,7 @@ public class IReadOnlyListOfTRefSegmentTest
     IReadOnlyListRefSegment<ReadRefList<int>,int> segment = new ( list );
     try
     {
-      segment.CopyTo ([], -1 );
+      segment.CopyTo ( [], -1 );
     }
     catch (ArgumentOutOfRangeException e)
     {
@@ -296,8 +301,8 @@ public class IReadOnlyListOfTRefSegmentTest
   {
     ReadRefList<int> list = new ([1,2,3,4,5]);
     IReadOnlyListRefSegment<ReadRefList<int>,int> segment = new ( list, offset, count: count);
-    int result = segment.IndexOf(value);
-    Assert.AreEqual ( index, result );
+    Assert.AreEqual ( index, segment.IndexOf ( value ) );
+    Assert.AreEqual ( index, segment.IndexOf ( value, null! ) );
   }
 
   [TestMethod]
@@ -307,6 +312,19 @@ public class IReadOnlyListOfTRefSegmentTest
     IReadOnlyListRefSegment<ReadRefList<int>,int> segment = new ( list, new SixEqualsFiveEqualityComparer());
     int result = segment.IndexOf(6);
     Assert.AreEqual ( 4, result );
+  }
+
+  [TestMethod]
+  public void IndexOf_WithEqualityComparerParameter ()
+  {
+    ReadRefList<int> list = new ([1,2,3,4,5]);
+    IReadOnlyListRefSegment<ReadRefList<int>, int> segment = new (list);
+    Assert.AreEqual ( 4, segment.IndexOf ( 5, null! ) );
+    Assert.AreEqual ( -1, segment.IndexOf ( 6, null! ) );
+
+    SixEqualsFiveEqualityComparer comparer = new ();
+    Assert.AreEqual ( 4, segment.IndexOf ( 6, comparer ) );
+    Assert.AreEqual ( -1, segment.IndexOf ( 7, comparer ) );
   }
 
   [TestMethod]
