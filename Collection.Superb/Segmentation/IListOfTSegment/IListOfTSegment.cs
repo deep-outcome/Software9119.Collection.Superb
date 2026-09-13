@@ -153,7 +153,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
 
   /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>.
   /// Otherwise, returns <see langword="false"/>.</returns>
-  readonly public bool Contains ( T? item ) 
+  readonly public bool Contains ( T? item )
     => IndexOf ( item, EqualityComparer ) != -1;
 
   /// <returns>
@@ -289,4 +289,16 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   {
     return left.Equals ( right ) == false;
   }
+
+  /// <summary>
+  /// Implicit conversion operator for <see cref="ArraySegment{T}"/>.
+  /// </summary>
+  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
+  static public implicit operator IListSegment<T> ( ArraySegment<T> segment ) => new ( segment.Array ?? Array.Empty<T> (), segment.Offset, segment.Count );
+
+  /// <summary>
+  /// Conversion method for <see cref="ArraySegment{T}"/>.
+  /// </summary>
+  [SuppressMessage ( "Design", "CA1000:Do not declare static members on generic types", Justification = "No way around." )]
+  static public IListSegment<T> ToIListSegment ( ArraySegment<T> segment ) => segment;
 }

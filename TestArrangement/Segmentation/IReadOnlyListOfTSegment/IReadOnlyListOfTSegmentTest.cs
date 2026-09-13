@@ -454,4 +454,52 @@ public class IReadOnlyListOfTSegmentTest
     IReadOnlyListSegment<int> other = new (  new int [0]);
     Assert.IsTrue ( segment != other );
   }
+
+  [TestMethod]
+  [DataRow ( 0, 5 )]
+  [DataRow ( 1, 3 )]
+  public void ArraySegmentImplicitCastOperator ( int offset, int count )
+  {
+    Func<ArraySegment<int>, IReadOnlyListSegment<int>>[] casts =
+    [
+      a => a,
+      a => IReadOnlyListSegment<int>.ToIReadOnlyListSegment(a)
+    ];
+
+    foreach (Func<ArraySegment<int>, IReadOnlyListSegment<int>> c in casts)
+    {
+      int[] array = [1,2 ,3, 4, 5];
+      ArraySegment<int> segment = new ( array, offset: offset, count );
+      IReadOnlyListSegment<int> test = c(segment);
+
+      Assert.AreEqual ( segment.Count, test.Count );
+      Assert.AreEqual ( segment.Offset, test.offset );
+      Assert.IsTrue ( ReferenceEquals ( segment.Array, test.List ) );
+
+      Assert.IsTrue ( segment.SequenceEqual ( test ) );
+    }
+  }
+
+  [TestMethod]
+  public void ArraySegmentImplicitCastOperator_DefaultArraySegment ()
+  {
+    Func<ArraySegment<int>, IReadOnlyListSegment<int>>[] casts =
+    [
+      a => a,
+      a => IReadOnlyListSegment<int>.ToIReadOnlyListSegment(a)
+    ];
+    foreach (Func<ArraySegment<int>, IReadOnlyListSegment<int>> c in casts)
+    {
+
+      ArraySegment<int> segment = default;
+      IReadOnlyListSegment<int> test = c(segment);
+
+      Assert.AreEqual ( 0, test.Count + segment.Count );
+      Assert.AreEqual ( 0, test.offset + segment.Offset );
+      Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.List ) );
+      Assert.IsNull ( segment.Array );
+
+      Assert.IsTrue ( segment.SequenceEqual ( test ) );
+    }
+  }
 }

@@ -69,7 +69,7 @@ public ref struct IListRefSegment<T> : IList
   /// <summary>
   /// Basic constructor.
   /// </summary>
-  /// <param name="equalityComparer"> defaults to <see cref="EqualityComparer{T}.Default"/>.</param>  
+  /// <param name="equalityComparer"> defaults to <see cref="EqualityComparer{T}.Default"/>.</param>
   public IListRefSegment ( T list, IEqualityComparer<object>? equalityComparer = null )
   {
     this.list = list;

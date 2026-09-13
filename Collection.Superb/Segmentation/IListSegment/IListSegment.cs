@@ -69,7 +69,6 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   /// Basic constructor.
   /// </summary>
   /// <param name="equalityComparer"> defaults to <see cref="EqualityComparer{T}.Default"/>.</param>
-  /// </param>
   public IListSegment ( IList list, IEqualityComparer<object>? equalityComparer = null )
   {
 

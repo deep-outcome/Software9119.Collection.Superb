@@ -381,7 +381,6 @@ public class IListSegmentTest
   public void IndexOf_DefaultEqualityComparer ( int offset, int count, int value, int index )
   {
     IListSegment segment = new ( new int [] {1,2,3,4,5 }, offset, count: count);
-    int result = segment.IndexOf(value);
     Assert.AreEqual ( index, segment.IndexOf ( value ) );
     Assert.AreEqual ( index, segment.IndexOf ( value, null! ) );
   }
