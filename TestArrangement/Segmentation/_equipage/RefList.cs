@@ -5,6 +5,7 @@ namespace Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
 
 readonly ref struct RefList ( IList values ) : IList
 {
+  readonly public IList values = values;
   public object? this [ int index ] { get => values [ index ]; set => values [ index ] = value; }
 
   public bool IsFixedSize => values.IsFixedSize;

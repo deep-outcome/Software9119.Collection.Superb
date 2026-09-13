@@ -1,4 +1,5 @@
 ﻿using Software9119.Collection.Superb.Extension;
+using Software9119.Collection.Superb.Numerics;
 
 using System;
 using System.Collections;
@@ -124,7 +125,7 @@ public ref struct IListRefSegment<T, U>
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
   {
-    return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, limit: limit, count: Count, out e );
+    return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, count: Count, out e );
   }
 
   /// <summary>
@@ -194,6 +195,38 @@ public ref struct IListRefSegment<T, U>
         return i - offset;
 
     return -1;
+  }
+
+  /// <summary>
+  /// Creates slice of this segment.
+  /// </summary>
+  /// <exception cref="IndexOutOfSegmentException">When <paramref name="offset"/> is out of range.</exception>
+  readonly public IListRefSegment<T, U> Slice ( NonNegativeInt32 offset )
+  {
+    int count = Count;
+    if (SegmentationValidator.ValidateIndex ( offset, count, out IndexOutOfSegmentException? e ))
+      throw e;
+
+    return Slice ( offset, count - offset );
+  }
+
+  /// <summary>
+  /// Creates slice of this segment.
+  /// </summary>
+  readonly public IListRefSegment<T, U> Slice ( NonNegativeInt32 offset, NonNegativeInt32 count )
+  {
+    int startIndex = SegmentationValidator.CorrelateIndex(offset, this.offset);
+    return new IListRefSegment<T, U> ( list, startIndex, count );
+  }
+
+  /// <summary>
+  /// Copies segment into new <c>U[]</c>.
+  /// </summary>
+  readonly public U? [] ToArray ()
+  {
+    U? [] array = new U? [ Count ];
+    CopyTo ( array, 0 );
+    return array;
   }
 
   /// <summary>

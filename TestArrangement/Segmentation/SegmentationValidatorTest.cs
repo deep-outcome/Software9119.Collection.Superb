@@ -16,6 +16,12 @@ public class SegmentationValidatorTest
   }
 
   [TestMethod]
+  public void CorrelateIndex ()
+  {
+    Assert.AreEqual ( 8, SegmentationValidator.CorrelateIndex ( 3, 5 ) );
+  }
+
+  [TestMethod]
   [DataRow ( 3, 3, 6, "With available length 5, given offset 3 and count 3 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation, offsetting." )]
   [DataRow ( 3, 5, 8, "With available length 5, given offset 3 and count 5 produce out-of indexing in range 5–7.", DisplayName = "Impossible segmentation, offsetting, range." )]
   [DataRow ( 0, 6, 6, "With available length 5, given offset 0 and count 6 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation." )]
@@ -62,22 +68,21 @@ public class SegmentationValidatorTest
   }
 
   [TestMethod]
-  [DataRow ( 2, 3, 1, 2, DisplayName = "Offsetting, index out of bounds." )]
-  [DataRow ( 5, 5, 0, 5, DisplayName = "No offset, index out of bounds" )]
-  [DataRow ( 0, 0, 0, 0, DisplayName = "Empty segment, 0 index." )]
-  [DataRow ( 1, 2, 1, 0, DisplayName = "Empty segment, other index." )]
-  [DataRow ( -3, -3, 1, 4, DisplayName = "Negative index." )]
-  [DataRow ( -1, -1, 0, 0, DisplayName = "Empty segment, negative index." )]
-  public void ValidateIndex_NegativeScenarios ( int index, int computedIndex, int offset, int count )
+  [DataRow ( 2, 1, 2, DisplayName = "Offsetting, index out of bounds." )]
+  [DataRow ( 5, 0, 5, DisplayName = "No offset, index out of bounds" )]
+  [DataRow ( 0, 0, 0, DisplayName = "Empty segment, 0 index." )]
+  [DataRow ( 1, 1, 0, DisplayName = "Empty segment, other index." )]
+  [DataRow ( -3, 1, 4, DisplayName = "Negative index." )]
+  [DataRow ( -1, 0, 0, DisplayName = "Empty segment, negative index." )]
+  public void ValidateIndexRef_NegativeScenarios ( int index, int offset, int count )
   {
     int origIndex = index;
-    int limit = SegmentationValidator.LimitOutOf(offset: offset, count);
     bool result = SegmentationValidator.ValidateIndex (ref index,
-      offset: offset, limit:limit,
+      offset: offset,
       count, out IndexOutOfSegmentException? e);
 
     Assert.IsTrue ( result );
-    Assert.AreEqual ( computedIndex, index );
+    Assert.AreEqual ( origIndex, index );
     Assert.IsNotNull ( e );
 
     string expMsg = index < 0
@@ -91,14 +96,39 @@ public class SegmentationValidatorTest
   [DataRow ( 1, 2, 1, 2 )]
   [DataRow ( 0, 0, 0, 5 )]
   [DataRow ( 4, 4, 0, 5 )]
-  public void ValidateIndex_PositiveScenarios ( int index, int computedIndex, int offset, int count )
+  public void ValidateIndexRef_PositiveScenarios ( int index, int computedIndex, int offset, int count )
   {
-    int limit = SegmentationValidator.LimitOutOf(offset: offset, count);
     bool result = SegmentationValidator.ValidateIndex (ref index,
-      offset: offset, limit:limit,
+      offset: offset,
       count, out IndexOutOfSegmentException? e);
     Assert.IsFalse ( result );
     Assert.AreEqual ( computedIndex, index );
+    Assert.IsNull ( e );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0 )]
+  [DataRow ( int.MaxValue, int.MaxValue )]
+  [DataRow ( 1, 0 )]  
+  [DataRow ( 5, 4 )]
+  public void ValidateIndex_NegativeScenarios ( int index, int count )
+  {
+    bool result = SegmentationValidator.ValidateIndex (index, count, out IndexOutOfSegmentException? e);
+    Assert.IsTrue ( result );
+    Assert.IsNotNull ( e );
+
+    string msg = $"Segment length is {count}, index {index} is out of its range.";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 1 )]
+  [DataRow ( 1, 2 )]  
+  [DataRow ( 5, 8 )]
+  public void ValidateIndex_PositiveScenarios ( int index, int count )
+  {
+    bool result = SegmentationValidator.ValidateIndex (index, count, out IndexOutOfSegmentException? e);
+    Assert.IsFalse ( result );
     Assert.IsNull ( e );
   }
 }

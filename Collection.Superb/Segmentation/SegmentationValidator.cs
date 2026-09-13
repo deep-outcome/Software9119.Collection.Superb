@@ -1,4 +1,5 @@
 ﻿using Software9119.Collection.Superb.Extension;
+using Software9119.Collection.Superb.Numerics;
 
 using System;
 using System.Collections;
@@ -11,6 +12,10 @@ class SegmentationValidator
 {
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public int LimitOutOf ( int offset, int count ) => offset + count;
+
+
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
+  static public int CorrelateIndex ( int index, int offset ) => index + offset;
 
   static public bool ValidateSegmentation ( int length, int offset, int count, out int limit,
    [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
@@ -52,7 +57,6 @@ class SegmentationValidator
   static public bool ValidateIndex (
     ref int index,
     int offset,
-    int limit,
     int count,
     [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
   {
@@ -63,10 +67,28 @@ class SegmentationValidator
       return true;
     }
 
-    index += offset;
-    if (index >= limit)
+    if (index >= count)
     {
-      e = IndexOutOfSegmentException.OutOfRangeMsg ( index: index - offset, length: count );
+      e = IndexOutOfSegmentException.OutOfRangeMsg ( index, length: count );
+      return true;
+    }
+
+    index = CorrelateIndex ( index, offset );
+
+    e = null;
+    return false;
+  }
+
+  static public bool ValidateIndex
+  (
+    NonNegativeInt32 index,
+    NonNegativeInt32 count,
+   [NotNullWhen ( true )] out IndexOutOfSegmentException? e
+  )
+  {
+    if (index >= count)
+    {
+      e = IndexOutOfSegmentException.OutOfRangeMsg ( index: index, length: count );
       return true;
     }
 

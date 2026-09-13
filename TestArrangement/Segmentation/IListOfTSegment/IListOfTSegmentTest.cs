@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 
 namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
@@ -202,17 +203,17 @@ public class IListOfTSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( 5, 5, 0, 5, DisplayName = "Index OOB." )]
-  [DataRow ( 1, 3, 2, 1, DisplayName = "Index OOB, segementation." )]
-  [DataRow ( 0, 0, 0, 0, DisplayName = "Empty segment." )]
-  [DataRow ( -1, -1, 0, 5, DisplayName = "Negative Index." )]
-  public void ValidateIndex_NegativeScenarios ( int index, int computedIndex, int offset, int count )
+  [DataRow ( 5, 0, 5, DisplayName = "Index OOB." )]
+  [DataRow ( 1, 2, 1, DisplayName = "Index OOB, segementation." )]
+  [DataRow ( 0, 0, 0, DisplayName = "Empty segment." )]
+  [DataRow ( -1, 0, 5, DisplayName = "Negative Index." )]
+  public void ValidateIndex_NegativeScenarios ( int index, int offset, int count )
   {
     int origIndex = index;
     IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
     Assert.IsTrue ( result );
-    Assert.AreEqual ( computedIndex, index );
+    Assert.AreEqual ( origIndex, index );
     Assert.IsNotNull ( e );
     string expMsg = index < 0
       ? $"Index must be non-negative, but it is {index}."
@@ -402,6 +403,81 @@ public class IListOfTSegmentTest
   }
 
   [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 2 )]
+  [DataRow ( 4 )]
+  public void Slice ( int offset )
+  {
+    int count = 5 - offset;
+    ArraySegment<int> arraySegment = new([1,2,3,4,5], offset, count);
+    IListSegment<int> segment = new (arraySegment.Array!);
+    IListSegment<int> test = segment.Slice(offset);
+
+    Assert.AreEqual ( segment.offset + offset, test.offset );
+    Assert.AreEqual ( count, test.Count );
+    Assert.IsTrue ( ReferenceEquals ( segment.list, test.list ) );
+
+    Assert.IsTrue ( arraySegment.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  public void Slice_IndexOutOfRange ()
+  {
+    IListSegment<int> segment = new ([1,2,3,4,5]);
+    Action test = () => segment.Slice(5);
+
+    IndexOutOfSegmentException e = Assert.ThrowsExactly<IndexOutOfSegmentException> ( test );
+    Assert.AreEqual ( "Segment length is 5, index 5 is out of its range.", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 5 )]
+  [DataRow ( 1, 3 )]
+  [DataRow ( 0, 0 )]
+  [DataRow ( 4, 0 )]
+  public void Slice_WithCount ( int offset, int count )
+  {
+    ArraySegment<int> arraySegment = new([1,2,3,4,5], offset, count);
+    IListSegment<int> segment = new (arraySegment.Array!);
+    IListSegment<int> test = segment.Slice(offset, count);
+
+    Assert.AreEqual ( segment.offset + offset, test.offset );
+    Assert.AreEqual ( count, test.Count );
+    Assert.IsTrue ( ReferenceEquals ( segment.list, test.list ) );
+
+    Assert.IsTrue ( arraySegment.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 6 )]
+  [DataRow ( 1, 5 )]
+  [DataRow ( 8, 10 )]
+  public void Slice_WithCount_ImpossibleSegmentation ( int offset, int count )
+  {
+    IListSegment<int> segment = new ([1,2,3,4,5]);
+    Action test = () => segment.Slice(offset, count);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    string msg = "With available length 5, given offset {0} and count {1} produce out-of indexing in range 5–{2}.";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count, offset + count - 1 );
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 5 )]
+  [DataRow ( 1, 3 )]
+  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
+  public void ToArray ( int offset, int count )
+  {
+    ArraySegment<int> arraySegment = new([1,2,3,4,5], offset, count);
+    IListSegment<int> segment = new (arraySegment.Array!, offset, count);
+    int [] test = segment.ToArray();
+
+    Assert.HasCount ( count, test );
+    Assert.IsTrue ( arraySegment.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 5, new [] { 1, 2, 3, 4, 5, } )]
   [DataRow ( 1, 3, new [] { 2, 3, 4, } )]
   [DataRow ( 0, 0, new int [] { } )]
@@ -514,7 +590,7 @@ public class IListOfTSegmentTest
 
       Assert.AreEqual ( segment.Count, test.Count );
       Assert.AreEqual ( segment.Offset, test.offset );
-      Assert.IsTrue ( ReferenceEquals ( segment.Array, test.List ) );
+      Assert.IsTrue ( ReferenceEquals ( segment.Array, test.list ) );
 
       Assert.IsTrue ( segment.SequenceEqual ( test ) );
     }

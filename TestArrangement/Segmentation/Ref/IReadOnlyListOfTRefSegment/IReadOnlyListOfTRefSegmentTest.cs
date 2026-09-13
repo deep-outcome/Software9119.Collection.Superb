@@ -7,6 +7,7 @@ using Software9119.Collection.Superb.TestArrangement.TestAide;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 
 namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
@@ -152,18 +153,18 @@ public class IReadOnlyListOfTRefSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( 5, 5, 0, 5, DisplayName = "Index OOB." )]
-  [DataRow ( 1, 3, 2, 1, DisplayName = "Index OOB, segementation." )]
-  [DataRow ( 0, 0, 0, 0, DisplayName = "Empty segment." )]
-  [DataRow ( -1, -1, 0, 5, DisplayName = "Negative Index." )]
-  public void ValidateIndex_NegativeScenarios ( int index, int computedIndex, int offset, int count )
+  [DataRow ( 5, 0, 5, DisplayName = "Index OOB." )]
+  [DataRow ( 1, 2, 1, DisplayName = "Index OOB, segementation." )]
+  [DataRow ( 0, 0, 0, DisplayName = "Empty segment." )]
+  [DataRow ( -1, 0, 5, DisplayName = "Negative Index." )]
+  public void ValidateIndex_NegativeScenarios ( int index, int offset, int count )
   {
     int origIndex = index;
     ReadRefList<string> list = new (["a", "b", "c", "d", "e",]);
     IReadOnlyListRefSegment<ReadRefList<string>,string> segment = new ( list, offset, count: count);
     bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
     Assert.IsTrue ( result );
-    Assert.AreEqual ( computedIndex, index );
+    Assert.AreEqual ( origIndex, index );
     Assert.IsNotNull ( e );
     string expMsg = index < 0
       ? $"Index must be non-negative, but it is {index}."
@@ -325,6 +326,91 @@ public class IReadOnlyListOfTRefSegmentTest
     SixEqualsFiveEqualityComparer comparer = new ();
     Assert.AreEqual ( 4, segment.IndexOf ( 6, comparer ) );
     Assert.AreEqual ( -1, segment.IndexOf ( 7, comparer ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 2 )]
+  [DataRow ( 4 )]
+  public void Slice ( int offset )
+  {
+    int count = 5 - offset;
+    ReadRefList<int> list = new ([1,2,3,4,5]);
+    IReadOnlyListRefSegment<ReadRefList<int>, int> segment = new (list);
+    IReadOnlyListRefSegment<ReadRefList<int>, int> test = segment.Slice(offset);
+
+    Assert.AreEqual ( segment.offset + offset, test.offset );
+    Assert.AreEqual ( count, test.Count );
+    Assert.IsTrue ( ReferenceEquals ( segment.list.values, test.list.values ) );
+  }
+
+  [TestMethod]
+  public void Slice_IndexOutOfRange ()
+  {
+    ReadRefList<int> list = new ([1,2,3,4,5]);
+    IReadOnlyListRefSegment<ReadRefList<int>, int> segment = new (list);
+    try
+    {
+      _ = segment.Slice ( 5 );
+    }
+    catch (IndexOutOfSegmentException e)
+    {
+      Assert.AreEqual ( "Segment length is 5, index 5 is out of its range.", e.Message );
+    }
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 5 )]
+  [DataRow ( 1, 3 )]
+  [DataRow ( 0, 0 )]
+  [DataRow ( 4, 0 )]
+  public void Slice_WithCount ( int offset, int count )
+  {
+    ReadRefList<int> list = new ([1,2,3,4,5]);
+    IReadOnlyListRefSegment<ReadRefList<int>, int> segment = new (list);
+    IReadOnlyListRefSegment<ReadRefList<int>, int> test = segment.Slice(offset, count);
+
+    Assert.AreEqual ( segment.offset + offset, test.offset );
+    Assert.AreEqual ( count, test.Count );
+    Assert.IsTrue ( ReferenceEquals ( segment.list.values, test.list.values ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 6 )]
+  [DataRow ( 1, 5 )]
+  [DataRow ( 8, 10 )]
+  public void Slice_WithCount_ImpossibleSegmentation ( int offset, int count )
+  {
+    ReadRefList<int> list = new ([1,2,3,4,5]);
+    IReadOnlyListRefSegment<ReadRefList<int>, int> segment = new (list);
+    try
+    {
+      _ = segment.Slice ( offset, count );
+    }
+    catch (ImpossibleSegmentationException e)
+    {
+      string msg = "With available length 5, given offset {0} and count {1} produce out-of indexing in range 5–{2}.";
+      msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count, offset + count - 1 );
+      Assert.AreEqual ( msg, e.Message );
+    }
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 5 )]
+  [DataRow ( 1, 3 )]
+  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
+  public void ToArray ( int offset, int count )
+  {
+    int[] array = [1,2,3,4,5];
+    ArraySegment<int> arraySegment = new(array, offset, count);
+
+    ReadRefList<int> list = new (array);
+    IReadOnlyListRefSegment<ReadRefList<int>, int> segment = new (list, offset, count);
+
+    int [] test = segment.ToArray();
+
+    Assert.HasCount ( count, test );
+    Assert.IsTrue ( arraySegment.SequenceEqual ( test ) );
   }
 
   [TestMethod]

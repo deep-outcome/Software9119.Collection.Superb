@@ -5,6 +5,7 @@ namespace Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
 
 readonly ref struct RefList<T> ( IList<T> values ) : IList<T>
 {
+  readonly public IList<T> values = values;
   public T this [ int index ] { get => values [ index ]; set => values [ index ] = value; }
   public int Count => values.Count;
   public bool IsReadOnly => values.IsReadOnly;
