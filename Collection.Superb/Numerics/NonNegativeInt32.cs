@@ -6,7 +6,7 @@ namespace Software9119.Collection.Superb.Numerics;
 /// <summary>
 /// Validated <see langword="int"/>-sized value.
 /// </summary>
-[DebuggerDisplay ( "value={Size}" )]
+[DebuggerDisplay ( "(Int32, {value})" )]
 readonly public struct NonNegativeInt32 : IEquatable<NonNegativeInt32>
 {
   /// <summary>
