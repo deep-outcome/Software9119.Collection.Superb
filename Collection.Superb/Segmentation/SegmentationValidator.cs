@@ -12,9 +12,8 @@ class SegmentationValidator
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public int LimitOutOf ( int offset, int count ) => offset + count;
 
-  static public bool ValidateSetup ( int listLength, int offset, int count, out int limit,
-   [NotNullWhen(true)]
-    out ImpossibleSegmentationException? e )
+  static public bool ValidateSegmentation ( int length, int offset, int count, out int limit,
+   [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
   {
     limit = LimitOutOf ( offset, count );
 
@@ -22,8 +21,8 @@ class SegmentationValidator
       e = ImpossibleSegmentationException.NegativeOffsetMsg ( offset );
     else if (count < 0)
       e = ImpossibleSegmentationException.NegativeCountMsg ( count );
-    else if (limit > listLength)
-      e = ImpossibleSegmentationException.OufRangeMsg ( listLength: listLength, offset: offset, count: count, limit );
+    else if (limit > length)
+      e = ImpossibleSegmentationException.OufRangeMsg ( length: length, offset: offset, count: count, limit );
     else
     {
       e = null;
@@ -31,7 +30,6 @@ class SegmentationValidator
     }
 
     return true;
-
   }
 
   static public bool ValidateList

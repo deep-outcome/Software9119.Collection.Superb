@@ -25,7 +25,7 @@ public ref struct IListRefEnumerator<T> : IEnumerator
   {
 
     int listLength = list.Count;
-    if (SegmentationValidator.ValidateSetup ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
+    if (SegmentationValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
       throw ise;
   }
 

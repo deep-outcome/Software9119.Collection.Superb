@@ -28,7 +28,7 @@ public struct IListEnumerator : IEnumerator
 #pragma warning disable CA1062 // Validate arguments of public methods
     int listLength = list.Count;
 #pragma warning restore CA1062 // Validate arguments of public methods
-    if (SegmentationValidator.ValidateSetup ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
+    if (SegmentationValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
       throw ise;
   }
 

@@ -16,16 +16,16 @@ public class SegmentationValidatorTest
   }
 
   [TestMethod]
-  [DataRow ( 3, 3, 6, "List has length 5, given offset 3 and count 3 produces out-of indexing in range 5–5.", DisplayName = "Impossible segmentation, offsetting." )]
-  [DataRow ( 3, 5, 8, "List has length 5, given offset 3 and count 5 produces out-of indexing in range 5–7.", DisplayName = "Impossible segmentation, offsetting, range." )]
-  [DataRow ( 0, 6, 6, "List has length 5, given offset 0 and count 6 produces out-of indexing in range 5–5.", DisplayName = "Impossible segmentation." )]
-  [DataRow ( 0, 7, 7, "List has length 5, given offset 0 and count 7 produces out-of indexing in range 5–6.", DisplayName = "Impossible segmentation, range." )]
+  [DataRow ( 3, 3, 6, "With available length 5, given offset 3 and count 3 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation, offsetting." )]
+  [DataRow ( 3, 5, 8, "With available length 5, given offset 3 and count 5 produce out-of indexing in range 5–7.", DisplayName = "Impossible segmentation, offsetting, range." )]
+  [DataRow ( 0, 6, 6, "With available length 5, given offset 0 and count 6 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation." )]
+  [DataRow ( 0, 7, 7, "With available length 5, given offset 0 and count 7 produce out-of indexing in range 5–6.", DisplayName = "Impossible segmentation, range." )]
   [DataRow ( -1, 0, -1, "Offset must be a non-negative integer, but it is -1.", DisplayName = "Negative offset." )]
   [DataRow ( 0, -1, -1, "Count must be a non-negative integer, but it is -1.", DisplayName = "Negative count." )]
   [DataRow ( -1, -1, -2, "Offset must be a non-negative integer, but it is -1.", DisplayName = "Negative count and negative offset." )]
   public void ValidateSetup_NegativeScenarios ( int offset, int count, int expLimit, string errMsg )
   {
-    bool result = SegmentationValidator.ValidateSetup ( 5, offset, count: count, out int limit, out ImpossibleSegmentationException? e);
+    bool result = SegmentationValidator.ValidateSegmentation ( 5, offset, count: count, out int limit, out ImpossibleSegmentationException? e);
     Assert.IsTrue ( result );
     Assert.AreEqual ( expLimit, limit );
     Assert.AreEqual ( errMsg, e!.Message );
@@ -40,7 +40,7 @@ public class SegmentationValidatorTest
   [DataRow ( 3, 0, 3, DisplayName = "Empty segment, offsetting" )]
   public void ValidateSetup_PositiveScenarios ( int offset, int count, int expLimit )
   {
-    bool result = SegmentationValidator.ValidateSetup ( 5, offset, count: count, out int limit, out ImpossibleSegmentationException? e);
+    bool result = SegmentationValidator.ValidateSegmentation ( 5, offset, count: count, out int limit, out ImpossibleSegmentationException? e);
     Assert.IsFalse ( result );
     Assert.AreEqual ( expLimit, limit );
     Assert.IsNull ( e );

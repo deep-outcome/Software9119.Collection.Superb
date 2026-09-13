@@ -38,9 +38,9 @@ public class IReadOnlyListOfTEnumeratorTest
   }
 
   [TestMethod]
-  [DataRow ( 3, 3, "List has length 5, given offset 3 and count 3 produces out-of indexing in range 5–5." )]
-  [DataRow ( 3, 4, "List has length 5, given offset 3 and count 4 produces out-of indexing in range 5–6." )]
-  [DataRow ( 8, 3, "List has length 5, given offset 8 and count 3 produces out-of indexing in range 5–10." )]
+  [DataRow ( 3, 3, "With available length 5, given offset 3 and count 3 produce out-of indexing in range 5–5." )]
+  [DataRow ( 3, 4, "With available length 5, given offset 3 and count 4 produce out-of indexing in range 5–6." )]
+  [DataRow ( 8, 3, "With available length 5, given offset 8 and count 3 produce out-of indexing in range 5–10." )]
   public void PubCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
     Action test = () => { using (new IReadOnlyListEnumerator<int>(offset,count, [1,2,3,4, 5])) { } };

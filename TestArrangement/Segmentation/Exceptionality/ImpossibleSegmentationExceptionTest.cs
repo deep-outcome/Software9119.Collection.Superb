@@ -30,7 +30,7 @@ public class ImpossibleSegmentationExceptionTest
     const int offset = 3;
     int limit = SegmentationValidator.LimitOutOf(offset,count);
     ImpossibleSegmentationException e = ImpossibleSegmentationException.OufRangeMsg ( 5, offset: offset, count: count, limit: limit);
-    string expMsg = $"List has length 5, given offset 3 and count {count} produces out-of indexing in range {r1}–{r2}.";
+    string expMsg = $"With available length 5, given offset 3 and count {count} produce out-of indexing in range {r1}–{r2}.";
     Assert.AreEqual ( expMsg, e.Message );
   }
 }

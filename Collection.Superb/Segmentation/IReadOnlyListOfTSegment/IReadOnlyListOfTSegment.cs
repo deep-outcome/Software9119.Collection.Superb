@@ -122,7 +122,7 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
 
   readonly internal bool ValidateSetup ( int count, out int limit, [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
   {
-    return SegmentationValidator.ValidateSetup ( list.Count, offset: offset, count: count, out limit, out e );
+    return SegmentationValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
   }
 
   [MemberNotNullWhen ( false, nameof ( list ) )]

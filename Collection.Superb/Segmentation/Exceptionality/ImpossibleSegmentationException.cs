@@ -8,7 +8,7 @@ namespace Software9119.Collection.Superb.Segmentation;
 /// <summary>
 /// Exception thrown on bad segmentation settings.
 /// </summary>
-public class ImpossibleSegmentationException : Exception
+public class ImpossibleSegmentationException : ArgumentOutOfRangeException
 {
   static public ImpossibleSegmentationException NegativeCountMsg ( int count )
   {
@@ -24,17 +24,17 @@ public class ImpossibleSegmentationException : Exception
     return new ImpossibleSegmentationException ( msg );
   }
 
-  static public ImpossibleSegmentationException OufRangeMsg ( int listLength, int offset, int count, int limit )
+  static public ImpossibleSegmentationException OufRangeMsg ( int length, int offset, int count, int limit )
   {
-    string msg = "List has length {0}, given offset {1} and count {2} produces out-of indexing in range {3}–{4}.";
+    string msg = "With available length {0}, given offset {1} and count {2} produce out-of indexing in range {3}–{4}.";
 
     int topIndexOver = limit -1;
-    msg = string.Format ( msg, listLength, offset, count, listLength, topIndexOver );
+    msg = string.Format ( msg, length, offset, count, length, topIndexOver );
     return new ImpossibleSegmentationException ( msg );
   }
 
   public ImpossibleSegmentationException ( SerializationInfo info, StreamingContext context ) : base ( info, context ) { }
   public ImpossibleSegmentationException () { }
-  public ImpossibleSegmentationException ( string message ) : base ( SegmentationExceptionHelper.DebugValMsg ( message ) ) { }
-  public ImpossibleSegmentationException ( string message, Exception innerException ) : base ( message, innerException ) { }
+  public ImpossibleSegmentationException ( string message ) : base ( paramName: null, message: SegmentationExceptionHelper.DebugValMsg ( message ) ) { }
+  public ImpossibleSegmentationException ( string message, Exception innerException ) : base ( message: message, innerException ) { }
 }

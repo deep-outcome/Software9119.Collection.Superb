@@ -119,7 +119,7 @@ public ref struct IListRefSegment<T, U>
 
   readonly internal bool ValidateSetup ( int count, out int limit, [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
   {
-    return SegmentationValidator.ValidateSetup ( list.Count, offset: offset, count: count, out limit, out e );
+    return SegmentationValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
   }
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfSegmentException? e )

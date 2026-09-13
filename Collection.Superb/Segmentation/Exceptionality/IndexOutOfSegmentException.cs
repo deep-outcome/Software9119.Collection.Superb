@@ -7,7 +7,7 @@ namespace Software9119.Collection.Superb.Segmentation;
 /// <summary>
 /// Exception thrown why trying to index into segment out of its range.
 /// </summary>
-public class IndexOutOfSegmentException : Exception
+public class IndexOutOfSegmentException : ArgumentOutOfRangeException
 {
   static public IndexOutOfSegmentException OutOfRangeMsg ( int index, int length )
   {
@@ -25,6 +25,6 @@ public class IndexOutOfSegmentException : Exception
 
   public IndexOutOfSegmentException ( SerializationInfo info, StreamingContext context ) : base ( info, context ) { }
   public IndexOutOfSegmentException () { }
-  public IndexOutOfSegmentException ( string message ) : base ( SegmentationExceptionHelper.DebugValMsg ( message ) ) { }
-  public IndexOutOfSegmentException ( string message, Exception innerException ) : base ( message, innerException ) { }
+  public IndexOutOfSegmentException ( string message ) : base ( paramName: null!, SegmentationExceptionHelper.DebugValMsg ( message ) ) { }
+  public IndexOutOfSegmentException ( string message, Exception innerException ) : base ( message: message, innerException ) { }
 }
