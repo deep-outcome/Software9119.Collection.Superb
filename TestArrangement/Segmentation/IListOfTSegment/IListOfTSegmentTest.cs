@@ -14,6 +14,13 @@ namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
 [TestClass]
 public class IListOfTSegmentTest
 {
+  [TestMethod]
+  public void Default_NullSafeList ()
+  {
+    IListSegment<int> segment = default(IListSegment<int>);
+    Assert.AreEqual ( Array.Empty<int> (), segment.List );
+  }
+
   static public IEnumerable<object []> NullListCtors ()
   {
     yield return new Func<object> [] { () => new IListSegment<string> ( null! ) };

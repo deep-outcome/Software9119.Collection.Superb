@@ -39,7 +39,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// <summary>
   /// The <see cref="IList{T}"/> over which segmentation occurs.
   /// </summary>
-  readonly public IList<T?> List => list;
+  readonly public IList<T?> List => list ?? Array.Empty<T?> ();
 
 
   IEqualityComparer<T> equalityComparer;

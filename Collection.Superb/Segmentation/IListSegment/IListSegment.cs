@@ -60,7 +60,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   /// <summary>
   /// The <see cref="IList"/> over which segmentation occurs.
   /// </summary>
-  readonly public IList List => list;
+  readonly public IList List => list ?? Array.Empty<object> ();
 
 
   IEqualityComparer<object> equalityComparer;

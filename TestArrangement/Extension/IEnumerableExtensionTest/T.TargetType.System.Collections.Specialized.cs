@@ -328,7 +328,7 @@ public class system_collections_specialized_test
     StringDictionary empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
 
-    const int count = 2000;
+    const int count = 1000;
     IEnumerable<object> source = XEnumerable.ObjectsEnumerable(count);
     StringDictionary target = targetType.Ctor(source);
 

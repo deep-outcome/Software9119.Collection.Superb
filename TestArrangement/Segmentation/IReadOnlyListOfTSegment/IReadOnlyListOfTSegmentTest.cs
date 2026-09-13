@@ -14,6 +14,13 @@ namespace Software9119.Collection.Superb.TestArrangement.Segmentation;
 [TestClass]
 public class IReadOnlyListOfTSegmentTest
 {
+  [TestMethod]
+  public void Default_NullSafeList ()
+  {
+    IReadOnlyListSegment<int> segment = default(IReadOnlyListSegment<int>);
+    Assert.AreEqual ( Array.Empty<int> (), segment.List );
+  }
+
   static public IEnumerable<object []> NullListCtors ()
   {
     yield return new Func<object> [] { () => new IReadOnlyListSegment<string> ( null! ) };
