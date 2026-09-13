@@ -1,5 +1,4 @@
-﻿using Software9119.Collection.Superb.Extension;
-using Software9119.Collection.Superb.Segmentation;
+﻿using Software9119.Collection.Superb.Segmentation;
 
 using System;
 using System.Collections;
