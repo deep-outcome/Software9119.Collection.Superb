@@ -29,7 +29,7 @@ public class SegmentationValidatorTest
   [DataRow ( -1, 0, -1, "Offset must be a non-negative integer, but it is -1.", DisplayName = "Negative offset." )]
   [DataRow ( 0, -1, -1, "Count must be a non-negative integer, but it is -1.", DisplayName = "Negative count." )]
   [DataRow ( -1, -1, -2, "Offset must be a non-negative integer, but it is -1.", DisplayName = "Negative count and negative offset." )]
-  public void ValidateSetup_NegativeScenarios ( int offset, int count, int expLimit, string errMsg )
+  public void ValidateSegmentation_NegativeScenarios ( int offset, int count, int expLimit, string errMsg )
   {
     bool result = SegmentationValidator.ValidateSegmentation ( 5, offset, count: count, out int limit, out ImpossibleSegmentationException? e);
     Assert.IsTrue ( result );
@@ -44,7 +44,7 @@ public class SegmentationValidatorTest
   [DataRow ( 2, 2, 4, DisplayName = "Segmentation, middle." )]
   [DataRow ( 0, 0, 0, DisplayName = "Empty segment." )]
   [DataRow ( 3, 0, 3, DisplayName = "Empty segment, offsetting" )]
-  public void ValidateSetup_PositiveScenarios ( int offset, int count, int expLimit )
+  public void ValidateSegmentation_PositiveScenarios ( int offset, int count, int expLimit )
   {
     bool result = SegmentationValidator.ValidateSegmentation ( 5, offset, count: count, out int limit, out ImpossibleSegmentationException? e);
     Assert.IsFalse ( result );

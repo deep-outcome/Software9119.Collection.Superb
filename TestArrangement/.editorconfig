@@ -23,3 +23,6 @@ dotnet_diagnostic.CS1591.severity = silent
 
 # CA1062: Validate arguments of public methods
 dotnet_diagnostic.CA1062.severity = silent
+
+# CA5394: Do not use insecure randomness
+dotnet_diagnostic.CA5394.severity = silent
