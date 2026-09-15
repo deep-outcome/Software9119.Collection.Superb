@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Software9119.Collection.Superb.Indexing;
+using Software9119.Collection.Superb.Numerics;
 using Software9119.Collection.Superb.Segmentation;
 using Software9119.Collection.Superb.TestArrangement.TestAide;
 
@@ -101,15 +102,23 @@ public class IListOfTSegmentTest
     Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
   }
 
+  [TestMethod]  
+  public void OffsetCtor_InvalidSegmentation ()
+  {
+    List<string?> list = ["a", "b", "c", "d", "e",];
+    Func<object> test = () => new IListSegment<string> ( list, 3, 3 );
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "With available 5, given offset 3 and count 3 produce out-of indexing.", e.Message );
+  }
+
   [TestMethod]
-  [DataRow ( 3, 3, "With available range 0–4, given offset 3 and count 3 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation, offsetting." )]
-  [DataRow ( -1, 0, "Offset must be a non-negative integer, but it is -1.", DisplayName = "Negative offset." )]
-  [DataRow ( 0, -1, "Count must be a non-negative integer, but it is -1.", DisplayName = "Negative count." )]
-  public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
+  [DataRow ( -1, 0, "Value must be non-negative, but it is '-1'.", DisplayName = "Negative offset." )]
+  [DataRow ( 0, -1, "Value must be non-negative, but it is '-1'.", DisplayName = "Negative count." )]
+  public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg)
   {
     List<string?> list = ["a", "b", "c", "d", "e",];
     Func<object> test = () => new IListSegment<string> ( list, offset: offset, count );
-    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
 
@@ -305,7 +314,7 @@ public class IListOfTSegmentTest
   [DataRow ( 1, 3, 0, 2 )]
   [DataRow ( 1, 3, 1, 3 )]
   [DataRow ( 0, 1, 0, 0 )]
-  public void CopyTo_InsufficientArrayLenght ( int offset, int count, int startingIndex, int arrayLength )
+  public void CopyTo_InsufficientArrayLength ( int offset, int count, int startingIndex, int arrayLength )
   {
     IListSegment<int> segment = new ([1,2,3,4,5], offset, count: count);
     Action test = () => segment.CopyTo(new int[arrayLength], startingIndex);
@@ -321,7 +330,7 @@ public class IListOfTSegmentTest
   [DataRow ( 1, 3, 1, 4, new [] { 0, 2, 3, 4 } )]
   [DataRow ( 0, 0, 0, 2, new [] { 0, 0 } )]
   [DataRow ( 0, 0, 1, 2, new [] { 0, 0 } )]
-  public void CopyTo_SufficientArrayLenght_Array ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
+  public void CopyTo_SufficientArrayLength_Array ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
   {
 
     IListSegment<int> segment = new ( new int []  { 1,2,3,4,5 }, offset, count: count);
@@ -339,7 +348,7 @@ public class IListOfTSegmentTest
   [DataRow ( 0, 0, 0, 2, new [] { 0, 0 } )]
   [DataRow ( 0, 0, 1, 2, new [] { 0, 0 } )]
   [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
-  public void CopyTo_SufficientArrayLenght_List ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
+  public void CopyTo_SufficientArrayLength_List ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
   {
 
     IListSegment<int> segment = new ( new List<int> { 1,2,3,4,5 }, offset, count: count);
@@ -356,7 +365,7 @@ public class IListOfTSegmentTest
   [DataRow ( 1, 3, 1, 4, new [] { 0, 2, 3, 4 } )]
   [DataRow ( 0, 0, 0, 2, new [] { 0, 0 } )]
   [DataRow ( 0, 0, 1, 2, new [] { 0, 0 } )]
-  public void CopyTo_SufficientArrayLenght_OtherCollection ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
+  public void CopyTo_SufficientArrayLength_OtherCollection ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
   {
     ImmutableArray<int> source = ImmutableArray.Create([1,2,3,4,5]);
 
@@ -459,7 +468,7 @@ public class IListOfTSegmentTest
     Action test = () => segment.Slice(offset, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available range 0–4, given offset {0} and count {1} produce out-of indexing in range 5–{2}.";
+    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count, offset + count - 1 );
     Assert.AreEqual ( msg, e.Message );
   }

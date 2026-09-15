@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Software9119.Collection.Superb.Indexing;
+using Software9119.Collection.Superb.Numerics;
 using Software9119.Collection.Superb.Segmentation;
 using Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
 using Software9119.Collection.Superb.TestArrangement.TestAide;
@@ -79,15 +80,23 @@ public class IListRefSegmentTest
     Assert.AreSame ( EqualityComparer<object>.Default, segment.EqualityComparer );
   }
 
+  [TestMethod]  
+  public void OffsetCtor_InvalidSegmentation ( )
+  {
+    NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );
+    Action test = () => _ = new IListRefSegment<NoRefList> ( list, 3, 3 );
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "With available 5, given offset 3 and count 3 produce out-of indexing.", e.Message );
+  }
+
   [TestMethod]
-  [DataRow ( 3, 3, "With available range 0–4, given offset 3 and count 3 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation, offsetting." )]
-  [DataRow ( -1, 0, "Offset must be a non-negative integer, but it is -1.", DisplayName = "Negative offset." )]
-  [DataRow ( 0, -1, "Count must be a non-negative integer, but it is -1.", DisplayName = "Negative count." )]
+  [DataRow ( -1, 0, "Value must be non-negative, but it is '-1'.", DisplayName = "Negative offset." )]
+  [DataRow ( 0, -1, "Value must be non-negative, but it is '-1'.", DisplayName = "Negative count." )]
   public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
     NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );
     Action test = () => _ = new IListRefSegment<NoRefList> ( list, offset: offset, count );
-    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
     Assert.AreEqual ( errMsg, e.Message );
   }
 
@@ -318,7 +327,7 @@ public class IListRefSegmentTest
   [DataRow ( 1, 3, 0, 2 )]
   [DataRow ( 1, 3, 1, 3 )]
   [DataRow ( 0, 1, 0, 0 )]
-  public void CopyTo_InsufficientArrayLenght ( int offset, int count, int startingIndex, int arrayLength )
+  public void CopyTo_InsufficientArrayLength ( int offset, int count, int startingIndex, int arrayLength )
   {
     RefList list = new(new int [] { 1,2,3,4,5 });
     IListRefSegment<RefList> segment = new (list , offset, count: count);
@@ -341,7 +350,7 @@ public class IListRefSegmentTest
   [DataRow ( 1, 3, 1, 4, new [] { 0, 2, 3, 4 } )]
   [DataRow ( 0, 0, 0, 2, new [] { 0, 0 } )]
   [DataRow ( 0, 0, 1, 2, new [] { 0, 0 } )]
-  public void CopyTo_SufficientArrayLenght ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
+  public void CopyTo_SufficientArrayLength ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
   {
     RefList list = new(new int [] { 1,2,3,4,5 });
     IListRefSegment<RefList> segment = new ( list, offset, count: count);
@@ -450,7 +459,7 @@ public class IListRefSegmentTest
     }
     catch (ImpossibleSegmentationException e)
     {
-      string msg = "With available range 0–4, given offset {0} and count {1} produce out-of indexing in range 5–{2}.";
+      string msg = "With available 5, given offset {0} and count {1} produce out-of indexing.";
       msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count, offset + count - 1 );
       Assert.AreEqual ( msg, e.Message );
     }

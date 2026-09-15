@@ -1,4 +1,3 @@
 - add .netstandard 2.0 support
 - add to ILIst segments extension methods
 - CopyTo(SameType) for segments
-- use NonNegativeInt32 for existing methods (same for positive and negative)

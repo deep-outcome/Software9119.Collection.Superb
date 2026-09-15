@@ -16,7 +16,10 @@ readonly public struct NonNegativeInt32 : IEquatable<NonNegativeInt32>
   public NonNegativeInt32 ( int value )
   {
     if (value < 0)
-      throw new ArgumentOutOfRangeException ( paramName: nameof ( value ), "Value must be non-negative." );
+    {
+      string msg = $"Value must be non-negative, but it is '{value}'.";
+      throw new ArgumentOutOfRangeException ( paramName: null, message: msg );
+    }
 
     this.value = value;
   }

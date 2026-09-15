@@ -26,7 +26,7 @@ public class NonNegativeInt32Test
   {
     Action test = () => _ = new NonNegativeInt32 ( value );
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
-    Assert.AreEqual ( "Value must be non-negative. (Parameter 'value')", e.Message );
+    Assert.AreEqual ( $"Value must be non-negative, but it is '{value}'.", e.Message );
   }
 
   [TestMethod]

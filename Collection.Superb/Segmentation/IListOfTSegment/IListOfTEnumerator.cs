@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Software9119.Collection.Superb.Indexing;
+using Software9119.Collection.Superb.Numerics;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -21,7 +24,8 @@ public struct IListEnumerator<T> : IEnumerator<T?>
   /// <exception cref="ArgumentNullException">when <paramref name="list"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
-  public IListEnumerator ( int offset, int count, IList<T?> list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
+  public IListEnumerator ( NonNegativeInt32 offset, NonNegativeInt32 count, IList<T?> list ) 
+    : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
   {
     if (SegmentationValidator.ValidateList ( list, out ArgumentNullException? ane ))
       throw ane;
@@ -29,7 +33,7 @@ public struct IListEnumerator<T> : IEnumerator<T?>
 #pragma warning disable CA1062 // Validate arguments of public methods
     int listLength = list.Count;
 #pragma warning restore CA1062 // Validate arguments of public methods
-    if (SegmentationValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
+    if (IndexingValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
       throw ise;
   }
 

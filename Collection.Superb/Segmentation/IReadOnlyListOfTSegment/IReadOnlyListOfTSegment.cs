@@ -74,7 +74,7 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
   /// <exception cref="ImpossibleSegmentationException">Thrown when the segmention settings are impossible.</exception>
-  public IReadOnlyListSegment ( IReadOnlyList<T?> list, int offset, int count, IEqualityComparer<T>? equalityComparer = null )
+  public IReadOnlyListSegment ( IReadOnlyList<T?> list, NonNegativeInt32 offset, NonNegativeInt32 count, IEqualityComparer<T>? equalityComparer = null )
   {
     this.list = list;
 
@@ -122,9 +122,13 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
     set => throw new NotSupportedException ();
   }
 
-  readonly internal bool ValidateSetup ( int count, out int limit, [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
+  readonly internal bool ValidateSetup
+  ( 
+    NonNegativeInt32 count, out int limit,
+    [NotNullWhen ( true )] out ImpossibleSegmentationException? e 
+  )
   {
-    return SegmentationValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
+    return IndexingValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
   }
 
   [MemberNotNullWhen ( false, nameof ( list ) )]
@@ -204,7 +208,7 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   }
 
   /// <summary>
-  /// Creates slice of this segment.
+  /// Creates slice of this segment, starting at <paramref name="offset"/>.
   /// </summary>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of range.</exception>
   readonly public IReadOnlyListSegment<T> Slice ( NonNegativeInt32 offset )
@@ -217,7 +221,7 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   }
 
   /// <summary>
-  /// Creates slice of this segment.
+  /// Creates slice of this segment, starting at <paramref name="offset"/>.
   /// </summary>
   readonly public IReadOnlyListSegment<T> Slice ( NonNegativeInt32 offset, NonNegativeInt32 count )
   {

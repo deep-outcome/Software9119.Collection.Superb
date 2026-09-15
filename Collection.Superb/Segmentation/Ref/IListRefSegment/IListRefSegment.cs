@@ -89,7 +89,7 @@ public ref struct IListRefSegment<T> : IList
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
   /// <exception cref="ImpossibleSegmentationException">Thrown when the segmention settings are impossible.</exception>
-  public IListRefSegment ( T list, int offset, int count, IEqualityComparer<object>? equalityComparer = null )
+  public IListRefSegment ( T list, NonNegativeInt32 offset, NonNegativeInt32 count, IEqualityComparer<object>? equalityComparer = null )
   {
     this.list = list;
     this.offset = offset;
@@ -139,9 +139,13 @@ public ref struct IListRefSegment<T> : IList
     }
   }
 
-  readonly internal bool ValidateSetup ( int count, out int limit, [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
+  readonly internal bool ValidateSetup
+  ( 
+    NonNegativeInt32 count, out int limit,
+    [NotNullWhen ( true )] out ImpossibleSegmentationException? e 
+  )
   {
-    return SegmentationValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
+    return IndexingValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
   }
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfBoundariesException? e )
@@ -219,7 +223,7 @@ public ref struct IListRefSegment<T> : IList
   }
 
   /// <summary>
-  /// Creates slice of this segment.
+  /// Creates slice of this segment, starting at <paramref name="offset"/>.
   /// </summary>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of range.</exception>
   readonly public IListRefSegment<T> Slice ( NonNegativeInt32 offset )
@@ -232,7 +236,7 @@ public ref struct IListRefSegment<T> : IList
   }
 
   /// <summary>
-  /// Creates slice of this segment.
+  /// Creates slice of this segment, starting at <paramref name="offset"/>.
   /// </summary>
   readonly public IListRefSegment<T> Slice ( NonNegativeInt32 offset, NonNegativeInt32 count )
   {

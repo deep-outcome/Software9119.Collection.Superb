@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Software9119.Collection.Superb.Numerics;
+
+using System;
 using System.Runtime.Serialization;
 
-namespace Software9119.Collection.Superb.Segmentation;
+namespace Software9119.Collection.Superb.Indexing;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
@@ -24,17 +26,21 @@ public class ImpossibleSegmentationException : ArgumentOutOfRangeException
     return new ImpossibleSegmentationException ( msg );
   }
 
-  static public ImpossibleSegmentationException OufRangeMsg ( int available, int offset, int count, int limit )
+  static public ImpossibleSegmentationException OufRangeMsg
+  (
+    NonNegativeInt32 available,
+    NonNegativeInt32 offset,
+    NonNegativeInt32 count
+  )
   {
-    string msg = "With available range 0–{0}, given offset {1} and count {2} produce out-of indexing in range {3}–{4}.";
+    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing.";
 
-    int topIndexOver = limit -1;
-    msg = string.Format ( msg, available-1, offset, count, available, topIndexOver );
+    msg = string.Format ( msg, available, offset, count, available );
     return new ImpossibleSegmentationException ( msg );
   }
 
   public ImpossibleSegmentationException ( SerializationInfo info, StreamingContext context ) : base ( info, context ) { }
   public ImpossibleSegmentationException () { }
-  public ImpossibleSegmentationException ( string message ) : base ( paramName: null, message: SegmentationExceptionHelper.DebugValMsg ( message ) ) { }
+  public ImpossibleSegmentationException ( string message ) : base ( paramName: null, message: message ) { }
   public ImpossibleSegmentationException ( string message, Exception innerException ) : base ( message: message, innerException ) { }
 }

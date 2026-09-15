@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Software9119.Collection.Superb.Indexing;
+using Software9119.Collection.Superb.Numerics;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -22,10 +25,10 @@ public ref struct IListRefEnumerator<T, U> : IEnumerator<U?>
   /// <exception cref="ArgumentNullException">when <paramref name="list"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
-  public IListRefEnumerator ( int offset, int count, T list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
+  public IListRefEnumerator ( NonNegativeInt32 offset, NonNegativeInt32 count, T list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
   {
     int listLength = list.Count;
-    if (SegmentationValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
+    if (IndexingValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
       throw ise;
   }
 

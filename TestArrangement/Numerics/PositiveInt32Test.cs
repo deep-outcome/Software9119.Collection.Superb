@@ -27,7 +27,7 @@ public class PositiveInt32Test
   {
     Action test = () => _ = new PositiveInt32 ( value );
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
-    Assert.AreEqual ( "Value must be positive. (Parameter 'value')", e.Message );
+    Assert.AreEqual ( $"Value must be positive, but it is '{value}'.", e.Message );
   }
 
   [TestMethod]

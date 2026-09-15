@@ -95,7 +95,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
   /// <exception cref="ImpossibleSegmentationException">Thrown when the segmention settings are impossible.</exception>
-  public IListSegment ( IList list, int offset, int count, IEqualityComparer<object>? equalityComparer = null )
+  public IListSegment ( IList list, NonNegativeInt32 offset, NonNegativeInt32 count, IEqualityComparer<object>? equalityComparer = null )
   {
     this.list = list;
 
@@ -149,9 +149,13 @@ public struct IListSegment : IList, IEquatable<IListSegment>
     }
   }
 
-  readonly internal bool ValidateSetup ( int count, out int limit, [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
+  readonly internal bool ValidateSetup
+  ( 
+    NonNegativeInt32 count, out int limit,
+    [NotNullWhen ( true )] out ImpossibleSegmentationException? e 
+  )
   {
-    return SegmentationValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
+    return IndexingValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
   }
 
   [MemberNotNullWhen ( false, nameof ( list ) )]
@@ -238,7 +242,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   }
 
   /// <summary>
-  /// Creates slice of this segment.
+  /// Creates slice of this segment, starting at <paramref name="offset"/>.
   /// </summary>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of range.</exception>
   readonly public IListSegment Slice ( NonNegativeInt32 offset )
@@ -251,7 +255,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
   }
 
   /// <summary>
-  /// Creates slice of this segment.
+  /// Creates slice of this segment, starting at <paramref name="offset"/>.
   /// </summary>
   readonly public IListSegment Slice ( NonNegativeInt32 offset, NonNegativeInt32 count )
   {

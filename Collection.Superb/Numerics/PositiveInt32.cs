@@ -16,7 +16,10 @@ readonly public struct PositiveInt32 : IEquatable<PositiveInt32>
   public PositiveInt32 ( int value )
   {
     if (value < 1)
-      throw new ArgumentOutOfRangeException ( paramName: nameof ( value ), "Value must be positive." );
+    {
+      string msg = $"Value must be positive, but it is '{value}'.";
+      throw new ArgumentOutOfRangeException ( paramName: null, message: msg );
+    }
 
     this.value = value;
   }

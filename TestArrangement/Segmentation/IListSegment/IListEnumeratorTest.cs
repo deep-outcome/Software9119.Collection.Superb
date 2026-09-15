@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Software9119.Collection.Superb.Indexing;
 using Software9119.Collection.Superb.Segmentation;
 
 using System;
@@ -24,8 +25,8 @@ public class IListEnumeratorTest
   {
     int[]? list = [];
     Func<object> test = () => new IListEnumerator(-1,0, list);
-    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
-    const string expMessage = "Offset must be a non-negative integer, but it is -1.";
+    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> (test);
+    const string expMessage = "Value must be non-negative, but it is '-1'.";
     Assert.AreEqual ( expMessage, e.Message );
   }
 
@@ -34,15 +35,15 @@ public class IListEnumeratorTest
   {
     int[]? list = [];
     Func<object> test = () => new IListEnumerator(0,-1, list);
-    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
-    const string expMessage = "Count must be a non-negative integer, but it is -1.";
+    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> (test);
+    const string expMessage = "Value must be non-negative, but it is '-1'.";
     Assert.AreEqual ( expMessage, e.Message );
   }
 
   [TestMethod]
-  [DataRow ( 3, 3, "With available range 0–4, given offset 3 and count 3 produce out-of indexing in range 5–5." )]
-  [DataRow ( 3, 4, "With available range 0–4, given offset 3 and count 4 produce out-of indexing in range 5–6." )]
-  [DataRow ( 8, 3, "With available range 0–4, given offset 8 and count 3 produce out-of indexing in range 5–10." )]
+  [DataRow ( 3, 3, "With available 5, given offset 3 and count 3 produce out-of indexing." )]
+  [DataRow ( 3, 4, "With available 5, given offset 3 and count 4 produce out-of indexing." )]
+  [DataRow ( 8, 3, "With available 5, given offset 8 and count 3 produce out-of indexing." )]
   public void PubCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
     Func<object> test = () => new IListEnumerator(offset,count, new int [] { 1,2,3,4, 5 } );

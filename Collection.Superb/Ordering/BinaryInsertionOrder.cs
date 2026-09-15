@@ -1,5 +1,5 @@
-﻿using Software9119.Collection.Superb.Numerics;
-using Software9119.Collection.Superb.Segmentation;
+﻿using Software9119.Collection.Superb.Indexing;
+using Software9119.Collection.Superb.Numerics;
 
 using System;
 
@@ -49,7 +49,9 @@ static public class BinaryInsertionOrder
 
     int length = array.Length;
     if (
-      SegmentationValidator.ValidateSegmentation ( length, offset, count, out int limit, out ImpossibleSegmentationException? e )
+        IndexingValidator.ValidateSegmentation ( length, offset, count, out int limit,
+        out ImpossibleSegmentationException? e
+      )
     )
       throw e;
 

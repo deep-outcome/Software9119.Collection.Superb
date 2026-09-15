@@ -28,7 +28,7 @@ class SegmentationValidator
     else if (count < 0)
       e = ImpossibleSegmentationException.NegativeCountMsg ( count );
     else if (limit > available)
-      e = ImpossibleSegmentationException.OufRangeMsg ( available: available, offset: offset, count: count, limit );
+      e = ImpossibleSegmentationException.OufRangeMsg ( available: available, offset: offset, count: count );
     else
     {
       e = null;

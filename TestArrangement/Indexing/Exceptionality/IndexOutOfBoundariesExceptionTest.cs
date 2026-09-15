@@ -2,7 +2,7 @@
 
 using Software9119.Collection.Superb.Indexing;
 
-namespace Software9119.Collection.Superb.TestArrangement.Storing.Exceptionality;
+namespace Software9119.Collection.Superb.TestArrangement.Indexing.Exceptionality;
 
 [TestClass]
 public class IndexOutOfBoundariesExceptionTest
