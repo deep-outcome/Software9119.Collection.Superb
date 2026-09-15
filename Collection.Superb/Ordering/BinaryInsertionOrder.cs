@@ -48,9 +48,10 @@ static public class BinaryInsertionOrder
       throw NullComparer ( nameof ( comparer ) );
 
     int length = array.Length;
-    int limit = SegmentationValidator.LimitOutOf ( offset, count );
-    if (limit > length)
-      throw ImpossibleSegmentationException.OufRangeMsg ( length, offset: offset, count: count, limit: limit );
+    if (
+      SegmentationValidator.ValidateSegmentation ( length, offset, count, out int limit, out ImpossibleSegmentationException? e )
+    )
+      throw e;
 
     for (int current = offset + 1 ; current < limit ; ++current)
     {

@@ -17,7 +17,7 @@ class SegmentationValidator
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public int CorrelateIndex ( int index, int offset ) => index + offset;
 
-  static public bool ValidateSegmentation ( int length, int offset, int count, out int limit,
+  static public bool ValidateSegmentation ( int available, int offset, int count, out int limit,
    [NotNullWhen ( true )] out ImpossibleSegmentationException? e )
   {
     limit = LimitOutOf ( offset, count );
@@ -26,8 +26,8 @@ class SegmentationValidator
       e = ImpossibleSegmentationException.NegativeOffsetMsg ( offset );
     else if (count < 0)
       e = ImpossibleSegmentationException.NegativeCountMsg ( count );
-    else if (limit > length)
-      e = ImpossibleSegmentationException.OufRangeMsg ( length: length, offset: offset, count: count, limit );
+    else if (limit > available)
+      e = ImpossibleSegmentationException.OufRangeMsg ( available: available, offset: offset, count: count, limit );
     else
     {
       e = null;

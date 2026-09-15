@@ -2,3 +2,4 @@
 - add to ILIst segments extension methods
 - CopyTo(SameType) for segments
 - use NonNegativeInt32 for existing methods
+- replace IndexOutOfSegmentException with IndexOutOfBoundariesException, consider creating general purpose validator

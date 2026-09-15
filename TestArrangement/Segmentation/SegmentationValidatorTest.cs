@@ -22,10 +22,10 @@ public class SegmentationValidatorTest
   }
 
   [TestMethod]
-  [DataRow ( 3, 3, 6, "With available length 5, given offset 3 and count 3 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation, offsetting." )]
-  [DataRow ( 3, 5, 8, "With available length 5, given offset 3 and count 5 produce out-of indexing in range 5–7.", DisplayName = "Impossible segmentation, offsetting, range." )]
-  [DataRow ( 0, 6, 6, "With available length 5, given offset 0 and count 6 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation." )]
-  [DataRow ( 0, 7, 7, "With available length 5, given offset 0 and count 7 produce out-of indexing in range 5–6.", DisplayName = "Impossible segmentation, range." )]
+  [DataRow ( 3, 3, 6, "With available range 0–4, given offset 3 and count 3 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation, offsetting." )]
+  [DataRow ( 3, 5, 8, "With available range 0–4, given offset 3 and count 5 produce out-of indexing in range 5–7.", DisplayName = "Impossible segmentation, offsetting, range." )]
+  [DataRow ( 0, 6, 6, "With available range 0–4, given offset 0 and count 6 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation." )]
+  [DataRow ( 0, 7, 7, "With available range 0–4, given offset 0 and count 7 produce out-of indexing in range 5–6.", DisplayName = "Impossible segmentation, range." )]
   [DataRow ( -1, 0, -1, "Offset must be a non-negative integer, but it is -1.", DisplayName = "Negative offset." )]
   [DataRow ( 0, -1, -1, "Count must be a non-negative integer, but it is -1.", DisplayName = "Negative count." )]
   [DataRow ( -1, -1, -2, "Offset must be a non-negative integer, but it is -1.", DisplayName = "Negative count and negative offset." )]

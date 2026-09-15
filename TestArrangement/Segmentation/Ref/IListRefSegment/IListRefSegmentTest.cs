@@ -79,7 +79,7 @@ public class IListRefSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( 3, 3, "With available length 5, given offset 3 and count 3 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation, offsetting." )]
+  [DataRow ( 3, 3, "With available range 0–4, given offset 3 and count 3 produce out-of indexing in range 5–5.", DisplayName = "Impossible segmentation, offsetting." )]
   [DataRow ( -1, 0, "Offset must be a non-negative integer, but it is -1.", DisplayName = "Negative offset." )]
   [DataRow ( 0, -1, "Count must be a non-negative integer, but it is -1.", DisplayName = "Negative count." )]
   public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
@@ -449,7 +449,7 @@ public class IListRefSegmentTest
     }
     catch (ImpossibleSegmentationException e)
     {
-      string msg = "With available length 5, given offset {0} and count {1} produce out-of indexing in range 5–{2}.";
+      string msg = "With available range 0–4, given offset {0} and count {1} produce out-of indexing in range 5–{2}.";
       msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count, offset + count - 1 );
       Assert.AreEqual ( msg, e.Message );
     }

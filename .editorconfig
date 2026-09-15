@@ -847,3 +847,6 @@ dotnet_diagnostic.CA1715.severity = silent
 
 # CA1024: Use properties where appropriate
 dotnet_diagnostic.CA1024.severity = silent
+
+# CA1021: Avoid out parameters
+dotnet_diagnostic.CA1021.severity = silent

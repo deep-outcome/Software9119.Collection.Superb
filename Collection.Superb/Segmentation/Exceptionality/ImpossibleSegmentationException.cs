@@ -24,12 +24,12 @@ public class ImpossibleSegmentationException : ArgumentOutOfRangeException
     return new ImpossibleSegmentationException ( msg );
   }
 
-  static public ImpossibleSegmentationException OufRangeMsg ( int length, int offset, int count, int limit )
+  static public ImpossibleSegmentationException OufRangeMsg ( int available, int offset, int count, int limit )
   {
-    string msg = "With available length {0}, given offset {1} and count {2} produce out-of indexing in range {3}–{4}.";
+    string msg = "With available range 0–{0}, given offset {1} and count {2} produce out-of indexing in range {3}–{4}.";
 
     int topIndexOver = limit -1;
-    msg = string.Format ( msg, length, offset, count, length, topIndexOver );
+    msg = string.Format ( msg, available-1, offset, count, available, topIndexOver );
     return new ImpossibleSegmentationException ( msg );
   }
 
