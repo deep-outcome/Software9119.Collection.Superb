@@ -26,3 +26,6 @@ dotnet_diagnostic.CA1062.severity = silent
 
 # CA5394: Do not use insecure randomness
 dotnet_diagnostic.CA5394.severity = silent
+
+# CA2263: Prefer generic overload when type is known
+dotnet_diagnostic.CA2263.severity = silent

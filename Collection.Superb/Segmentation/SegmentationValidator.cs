@@ -1,4 +1,5 @@
 ﻿using Software9119.Collection.Superb.Extension;
+using Software9119.Collection.Superb.Indexing;
 using Software9119.Collection.Superb.Numerics;
 
 using System;
@@ -57,40 +58,23 @@ class SegmentationValidator
   static public bool ValidateIndex (
     ref int index,
     int offset,
-    int count,
-    [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
+    NonNegativeInt32 count,
+    [NotNullWhen ( true )] out IndexOutOfBoundariesException? e )
   {
 
     if (index < 0)
     {
-      e = IndexOutOfSegmentException.NegativeIndexMsg ( index );
+      e = IndexOutOfBoundariesException.NegativeIndexMsg ( index );
       return true;
     }
 
     if (index >= count)
     {
-      e = IndexOutOfSegmentException.OutOfRangeMsg ( index, length: count );
+      e = IndexOutOfBoundariesException.OutOfBoundsMsg  ( index, available: count );
       return true;
     }
 
     index = CorrelateIndex ( index, offset );
-
-    e = null;
-    return false;
-  }
-
-  static public bool ValidateIndex
-  (
-    NonNegativeInt32 index,
-    NonNegativeInt32 count,
-   [NotNullWhen ( true )] out IndexOutOfSegmentException? e
-  )
-  {
-    if (index >= count)
-    {
-      e = IndexOutOfSegmentException.OutOfRangeMsg ( index: index, length: count );
-      return true;
-    }
 
     e = null;
     return false;

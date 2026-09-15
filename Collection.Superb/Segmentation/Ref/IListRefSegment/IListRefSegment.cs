@@ -1,4 +1,5 @@
 ﻿using Software9119.Collection.Superb.Extension;
+using Software9119.Collection.Superb.Indexing;
 using Software9119.Collection.Superb.Numerics;
 
 using System;
@@ -121,17 +122,17 @@ public ref struct IListRefSegment<T> : IList
   /// <summary>
   /// <see cref="IListRefSegment{T}"/> indexer.
   /// </summary>
-  /// <exception cref="IndexOutOfSegmentException">If <paramref name="index"/> is negative or out of segment range.</exception>
+  /// <exception cref="IndexOutOfBoundariesException">If <paramref name="index"/> is negative or out of segment range.</exception>
   public object? this [ int index ]
   {
     [SuppressMessage ( "Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "Expected location." )]
     readonly get
     {
-      return ValidateIndex ( ref index, out IndexOutOfSegmentException? e ) ? throw e : list [ index ];
+      return ValidateIndex ( ref index, out IndexOutOfBoundariesException? e ) ? throw e : list [ index ];
     }
     set
     {
-      if (ValidateIndex ( ref index, out IndexOutOfSegmentException? e ))
+      if (ValidateIndex ( ref index, out IndexOutOfBoundariesException? e ))
         throw e;
 
       list [ index ] = value;
@@ -143,7 +144,7 @@ public ref struct IListRefSegment<T> : IList
     return SegmentationValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
   }
 
-  readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfSegmentException? e )
+  readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfBoundariesException? e )
   {
     return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, count: Count, out e );
   }
@@ -220,11 +221,11 @@ public ref struct IListRefSegment<T> : IList
   /// <summary>
   /// Creates slice of this segment.
   /// </summary>
-  /// <exception cref="IndexOutOfSegmentException">When <paramref name="offset"/> is out of range.</exception>
+  /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of range.</exception>
   readonly public IListRefSegment<T> Slice ( NonNegativeInt32 offset )
   {
     int count = Count;
-    if (SegmentationValidator.ValidateIndex ( offset, count, out IndexOutOfSegmentException? e ))
+    if (IndexingValidator.ValidateIndex ( offset, count, out IndexOutOfBoundariesException? e ))
       throw e;
 
     return Slice ( offset, count - offset );

@@ -67,4 +67,9 @@ readonly public struct NonNegativeInt32 : IEquatable<NonNegativeInt32>
   /// Equals method.
   /// </summary>
   public bool Equals ( NonNegativeInt32 other ) => other == this;
+
+  /// <summary>
+  /// Int32 string representation of this instance.
+  /// </summary>
+  override public string ToString () => value.ToString ();
 }

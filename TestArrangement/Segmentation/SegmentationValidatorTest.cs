@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Software9119.Collection.Superb.Indexing;
 using Software9119.Collection.Superb.Segmentation;
 
 using System;
@@ -79,15 +80,15 @@ public class SegmentationValidatorTest
     int origIndex = index;
     bool result = SegmentationValidator.ValidateIndex (ref index,
       offset: offset,
-      count, out IndexOutOfSegmentException? e);
+      count, out IndexOutOfBoundariesException? e);
 
     Assert.IsTrue ( result );
     Assert.AreEqual ( origIndex, index );
     Assert.IsNotNull ( e );
 
     string expMsg = index < 0
-      ? $"Index must be non-negative, but it is {index}."
-      : $"Segment length is {count}, index {origIndex} is out of its range.";
+      ? $"Index must be non-negative, but it is '{index}'."
+      : $"For available '{count}' is index '{origIndex}' out of bounds.";
     Assert.AreEqual ( expMsg, e.Message );
   }
 
@@ -100,35 +101,9 @@ public class SegmentationValidatorTest
   {
     bool result = SegmentationValidator.ValidateIndex (ref index,
       offset: offset,
-      count, out IndexOutOfSegmentException? e);
+      count, out IndexOutOfBoundariesException? e);
     Assert.IsFalse ( result );
     Assert.AreEqual ( computedIndex, index );
-    Assert.IsNull ( e );
-  }
-
-  [TestMethod]
-  [DataRow ( 0, 0 )]
-  [DataRow ( int.MaxValue, int.MaxValue )]
-  [DataRow ( 1, 0 )]  
-  [DataRow ( 5, 4 )]
-  public void ValidateIndex_NegativeScenarios ( int index, int count )
-  {
-    bool result = SegmentationValidator.ValidateIndex (index, count, out IndexOutOfSegmentException? e);
-    Assert.IsTrue ( result );
-    Assert.IsNotNull ( e );
-
-    string msg = $"Segment length is {count}, index {index} is out of its range.";
-    Assert.AreEqual ( msg, e.Message );
-  }
-
-  [TestMethod]
-  [DataRow ( 0, 1 )]
-  [DataRow ( 1, 2 )]  
-  [DataRow ( 5, 8 )]
-  public void ValidateIndex_PositiveScenarios ( int index, int count )
-  {
-    bool result = SegmentationValidator.ValidateIndex (index, count, out IndexOutOfSegmentException? e);
-    Assert.IsFalse ( result );
     Assert.IsNull ( e );
   }
 }

@@ -3,6 +3,7 @@
 using Software9119.Collection.Superb.Numerics;
 
 using System;
+using System.Globalization;
 
 namespace Software9119.Collection.Superb.TestArrangement.Numerics;
 
@@ -94,5 +95,13 @@ public class PositiveInt32Test
     PositiveInt32 b = new (998);
     Assert.IsTrue ( a.Equals ( a ) );
     Assert.IsFalse ( a.Equals ( b ) );
+  }
+
+  [TestMethod]
+  public void ToStringTest ()
+  {
+    int num = 999;
+    PositiveInt32 a = num;
+    Assert.AreEqual ( num.ToString ( CultureInfo.InvariantCulture ), a.ToString () );
   }
 }

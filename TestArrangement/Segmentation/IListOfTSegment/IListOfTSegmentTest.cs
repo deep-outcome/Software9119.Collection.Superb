@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Software9119.Collection.Superb.Indexing;
 using Software9119.Collection.Superb.Segmentation;
 using Software9119.Collection.Superb.TestArrangement.TestAide;
 
@@ -125,15 +126,15 @@ public class IListOfTSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( 0, 5, -1, "Index must be non-negative, but it is -1." )]
-  [DataRow ( 0, 5, 5, "Segment length is 5, index 5 is out of its range." )]
-  [DataRow ( 2, 2, 2, "Segment length is 2, index 2 is out of its range." )]
-  [DataRow ( 0, 0, 0, "Segment length is 0, index 0 is out of its range." )]
+  [DataRow ( 0, 5, -1, "Index must be non-negative, but it is '-1'." )]
+  [DataRow ( 0, 5, 5, "For available '5' is index '5' out of bounds." )]
+  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds."  )]
+  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds."  )]
   public void Indexer_Get_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
     IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     Func<object> test = () => segment[index]!;
-    IndexOutOfSegmentException e = Assert.ThrowsExactly<IndexOutOfSegmentException> ( test );
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
     Assert.AreEqual ( expMsg, e.Message );
   }
 
@@ -152,15 +153,15 @@ public class IListOfTSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( 0, 5, -1, "Index must be non-negative, but it is -1." )]
-  [DataRow ( 0, 5, 5, "Segment length is 5, index 5 is out of its range." )]
-  [DataRow ( 2, 2, 2, "Segment length is 2, index 2 is out of its range." )]
-  [DataRow ( 0, 0, 0, "Segment length is 0, index 0 is out of its range." )]
+  [DataRow ( 0, 5, -1, "Index must be non-negative, but it is '-1'." )]
+  [DataRow ( 0, 5, 5, "For available '5' is index '5' out of bounds." )]
+  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds."  )]
+  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds."  )]
   public void Indexer_Set_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
     IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
     Func<object> test = () => segment[index] = "";
-    IndexOutOfSegmentException e = Assert.ThrowsExactly<IndexOutOfSegmentException> ( test );
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
     Assert.AreEqual ( expMsg, e.Message );
   }
 
@@ -196,7 +197,7 @@ public class IListOfTSegmentTest
   public void ValidateIndex_PositiveScenarios ( int index, int computedIndex, int offset, int count )
   {
     IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
-    bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
+    bool result = segment.ValidateIndex (ref index, out IndexOutOfBoundariesException? e );
     Assert.IsFalse ( result );
     Assert.AreEqual ( computedIndex, index );
     Assert.IsNull ( e );
@@ -211,13 +212,13 @@ public class IListOfTSegmentTest
   {
     int origIndex = index;
     IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
-    bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
+    bool result = segment.ValidateIndex (ref index, out IndexOutOfBoundariesException? e );
     Assert.IsTrue ( result );
     Assert.AreEqual ( origIndex, index );
     Assert.IsNotNull ( e );
     string expMsg = index < 0
-      ? $"Index must be non-negative, but it is {index}."
-      : $"Segment length is {count}, index {origIndex} is out of its range.";
+      ? $"Index must be non-negative, but it is '{index}'."
+      : $"For available '{count}' is index '{origIndex}' out of bounds.";
     Assert.AreEqual ( expMsg, e.Message );
   }
 
@@ -426,8 +427,8 @@ public class IListOfTSegmentTest
     IListSegment<int> segment = new ([1,2,3,4,5]);
     Action test = () => segment.Slice(5);
 
-    IndexOutOfSegmentException e = Assert.ThrowsExactly<IndexOutOfSegmentException> ( test );
-    Assert.AreEqual ( "Segment length is 5, index 5 is out of its range.", e.Message );
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    Assert.AreEqual ( "For available '5' is index '5' out of bounds.", e.Message );
   }
 
   [TestMethod]

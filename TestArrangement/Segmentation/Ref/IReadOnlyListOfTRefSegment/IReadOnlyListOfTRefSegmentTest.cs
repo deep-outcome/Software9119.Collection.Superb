@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Software9119.Collection.Superb.Indexing;
 using Software9119.Collection.Superb.Segmentation;
 using Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
 using Software9119.Collection.Superb.TestArrangement.TestAide;
@@ -104,10 +105,10 @@ public class IReadOnlyListOfTRefSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( 0, 5, -1, "Index must be non-negative, but it is -1." )]
-  [DataRow ( 0, 5, 5, "Segment length is 5, index 5 is out of its range." )]
-  [DataRow ( 2, 2, 2, "Segment length is 2, index 2 is out of its range." )]
-  [DataRow ( 0, 0, 0, "Segment length is 0, index 0 is out of its range." )]
+  [DataRow ( 0, 5, -1, "Index must be non-negative, but it is '-1'." )]
+  [DataRow ( 0, 5, 5, "For available '5' is index '5' out of bounds." )]
+  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds."  )]
+  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds."  )]
   public void Indexer_Get_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
     ReadRefList<string> list = new (["a", "b", "c", "d", "e",]);
@@ -116,7 +117,7 @@ public class IReadOnlyListOfTRefSegmentTest
     {
       _ = segment [ index ];
     }
-    catch (IndexOutOfSegmentException e)
+    catch (IndexOutOfBoundariesException e)
     {
       Assert.AreEqual ( expMsg, e.Message );
     }
@@ -146,7 +147,7 @@ public class IReadOnlyListOfTRefSegmentTest
   {
     ReadRefList<string> list = new (["a", "b", "c", "d", "e",]);
     IReadOnlyListRefSegment<ReadRefList<string>,string> segment = new (list, offset, count: count);
-    bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
+    bool result = segment.ValidateIndex (ref index, out IndexOutOfBoundariesException? e );
     Assert.IsFalse ( result );
     Assert.AreEqual ( computedIndex, index );
     Assert.IsNull ( e );
@@ -162,13 +163,13 @@ public class IReadOnlyListOfTRefSegmentTest
     int origIndex = index;
     ReadRefList<string> list = new (["a", "b", "c", "d", "e",]);
     IReadOnlyListRefSegment<ReadRefList<string>,string> segment = new ( list, offset, count: count);
-    bool result = segment.ValidateIndex (ref index, out IndexOutOfSegmentException? e );
+    bool result = segment.ValidateIndex (ref index, out IndexOutOfBoundariesException? e );
     Assert.IsTrue ( result );
     Assert.AreEqual ( origIndex, index );
     Assert.IsNotNull ( e );
     string expMsg = index < 0
-      ? $"Index must be non-negative, but it is {index}."
-      : $"Segment length is {count}, index {origIndex} is out of its range.";
+      ? $"Index must be non-negative, but it is '{index}'."
+      : $"For available '{count}' is index '{origIndex}' out of bounds.";
     Assert.AreEqual ( expMsg, e.Message );
   }
 
@@ -353,9 +354,9 @@ public class IReadOnlyListOfTRefSegmentTest
     {
       _ = segment.Slice ( 5 );
     }
-    catch (IndexOutOfSegmentException e)
+    catch (IndexOutOfBoundariesException e)
     {
-      Assert.AreEqual ( "Segment length is 5, index 5 is out of its range.", e.Message );
+      Assert.AreEqual ( "For available '5' is index '5' out of bounds.", e.Message );
     }
   }
 
