@@ -42,3 +42,5 @@ for (; backward > 0 ;)
 
 Assert.AreEqual ( numbers.Sum (), sum );
 ```
+
+- [`IndexingValidator`](./IndexingValidator.cs) – semi-public validator, useful mostly for APIs which adopted Software9119.Collection.Superb.Numerics types

@@ -6,3 +6,4 @@ This namespace contains useful numerical types.
 
 - [`NonNegativeInt32`](./NonNegativeInt32.cs) – `Int32` type which is never negative, implicit casting from/to `Int32`
 - [`PositiveInt32`](./PositiveInt32.cs) – `Int32` type which is always positive, implicit casting from/to `Int32`
+- [`NegativeInt32`](./NegativeInt32.cs) – `Int32` type which is always negative, implicit casting from/to `Int32`
