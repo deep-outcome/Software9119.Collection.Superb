@@ -104,7 +104,7 @@ public class IndexingValidatorTest
   {
     Action test = () => _ = IndexingValidator.ValidateSegmentation ( available, offset: offset, count: count, out _, out _);
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException>( test );
-    Assert.AreEqual ( "Value must be non-negative, but it is '-1'.", e?.Message );
+    Assert.AreEqual ( "Value must be non-negative integer, but it is '-1'.", e?.Message );
   }
 
   [TestMethod]

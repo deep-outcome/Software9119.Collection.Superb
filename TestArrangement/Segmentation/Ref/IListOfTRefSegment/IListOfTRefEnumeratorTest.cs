@@ -21,7 +21,7 @@ public class IListOfTRefEnumeratorTest
     }
     catch (ArgumentOutOfRangeException e)
     {
-      const string expMessage = "Value must be non-negative, but it is '-1'.";
+      const string expMessage = "Value must be non-negative integer, but it is '-1'.";
       Assert.AreEqual ( expMessage, e.Message );
     }
   }
@@ -36,7 +36,7 @@ public class IListOfTRefEnumeratorTest
     }
     catch (ArgumentOutOfRangeException e)
     {
-      const string expMessage = "Value must be non-negative, but it is '-1'.";
+      const string expMessage = "Value must be non-negative integer, but it is '-1'.";
       Assert.AreEqual ( expMessage, e.Message );
     }
   }

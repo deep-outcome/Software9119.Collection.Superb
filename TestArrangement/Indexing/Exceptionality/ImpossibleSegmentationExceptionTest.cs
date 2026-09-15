@@ -40,6 +40,6 @@ public class ImpossibleSegmentationExceptionTest
   {
     Action test = () => _ = ImpossibleSegmentationException.OufRangeMsg ( available, offset: offset, count: count);
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException>( test );
-    Assert.AreEqual ( "Value must be non-negative, but it is '-1'.", e?.Message );
+    Assert.AreEqual ( "Value must be non-negative integer, but it is '-1'.", e?.Message );
   }
 }

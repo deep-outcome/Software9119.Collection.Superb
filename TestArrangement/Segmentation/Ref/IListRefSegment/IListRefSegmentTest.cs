@@ -90,8 +90,8 @@ public class IListRefSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( -1, 0, "Value must be non-negative, but it is '-1'.", DisplayName = "Negative offset." )]
-  [DataRow ( 0, -1, "Value must be non-negative, but it is '-1'.", DisplayName = "Negative count." )]
+  [DataRow ( -1, 0, "Value must be non-negative integer, but it is '-1'.", DisplayName = "Negative offset." )]
+  [DataRow ( 0, -1, "Value must be non-negative integer, but it is '-1'.", DisplayName = "Negative count." )]
   public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
     NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );

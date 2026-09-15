@@ -26,7 +26,7 @@ public class IListEnumeratorTest
     int[]? list = [];
     Func<object> test = () => new IListEnumerator(-1,0, list);
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> (test);
-    const string expMessage = "Value must be non-negative, but it is '-1'.";
+    const string expMessage = "Value must be non-negative integer, but it is '-1'.";
     Assert.AreEqual ( expMessage, e.Message );
   }
 
@@ -36,7 +36,7 @@ public class IListEnumeratorTest
     int[]? list = [];
     Func<object> test = () => new IListEnumerator(0,-1, list);
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> (test);
-    const string expMessage = "Value must be non-negative, but it is '-1'.";
+    const string expMessage = "Value must be non-negative integer, but it is '-1'.";
     Assert.AreEqual ( expMessage, e.Message );
   }
 
