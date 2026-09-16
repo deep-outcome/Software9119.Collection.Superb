@@ -17,6 +17,12 @@ public class IndexingValidatorTest
   }
 
   [TestMethod]
+  public void CorrelateIndex ()
+  {
+    Assert.AreEqual ( 8, IndexingValidator.CorrelateIndex ( (NonNegativeInt32) 3, (NonNegativeInt32) 5 ) );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 0 )]
   [DataRow ( int.MaxValue, int.MaxValue )]
   [DataRow ( 1, 0 )]
@@ -72,6 +78,49 @@ public class IndexingValidatorTest
   {
     bool result = IndexingValidator.ValidateIndex (index, count, out IndexOutOfBoundariesException? e);
     Assert.IsFalse ( result );
+    Assert.IsNull ( e );
+  }
+
+  [TestMethod]
+  [DataRow ( 2, 1, 2, DisplayName = "Offsetting, index out of bounds." )]
+  [DataRow ( 5, 0, 5, DisplayName = "No offset, index out of bounds" )]
+  [DataRow ( 0, 0, 0, DisplayName = "Empty segment, 0 index." )]
+  [DataRow ( 1, 1, 0, DisplayName = "Empty segment, other index." )]
+  [DataRow ( -3, 1, 4, DisplayName = "Negative index." )]
+  [DataRow ( -1, 0, 0, DisplayName = "Empty segment, negative index." )]
+  public void ValidateIndexRef_NegativeScenarios ( int index, int offset, int count )
+  {
+    int origIndex = index;
+    bool result = IndexingValidator.ValidateIndex
+    (
+      ref index, offset: offset, count,
+      out IndexOutOfBoundariesException? e
+    );
+
+    Assert.IsTrue ( result );
+    Assert.AreEqual ( origIndex, index );
+    Assert.IsNotNull ( e );
+
+    string expMsg = index < 0
+      ? $"Index must be non-negative, but it is '{index}'."
+      : $"For available '{count}' is index '{origIndex}' out of bounds.";
+    Assert.AreEqual ( expMsg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 1, 1, 2 )]
+  [DataRow ( 1, 2, 1, 2 )]
+  [DataRow ( 0, 0, 0, 1 )]
+  [DataRow ( 4, 4, 0, 5 )]
+  public void ValidateIndexRef_PositiveScenarios ( int index, int computedIndex, int offset, int count )
+  {
+    bool result = IndexingValidator.ValidateIndex
+    (
+      ref index, offset: offset, count,
+      out IndexOutOfBoundariesException? e
+    );
+    Assert.IsFalse ( result );
+    Assert.AreEqual ( computedIndex, index );
     Assert.IsNull ( e );
   }
 

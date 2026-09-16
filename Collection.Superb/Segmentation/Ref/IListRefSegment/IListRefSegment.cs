@@ -150,7 +150,7 @@ public ref struct IListRefSegment<T> : IList
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfBoundariesException? e )
   {
-    return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, count: Count, out e );
+    return IndexingValidator.ValidateIndex ( index: ref index, offset: offset, count: Count, out e );
   }
 
   /// <summary>
@@ -240,7 +240,7 @@ public ref struct IListRefSegment<T> : IList
   /// </summary>
   readonly public IListRefSegment<T> Slice ( NonNegativeInt32 offset, NonNegativeInt32 count )
   {
-    int startIndex = SegmentationValidator.CorrelateIndex(offset, this.offset);
+    int startIndex = IndexingValidator.CorrelateIndex(offset, this.offset);
     return new IListRefSegment<T> ( list, startIndex, count );
   }
 

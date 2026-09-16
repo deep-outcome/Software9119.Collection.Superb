@@ -850,3 +850,6 @@ dotnet_diagnostic.CA1024.severity = silent
 
 # CA1021: Avoid out parameters
 dotnet_diagnostic.CA1021.severity = silent
+
+# CA1045: Do not pass types by reference
+dotnet_diagnostic.CA1045.severity = silent

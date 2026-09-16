@@ -17,6 +17,12 @@ static public class IndexingValidator
   static public int LimitOutOf ( NonNegativeInt32 offset, NonNegativeInt32 count ) => offset + count;
 
   /// <summary>
+  /// Computes offseted index.
+  /// </summary>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
+  static public int CorrelateIndex ( NonNegativeInt32 index, NonNegativeInt32 offset ) => index + offset;
+
+  /// <summary>
   /// Validates <paramref name="index"/> is valid for target <paramref name="count"/>.
   /// </summary>
   /// <returns><see langword="true"/> if index is invalid.</returns>
@@ -55,6 +61,41 @@ static public class IndexingValidator
     }
 
     return ValidateIndex ( ((NonNegativeInt32) index), count, out e );
+  }
+
+  /// <summary>
+  /// <list type="bullet">
+  /// <item>
+  /// Validates <paramref name="index"/> non-negativity and validity for source of length/count <paramref name="count"/>.
+  /// </item>
+  /// <item>
+  /// When <paramref name="index"/> is valid, it is incremented with <paramref name="offset"/>.
+  /// </item>
+  /// </list>
+  /// </summary>
+  /// <returns><see langword="true"/> when <paramref name="index"/> is invalid.</returns>
+  static public bool ValidateIndex (
+    ref int index,
+    NonNegativeInt32 offset,
+    NonNegativeInt32 count,
+    [NotNullWhen ( true )] out IndexOutOfBoundariesException? e )
+  {
+    if (index < 0)
+    {
+      e = IndexOutOfBoundariesException.NegativeIndexMsg ( index );
+      return true;
+    }
+
+    if (index >= count)
+    {
+      e = IndexOutOfBoundariesException.OutOfBoundsMsg ( index, available: count );
+      return true;
+    }
+
+    index = CorrelateIndex ( index, offset );
+
+    e = null;
+    return false;
   }
 
   /// <summary>

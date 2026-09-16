@@ -25,9 +25,9 @@ public struct IListEnumerator<T> : IEnumerator<T?>
   /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
   public IListEnumerator ( NonNegativeInt32 offset, NonNegativeInt32 count, IList<T?> list ) 
-    : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
+    : this ( list, offset, IndexingValidator.LimitOutOf ( offset, count ) )
   {
-    if (SegmentationValidator.ValidateList ( list, out ArgumentNullException? ane ))
+    if (SegmentingValidator.ValidateList ( list, out ArgumentNullException? ane ))
       throw ane;
 
 #pragma warning disable CA1062 // Validate arguments of public methods

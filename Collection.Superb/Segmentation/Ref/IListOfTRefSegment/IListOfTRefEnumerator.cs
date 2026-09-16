@@ -25,7 +25,7 @@ public ref struct IListRefEnumerator<T, U> : IEnumerator<U?>
   /// <exception cref="ArgumentNullException">when <paramref name="list"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
   /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
-  public IListRefEnumerator ( NonNegativeInt32 offset, NonNegativeInt32 count, T list ) : this ( list, offset, SegmentationValidator.LimitOutOf ( offset, count ) )
+  public IListRefEnumerator ( NonNegativeInt32 offset, NonNegativeInt32 count, T list ) : this ( list, offset, IndexingValidator.LimitOutOf ( offset, count ) )
   {
     int listLength = list.Count;
     if (IndexingValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))

@@ -123,7 +123,7 @@ public ref struct IReadOnlyListRefSegment<T, U> : IList<U?>, IReadOnlyList<U?>
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfBoundariesException? e )
   {
-    return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, count: Count, out e );
+    return IndexingValidator.ValidateIndex ( index: ref index, offset: offset, count: Count, out e );
   }
 
   /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>.
@@ -204,7 +204,7 @@ public ref struct IReadOnlyListRefSegment<T, U> : IList<U?>, IReadOnlyList<U?>
   /// </summary>
   readonly public IReadOnlyListRefSegment<T, U> Slice ( NonNegativeInt32 offset, NonNegativeInt32 count )
   {
-    int startIndex = SegmentationValidator.CorrelateIndex(offset, this.offset);
+    int startIndex = IndexingValidator.CorrelateIndex(offset, this.offset);
     return new IReadOnlyListRefSegment<T, U> ( list, startIndex, count );
   }
 

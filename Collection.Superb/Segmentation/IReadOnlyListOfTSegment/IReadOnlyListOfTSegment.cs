@@ -134,12 +134,12 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   [MemberNotNullWhen ( false, nameof ( list ) )]
   readonly internal bool ValidateList ( [NotNullWhen ( true )] out ArgumentNullException? e )
   {
-    return SegmentationValidator.ValidateList ( list, out e );
+    return SegmentingValidator.ValidateList ( list, out e );
   }
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfBoundariesException? e )
   {
-    return SegmentationValidator.ValidateIndex ( index: ref index, offset: offset, count: Count, out e );
+    return IndexingValidator.ValidateIndex ( index: ref index, offset: offset, count: Count, out e );
   }
 
   /// <returns>Returns <see langword="true"/> on first equality encounter using <see cref="EqualityComparer"/>.
@@ -225,7 +225,7 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   /// </summary>
   readonly public IReadOnlyListSegment<T> Slice ( NonNegativeInt32 offset, NonNegativeInt32 count )
   {
-    int startIndex = SegmentationValidator.CorrelateIndex(offset, this.offset);
+    int startIndex = IndexingValidator.CorrelateIndex(offset, this.offset);
     return new IReadOnlyListSegment<T> ( list, startIndex, count );
   }
 

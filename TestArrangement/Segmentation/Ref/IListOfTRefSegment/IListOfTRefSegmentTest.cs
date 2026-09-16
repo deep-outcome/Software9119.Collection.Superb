@@ -58,7 +58,7 @@ public class IListOfTRefSegmentTest
 
     IListRefSegment<ArraySegment<string?>, string> segment = new ( list, offset: offset, count, comparer );
     Assert.AreEqual ( count, segment.Count );
-    Assert.AreEqual ( SegmentationValidator.LimitOutOf ( offset: offset, count ), segment.limit );
+    Assert.AreEqual ( IndexingValidator.LimitOutOf ( offset: offset, count ), segment.limit );
     Assert.AreEqual ( offset, segment.Offset );
     Assert.AreEqual ( offset, segment.offset );
     Assert.AreEqual ( list, segment.list );
