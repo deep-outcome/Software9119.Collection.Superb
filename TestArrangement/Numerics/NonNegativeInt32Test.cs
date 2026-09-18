@@ -30,6 +30,9 @@ public class NonNegativeInt32Test
   }
 
   [TestMethod]
+  public void Value () => Assert.AreEqual ( 1, new NonNegativeInt32 ( 1 ).Value );
+
+  [TestMethod]
   public void ImplicitCastOperator_FromInt ()
   {
     int value = 999;
@@ -45,10 +48,10 @@ public class NonNegativeInt32Test
   {
     NonNegativeInt32 num = new (999);
     int value = num;
-    Assert.AreEqual ( num.value, value );
+    Assert.AreEqual ( value, num.value );
 
     value = NonNegativeInt32.ToInt32 ( num );
-    Assert.AreEqual ( num.value, value );
+    Assert.AreEqual ( value, num.value );
   }
 
   [TestMethod]

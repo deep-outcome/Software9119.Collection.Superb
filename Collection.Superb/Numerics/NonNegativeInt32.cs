@@ -27,6 +27,11 @@ readonly public struct NonNegativeInt32 : IEquatable<NonNegativeInt32>
   readonly internal int value;
 
   /// <summary>
+  /// This instance value.
+  /// </summary>  
+  public int Value => value;
+
+  /// <summary>
   /// Implicit operator for conversion from <see langword="int"/> to <see cref="NonNegativeInt32"/>.
   /// </summary>
   static public implicit operator NonNegativeInt32 ( int value ) => new ( value );
