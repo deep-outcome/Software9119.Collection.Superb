@@ -21,8 +21,6 @@ static public class system_collections_immutable
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.immutablearray-1?view=net-10.0">
   /// ImmutableArray&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
-  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ImmutableArray<Item>> ImmutableArray<Item> ( bool strictLengthMatch, int? capacity )
   {
     Ctor<Item, ImmutableArray<Item>> typedCtor = (e) =>
@@ -105,7 +103,6 @@ static public class system_collections_immutable
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.immutablehashset-1?view=net-10.0">
   /// ImmutableHashSet&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ImmutableHashSet<Item>> ImmutableHashSet<Item> ( IEqualityComparer<Item> itemComparer )
   {
     if (itemComparer == null)
@@ -123,8 +120,6 @@ static public class system_collections_immutable
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableList-1?view=net-10.0">
   /// ImmutableList&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
-  [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ImmutableList<Item>> ImmutableList<Item> ()
   {
     Ctor<Item, ImmutableList <Item>> typedCtor = (e) => Immutable.ImmutableList.CreateRange (e);
@@ -138,8 +133,6 @@ static public class system_collections_immutable
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableQueue-1?view=net-10.0">
   /// ImmutableQueue&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
-  [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ImmutableQueue<Item>> ImmutableQueue<Item> ()
   {
     Ctor<Item, ImmutableQueue <Item>> typedCtor = (e) => Immutable.ImmutableQueue.CreateRange (e);
@@ -227,8 +220,6 @@ static public class system_collections_immutable
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.immutable.ImmutableStack-1?view=net-10.0">
   /// ImmutableStack&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
-  [SuppressMessage ( "Style", "IDE0303:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ImmutableStack<Item>> ImmutableStack<Item> ()
   {
     Ctor<Item, ImmutableStack <Item>> typedCtor = (e) => Immutable.ImmutableStack.CreateRange (e);

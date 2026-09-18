@@ -56,12 +56,12 @@ public class BinaryInsertionOrderTest
   [TestMethod]
   public void Ordered ()
   {
-    foreach ( int s in sourceSizes )
+    foreach (int s in sourceSizes)
     {
       int [] source = Enumerable.Range ( 1, s ).AsOrToArray ( s )!;
 
-      int [] array = [.. source];
-      Span<int> span = [ .. source ];
+      int [] array = source.ToArray();
+      Span<int> span = source.ToArray();
 
       BinaryInsertionOrder.Order ( array, Comparison );
       BinaryInsertionOrder.Order ( span, Comparison );
@@ -74,12 +74,12 @@ public class BinaryInsertionOrderTest
   [TestMethod]
   public void Ordered_Reversed ()
   {
-    foreach ( int s in sourceSizes )
+    foreach (int s in sourceSizes)
     {
       int[] source = Enumerable.Range(1, s).Reverse().AsOrToArray(s)!;
 
-      int [] array = [ .. source ];
-      Span<int> span = [ .. source ];
+      int [] array = source.ToArray();
+      Span<int> span = source.ToArray();
 
       BinaryInsertionOrder.Order ( array, Comparison );
       BinaryInsertionOrder.Order ( span, Comparison );
@@ -94,9 +94,9 @@ public class BinaryInsertionOrderTest
   public void Ordered_Partially ()
   {
     Random random = new ();
-    foreach ( int s in sourceSizes )
+    foreach (int s in sourceSizes)
     {
-      foreach ( int orderer in new int [] { 0, 1 } )
+      foreach (int orderer in new int [] { 0, 1 })
       {
         int order = 1;
         int [] source = Enumerable.Range ( 1, s )
@@ -115,8 +115,8 @@ public class BinaryInsertionOrderTest
         })
         .AsOrToArray ( s )!;
 
-        int [] array = [.. source];
-        Span<int> span = [ .. source ];
+        int [] array = source.ToArray();
+        Span<int> span = source.ToArray();
 
         BinaryInsertionOrder.Order ( array, Comparison );
         BinaryInsertionOrder.Order ( span, Comparison );
@@ -132,15 +132,15 @@ public class BinaryInsertionOrderTest
   public void RandomOrder ()
   {
     Random random = new ();
-    foreach ( int s in sourceSizes )
+    foreach (int s in sourceSizes)
     {
       int[] source = Enumerable
       .Repeat(() => random.Next(int.MinValue, int.MaxValue), s)
       .Select(x => x())
       .AsOrToArray(s)!;
 
-      int [] array = [ .. source ];
-      Span<int> span = [ .. source ];
+      int [] array = source.ToArray();
+      Span<int> span = source.ToArray();
 
       BinaryInsertionOrder.Order ( array, Comparison );
       BinaryInsertionOrder.Order ( span, Comparison );
@@ -154,17 +154,17 @@ public class BinaryInsertionOrderTest
   [TestMethod]
   public void ZigZag ()
   {
-    foreach ( int s in sourceSizes )
+    foreach (int s in sourceSizes)
     {
-      foreach ( int orderer in new [] { 0, 1 } )
+      foreach (int orderer in new [] { 0, 1 })
       {
         int[] source = Enumerable
           .Range ( 1, s )
           .Select(x => (x & 1) == orderer ? 1 : 2)
           .AsOrToArray ( s )!;
 
-        int [] array = [ .. source ];
-        Span<int> span = [ .. source ];
+        int [] array = source.ToArray();
+        Span<int> span = source.ToArray();
 
         BinaryInsertionOrder.Order ( array, Comparison );
         BinaryInsertionOrder.Order ( span, Comparison );
@@ -180,7 +180,7 @@ public class BinaryInsertionOrderTest
   public void Offsets ()
   {
     Random random = new ();
-    foreach ( int s in sourceSizes )
+    foreach (int s in sourceSizes)
     {
       int[] source = Enumerable
       .Repeat(() => random.Next(int.MinValue, int.MaxValue), s)
@@ -190,8 +190,8 @@ public class BinaryInsertionOrderTest
       int offset = 1000;
       int count = s - 1000;
 
-      int [] array = [ .. source ];
-      int [] spanArray = [ .. source ];
+      int [] array = source.ToArray();
+      int [] spanArray = source.ToArray();
       Span<int> span = new (spanArray, offset, count);
 
       BinaryInsertionOrder.Order ( array, offset, count, Comparison );
@@ -219,10 +219,10 @@ public class BinaryInsertionOrderTest
   public void ShortSources ()
   {
     int [] [] sources = [ [1], [1, 2], [2, 1], [1, 1],];
-    foreach ( int [] s in sources )
+    foreach (int [] s in sources)
     {
-      int [] array = [ .. s ];
-      Span<int> span = [.. s];
+      int [] array = s.ToArray();
+      Span<int> span = s.ToArray();
 
       BinaryInsertionOrder.Order ( array, Comparison );
       BinaryInsertionOrder.Order ( span, Comparison );
@@ -243,10 +243,10 @@ public class BinaryInsertionOrderTest
       ([4, 2, 1, 1], 1, 2),
       ([4, 1, 1, 4], 1, 2)
     ];
-    foreach ( (int [] s, int offset, int count) in sources )
+    foreach ((int [] s, int offset, int count) in sources)
     {
-      int [] array = [ .. s ];
-      int [] spanArray = [ .. s ];
+      int [] array = s.ToArray();
+      int[] spanArray = s.ToArray();
       Span<int> span = new (spanArray, offset, count);
 
       BinaryInsertionOrder.Order ( array, offset, count, Comparison );

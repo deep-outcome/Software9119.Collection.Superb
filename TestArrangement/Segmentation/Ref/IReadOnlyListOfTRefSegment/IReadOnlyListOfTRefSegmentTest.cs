@@ -408,7 +408,6 @@ public class IReadOnlyListOfTRefSegmentTest
   [TestMethod]
   [DataRow ( 0, 5 )]
   [DataRow ( 1, 3 )]
-  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
   public void ToArray ( int offset, int count )
   {
     int[] array = [1,2,3,4,5];

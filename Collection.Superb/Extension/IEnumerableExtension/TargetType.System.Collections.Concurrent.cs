@@ -19,8 +19,6 @@ static public class system_collections_concurrent
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.concurrentbag-1?view=net-10.0">
   /// ConcurrentBag&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
-  [SuppressMessage ( "Style", "IDE0306:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ConcurrentBag<Item>> ConcurrentBag<Item> ()
   {
     Ctor<Item, ConcurrentBag <Item>> typedCtor = (e) => new (e);
@@ -90,8 +88,6 @@ static public class system_collections_concurrent
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.ConcurrentQueue-1?view=net-10.0">
   /// ConcurrentQueue&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
-  [SuppressMessage ( "Style", "IDE0306:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ConcurrentQueue<Item>> ConcurrentQueue<Item> ()
   {
     Ctor<Item, ConcurrentQueue <Item>> typedCtor = (e) => new (e);
@@ -105,8 +101,6 @@ static public class system_collections_concurrent
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.ConcurrentStack-1?view=net-10.0">
   /// ConcurrentStack&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
-  [SuppressMessage ( "Style", "IDE0306:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<ConcurrentStack<Item>> ConcurrentStack<Item> ()
   {
     Ctor<Item, ConcurrentStack <Item>> typedCtor = (e) => new (e);
@@ -146,7 +140,6 @@ static public class system_collections_concurrent
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.concurrent.BlockingCollection-1?view=net-10.0">
   /// BlockingCollection&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<BlockingCollection<Item>> BlockingCollection<Item>
   (
     int? boundedCapacity,

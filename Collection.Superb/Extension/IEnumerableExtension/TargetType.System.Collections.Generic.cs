@@ -113,8 +113,6 @@ static public class system_collections_generic
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-10.0">
   /// List&lt;Item&gt;</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Explication intent." )]
-  [SuppressMessage ( "Style", "IDE0306:Simplify collection initialization", Justification = "Explication intent." )]
   static public AsOrToTargetType<List<Item>> List<Item> ( int? capacity )
   {
     Ctor<Item, List<Item>> typedCtor = (e) =>

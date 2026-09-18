@@ -20,7 +20,7 @@ public partial class IEnumerableExtensionTest
   [DataRow ( false )]
   public void AsOrderablePartitioner_IList ( bool loadBalance )
   {
-    List<int> source = [ .. Enumerable.Range(0, 10) ];
+    List<int> source = Enumerable.Range(0, 10).ToList();
     OrderablePartitioner<int> test = source.AsOrderablePartitioner(dynamicLoadBalancing: loadBalance)!;
 
     string typeName = test.GetType().Name;
@@ -66,7 +66,7 @@ public partial class IEnumerableExtensionTest
   long MyComplexComputation ( int x ) => x;
 
   [TestMethod]
-  public void Sample_Concurrent()
+  public void Sample_Concurrent ()
   {
     // orderable partitioner sample
     IEnumerable<long> source = Enumerable.Range(0, 1000_000).Select(MyComplexComputation);

@@ -331,7 +331,6 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// <summary>
   /// Implicit conversion operator for <see cref="ArraySegment{T}"/>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0301:Simplify collection initialization", Justification = "Obviousity." )]
   static public implicit operator IListSegment<T> ( ArraySegment<T> segment ) => new ( segment.Array ?? Array.Empty<T> (), segment.Offset, segment.Count );
 
   /// <summary>

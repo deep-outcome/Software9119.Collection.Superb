@@ -20,7 +20,7 @@ public partial class IEnumerableExtensionTest
 {
   static public AsOrToTargetType<List<int>> TargetClass ( bool canCast )
   {
-    Ctor<int, List<int>> ctor = ( e ) => [ .. e ];
+    Ctor<int, List<int>> ctor = ( e ) => e.ToList();
 
     AsOrToTargetType<List<int>> targetType = AsOrToTargetType.FromTypedCtor(ctor, e => canCast, () => []);
     return targetType;
@@ -28,7 +28,7 @@ public partial class IEnumerableExtensionTest
 
   static public AsOrToTargetType<ArraySegment<int>> TargetStruct ()
   {
-    Ctor<int, ArraySegment<int>> ctor = (e) => new ([ .. e ]);
+    Ctor<int, ArraySegment<int>> ctor = (e) => new (e.ToArray());
     AsOrToTargetType<ArraySegment<int>> targetType = AsOrToTargetType.FromTypedCtor(ctor, e => default, () => default);
     return targetType;
   }

@@ -43,8 +43,7 @@ dotnet_style_require_accessibility_modifiers = omit_if_default:suggestion
 
 # Expression-level preferences
 dotnet_style_coalesce_expression = true
-dotnet_style_collection_initializer = true
-# IDE0300: Simplify collection initialization
+dotnet_style_collection_initializer = false
 dotnet_style_prefer_collection_expression = when_types_exactly_match
 dotnet_style_explicit_tuple_names = true
 dotnet_style_namespace_match_folder = true
@@ -853,3 +852,18 @@ dotnet_diagnostic.CA1021.severity = silent
 
 # CA1045: Do not pass types by reference
 dotnet_diagnostic.CA1045.severity = silent
+
+# IDE0028: Simplify collection initialization
+dotnet_diagnostic.IDE0028.severity = silent
+
+# IDE0301: Simplify collection initialization
+dotnet_diagnostic.IDE0301.severity = silent
+
+# IDE0303: Simplify collection initialization
+dotnet_diagnostic.IDE0303.severity = silent
+
+# IDE0305: Simplify collection initialization
+dotnet_diagnostic.IDE0305.severity = silent
+
+# IDE0306: Simplify collection initialization
+dotnet_diagnostic.IDE0306.severity = silent

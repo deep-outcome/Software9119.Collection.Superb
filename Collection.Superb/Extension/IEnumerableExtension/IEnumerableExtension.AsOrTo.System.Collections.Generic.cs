@@ -467,7 +467,6 @@ static public partial class IEnumerableExtension
   /// </item>
   /// </list>
   /// </remarks>
-  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
   static public IList<Item>? AsOrToIList<Item>
   (
     this IEnumerable<Item>? enumerable,

@@ -162,7 +162,7 @@ public class system_c_concurrent_tests
     OrderablePartitioner <int> empty = targetType.Empty ();
     Assert.IsFalse ( empty.GetPartitions ( 1 ).Single ().MoveNext () );
 
-    int[] source = [ .. XEnumerable.RangeEnumerable(1, 10) ];
+    int[] source = XEnumerable.RangeEnumerable(1, 10).ToArray();
     OrderablePartitioner <int> target = targetType.Ctor(source);
 
     string typeName = target.GetType().Name;
@@ -185,7 +185,7 @@ public class system_c_concurrent_tests
     OrderablePartitioner <int> empty = targetType.Empty ();
     Assert.IsFalse ( empty.GetPartitions ( 1 ).Single ().MoveNext () );
 
-    List<int> source = [ .. XEnumerable.RangeEnumerable(1, 10) ];
+    List<int> source = XEnumerable.RangeEnumerable(1, 10).ToList();
     OrderablePartitioner <int> target = targetType.Ctor(source);
 
     string typeName = target.GetType().Name;

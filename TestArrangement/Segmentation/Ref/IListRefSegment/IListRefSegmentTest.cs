@@ -137,7 +137,6 @@ public class IListRefSegmentTest
   [DataRow ( 0, 5, 4, DisplayName = "No segmentation, high." )]
   [DataRow ( 2, 2, 0, DisplayName = "Segmentation, low." )]
   [DataRow ( 2, 2, 1, DisplayName = "Segmentation, high." )]
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Okay." )]
   public void Indexer_Set_PositiveScenarios ( int offset, int count, int index )
   {
     const string val = "z";
@@ -468,7 +467,6 @@ public class IListRefSegmentTest
   [TestMethod]
   [DataRow ( 0, 5 )]
   [DataRow ( 1, 3 )]
-  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
   public void ToArray ( int offset, int count )
   {
     object[] array = [1,2,3,4,5];

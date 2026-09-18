@@ -102,7 +102,7 @@ public class IListOfTSegmentTest
     Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
   }
 
-  [TestMethod]  
+  [TestMethod]
   public void OffsetCtor_InvalidSegmentation ()
   {
     List<string?> list = ["a", "b", "c", "d", "e",];
@@ -114,7 +114,7 @@ public class IListOfTSegmentTest
   [TestMethod]
   [DataRow ( -1, 0, "Value must be non-negative integer, but it is '-1'.", DisplayName = "Negative offset." )]
   [DataRow ( 0, -1, "Value must be non-negative integer, but it is '-1'.", DisplayName = "Negative count." )]
-  public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg)
+  public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
     List<string?> list = ["a", "b", "c", "d", "e",];
     Func<object> test = () => new IListSegment<string> ( list, offset: offset, count );
@@ -137,8 +137,8 @@ public class IListOfTSegmentTest
   [TestMethod]
   [DataRow ( 0, 5, -1, "Index must be non-negative, but it is '-1'." )]
   [DataRow ( 0, 5, 5, "For available '5' is index '5' out of bounds." )]
-  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds."  )]
-  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds."  )]
+  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds." )]
+  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds." )]
   public void Indexer_Get_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
     IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
@@ -152,7 +152,6 @@ public class IListOfTSegmentTest
   [DataRow ( 0, 5, 4, DisplayName = "No segmentation, high." )]
   [DataRow ( 2, 2, 0, DisplayName = "Segmentation, low." )]
   [DataRow ( 2, 2, 1, DisplayName = "Segmentation, high." )]
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Okay." )]
   public void Indexer_Set_PositiveScenarios ( int offset, int count, int index )
   {
     const string val = "z";
@@ -164,8 +163,8 @@ public class IListOfTSegmentTest
   [TestMethod]
   [DataRow ( 0, 5, -1, "Index must be non-negative, but it is '-1'." )]
   [DataRow ( 0, 5, 5, "For available '5' is index '5' out of bounds." )]
-  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds."  )]
-  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds."  )]
+  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds." )]
+  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds." )]
   public void Indexer_Set_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
     IListSegment<string> segment = new (["a", "b", "c", "d", "e"], offset, count: count);
@@ -347,7 +346,6 @@ public class IListOfTSegmentTest
   [DataRow ( 1, 3, 1, 4, new [] { 0, 2, 3, 4 } )]
   [DataRow ( 0, 0, 0, 2, new [] { 0, 0 } )]
   [DataRow ( 0, 0, 1, 2, new [] { 0, 0 } )]
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   public void CopyTo_SufficientArrayLength_List ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
   {
 
@@ -476,7 +474,6 @@ public class IListOfTSegmentTest
   [TestMethod]
   [DataRow ( 0, 5 )]
   [DataRow ( 1, 3 )]
-  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
   public void ToArray ( int offset, int count )
   {
     ArraySegment<int> arraySegment = new([1,2,3,4,5], offset, count);

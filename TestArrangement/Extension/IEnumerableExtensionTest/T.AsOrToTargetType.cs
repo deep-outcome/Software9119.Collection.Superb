@@ -107,12 +107,12 @@ public class AsOrToTargetTypeTest
   [TestMethod]
   public void FromTypedCtor ()
   {
-    Ctor<int, List<int>> func = ( e) => [ .. e ];
+    Ctor<int, List<int>> func = ( e) =>  e.ToList();
 
     AsOrToTargetType<List<int>> test = AsOrToTargetType.FromTypedCtor(func, null, () => []);
 
     IEnumerable<int> enumerable = Enumerable.Range(1, 11);
-    List<int> expectation = new ([..enumerable]);
+    List<int> expectation = new (enumerable);
 
     Assert.IsTrue ( test.CanCast ( new List<int> () ) );
 

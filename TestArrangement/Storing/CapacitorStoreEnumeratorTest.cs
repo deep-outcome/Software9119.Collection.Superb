@@ -54,7 +54,7 @@ public class CapacitorStoreEnumeratorTest
   public void Enumeration ()
   {
     int[] source = [1, 2, 3, 4, 5];
-    Capacitor<int> capacitor = [..source];
+    Capacitor<int> capacitor = new (source);
     CapacitorStoreEnumerator<int> enumerator = new (capacitor);
     EnumerableEnumerator<int> enumerable = new (enumerator);
 
@@ -65,7 +65,7 @@ public class CapacitorStoreEnumeratorTest
   public void Empty ()
   {
     int[] source = [];
-    Capacitor<int> capacitor = [..source];
+    Capacitor<int> capacitor = new(source);
     CapacitorStoreEnumerator<int> enumerator = new (capacitor);
     EnumerableEnumerator<int> enumerable = new (enumerator);
 
@@ -81,7 +81,7 @@ public class CapacitorStoreEnumeratorTest
     CapacitorStoreEnumerator<int> enumerator = new (capacitor);
 
     (int, bool) [] steps = [(0, true), (1, true), (1, false)];
-    foreach ((int increment, bool moved) in steps)
+    foreach ( (int increment, bool moved) in steps )
     {
       Assert.AreEqual ( moved, enumerator.MoveNext () );
       Assert.AreEqual ( 0 + increment, enumerator.index );
@@ -96,12 +96,12 @@ public class CapacitorStoreEnumeratorTest
     CapacitorStoreEnumerator<int> enumerator = new (capacitor);
 
     Assert.AreEqual ( 0, enumerator.Current );
-    Assert.AreEqual ( 0, ((IEnumerator) enumerator).Current );
+    Assert.AreEqual ( 0, (( IEnumerator ) enumerator).Current );
 
     _ = enumerator.MoveNext ();
 
     Assert.AreEqual ( 3, enumerator.Current );
-    Assert.AreEqual ( 3, ((IEnumerator) enumerator).Current );
+    Assert.AreEqual ( 3, (( IEnumerator ) enumerator).Current );
   }
 
   [TestMethod]

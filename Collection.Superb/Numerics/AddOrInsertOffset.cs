@@ -19,6 +19,7 @@ readonly public struct AddOrInsertOffset ( int value, bool inserting ) : IEquata
   /// <remarks>
   /// Relations of and guarantees about parameters are not validated and are reponsibility of implementors.
   /// </remarks>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public AddOrInsertOffset CreateUsingCount ( int value, int count ) => new ( value, value != count );
 
   readonly internal int value = value;

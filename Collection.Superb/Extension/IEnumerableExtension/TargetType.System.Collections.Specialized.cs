@@ -28,7 +28,6 @@ static public class system_collections_specialized
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.hybriddictionary?view=net-10.0">
   /// HybridDictionary</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<HybridDictionary> HybridDictionary<Item>
   (
     Func<Item, object> keySelector,
@@ -185,7 +184,6 @@ static public class system_collections_specialized
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.stringcollection?view=net-10.0">
   /// StringCollection</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<StringCollection> StringCollection<Item> ( Func<Item, string?> selector )
   {
     if (selector == null)
@@ -209,7 +207,6 @@ static public class system_collections_specialized
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.StringDictionary?view=net-10.0">
   /// StringDictionary</see>.
   /// </summary>
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   static public AsOrToTargetType<StringDictionary> StringDictionary<Item> ( Func<Item, string> keySelector, Func<Item, string?> valueSelector )
   {
     if (keySelector == null)

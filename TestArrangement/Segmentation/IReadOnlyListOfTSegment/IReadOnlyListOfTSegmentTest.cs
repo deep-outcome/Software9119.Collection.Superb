@@ -307,7 +307,6 @@ public class IReadOnlyListOfTSegmentTest
   [DataRow ( 1, 3, 1, 4, new [] { 0, 2, 3, 4 } )]
   [DataRow ( 0, 0, 0, 2, new [] { 0, 0 } )]
   [DataRow ( 0, 0, 1, 2, new [] { 0, 0 } )]
-  [SuppressMessage ( "Style", "IDE0028:Simplify collection initialization", Justification = "Obviousity." )]
   public void CopyTo_SufficientArrayLength_List ( int offset, int count, int startingIndex, int arrayLength, int [] expResult )
   {
 
@@ -436,7 +435,6 @@ public class IReadOnlyListOfTSegmentTest
   [TestMethod]
   [DataRow ( 0, 5 )]
   [DataRow ( 1, 3 )]
-  [SuppressMessage ( "Style", "IDE0305:Simplify collection initialization", Justification = "Obviousity." )]
   public void ToArray ( int offset, int count )
   {
     ArraySegment<int> arraySegment = new([1,2,3,4,5], offset, count);
