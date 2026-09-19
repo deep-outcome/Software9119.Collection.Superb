@@ -32,14 +32,27 @@ public class AddOrInsertOffsetTest
   }
 
   [TestMethod]
-  public void ImplicitCastOperator_FromOffset ()
+  public void ImplicitCastOperator_FromOffsetToInt32 ()
   {
-    AddOrInsertOffset test = new (999, default);
-    int value = test;
-    Assert.AreEqual ( value, test.value );
+    AddOrInsertOffset offset = new (999, default);
+    int test = offset;
+    Assert.AreEqual ( offset.value, test );
 
-    value = AddOrInsertOffset.ToInt32 ( test );
-    Assert.AreEqual ( value, test.value );
+    test = AddOrInsertOffset.ToInt32 ( offset );
+    Assert.AreEqual ( offset.value, test );
+  }
+
+  [TestMethod]
+  [DataRow ( true )]
+  [DataRow ( false )]
+  public void ImplicitCastOperator_FromOffsetToBoolean ( bool inserting )
+  {
+    AddOrInsertOffset offset = new (default, inserting);
+    bool test = offset;
+    Assert.AreEqual ( inserting, test );
+
+    test = AddOrInsertOffset.ToBoolean ( offset );
+    Assert.AreEqual ( inserting, test );
   }
 
   [TestMethod]

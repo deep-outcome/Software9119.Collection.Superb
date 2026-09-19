@@ -32,9 +32,18 @@ readonly public struct AddOrInsertOffset ( int value, bool inserting ) : IEquata
   static public implicit operator int ( AddOrInsertOffset value ) => value.value;
 
   /// <summary>
-  /// Conversion method.
+  /// Implicit operator for conversion from <see cref="AddOrInsertOffset"/> to <see langword="bool"/>.
   /// </summary>
-  static public int ToInt32 ( AddOrInsertOffset value ) => value;
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
+  static public implicit operator bool ( AddOrInsertOffset value ) => value.inserting;
+
+  /// <summary>
+  /// Current offset.
+  /// </summary>
+  static public int ToInt32 ( AddOrInsertOffset value ) => value.value;
+
+  /// <returns><see langword="true"/> if inserting offset.</returns>
+  static public bool ToBoolean ( AddOrInsertOffset value ) => value.inserting;
 
   /// <summary>
   /// This struct hash code.

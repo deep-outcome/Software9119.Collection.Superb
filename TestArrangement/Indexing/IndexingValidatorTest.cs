@@ -23,6 +23,15 @@ public class IndexingValidatorTest
   }
 
   [TestMethod]
+  [DataRow ( 0, 0, 0 )]
+  [DataRow ( 0, 1, 1 )]
+  [DataRow ( 1, 3, 2 )]
+  public void IndexToCountInclusiveDifference ( int from, int count, int diff )
+  {
+    Assert.AreEqual ( diff, IndexingValidator.IndexToCountInclusiveDifference ( from, count ) );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 0 )]
   [DataRow ( int.MaxValue, int.MaxValue )]
   [DataRow ( 1, 0 )]
@@ -176,5 +185,17 @@ public class IndexingValidatorTest
     Assert.IsFalse ( result );
     Assert.AreEqual ( IndexingValidator.LimitOutOf ( offset, count ), limit );
     Assert.IsNull ( e );
+  }
+
+  // examples
+
+  [TestMethod]
+  public void IndexToCountInclusiveDifference_Example ()
+  {
+    int[] items = [1,2,3,4,5,6,7,8,9,10];
+    int itemsToEndCount = IndexingValidator.IndexToCountInclusiveDifference ( 5, 10 );
+    Array.Clear ( items, 5, itemsToEndCount );
+
+    Assert.IsTrue ( new int [] { 1, 2, 3, 4, 5, 0, 0, 0, 0, 0 }.SequenceEqual ( items ) );
   }
 }

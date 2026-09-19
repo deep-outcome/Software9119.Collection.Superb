@@ -23,6 +23,21 @@ static public class IndexingValidator
   static public int CorrelateIndex ( NonNegativeInt32 index, NonNegativeInt32 offset ) => index + offset;
 
   /// <summary>
+  /// Computes inclusive difference of <paramref name="from"/> and <paramref name="count"/>.
+  /// </summary>
+  /// <remarks>
+  /// Usage example
+  /// <code>
+  /// int[] items = [1,2,3,4,5,6,7,8,9,10];
+  /// int itemsToEndCount = IndexingValidator.IndexToCountInclusiveDifference ( 5, 10 );
+  /// Array.Clear(items, 5, itemsToEndCount );
+  /// // [ 1, 2, 3, 4, 5, 0, 0, 0, 0, 0 ]
+  /// </code>
+  /// </remarks>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
+  static public int IndexToCountInclusiveDifference ( NonNegativeInt32 from, NonNegativeInt32 count ) => count - from;
+
+  /// <summary>
   /// Validates <paramref name="index"/> is valid for target <paramref name="count"/>.
   /// </summary>
   /// <returns><see langword="true"/> if index is invalid.</returns>

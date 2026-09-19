@@ -7,7 +7,6 @@ using Software9119.Collection.Superb.TestArrangement.TestAide;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -62,7 +61,7 @@ public class CapacitorTest
     Capacitor<int> capacitor = new (count, store);
 
     Assert.IsTrue ( ReferenceEquals ( store ?? capacitor.store, capacitor.store ) );
-    Assert.AreEqual ( index, capacitor.index );
+    Assert.AreEqual ( index, capacitor.storeIndex );
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
@@ -72,7 +71,7 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new ();
     Assert.AreEqual ( Array.Empty<int> (), capacitor.store );
-    Assert.AreEqual ( 0, capacitor.index );
+    Assert.AreEqual ( 0, capacitor.storeIndex );
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
@@ -84,7 +83,7 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new (capacity);
     Assert.AreEqual ( capacity, capacitor.store.Length );
-    Assert.AreEqual ( 0, capacitor.index );
+    Assert.AreEqual ( 0, capacitor.storeIndex );
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
@@ -95,7 +94,7 @@ public class CapacitorTest
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 9);
     Capacitor<int> capacitor = new (source);
     Assert.AreEqual ( 16, capacitor.store.Length );
-    Assert.AreEqual ( 9, capacitor.index );
+    Assert.AreEqual ( 9, capacitor.storeIndex );
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
 
@@ -108,7 +107,7 @@ public class CapacitorTest
     IEnumerable<int> source = Enumerable.Range(0, 9);
     Capacitor<int> capacitor = new (source);
     Assert.AreEqual ( 9, capacitor.store.Length );
-    Assert.AreEqual ( 9, capacitor.index );
+    Assert.AreEqual ( 9, capacitor.storeIndex );
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
 
@@ -121,7 +120,7 @@ public class CapacitorTest
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 9);
     Capacitor<int> capacitor = new (source, 1000);
     Assert.AreEqual ( 1000, capacitor.store.Length );
-    Assert.AreEqual ( 9, capacitor.index );
+    Assert.AreEqual ( 9, capacitor.storeIndex );
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
 
@@ -134,7 +133,7 @@ public class CapacitorTest
     IList<int> source = (IList<int>)Enumerable.Range(0, 9);
     Capacitor<int> capacitor = new (source, 1000);
     Assert.AreEqual ( 1000, capacitor.store.Length );
-    Assert.AreEqual ( 9, capacitor.index );
+    Assert.AreEqual ( 9, capacitor.storeIndex );
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
 
@@ -147,7 +146,7 @@ public class CapacitorTest
     Capacitor<int> empty = Capacitor<int>.Empty;
     Assert.IsFalse ( ReferenceEquals ( Capacitor<int>.Empty, empty ) );
     Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), empty.store ) );
-    Assert.AreEqual ( 0, empty.index );
+    Assert.AreEqual ( 0, empty.storeIndex );
     Assert.AreEqual ( GrowFactor.Two, empty.growFactor );
     Assert.IsFalse ( empty.LockGrowFactor );
   }
@@ -165,6 +164,47 @@ public class CapacitorTest
     Assert.IsTrue ( new Capacitor<object> ().itemShouldDefault );
     Assert.IsTrue ( new Capacitor<NoRefList> ().itemShouldDefault );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+  }
+
+  [TestMethod]
+  [DataRow ( 3, 3, 6 )]
+  [DataRow ( 3, 4, 4 )]
+  [DataRow ( 0, 3, 6 )]
+  [DataRow ( 0, 4, 4 )]
+  [DataRow ( 1, 3, 6 )]
+  [DataRow ( 1, 4, 4 )]
+  public void AddOrInsert ( int index, int cap, int expCap )
+  {
+    int insertion = 9;
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source, cap);
+
+    List<int> expectation = source.ToList();
+    expectation.Insert ( index, insertion );
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    capacitor.AddOrInsert ( offset, insertion );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 4, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, 4 )]
+  [DataRow ( 0, 1, 1 )]
+  public void AddOrInsert_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    int insertion = 9;
+    Capacitor<int> capacitor = new ([], cap);
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    capacitor.AddOrInsert ( offset, insertion );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 1, capacitor.Count );
+    Assert.AreEqual ( insertion, capacitor [ 0 ] );
   }
 
   [TestMethod]
@@ -198,6 +238,22 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [DataRow ( 0, 0, 2 )]
+  [DataRow ( 0, 3, 3 )]
+  public void AddOrInsert_OffsetEnumerableExtraCapacity_ArrayItems_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    int[] insertion = [4,5];
+    Capacitor<int> capacitor = new ([], cap);
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddOrInsert ( offset, insertion, 1000 ) );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 2, capacitor.Count );
+    Assert.IsTrue ( insertion.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   [DataRow ( 3 )]
   [DataRow ( 0 )]
   [DataRow ( 1 )]
@@ -220,6 +276,22 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [DataRow ( 0, 0, 2 )]
+  [DataRow ( 0, 3, 3 )]
+  public void AddOrInsert_OffsetEnumerableExtraCapacity_CollectionItems_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    XCollection<int> insertion = new([4,5]);
+    Capacitor<int> capacitor = new ([], cap);
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddOrInsert ( offset, insertion, 1000 ) );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 2, capacitor.Count );
+    Assert.IsTrue ( insertion.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   [DataRow ( 3 )]
   [DataRow ( 0 )]
   [DataRow ( 1 )]
@@ -239,6 +311,22 @@ public class CapacitorTest
     Assert.AreEqual ( 5, capacitor.Capacity );
     Assert.AreEqual ( 5, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, 2 )]
+  [DataRow ( 0, 3, 3 )]
+  public void AddOrInsert_OffsetEnumerableExtraCapacity_ReadOnlyCollectionItems_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    XReadOnlyCollection<int> insertion = new([4,5]);
+    Capacitor<int> capacitor = new ([], cap);
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddOrInsert ( offset, insertion, 1000 ) );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 2, capacitor.Count );
+    Assert.IsTrue ( insertion.SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
@@ -274,6 +362,23 @@ public class CapacitorTest
     Assert.AreEqual ( cap, capacitor.Capacity );
     Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, 4 )]
+  [DataRow ( 0, 3, 3 )]
+  [DataRow ( 0, 2, 4 )]
+  public void AddOrInsert_OffsetEnumerableExtraCapacity_Enumerable_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    IEnumerable<int> insertion = XEnumerable.RangeEnumerable(4, 3);
+    Capacitor<int> capacitor = new ([]);
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddOrInsert ( offset, insertion, cap ) );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 3, capacitor.Count );
+    Assert.IsTrue ( insertion.SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
@@ -314,6 +419,22 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [DataRow ( 0, 0, 2 )]
+  [DataRow ( 0, 3, 3 )]
+  public void AddOrInsert_OffsetArray_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    int[] insertion = [4,5];
+    Capacitor<int> capacitor = new ([], cap);
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddOrInsert ( offset, insertion ) );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 2, capacitor.Count );
+    Assert.IsTrue ( insertion.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   public void AddOrInsert_OffsetCollection_NullItems ()
   {
     Capacitor<int> capacitor = [];
@@ -348,6 +469,22 @@ public class CapacitorTest
     Assert.AreEqual ( capCount, capacitor.Capacity );
     Assert.AreEqual ( capCount, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, 2 )]
+  [DataRow ( 0, 3, 3 )]
+  public void AddOrInsert_OffsetCollection_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    ICollection<int> insertion = new XCollection<int>([4,5]);
+    Capacitor<int> capacitor = new ([], cap);
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddOrInsert ( offset, insertion ) );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 2, capacitor.Count );
+    Assert.IsTrue ( insertion.SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
@@ -422,7 +559,22 @@ public class CapacitorTest
     Assert.AreEqual ( capCount, capacitor.Capacity );
     Assert.AreEqual ( capCount, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
 
+  [TestMethod]
+  [DataRow ( 0, 0, 2 )]
+  [DataRow ( 0, 3, 3 )]
+  public void AddOrInsert_OffsetReadOnlyCollection_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    IReadOnlyCollection<int> insertion = new XReadOnlyCollection<int>([4,5]);
+    Capacitor<int> capacitor = new ([], cap);
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddOrInsert ( offset, insertion ) );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 2, capacitor.Count );
+    Assert.IsTrue ( insertion.SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
@@ -448,13 +600,13 @@ public class CapacitorTest
   public void AutoGrow_Growing ()
   {
     Capacitor<int> capacitor = new ( 11 );
-    capacitor.index = 11;
+    capacitor.storeIndex = 11;
     capacitor.growFactor = GrowFactor.OneAndHalf;
 
     Assert.IsTrue ( capacitor.AutoGrow () );
     Assert.AreEqual ( 16, capacitor.store.Length );
 
-    capacitor.index = 16;
+    capacitor.storeIndex = 16;
     capacitor.growFactor = GrowFactor.Five;
 
     Assert.IsTrue ( capacitor.AutoGrow () );
@@ -462,9 +614,34 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [DataRow ( 3 )]
+  [DataRow ( 0 )]
+  [DataRow ( 2 )]
+  public void Capacitate ( int to )
+  {
+    Capacitor<int> capacitor = new([1,2,3]);
+    capacitor.Capacitate ( to );
+    Assert.AreEqual ( to, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( 1 )]
+  [DataRow ( 3 )]
+  public void CreateAddInsOffset ( int index )
+  {
+    Capacitor<int> capacitor = new([1,2,3]);
+    bool inserting = index != capacitor.Count;
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.AreEqual ( index, offset.value );
+    Assert.AreEqual ( inserting, offset.inserting );
+  }
+
+  [TestMethod]
   public void ItemsCountToEndInclusive ()
   {
-    Capacitor<int> capacitor = [1,2,3];
+    Capacitor<int> capacitor = new([1,2,3]);
+
     Assert.AreEqual ( 1, capacitor.ItemsCountToEndInclusive ( 2 ) );
     Assert.AreEqual ( 0, capacitor.ItemsCountToEndInclusive ( 3 ) );
     Assert.AreEqual ( -1, capacitor.ItemsCountToEndInclusive ( 4 ) );
