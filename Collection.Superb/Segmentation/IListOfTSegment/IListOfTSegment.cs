@@ -127,13 +127,13 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
     }
   }
 
-  readonly internal bool ValidateSetup 
-  ( 
+  readonly internal bool ValidateSetup
+  (
     NonNegativeInt32 count, out int limit,
-    [NotNullWhen ( true )] out ImpossibleSegmentationException? e 
+    [NotNullWhen ( true )] out ImpossibleSegmentationException? e
   )
   {
-    return IndexingValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
+    return IxValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e ) == 1;
   }
 
   [MemberNotNullWhen ( false, nameof ( list ) )]

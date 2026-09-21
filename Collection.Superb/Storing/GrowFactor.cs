@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Software9119.Collection.Superb.Storing;
+﻿namespace Software9119.Collection.Superb.Storing;
 
 /// <summary>
 /// Internal store auto-grow factor.
@@ -49,10 +47,11 @@ static public class GrowFactorExtension
   /// <summary>
   /// Converts <paramref name="factor"/> to <see langword="float"/>.
   /// </summary>
-  /// <exception cref="ArgumentOutOfRangeException">When <paramref name="factor"/> is unknown.</exception>
-  static public float ToFloat ( this GrowFactor factor )
+  /// <returns><see langword="true"/> when conversion exists, <see langword="false"/> otherwise.</returns>
+  /// <remarks>When <see langword="false"/> returned, <paramref name="number"/> is <see langword="default"/>.</remarks>
+  static public bool ToFloat ( this GrowFactor factor, out float number )
   {
-    return factor switch
+    number = factor switch
     {
       GrowFactor.OneAndHalf => 1.5f,
       GrowFactor.Two => 2.0f,
@@ -62,7 +61,9 @@ static public class GrowFactorExtension
       GrowFactor.Four => 4f,
       GrowFactor.FourAndHalf => 4.5f,
       GrowFactor.Five => 5.0f,
-      _ => throw new ArgumentOutOfRangeException ( paramName: nameof ( factor ), $"Unsupported grow factor, '{factor}'." )
+      _ => default
     };
+
+    return number != default;
   }
 }

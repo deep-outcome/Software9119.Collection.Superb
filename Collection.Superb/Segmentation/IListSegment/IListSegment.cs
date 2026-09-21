@@ -155,7 +155,7 @@ public struct IListSegment : IList, IEquatable<IListSegment>
     [NotNullWhen ( true )] out ImpossibleSegmentationException? e 
   )
   {
-    return IndexingValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
+    return IxValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e ) == 1;
   }
 
   [MemberNotNullWhen ( false, nameof ( list ) )]

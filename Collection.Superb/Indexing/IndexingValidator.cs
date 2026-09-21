@@ -117,28 +117,120 @@ static public class IndexingValidator
   /// Validates whether <paramref name="count"/> and <paramref name="offset"/> create
   /// valid segmentation over source of length/count <paramref name="available"/>.
   /// </summary>
-  /// <returns><see langword="true"/> if segmentation is invalid.</returns>
-  /// <remarks>Empty segment is considered to be always valid.</remarks>
-  static public bool ValidateSegmentation
+  /// <returns>
+  /// <list type="bullet">
+  /// <item><c>-1</c> – for empty segment</item>
+  /// <item><c>0</c>  – for valid segment</item>
+  /// <item><c>1</c>  – for invalid segment</item>
+  /// </list>
+  /// </returns>  
+  /// <param name="limit">Is exclusive upper bound for <paramref name="offset"/> and <paramref name="count"/>.</param>
+  /// <remarks>
+  /// Beware of <b>false allowance</b> for empty segments.
+  /// <code>
+  /// ┌───────────┬────────┬───────┬──────────────────┐
+  /// │ available │ offset │ count │      valid       │
+  /// ├───────────┼────────┼───────┼──────────────────┤
+  /// │         0 │      0 │     0 │ valid by formula │
+  /// │         1 │      1 │     0 │ valid by formula │
+  /// │         1 │      0 │     1 │ completely valid │
+  /// │         1 │      2 │     0 │ invalid (empty)  │
+  /// │         5 │      5 │     0 │ valid by formula │
+  /// │         5 │      0 │     5 │ completely valid │
+  /// │         5 │      1 │     4 │ completely valid │
+  /// │         5 │      4 │     1 │ completely valid │
+  /// │         5 │      6 │     0 │ invalid (empty)  │
+  /// └───────────┴────────┴───────┴──────────────────┘
+  /// </code>
+  /// <list type="bullet">
+  /// <item>Segment <c>|offset,count|</c> translates to half-open interval <c>[offset, offset+count)</c>.</item>
+  /// <item>
+  /// <paramref name="offset"/> is always validated to be less than <paramref name="available"/> with exception 
+  /// for case <c>|offset=length,0| → [length,length) = [length,length-1]</c> which is common practice.
+  /// </item>  
+  /// <item>
+  /// See <see cref="ValidateSegmentationStrict(NonNegativeInt32, NonNegativeInt32, NonNegativeInt32, out int, out ImpSegExc?)"/> 
+  /// for less permissive version of this validation method.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  static public int ValidateSegmentation
   (
     NonNegativeInt32 available,
     NonNegativeInt32 offset,
     NonNegativeInt32 count,
     out int limit,
-    [NotNullWhen ( true )] out ImpossibleSegmentationException? e
+    out ImpossibleSegmentationException? e
   )
   {
     limit = LimitOutOf ( offset, count );
-    if (count != 0)
+
+    if (limit > available)
     {
-      if (limit > available)
-      {
-        e = ImpossibleSegmentationException.OufRangeMsg ( available: available, offset: offset, count );
-        return true;
-      }
+      e = ImpossibleSegmentationException.OufRangeMsg ( available: available, offset: offset, count );
+      return 1;
+    }
+
+    if (count == 0)
+    {
+      e = null;
+      return -1;
     }
 
     e = null;
-    return false;
+    return 0;
+  }
+
+  /// <summary>
+  /// <list type="bullet">
+  /// <item>
+  /// Validates whether <paramref name="count"/> and <paramref name="offset"/> create
+  /// valid segmentation over source of length/count <paramref name="available"/>.
+  /// </item>
+  /// <item><paramref name="offset"/> is never considered valid unless less than <paramref name="available"/> with exception for
+  /// <paramref name="available"/> = 0 = <paramref name="offset"/>.
+  /// </item>
+  /// <item>
+  /// This means that segment <c>|offset,count|</c> which translates to interval <c>[start=offset, end=offset+count)</c> is
+  /// valid only when <c>start</c> &lt; <c>end = length</c> with exception for <c>|0,0| → [0, 0)</c>.
+  /// </item>
+  /// <item>See <see cref="ValidateSegmentation(NonNegativeInt32, NonNegativeInt32, NonNegativeInt32, out int, out ImpSegExc?)"/>
+  /// for more information.
+  /// </item>
+  /// </list>
+  /// </summary>
+  /// <returns>
+  /// <list type="bullet">
+  /// <item><c>-1</c> – for empty segment</item>
+  /// <item><c>0</c>  – for valid segment</item>
+  /// <item><c>1</c>  – for invalid segment</item>
+  /// </list>
+  /// </returns>  
+  /// <param name="limit">Is exclusive upper bound for <paramref name="offset"/> and <paramref name="count"/>.</param>
+  static public int ValidateSegmentationStrict
+  (
+    NonNegativeInt32 available,
+    NonNegativeInt32 offset,
+    NonNegativeInt32 count,
+    out int limit,
+    out ImpossibleSegmentationException? e
+  )
+  {
+    limit = LimitOutOf ( offset, count );
+
+    if ((offset == available && offset != 0) || limit > available)
+    {
+      e = ImpossibleSegmentationException.OufRangeMsg ( available: available, offset: offset, count );
+      return 1;
+    }
+
+    if (count == 0)
+    {
+      e = null;
+      return -1;
+    }
+
+    e = null;
+    return 0;
   }
 }

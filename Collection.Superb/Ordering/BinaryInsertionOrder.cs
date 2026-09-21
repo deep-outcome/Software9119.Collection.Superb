@@ -47,13 +47,22 @@ static public class BinaryInsertionOrder
     if (comparer == null)
       throw NullComparer ( nameof ( comparer ) );
 
+    if (array.Length == 0)
+      return;
+
     int length = array.Length;
-    if (
-        IndexingValidator.ValidateSegmentation ( length, offset, count, out int limit,
-        out ImpossibleSegmentationException? e
-      )
-    )
-      throw e;
+    int validation = IxValidator.ValidateSegmentation ( length, offset, count, out int limit, out ImpSegExc? e );
+    switch (validation)
+    {
+      case -1:
+        return;
+      case 1:
+        throw e!;
+      case 0:
+        break;
+      default:
+        throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+    }
 
     for (int current = offset + 1 ; current < limit ; ++current)
     {

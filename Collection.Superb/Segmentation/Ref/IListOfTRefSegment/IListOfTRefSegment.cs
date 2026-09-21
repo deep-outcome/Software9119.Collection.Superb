@@ -125,7 +125,7 @@ public ref struct IListRefSegment<T, U>
     [NotNullWhen ( true )] out ImpossibleSegmentationException? e 
   )
   {
-    return IndexingValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e );
+    return IxValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e ) == 1;
   }
 
   readonly internal bool ValidateIndex ( ref int index, [NotNullWhen ( true )] out IndexOutOfBoundariesException? e )

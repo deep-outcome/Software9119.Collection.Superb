@@ -32,8 +32,8 @@ public struct IReadOnlyListEnumerator<T> : IEnumerator<T?>
 #pragma warning disable CA1062 // Validate arguments of public methods
     int listLength = list.Count;
 #pragma warning restore CA1062 // Validate arguments of public methods
-    if (IndexingValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
-      throw ise;
+    if (IxValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpSegExc? ise ) == 1)
+      throw ise!;
   }
 
   internal IReadOnlyListEnumerator ( IReadOnlyList<T?> list, int offset, int limit )

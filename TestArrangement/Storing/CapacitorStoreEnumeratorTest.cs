@@ -81,7 +81,7 @@ public class CapacitorStoreEnumeratorTest
     CapacitorStoreEnumerator<int> enumerator = new (capacitor);
 
     (int, bool) [] steps = [(0, true), (1, true), (1, false)];
-    foreach ( (int increment, bool moved) in steps )
+    foreach ((int increment, bool moved) in steps)
     {
       Assert.AreEqual ( moved, enumerator.MoveNext () );
       Assert.AreEqual ( 0 + increment, enumerator.index );
@@ -96,12 +96,12 @@ public class CapacitorStoreEnumeratorTest
     CapacitorStoreEnumerator<int> enumerator = new (capacitor);
 
     Assert.AreEqual ( 0, enumerator.Current );
-    Assert.AreEqual ( 0, (( IEnumerator ) enumerator).Current );
+    Assert.AreEqual ( 0, ((IEnumerator) enumerator).Current );
 
     _ = enumerator.MoveNext ();
 
     Assert.AreEqual ( 3, enumerator.Current );
-    Assert.AreEqual ( 3, (( IEnumerator ) enumerator).Current );
+    Assert.AreEqual ( 3, ((IEnumerator) enumerator).Current );
   }
 
   [TestMethod]
@@ -116,5 +116,30 @@ public class CapacitorStoreEnumeratorTest
     Assert.AreEqual ( resetIndex, enumerator.index );
     Assert.AreEqual ( -1, enumerator.index );
     Assert.AreEqual ( 0, enumerator.Current );
+  }
+
+  // veryfing strunct equality works as it should, not truly implemented
+  [TestMethod]
+  public void Equals_Object ()
+  {
+    int[] source = [1, 2, 3, 4, 5];
+
+    Capacitor<int> c1 = new (source);
+    Capacitor<int> c2 = new (source);
+
+    CapacitorStoreEnumerator<int> e1 = new (c1);
+    CapacitorStoreEnumerator<int> e2 = new (c1);
+
+    Assert.IsTrue ( e1.Equals ( (object) e2 ) );
+
+    _ = e2.MoveNext ();
+    Assert.IsFalse ( e1.Equals ( (object) e2 ) );
+
+    c1.Add ( 6 );
+    e2 = new ( c1 );
+    Assert.IsFalse ( e1.Equals ( (object) e2 ) );
+
+    e2 = new ( c2 );
+    Assert.IsFalse ( e1.Equals ( (object) e2 ) );
   }
 }

@@ -28,8 +28,8 @@ public ref struct IListRefEnumerator<T, U> : IEnumerator<U?>
   public IListRefEnumerator ( NonNegativeInt32 offset, NonNegativeInt32 count, T list ) : this ( list, offset, IndexingValidator.LimitOutOf ( offset, count ) )
   {
     int listLength = list.Count;
-    if (IndexingValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpossibleSegmentationException? ise ))
-      throw ise;
+    if (IxValidator.ValidateSegmentation ( listLength, offset: offset, count: count, out _, out ImpSegExc? ise ) == 1)
+      throw ise!;
   }
 
   internal IListRefEnumerator ( T list, int offset, int limit )

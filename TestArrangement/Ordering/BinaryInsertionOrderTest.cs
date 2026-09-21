@@ -37,6 +37,7 @@ public class BinaryInsertionOrderTest
   [DataRow ( 3, 5, "With available 5, given offset 3 and count 5 produce out-of indexing." )]
   [DataRow ( 0, 6, "With available 5, given offset 0 and count 6 produce out-of indexing." )]
   [DataRow ( 0, 7, "With available 5, given offset 0 and count 7 produce out-of indexing." )]
+  [DataRow ( 6, 0, "With available 5, given offset 6 and count 0 produce out-of indexing." )]
   public void Order_InvalidSegmenation ( int offset, int count, string errMsg )
   {
     int [] array = [1, 2, 3, 4, 5];
@@ -201,6 +202,29 @@ public class BinaryInsertionOrderTest
       Assert.IsTrue ( source.SequenceEqual ( array ) );
       Assert.IsTrue ( source.SequenceEqual ( spanArray ) );
     }
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0 )]
+  [DataRow ( 500, 0 )]
+  [DataRow ( 1000, 0 )]
+  public void EmptySegment ( int offset, int count )
+  {
+    Random random = new ();
+    int[] source = Enumerable
+      .Repeat(() => random.Next(int.MinValue, int.MaxValue), 1000)
+      .Select(x => x())
+      .AsOrToArray(1000)!;
+
+    int [] array = source.ToArray();
+    int [] spanArray = source.ToArray();
+    Span<int> span = new (spanArray, offset, count);
+
+    BinaryInsertionOrder.Order ( array, offset, count, Comparison );
+    BinaryInsertionOrder.Order ( span, Comparison );
+
+    Assert.IsTrue ( source.SequenceEqual ( array ) );
+    Assert.IsTrue ( source.SequenceEqual ( spanArray ) );
   }
 
   [TestMethod]

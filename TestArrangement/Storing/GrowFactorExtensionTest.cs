@@ -21,17 +21,17 @@ public class GrowFactorExtensionTest
   [DataRow ( GrowFactor.Five, 5.0f )]
   public void ToFloat ( GrowFactor factor, float expectation )
   {
-    Assert.AreEqual ( expectation, factor.ToFloat () );
+    Assert.IsTrue ( factor.ToFloat ( out float number ) );
+    Assert.AreEqual ( expectation, number );
 
     // no error, all values are handled
-    _ = Enum.GetValues ( typeof ( GrowFactor ) ).Cast<GrowFactor> ().Select ( GrowFactorExtension.ToFloat );
+    _ = Enum.GetValues ( typeof ( GrowFactor ) ).Cast<GrowFactor> ().All ( x => GrowFactorExtension.ToFloat ( x, out _ ) );
   }
 
   [TestMethod]
   public void ToFloat_Unknown ()
   {
-    Action test = () => _ = ((GrowFactor) (-1)).ToFloat();
-    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
-    Assert.AreEqual ( "Unsupported grow factor, '-1'. (Parameter 'factor')", e.Message );
+    Assert.IsFalse ( ((GrowFactor) (-1)).ToFloat ( out float number ) );
+    Assert.AreEqual ( default, number );
   }
 }
