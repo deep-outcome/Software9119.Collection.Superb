@@ -11,20 +11,21 @@ namespace Software9119.Collection.Superb.Indexing;
 /// </summary>
 public class IndexOutOfBoundariesException : ArgumentOutOfRangeException
 {
-  static public IndexOutOfBoundariesException OutOfBoundsMsg ( NonNegativeInt32 index, NonNegativeInt32 available )
+  static public IndexOutOfBoundariesException OutOfBoundsMsg ( NonNegativeInt32 index, NonNegativeInt32 available, string? paramName = null )
   {
     string msg = $"For available '{available}' is index '{index}' out of bounds.";
-    return new IndexOutOfBoundariesException ( msg );
+    return new IndexOutOfBoundariesException ( msg, paramName: paramName );
   }
 
-  static public IndexOutOfBoundariesException NegativeIndexMsg ( NegativeInt32 index )
+  static public IndexOutOfBoundariesException NegativeIndexMsg ( NegativeInt32 index, string? paramName = null )
   {
     string msg = $"Index must be non-negative, but it is '{index}'.";
-    return new IndexOutOfBoundariesException ( msg );
+    return new IndexOutOfBoundariesException ( msg, paramName: paramName );
   }
 
   public IndexOutOfBoundariesException ( SerializationInfo info, StreamingContext context ) : base ( info, context ) { }
   public IndexOutOfBoundariesException () { }
-  public IndexOutOfBoundariesException ( string message ) : base ( paramName: null!, message ) { }
-  public IndexOutOfBoundariesException ( string message, Exception innerException ) : base ( message: message, innerException ) { }
+  public IndexOutOfBoundariesException ( string? message ) : base ( paramName: null, message: message ) { }
+  public IndexOutOfBoundariesException ( string? message, string? paramName ) : base ( paramName: paramName, message: message ) { }
+  public IndexOutOfBoundariesException ( string? message, Exception? innerException ) : base ( message: message, innerException ) { }
 }

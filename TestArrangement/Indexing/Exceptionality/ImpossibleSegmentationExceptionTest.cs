@@ -3,6 +3,7 @@
 using Software9119.Collection.Superb.Indexing;
 
 using System;
+using System.Globalization;
 
 namespace Software9119.Collection.Superb.TestArrangement.Indexing.Exceptionality;
 
@@ -30,6 +31,26 @@ public class ImpossibleSegmentationExceptionTest
     ImpossibleSegmentationException e = ImpossibleSegmentationException.OufRangeMsg (1, 2, 3);
     string expMsg = "With available 1, given offset 2 and count 3 produce out-of indexing.";
     Assert.AreEqual ( expMsg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( null )]
+  [DataRow ( false )]
+  [DataRow ( true )]
+  public void OufRangeMsg ( bool? withParamaters )
+  {
+    string[]? parameters = withParamaters == null
+      ? null
+      : withParamaters == true
+        ? [ "AB", "C", "DE" ]
+        : [];
+
+    ImpossibleSegmentationException e = ImpossibleSegmentationException.OufRangeMsg (1, 2, 3,parameters);
+    string msg = "With available 1, given offset 2 and count 3 produce out-of indexing.{0}";
+    string paramsString = withParamaters == true ? " (Parameters 'AB','C','DE')" : "";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsString );
+
+    Assert.AreEqual ( msg, e.Message );
   }
 
   [TestMethod]

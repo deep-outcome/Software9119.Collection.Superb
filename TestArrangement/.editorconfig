@@ -29,3 +29,6 @@ dotnet_diagnostic.CA5394.severity = silent
 
 # CA2263: Prefer generic overload when type is known
 dotnet_diagnostic.CA2263.severity = silent
+
+# CA1820: Test for empty strings using string length
+dotnet_diagnostic.CA1820.severity = silent

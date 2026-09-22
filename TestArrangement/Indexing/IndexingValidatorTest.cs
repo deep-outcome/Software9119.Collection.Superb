@@ -4,6 +4,8 @@ using Software9119.Collection.Superb.Indexing;
 using Software9119.Collection.Superb.Numerics;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 
 namespace Software9119.Collection.Superb.TestArrangement.Indexing;
 
@@ -50,6 +52,26 @@ public class IndexingValidatorTest
   }
 
   [TestMethod]
+  [DataRow ( "implicit" )]
+  [DataRow ( null )]
+  [DataRow ( "" )]
+  [DataRow ( "yourParam" )]
+  [SuppressMessage ( "Style", "IDE0018:Inline variable declaration", Justification = "No." )]
+  public void ValidateIndex_NegativeScenarios_Parameters ( string? paramName )
+  {
+    IndexOutOfBoundariesException? e;
+    _ = paramName == "implicit"
+      ? IndexingValidator.ValidateIndex ( index: (NonNegativeInt32) 0, (NonNegativeInt32) 0, out e )
+      : IndexingValidator.ValidateIndex ( index: (NonNegativeInt32) 0, (NonNegativeInt32) 0, out e, paramName );
+
+    string msg =  $"For available '0' is index '0' out of bounds.";
+    string paramString = paramName == "yourParam" ? " (Parameter 'yourParam')" : "";
+    msg += paramString;
+
+    Assert.AreEqual ( msg, e?.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 1 )]
   [DataRow ( 1, 2 )]
   [DataRow ( 5, 8 )]
@@ -77,6 +99,33 @@ public class IndexingValidatorTest
     Assert.IsNotNull ( e );
 
     Assert.AreEqual ( errMsg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, "implicit" )]
+  [DataRow ( 0, 0, null )]
+  [DataRow ( 0, 0, "" )]
+  [DataRow ( 0, 0, "yourParam" )]
+  [DataRow ( -1, 0, "implicit" )]
+  [DataRow ( -1, 0, null )]
+  [DataRow ( -1, 0, "" )]
+  [DataRow ( -1, 0, "yourParam" )]
+  [SuppressMessage ( "Style", "IDE0018:Inline variable declaration", Justification = "No." )]
+  public void ValidateIndex_Int32Index_NegativeScenarios_ParameterName ( int index, int count, string? paramName )
+  {
+    IndexOutOfBoundariesException? e;
+    _ = paramName == "implicit"
+      ? IndexingValidator.ValidateIndex ( index, count, out e )
+      : IndexingValidator.ValidateIndex ( index, count, out e, paramName );
+
+    string errMsg = index == -1
+      ? "Index must be non-negative, but it is '-1'."
+      : "For available '0' is index '0' out of bounds.";
+
+    string paramString = paramName == "yourParam" ? " (Parameter 'yourParam')" : "";
+    errMsg += paramString;
+
+    Assert.AreEqual ( errMsg, e?.Message );
   }
 
   [TestMethod]
@@ -157,6 +206,27 @@ public class IndexingValidatorTest
   }
 
   [TestMethod]
+  [DataRow ( null )]
+  [DataRow ( false )]
+  [DataRow ( true )]
+  public void ValidateSegmentation_ImpossibleSegment_Parameters ( bool? withParamaters )
+  {
+    string[]? parameters = withParamaters == null
+      ? null
+      : withParamaters == true
+        ? ["ABC", "xYz"]
+        : [];
+
+    _ = IndexingValidator.ValidateSegmentation ( 5, 0, 6, out _, out ImpSegExc? e, parameters );
+
+    string msg = "With available 5, given offset 0 and count 6 produce out-of indexing.{0}";
+    string parametersString = withParamaters == true ? " (Parameters 'ABC','xYz')" : "";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
+
+    Assert.AreEqual ( msg, e?.Message );
+  }
+
+  [TestMethod]
   [DataRow ( -1, 0, 0, DisplayName = "Negative available." )]
   [DataRow ( 0, -1, 0, DisplayName = "Negative offset." )]
   [DataRow ( 0, 0, -1, DisplayName = "Negative count." )]
@@ -192,10 +262,10 @@ public class IndexingValidatorTest
   [DataRow ( 3, 3, 5, DisplayName = "Impossible segmentation, offsetting." )]
   [DataRow ( 3, 5, 5, DisplayName = "Impossible segmentation, offsetting, range." )]
   [DataRow ( 0, 6, 5, DisplayName = "Impossible segmentation." )]
-  [DataRow ( 0, 7, 5, DisplayName = "Impossible segmentation, range." )]    
+  [DataRow ( 0, 7, 5, DisplayName = "Impossible segmentation, range." )]
   [DataRow ( 0, 1, 0, DisplayName = "Impossible segmentation, nothing available." )]
   [DataRow ( 1, 1, 0, DisplayName = "Impossible segmentation, nothing available." )]
-  [DataRow ( 1, 0, 0, DisplayName = "Empty segment, index not less" )]  
+  [DataRow ( 1, 0, 0, DisplayName = "Empty segment, index not less" )]
   [DataRow ( 5, 0, 5, DisplayName = "Empty segment, index not less" )]
   [DataRow ( 6, 0, 5, DisplayName = "Empty segment, index not less" )]
   public void ValidateSegmentationStrict_ImpossibleSegment ( int offset, int count, int available )

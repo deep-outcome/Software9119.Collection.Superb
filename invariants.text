@@ -1,0 +1,5 @@
+- methods with offsets validates it
+- methods with offsets+count validates them
+- methods consuming reference types validates non-null (predicates, arrays)
+- methods working with sourcing data are tested for empty capacitor (not applicable for offset-only methods)
+- methods working with segments are tested with empty segment

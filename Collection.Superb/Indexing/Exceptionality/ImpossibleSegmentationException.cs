@@ -30,17 +30,22 @@ public class ImpossibleSegmentationException : ArgumentOutOfRangeException
   (
     NonNegativeInt32 available,
     NonNegativeInt32 offset,
-    NonNegativeInt32 count
+    NonNegativeInt32 count,
+    string []? parameters = null
   )
   {
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing.";
+    const string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing.{3}";
 
-    msg = string.Format ( msg, available, offset, count, available );
-    return new ImpossibleSegmentationException ( msg );
+    int paramsLength = parameters?.Length ?? 0;
+    string paramsString = paramsLength == 0 ? "" : $" (Parameters '{string.Join("','", parameters!)}')";
+
+    string errMsg = string.Format ( msg, available, offset, count, paramsString );
+    return new ImpossibleSegmentationException ( errMsg );
   }
 
   public ImpossibleSegmentationException ( SerializationInfo info, StreamingContext context ) : base ( info, context ) { }
   public ImpossibleSegmentationException () { }
-  public ImpossibleSegmentationException ( string message ) : base ( paramName: null, message: message ) { }
-  public ImpossibleSegmentationException ( string message, Exception innerException ) : base ( message: message, innerException ) { }
+  public ImpossibleSegmentationException ( string? message ) : base ( paramName: null, message: message ) { }
+  public ImpossibleSegmentationException ( string? message, string? paramName ) : base ( paramName: paramName, message: message ) { }
+  public ImpossibleSegmentationException ( string? message, Exception? innerException ) : base ( message: message, innerException ) { }
 }

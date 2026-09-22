@@ -54,14 +54,10 @@ static public class BinaryInsertionOrder
     int validation = IxValidator.ValidateSegmentation ( length, offset, count, out int limit, out ImpSegExc? e );
     switch (validation)
     {
-      case -1:
-        return;
-      case 1:
-        throw e!;
-      case 0:
-        break;
-      default:
-        throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      case -1: return;
+      case 1: throw e!;
+      case 0: break;
+      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
     }
 
     for (int current = offset + 1 ; current < limit ; ++current)
