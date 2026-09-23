@@ -2,5 +2,3 @@
 - add to ILIst segments extension methods
 - add AsOrToCapacitor and AsOrToAccumulator
 - CopyTo(SameType) for segments (as ArraySegment do)
-
-- consider capacitor and accumulator variant derived from List<T>

@@ -3,3 +3,5 @@
 - methods consuming reference types validates non-null (predicates, arrays)
 - methods working with sourcing data are tested for empty capacitor (not applicable for offset-only methods)
 - methods working with segments are tested with empty segment
+- methods working with segments throws and documents segmentation exception
+- methods with offsets only throws and documents index oob exception
