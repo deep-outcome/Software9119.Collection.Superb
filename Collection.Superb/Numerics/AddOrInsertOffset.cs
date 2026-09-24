@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Software9119.Collection.Superb.Numerics;
@@ -11,8 +12,19 @@ namespace Software9119.Collection.Superb.Numerics;
 /// Internal type opened only for implementors.
 /// </remarks>
 [DebuggerDisplay ( "({value}, inserting={inserting})" )]
-readonly public struct AddOrInsertOffset ( int value, bool inserting ) : IEquatable<AddOrInsertOffset>
+readonly public struct AddOrInsertOffset : IEquatable<AddOrInsertOffset>
 {
+  /// <summary>
+  /// Constructor.
+  /// </summary>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
+  [SuppressMessage ( "Style", "IDE0290:Use primary constructor", Justification = "Cannot target method via class attribute." )]
+  public AddOrInsertOffset ( int value, bool inserting )
+  {
+    this.value = value;
+    this.inserting = inserting;
+  }
+
   /// <summary>
   /// When <paramref name="value"/> equals <paramref name="count"/>, it's addition operation, otherwise insertion operation.
   /// </summary>  
@@ -22,8 +34,8 @@ readonly public struct AddOrInsertOffset ( int value, bool inserting ) : IEquata
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public AddOrInsertOffset CreateUsingCount ( int value, int count ) => new ( value, value != count );
 
-  readonly internal int value = value;
-  readonly internal bool inserting = inserting;
+  readonly internal int value;
+  readonly internal bool inserting; 
 
   /// <summary>
   /// Implicit operator for conversion from <see cref="AddOrInsertOffset"/> to <see langword="int"/>.

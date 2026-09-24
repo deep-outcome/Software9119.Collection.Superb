@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Software9119.Collection.Superb.Numerics;
 
@@ -13,6 +14,7 @@ readonly public struct NegativeInt32 : IEquatable<NegativeInt32>
   /// Validates current instance initialization and throws if it is default.
   /// </summary>
   /// <exception cref="InvalidOperationException"/>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   public void ThrowIfDefault ()
   {
     const string msg = $"Unitialized {nameof(NegativeInt32)} instance usage.";
@@ -24,6 +26,7 @@ readonly public struct NegativeInt32 : IEquatable<NegativeInt32>
   /// This struct constructor.
   /// </summary>
   /// <exception cref="ArgumentOutOfRangeException">When <paramref name="value"/> is less then <c>0</c>.</exception>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   public NegativeInt32 ( int value )
   {
     if (value > -1)
@@ -42,6 +45,7 @@ readonly public struct NegativeInt32 : IEquatable<NegativeInt32>
   /// </summary>  
   public int Value
   {
+    [MethodImpl ( MethodImplOptions.AggressiveInlining )]
     get
     {
       ThrowIfDefault ();
@@ -52,11 +56,13 @@ readonly public struct NegativeInt32 : IEquatable<NegativeInt32>
   /// <summary>
   /// Implicit operator for conversion from <see langword="int"/> to <see cref="NegativeInt32"/>.
   /// </summary>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public implicit operator NegativeInt32 ( int value ) => new ( value );
 
   /// <summary>
   /// Implicit operator for conversion from <see cref="NegativeInt32"/> to <see langword="int"/>.
   /// </summary>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public implicit operator int ( NegativeInt32 value ) => value.Value;
 
   /// <summary>

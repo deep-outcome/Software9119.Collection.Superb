@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Software9119.Collection.Superb.Numerics;
 
@@ -13,6 +14,7 @@ readonly public struct NonNegativeInt32 : IEquatable<NonNegativeInt32>
   /// This struct constructor.
   /// </summary>
   /// <exception cref="ArgumentOutOfRangeException">When <paramref name="value"/> is less then <c>0</c>.</exception>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   public NonNegativeInt32 ( int value )
   {
     if (value < 0)
@@ -28,17 +30,26 @@ readonly public struct NonNegativeInt32 : IEquatable<NonNegativeInt32>
 
   /// <summary>
   /// This instance value.
-  /// </summary>  
-  public int Value => value;
+  /// </summary>
+  public int Value
+  {
+    [MethodImpl ( MethodImplOptions.AggressiveInlining )]
+    get
+    {
+      return value;
+    }
+  }
 
   /// <summary>
   /// Implicit operator for conversion from <see langword="int"/> to <see cref="NonNegativeInt32"/>.
   /// </summary>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public implicit operator NonNegativeInt32 ( int value ) => new ( value );
 
   /// <summary>
   /// Implicit operator for conversion from <see cref="NonNegativeInt32"/> to <see langword="int"/>.
   /// </summary>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static public implicit operator int ( NonNegativeInt32 value ) => value.value;
 
   /// <summary>

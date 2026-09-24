@@ -8,4 +8,6 @@ struct PositionValueItem ( int value, int position )
   readonly bool initialized = true;
   int position = position;
   int value = value;
+
+  static public implicit operator PositionValueItem ( (int, int) pair ) => new ( pair.Item1, pair.Item2 );
 }

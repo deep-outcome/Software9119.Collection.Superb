@@ -140,6 +140,59 @@ public class IndexingValidatorTest
   }
 
   [TestMethod]
+  [DataRow ( 1, 0, "Cannot insert at index '1' when available is '0'." )]
+  [DataRow ( 5, 4, "Cannot insert at index '5' when available is '4'." )]
+  [DataRow ( -1, default, "Index must be non-negative, but it is '-1'." )]
+  [DataRow ( int.MinValue, default, "Index must be non-negative, but it is '-2147483648'." )]
+  public void ValidateInsertionIndex_Int32Index_NegativeScenarios ( int index, int count, string errMsg )
+  {
+    bool result = IndexingValidator.ValidateInsertionIndex (index, count, out IndexOutOfBoundariesException? e);
+    Assert.IsTrue ( result );
+    Assert.IsNotNull ( e );
+
+    Assert.AreEqual ( errMsg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 1, "implicit" )]
+  [DataRow ( 1, null )]
+  [DataRow ( 1, "" )]
+  [DataRow ( 1, "yourParam" )]
+  [DataRow ( -1, "implicit" )]
+  [DataRow ( -1, null )]
+  [DataRow ( -1, "" )]
+  [DataRow ( -1, "yourParam" )]
+  [SuppressMessage ( "Style", "IDE0018:Inline variable declaration", Justification = "No." )]
+  public void ValidateInsertionIndex_Int32Index_NegativeScenarios_ParameterName ( int index, string? paramName )
+  {
+    IndexOutOfBoundariesException? e;
+    _ = paramName == "implicit"
+      ? IndexingValidator.ValidateInsertionIndex ( index, 0, out e )
+      : IndexingValidator.ValidateInsertionIndex ( index, 0, out e, paramName );
+
+    string errMsg = index == -1
+      ? "Index must be non-negative, but it is '-1'."
+      : "Cannot insert at index '1' when available is '0'.";
+
+    string paramString = paramName == "yourParam" ? " (Parameter 'yourParam')" : "";
+    errMsg += paramString;
+
+    Assert.AreEqual ( errMsg, e?.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 1 )]
+  [DataRow ( 1, 1 )]
+  [DataRow ( 7, 8 )]
+  [DataRow ( 8, 8 )]
+  public void ValidateInsertionIndex_Int32Index_PositiveScenarios ( int index, int count )
+  {
+    bool result = IndexingValidator.ValidateInsertionIndex (index, count, out IndexOutOfBoundariesException? e);
+    Assert.IsFalse ( result );
+    Assert.IsNull ( e );
+  }
+
+  [TestMethod]
   [DataRow ( 2, 1, 2, DisplayName = "Offsetting, index out of bounds." )]
   [DataRow ( 5, 0, 5, DisplayName = "No offset, index out of bounds" )]
   [DataRow ( 0, 0, 0, DisplayName = "Empty segment, 0 index." )]

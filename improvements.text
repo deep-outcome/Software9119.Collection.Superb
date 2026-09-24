@@ -2,3 +2,7 @@
 - add to ILIst segments extension methods
 - add AsOrToCapacitor and AsOrToAccumulator
 - CopyTo(SameType) for segments (as ArraySegment do)
+- IndexingValidator.ValidateSegmentation can return -2 for empty source and -1 for empty segment
+
+- capacitor
+	- replace various segmented methods with internal capacitor-slice with call to simplest method possible

@@ -81,6 +81,34 @@ static public class IndexingValidator
   }
 
   /// <summary>
+  /// Validates insertion <paramref name="index"/> is not negative and valid for target <paramref name="count"/>.
+  /// </summary>
+  /// <returns><see langword="true"/> if index is invalid.</returns>
+  static public bool ValidateInsertionIndex
+  (
+    int index,
+    NonNegativeInt32 count,
+    [NotNullWhen ( true )] out IndexOutOfBoundariesException? e,
+    string? paramName = null
+  )
+  {
+    if (index < 0)
+    {
+      e = IndexOutOfBoundariesException.NegativeIndexMsg ( index, paramName );
+      return true;
+    }
+
+    if (index > count)
+    {
+      e = IndexOutOfBoundariesException.OutOfBoundsForInsertionMsg ( index: index, count, paramName );
+      return true;
+    }
+
+    e = null;
+    return false;
+  }
+
+  /// <summary>
   /// <list type="bullet">
   /// <item>
   /// Validates <paramref name="index"/> non-negativity and validity for source of length/count <paramref name="count"/>.

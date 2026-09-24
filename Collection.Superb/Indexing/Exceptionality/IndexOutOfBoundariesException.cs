@@ -11,6 +11,13 @@ namespace Software9119.Collection.Superb.Indexing;
 /// </summary>
 public class IndexOutOfBoundariesException : ArgumentOutOfRangeException
 {
+  static public IndexOutOfBoundariesException OutOfBoundsForInsertionMsg (
+    NonNegativeInt32 index, NonNegativeInt32 available, string? paramName = null )
+  {
+    string msg = $"Cannot insert at index '{index}' when available is '{available}'.";
+    return new IndexOutOfBoundariesException ( msg, paramName: paramName );
+  }
+
   static public IndexOutOfBoundariesException OutOfBoundsMsg ( NonNegativeInt32 index, NonNegativeInt32 available, string? paramName = null )
   {
     string msg = $"For available '{available}' is index '{index}' out of bounds.";

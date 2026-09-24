@@ -12,6 +12,24 @@ public class IndexOutOfBoundariesExceptionTest
   [DataRow ( null )]
   [DataRow ( "" )]
   [DataRow ( "yourParam" )]
+  public void OutOfBoundsForInsertionMsg ( string paramName )
+  {
+    string msg = "Cannot insert at index '1' when available is '0'.";
+    string paramString = paramName == "yourParam" ? $" (Parameter '{paramName}')" : "";
+    msg += paramString;
+
+    IndexOutOfBoundariesException test = paramName == "implicit"
+      ? IndexOutOfBoundariesException.OutOfBoundsForInsertionMsg(1, available: 0)
+      : IndexOutOfBoundariesException.OutOfBoundsForInsertionMsg(1, available: 0, paramName);
+
+    Assert.AreEqual ( msg, test.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( "implicit" )]
+  [DataRow ( null )]
+  [DataRow ( "" )]
+  [DataRow ( "yourParam" )]
   public void OutOfBoundsMsg ( string paramName )
   {
     string msg = "For available '0' is index '1' out of bounds.";
