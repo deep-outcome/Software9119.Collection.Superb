@@ -304,7 +304,7 @@ public partial class IEnumerableExtensionTest
   [DataRow ( null )]
   public void IntoPriorityQueue ( int? capacity )
   {
-    ReverseOrderComparer<int> priorityComparer = new ();
+    ReversiveComparer<int> priorityComparer = new ();
     IEnumerable<(int, int)> source = Enumerable.Range(0, 10).Select(x => (x, x*2 ));
     PriorityQueue<int, int> test = capacity is int
       ? source.IntoPriorityQueue(capacity, priorityComparer: priorityComparer)!
@@ -385,7 +385,7 @@ public partial class IEnumerableExtensionTest
   public void IntoSortedDictionary_KeySelectorOnly ()
   {
     Func<int, int> keySelector = x => x * 2;
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
     SortedDictionary<int, int> test = source.IntoSortedDictionary(keySelector, keyComparer)!;
@@ -429,7 +429,7 @@ public partial class IEnumerableExtensionTest
   {
     Func<int, int> keySelector = x => x * 2;
     Func<int, int> valueSelector = x => x * 3;
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
     SortedDictionary<int, int>? test = source.IntoSortedDictionary(keySelector, valueSelector, keyComparer: keyComparer)!;
@@ -475,7 +475,7 @@ public partial class IEnumerableExtensionTest
   public void IntoTypedSortedList_KeySelectorOnly ( int? cap )
   {
     Func<int, int> keySelector = x => x * 2;
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
     SortedList<int, int> test = cap is int
@@ -525,7 +525,7 @@ public partial class IEnumerableExtensionTest
   {
     Func<int, int> keySelector = x => x * 2;
     Func<int, int> valueSelector = x => x * 3;
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
     SortedList<int, int>? test = cap is int
@@ -571,7 +571,7 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   public void AsOrToSortedSet ()
   {
-    ReverseOrderComparer<int> itemComparer = new ();
+    ReversiveComparer<int> itemComparer = new ();
     IEnumerable<int> source = Enumerable.Range(0, 10);
     SortedSet<int> test = source.AsOrToSortedSet(itemComparer: itemComparer)!;
 

@@ -1,5 +1,6 @@
 ﻿using Software9119.Collection.Superb.Numerics;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -191,13 +192,14 @@ static public class IndexingValidator
     NonNegativeInt32 count,
     out int limit,
     out ImpossibleSegmentationException? e,
-    string []? parameters = null
+    Func<string []>? parametersGetter = null
   )
   {
     limit = LimitOutOf ( offset, count );
 
     if (limit > available)
     {
+      string []? parameters = parametersGetter?.Invoke();
       e = ImpossibleSegmentationException.OufRangeMsg ( available: available, offset: offset, count, parameters );
       return 1;
     }
@@ -225,7 +227,7 @@ static public class IndexingValidator
   /// This means that segment <c>|offset,count|</c> which translates to interval <c>[start=offset, end=offset+count)</c> is
   /// valid only when <c>start</c> &lt; <c>end = length</c> with exception for <c>|0,0| → [0, 0)</c>.
   /// </item>
-  /// <item>See <see cref="ValidateSegmentation(NonNegativeInt32, NonNegativeInt32, NonNegativeInt32, out int, out ImpSegExc?, string[])"/>
+  /// <item>See <see cref="ValidateSegmentation(NonNegativeInt32, NonNegativeInt32, NonNegativeInt32, out int, out ImpSegExc?, Func{string[]}?)"/>
   /// for more information.
   /// </item>
   /// </list>

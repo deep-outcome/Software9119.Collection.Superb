@@ -229,7 +229,7 @@ public class system_collections_immutable_test
   public void ImmutableSortedDictionary_KeySelectorOnly ()
   {
     Func<int, int> keySelector = x => x *2;
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
     TestComparer<int> itemComparer = new ();
 
     AsOrToTargetType<ImmutableSortedDictionary<int, int>> targetType = collections_immutable.ImmutableSortedDictionary
@@ -266,7 +266,7 @@ public class system_collections_immutable_test
   public void ImmutableSortedDictionary_KeySelectorOnly_NullParameter ( string errMsg, string whosNull )
   {
     Func<int, int> keySelector            = whosNull == "sk" ? null! : x => x;
-    ReverseOrderComparer<int> keyComparer = whosNull == "ck" ? null! : new ();
+    ReversiveComparer<int> keyComparer = whosNull == "ck" ? null! : new ();
     TestComparer<int> itemComparer        = whosNull == "ci" ? null! : new ();
 
     Action test = () => collections_immutable.ImmutableSortedDictionary
@@ -284,7 +284,7 @@ public class system_collections_immutable_test
   {
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = x => x *3;
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
     TestComparer<int> valueComparer = new ();
 
     AsOrToTargetType<ImmutableSortedDictionary<int, int>> targetType = collections_immutable.ImmutableSortedDictionary
@@ -324,7 +324,7 @@ public class system_collections_immutable_test
   {
     Func<int, int> keySelector            = whosNull == "sk" ? null! : x => x;
     Func<int, int> valueSelector          = whosNull == "sv" ? null! : x => x;
-    ReverseOrderComparer<int> keyComparer = whosNull is "ck" ? null! : new ();
+    ReversiveComparer<int> keyComparer = whosNull is "ck" ? null! : new ();
     TestComparer<int> valueComparer       = whosNull is "cv" ? null! : new ();
 
     Action test = () => collections_immutable.ImmutableSortedDictionary
@@ -341,7 +341,7 @@ public class system_collections_immutable_test
   [TestMethod]
   public void ImmutableSortedSet ()
   {
-    ReverseOrderComparer<int> itemComparer = new ();
+    ReversiveComparer<int> itemComparer = new ();
     AsOrToTargetType<ImmutableSortedSet<int>> targetType = collections_immutable.ImmutableSortedSet ( itemComparer );
 
     ImmutableSortedSet<int> empty = targetType.Empty ();
@@ -363,7 +363,7 @@ public class system_collections_immutable_test
   [TestMethod]
   public void ImmutableSortedSet_NullComparer ()
   {
-    ReverseOrderComparer<int> itemComparer = null!;
+    ReversiveComparer<int> itemComparer = null!;
     Action test = () => collections_immutable.ImmutableSortedSet ( itemComparer );
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Item comparer not provided. (Parameter 'itemComparer')", e.Message );

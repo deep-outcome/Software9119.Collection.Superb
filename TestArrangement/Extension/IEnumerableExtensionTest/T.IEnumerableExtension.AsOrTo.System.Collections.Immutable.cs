@@ -245,7 +245,7 @@ public partial class IEnumerableExtensionTest
   public void IntoImmutableSortedDictionary_KeySelectorOnly ()
   {
     Func<int, int> keySelector = x => x * 2;
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
     TestComparer<int> itemComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
@@ -298,7 +298,7 @@ public partial class IEnumerableExtensionTest
   {
     Func<int, int> keySelector = x => x * 2;
     Func<int, int> valueSelector = x => x * 3;
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
     TestComparer<int> valueComparer = new ();
 
     IEnumerable<int> source = Enumerable.Range(0, 10);
@@ -350,7 +350,7 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   public void AsOrToImmutableSortedSet ()
   {
-    ReverseOrderComparer<int> itemComparer = new ();
+    ReversiveComparer<int> itemComparer = new ();
     IEnumerable<int> source = Enumerable.Range(0, 10);
     ImmutableSortedSet<int> test = source.AsOrToImmutableSortedSet(itemComparer: itemComparer)!;
 

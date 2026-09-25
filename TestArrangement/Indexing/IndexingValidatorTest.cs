@@ -264,11 +264,11 @@ public class IndexingValidatorTest
   [DataRow ( true )]
   public void ValidateSegmentation_ImpossibleSegment_Parameters ( bool? withParamaters )
   {
-    string[]? parameters = withParamaters == null
+    Func<string[]>? parameters = withParamaters == null
       ? null
       : withParamaters == true
-        ? ["ABC", "xYz"]
-        : [];
+        ? () => ["ABC", "xYz"]
+        : () => [];
 
     _ = IndexingValidator.ValidateSegmentation ( 5, 0, 6, out _, out ImpSegExc? e, parameters );
 

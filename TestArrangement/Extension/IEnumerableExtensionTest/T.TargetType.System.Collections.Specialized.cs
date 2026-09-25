@@ -91,7 +91,7 @@ public class system_collections_specialized_test
   [DataRow ( false )]
   public void ListDictionary ( bool keySelectorOnly )
   {
-    ReverseOrderComparer keyComparer = new ();
+    ReversiveComparer keyComparer = new ();
 
     Func<object, object> keySelector = x => x.GetHashCode();
     Func<object, object> valueSelector = keySelectorOnly
@@ -131,7 +131,7 @@ public class system_collections_specialized_test
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", "c" )]
   public void ListDictionary_KeySelectorOnly_NullParameter ( string errMsg, string whosNull )
   {
-    ReverseOrderComparer keyComparer = whosNull == "c" ? null! : new();
+    ReversiveComparer keyComparer = whosNull == "c" ? null! : new();
     Func<int, object> keySelector    = whosNull == "k" ? null! : x => x;
     Action test = () => c_specialized.ListDictionary(keySelector, keyComparer);
 
@@ -145,7 +145,7 @@ public class system_collections_specialized_test
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", "c" )]
   public void ListDictionary_NullParameter ( string errMsg, string whosNull )
   {
-    ReverseOrderComparer keyComparer = whosNull == "c" ? null! : new();
+    ReversiveComparer keyComparer = whosNull == "c" ? null! : new();
     Func<int, object> keySelector    = whosNull == "k" ? null! : x => x;
     Func<int, object> valueSelector  = whosNull == "v" ? null! : x => x;
 

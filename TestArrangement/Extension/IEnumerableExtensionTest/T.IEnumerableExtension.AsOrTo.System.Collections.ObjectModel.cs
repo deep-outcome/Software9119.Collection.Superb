@@ -283,7 +283,7 @@ public partial class IEnumerableExtensionTest
   {
     IComparer<int> comparer = defaultComparer
       ? Comparer<int>.Default
-      : new ReverseOrderComparer<int> ();
+      : new ReversiveComparer<int> ();
 
     ReadOnlySetType setType = ReadOnlySetType.ImmutableSortedSet;
     IEnumerable<int> source = Enumerable.Range(0, 10);
@@ -305,7 +305,7 @@ public partial class IEnumerableExtensionTest
   {
     IComparer<int> comparer = defaultComparer
       ? Comparer<int>.Default
-      : new ReverseOrderComparer<int> ();
+      : new ReversiveComparer<int> ();
 
     ReadOnlySetType setType = ReadOnlySetType.SortedSet;
     IEnumerable<int> source = Enumerable.Range(0, 10);

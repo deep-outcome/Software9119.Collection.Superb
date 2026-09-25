@@ -186,7 +186,7 @@ public partial class IEnumerableExtensionTest
   [DataRow ( false, false )]
   public void IntoListDictionary_IEnumerableOfT ( bool keySelectorOnly, bool defaultComparer )
   {
-    IComparer keyComparer = defaultComparer ? Comparer.Default : new ReverseOrderComparer ();
+    IComparer keyComparer = defaultComparer ? Comparer.Default : new ReversiveComparer ();
     Func<int, object> keySelector = x => x * 2;
     Func<int, object> valueSelector = keySelectorOnly ? x => x : x => x * 3;
 
@@ -239,7 +239,7 @@ public partial class IEnumerableExtensionTest
   [DataRow ( false, false )]
   public void IntoListDictionary_IEnumerable ( bool keySelectorOnly, bool defaultComparer )
   {
-    IComparer keyComparer = defaultComparer ? Comparer.Default : new ReverseOrderComparer ();
+    IComparer keyComparer = defaultComparer ? Comparer.Default : new ReversiveComparer ();
     Func<object, object> keySelector = x => (int) x * 2;
     Func<object, object> valueSelector = keySelectorOnly ? x => x : x => (int)x * 3;
 

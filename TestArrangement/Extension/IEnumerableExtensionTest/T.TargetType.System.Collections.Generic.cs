@@ -273,7 +273,7 @@ public class system_collections_generic_test
   [DataRow ( null )]
   public void PriorityQueue ( int? capacity )
   {
-    ReverseOrderComparer<int> priorityComparer = new ();
+    ReversiveComparer<int> priorityComparer = new ();
     AsOrToTargetType<PriorityQueue<int, int>> targetType = system_collections_generic.PriorityQueue<int, int>( priorityComparer, capacity );
 
     PriorityQueue<int, int> empty = targetType.Empty ();
@@ -304,7 +304,7 @@ public class system_collections_generic_test
   [TestMethod]
   public void PriorityQueue_NullComparer ()
   {
-    ReverseOrderComparer<int> priorityComparer = null!;
+    ReversiveComparer<int> priorityComparer = null!;
     Action test = () => system_collections_generic.PriorityQueue<int, int> ( priorityComparer, null );
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Priority comparer not provided. (Parameter 'priorityComparer')", e.Message );
@@ -332,7 +332,7 @@ public class system_collections_generic_test
   [TestMethod]
   public void SortedDictionary_KeySelectorOnly ()
   {
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
     Func<int, int> keySelector = x => x *2;
 
     AsOrToTargetType<SortedDictionary<int, int>> targetType = system_collections_generic.SortedDictionary ( keySelector, keyComparer );
@@ -360,7 +360,7 @@ public class system_collections_generic_test
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", true, false )]
   public void SortedDictionary_KeySelectorOnly_NullParameter ( string errMsg, bool nullComparer, bool nullSelector )
   {
-    ReverseOrderComparer<int> keyComparer = nullComparer ? null! : new ();
+    ReversiveComparer<int> keyComparer = nullComparer ? null! : new ();
     Func<int, int> keySelector = nullSelector ? null! : x => x;
 
     Action test = () => system_collections_generic.SortedDictionary ( keySelector, keyComparer );
@@ -371,7 +371,7 @@ public class system_collections_generic_test
   [TestMethod]
   public void SortedDictionary ()
   {
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = x => x *3;
 
@@ -406,7 +406,7 @@ public class system_collections_generic_test
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", 'c' )]
   public void SortedDictionary_NullParameter ( string errMsg, char whosNull )
   {
-    ReverseOrderComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
+    ReversiveComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
     Func<int, int> keySelector            = whosNull == 'k' ? null! : x => x;
     Func<int, int> valueSelector          = whosNull == 'v' ? null! : x => x;
 
@@ -420,7 +420,7 @@ public class system_collections_generic_test
   [DataRow ( null )]
   public void SortedList_KeySelectorOnly ( int? capacity )
   {
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
     Func<int, int> keySelector = x => x *2;
 
     AsOrToTargetType<SortedList<int, int>> targetType = system_collections_generic.SortedList ( keySelector, keyComparer, capacity );
@@ -449,7 +449,7 @@ public class system_collections_generic_test
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", true, false )]
   public void SortedList_KeySelectorOnly_NullParameter ( string errMsg, bool nullComparer, bool nullSelector )
   {
-    ReverseOrderComparer<int> keyComparer = nullComparer ? null! : new ();
+    ReversiveComparer<int> keyComparer = nullComparer ? null! : new ();
     Func<int, int> keySelector = nullSelector ? null! : x => x;
 
     Action test = () => system_collections_generic.SortedList ( keySelector, keyComparer, null );
@@ -462,7 +462,7 @@ public class system_collections_generic_test
   [DataRow ( null )]
   public void SortedList ( int? capacity )
   {
-    ReverseOrderComparer<int> keyComparer = new ();
+    ReversiveComparer<int> keyComparer = new ();
     Func<int, int> keySelector = x => x *2;
     Func<int, int> valueSelector = x => x *3;
 
@@ -499,7 +499,7 @@ public class system_collections_generic_test
   [DataRow ( "Key comparer not provided. (Parameter 'keyComparer')", 'c' )]
   public void SortedList_NullParameter ( string errMsg, char whosNull )
   {
-    ReverseOrderComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
+    ReversiveComparer<int> keyComparer = whosNull is 'c' ? null! : new ();
     Func<int, int> keySelector            = whosNull == 'k' ? null! : x => x;
     Func<int, int> valueSelector          = whosNull == 'v' ? null! : x => x;
 
@@ -512,7 +512,7 @@ public class system_collections_generic_test
   [TestMethod]
   public void SortedSet ()
   {
-    ReverseOrderComparer<int> itemComparer = new ();
+    ReversiveComparer<int> itemComparer = new ();
     AsOrToTargetType<SortedSet<int>> targetType = system_collections_generic.SortedSet ( itemComparer );
 
     SortedSet<int> empty = targetType.Empty ();
@@ -525,7 +525,7 @@ public class system_collections_generic_test
     Assert.IsTrue ( ReferenceEquals ( itemComparer, target.Comparer ) );
 
     Assert.IsTrue ( targetType.CanCast ( new SortedSet<int> ( [], itemComparer ) ) );
-    Assert.IsFalse ( targetType.CanCast ( new SortedSet<int> ( [], new ReverseOrderComparer<int> () ) ) );
+    Assert.IsFalse ( targetType.CanCast ( new SortedSet<int> ( [], new ReversiveComparer<int> () ) ) );
     Assert.IsFalse ( targetType.CanCast ( new SortedSet<object> ( [] ) ) );
 
     Assert.IsTrue ( source.Reverse ().SequenceEqual ( target ) );
@@ -534,7 +534,7 @@ public class system_collections_generic_test
   [TestMethod]
   public void SortedSet_NullComparer ()
   {
-    ReverseOrderComparer<int> itemComparer = null!;
+    ReversiveComparer<int> itemComparer = null!;
     Action test = () => system_collections_generic.SortedSet ( itemComparer );
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Item comparer not provided. (Parameter 'itemComparer')", e.Message );
