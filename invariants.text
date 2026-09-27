@@ -1,7 +1,15 @@
-- methods with offsets validates it
+
+- methods with offsets validates it 
+	- and documents exception
+
 - methods with offsets+count validates them
+	- and documents exception
+
 - methods consuming reference types validates non-null (predicates, arrays)
-- methods working with sourcing data are tested for empty capacitor (not applicable for offset-only methods)
-- methods working with segments are tested with empty segment
-- methods working with segments throws and documents segmentation exception
-- methods with offsets only throws and documents index oob exception
+
+- data sourcing methods tests empty capacitor: blank + offset&count
+
+- methods working with segments are tested:
+	- with empty segment
+	- invalid segments
+	- valid segments

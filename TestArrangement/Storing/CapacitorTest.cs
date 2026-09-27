@@ -13,7 +13,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 using DVI = Software9119.Collection.Superb.TestArrangement.TestAide.DoubleValueItem;
 using PVI = Software9119.Collection.Superb.TestArrangement.TestAide.PositionValueItem;
@@ -27,6 +29,27 @@ public class CapacitorTest
 {
 
   [TestMethod]
+  public void NullAction ()
+  {
+    ArgumentNullException e = Capacitor.NullAction("XXX");
+    Assert.AreEqual ( "Action must be provided. (Parameter 'XXX')", e.Message );
+  }
+
+  [TestMethod]
+  public void NullComparer ()
+  {
+    ArgumentNullException e = Capacitor.NullComparer("XXX");
+    Assert.AreEqual ( "Comparer must be provided. (Parameter 'XXX')", e.Message );
+  }
+
+  [TestMethod]
+  public void NullConverter ()
+  {
+    ArgumentNullException e = Capacitor.NullConverter("XXX");
+    Assert.AreEqual ( "Converter must be provided. (Parameter 'XXX')", e.Message );
+  }
+
+  [TestMethod]
   public void NullMatchPredicate ()
   {
     ArgumentNullException e = Capacitor.NullMatchPredicate("XXX");
@@ -38,13 +61,6 @@ public class CapacitorTest
   {
     ArgumentNullException e = Capacitor.NullTargetArray("XXX");
     Assert.AreEqual ( "Target array must be provided. (Parameter 'XXX')", e.Message );
-  }
-
-  [TestMethod]
-  public void NullComparer ()
-  {
-    ArgumentNullException e = Capacitor.NullComparer("XXX");
-    Assert.AreEqual ( "Comparer must be provided. (Parameter 'XXX')", e.Message );
   }
 
   [TestMethod]
@@ -236,7 +252,7 @@ public class CapacitorTest
   public void AddOrInsert_OffsetEnumerableRoomRequest_NullItems ()
   {
     Capacitor<int> capacitor = [];
-    Assert.IsFalse ( capacitor.AddOrInsert ( default, null, 1000 ) );
+    Assert.IsFalse ( capacitor.AddOrInsert ( default, (IEnumerable<int>?) null, 1000 ) );
     Assert.AreEqual ( 0, capacitor.Capacity );
   }
 
@@ -428,6 +444,94 @@ public class CapacitorTest
     Assert.AreEqual ( expCap, capacitor.Capacity );
     Assert.AreEqual ( 3, capacitor.Count );
     Assert.IsTrue ( insertion.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 3, 0, 3, 0, DisplayName = "add,empty items" )]
+  [DataRow ( 3, 0, 6, 3, DisplayName = "add,auto-grow" )]
+  [DataRow ( 3, 2, 5, 2, DisplayName = "add,room req" )]
+  [DataRow ( 3, 2, 10, 3, DisplayName = "add,room req,auto-grow" )]
+  [DataRow ( 1, 0, 3, 0, DisplayName = "insert,empty items" )]
+  [DataRow ( 1, 0, 6, 3, DisplayName = "insert,auto-grow" )]
+  [DataRow ( 1, 0, 5, 2, DisplayName = "insert,exact-grow" )]
+  [DataRow ( 1, 2, 5, 2, DisplayName = "insert,room req" )]
+  [DataRow ( 1, 2, 10, 7, DisplayName = "insert,room req,auto-grow" )]
+  [DataRow ( 1, 2, 12, 9, DisplayName = "insert,room req,auto-grow,exact-grow" )]
+  [DataRow ( 0, 0, 3, 0, DisplayName = "insert start,empty items" )]
+  [DataRow ( 0, 0, 6, 3, DisplayName = "insert start,auto-grow" )]
+  [DataRow ( 0, 0, 5, 2, DisplayName = "insert start,exact-grow" )]
+  [DataRow ( 0, 2, 5, 2, DisplayName = "insert start,room req" )]
+  [DataRow ( 0, 2, 10, 7, DisplayName = "insert start,room req,auto-grow" )]
+  [DataRow ( 0, 2, 13, 10, DisplayName = "insert start,room req,auto-grow,exact-grow" )]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
+  async public Task AddOrInsert_OffsetAsyncEnumerableRoomRequest_Enumerable ( int index, int roomReq, int cap, int count )
+  {
+    IAsyncEnumerable<int> insertion = new TestAide.AsyncEnumerable(4, count);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source);
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion.ToBlockingEnumerable ( CancellationToken.None ) );
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( await capacitor.AddOrInsert ( offset, insertion, roomReq ) );
+
+    Assert.AreEqual ( cap, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, 4 )]
+  [DataRow ( 0, 4, 4 )]
+  [DataRow ( 0, 5, 4 )]
+  [DataRow ( 0, 4, 5 )]
+  [DataRow ( 3, 0, 4 )]
+  [DataRow ( 3, 4, 4 )]
+  [DataRow ( 3, 5, 4 )]
+  [DataRow ( 3, 4, 5 )]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
+  async public Task AddOrInsert_OffsetAsyncEnumerableRoomRequest_Enumerable_NoOverCapacitation ( int index, int capacity, int roomRequest )
+  {
+    IAsyncEnumerable<int> insertion = new TestAide.AsyncEnumerable(4, 4);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source);
+    _ = capacitor.CapacitateForNext ( capacity );
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( await capacitor.AddOrInsert ( offset, insertion, roomRequest ) );
+
+    int expectedCapacity = Math.Max(capacity,roomRequest) + 3;
+    Assert.AreEqual ( expectedCapacity, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, 4 )]
+  [DataRow ( 0, 3, 3 )]
+  [DataRow ( 0, 2, 4 )]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
+  async public Task AddOrInsert_OffsetAsyncEnumerableRoomRequest_Enumerable_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    IAsyncEnumerable<int> insertion = new TestAide.AsyncEnumerable(4, 3);
+    Capacitor<int> capacitor = new ([]);
+
+    AddOrInsertOffset offset = capacitor.CreateAddInsOffset(index);
+    Assert.IsTrue ( await capacitor.AddOrInsert ( offset, insertion, cap ) );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 3, capacitor.Count );
+    Assert.IsTrue ( insertion.ToBlockingEnumerable ( CancellationToken.None ).SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
+  async public Task AddOrInsert_OffsetAsyncEnumerableRoomRequest_NullItems ()
+  {
+    Capacitor<int> capacitor = [];
+    Assert.IsFalse ( await capacitor.AddOrInsert ( default, (IAsyncEnumerable<int>?) null, 1000 ) );
+    Assert.AreEqual ( 0, capacitor.Capacity );
   }
 
   [TestMethod]
@@ -1306,7 +1410,7 @@ public class CapacitorTest
   public void Add_EnumerableRoomRequest_NullItems ()
   {
     Capacitor<int> capacitor = new();
-    Assert.IsFalse ( capacitor.Add ( null, 0 ) );
+    Assert.IsFalse ( capacitor.Add ( (IEnumerable<int>?) null, 0 ) );
   }
 
   [TestMethod]
@@ -1456,6 +1560,35 @@ public class CapacitorTest
 
     addition = null;
     Assert.IsFalse ( capacitor.Add ( addition ) );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
+  async public Task Add_AsyncEnumerableRoomRequest_NullItems ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsFalse ( await capacitor.Add ( (IAsyncEnumerable<int>?) null, 0 ) );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
+  async public Task Add_AsyncEnumerableRoomRequest_Enumerable ()
+  {
+    IAsyncEnumerable<int> addition;
+    Capacitor<int> capacitor = new();
+
+    const int count = 5;
+    addition = new TestAide.AsyncEnumerable ( 1, count );
+    Assert.IsTrue ( await capacitor.Add ( addition, 0 ) );
+    Assert.AreEqual ( count, capacitor.Count );
+    Assert.AreEqual ( 8, capacitor.Capacity );
+
+    addition = new TestAide.AsyncEnumerable ( 6, count );
+    Assert.IsTrue ( await capacitor.Add ( addition, count + 1 ) );
+    Assert.AreEqual ( 10, capacitor.Count );
+    Assert.AreEqual ( 11, capacitor.Capacity );
+
+    Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
@@ -1866,7 +1999,7 @@ public class CapacitorTest
     };
 
     Converter<int, long> convertor = x => x;
-    Capacitor<long> test = capacitor.Convert(convertor, index, count);    
+    Capacitor<long> test = capacitor.Convert(convertor, index, count);
 
     Assert.AreEqual ( count, test.Count );
     Assert.AreEqual ( count, test.Capacity );
@@ -1954,7 +2087,7 @@ public class CapacitorTest
     Capacitor<int> capacitor = new(new int[size]);
 
     Converter<int, long> convertor = x => x;
-    _ = capacitor.Convert ( convertor, index, count);
+    _ = capacitor.Convert ( convertor, index, count );
   }
 
   [TestMethod]
@@ -4798,7 +4931,7 @@ public class CapacitorTest
   public void Insert_OffsetEnumerableRoomRequest_NullItems ()
   {
     Capacitor<int> capacitor = [];
-    Assert.IsFalse ( capacitor.Insert ( default, null, 1000 ) );
+    Assert.IsFalse ( capacitor.Insert ( default, (IEnumerable<int>?) null, 1000 ) );
     Assert.AreEqual ( 0, capacitor.Capacity );
   }
 
@@ -4994,6 +5127,107 @@ public class CapacitorTest
     Action test = () => capacitor.Insert(index, (IEnumerable<int>?)null, 0);
 
     IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"Cannot insert at index '{index}' when available is '{size}'. (Parameter 'offset')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Readme style." )]
+  async public Task Insert_OffsetAsyncEnumerableRoomRequest_NullItems ()
+  {
+    Capacitor<int> capacitor = [];
+    Assert.IsFalse ( await capacitor.Insert ( default, (IAsyncEnumerable<int>?) null, 1000 ) );
+    Assert.AreEqual ( 0, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( 3, 0, 3, 0, DisplayName = "add,empty items" )]
+  [DataRow ( 3, 0, 6, 3, DisplayName = "add,auto-grow" )]
+  [DataRow ( 3, 2, 5, 2, DisplayName = "add,room req" )]
+  [DataRow ( 3, 2, 10, 3, DisplayName = "add,room req,auto-grow" )]
+  [DataRow ( 1, 0, 3, 0, DisplayName = "insert,empty items" )]
+  [DataRow ( 1, 0, 6, 3, DisplayName = "insert,auto-grow" )]
+  [DataRow ( 1, 0, 5, 2, DisplayName = "insert,exact-grow" )]
+  [DataRow ( 1, 2, 5, 2, DisplayName = "insert,room req" )]
+  [DataRow ( 1, 2, 10, 7, DisplayName = "insert,room req,auto-grow" )]
+  [DataRow ( 1, 2, 12, 9, DisplayName = "insert,room req,auto-grow,exact-grow" )]
+  [DataRow ( 0, 0, 3, 0, DisplayName = "insert start,empty items" )]
+  [DataRow ( 0, 0, 6, 3, DisplayName = "insert start,auto-grow" )]
+  [DataRow ( 0, 0, 5, 2, DisplayName = "insert start,exact-grow" )]
+  [DataRow ( 0, 2, 5, 2, DisplayName = "insert start,room req" )]
+  [DataRow ( 0, 2, 10, 7, DisplayName = "insert start,room req,auto-grow" )]
+  [DataRow ( 0, 2, 13, 10, DisplayName = "insert start,room req,auto-grow,exact-grow" )]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Readme style." )]
+  async public Task Insert_OffsetAsyncEnumerableRoomRequest_Enumerable ( int index, int roomReq, int cap, int count )
+  {
+    IAsyncEnumerable<int> insertion = new TestAide.AsyncEnumerable(4, count);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source);
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion.ToBlockingEnumerable ( CancellationToken.None ) );
+
+    Assert.IsTrue ( await capacitor.Insert ( index, insertion, roomReq ) );
+
+    Assert.AreEqual ( cap, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, 4 )]
+  [DataRow ( 0, 4, 4 )]
+  [DataRow ( 0, 5, 4 )]
+  [DataRow ( 0, 4, 5 )]
+  [DataRow ( 3, 0, 4 )]
+  [DataRow ( 3, 4, 4 )]
+  [DataRow ( 3, 5, 4 )]
+  [DataRow ( 3, 4, 5 )]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Readme style." )]
+  async public Task Insert_OffsetAsyncEnumerableRoomRequest_Enumerable_NoOverCapacitation ( int index, int capacity, int roomRequest )
+  {
+    IAsyncEnumerable<int> insertion = new TestAide.AsyncEnumerable(4, 4);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source);
+    _ = capacitor.CapacitateForNext ( capacity );
+
+    Assert.IsTrue ( await capacitor.Insert ( index, insertion, roomRequest ) );
+
+    int expectedCapacity = Math.Max(capacity,roomRequest) + 3;
+    Assert.AreEqual ( expectedCapacity, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, 4 )]
+  [DataRow ( 0, 3, 3 )]
+  [DataRow ( 0, 2, 4 )]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Readme style." )]
+  async public Task Insert_OffsetAsyncEnumerableRoomRequest_Enumerable_EmptyCapacitor ( int index, int cap, int expCap )
+  {
+    IAsyncEnumerable<int> insertion = new TestAide.AsyncEnumerable(4, 3);
+    Capacitor<int> capacitor = new ([]);
+
+    Assert.IsTrue ( await capacitor.Insert ( index, insertion, cap ) );
+
+    Assert.AreEqual ( expCap, capacitor.Capacity );
+    Assert.AreEqual ( 3, capacitor.Count );
+    Assert.IsTrue ( insertion.ToBlockingEnumerable ( CancellationToken.None ).SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 1 )]
+  [DataRow ( 6 )]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Readme style." )]
+  async public Task Insert_OffsetAsyncEnumerableRoomRequest_IndexOutOfBounds ( int index )
+  {
+    int size = index -1;
+    Capacitor<int> capacitor = new(new int[size]);
+    Action<int> action = x => { };
+    Func<Task> test = async () => await capacitor.Insert(index, (IAsyncEnumerable<int>?)null, 0);
+
+    IndexOutOfBoundariesException e = await Assert.ThrowsExactlyAsync<IndexOutOfBoundariesException> ( test );
     string msg = $"Cannot insert at index '{index}' when available is '{size}'. (Parameter 'offset')";
     Assert.AreEqual ( msg, e.Message );
   }
@@ -6889,23 +7123,16 @@ public class CapacitorTest
   [SuppressMessage ( "Globalization", "CA1305:Specify IFormatProvider", Justification = "Readme style" )]
   public void Capacitor_NoVersioning_Sample ()
   {
-    StringBuilder builder = new();
-    Capacitor<int> capacitor = [ 1, 2, 3, 4, 5 ];
 
+    Capacitor<int> capacitor = [ 1, 2, 3, 4, 5 ];
     foreach (int item in capacitor)
     {
       capacitor.Add ( item );
       capacitor.Reverse ();
-      builder.Append ( $"{item}, " );
+      capacitor.Add ( item );
     }
 
-    Assert.AreEqual ( "1, 5, 2, 4, 3", GetString () );
-
-    string GetString ()
-    {
-      builder.Length -= 2;
-      return builder.ToString ();
-    }
+    Assert.AreEqual ( "3,2,1,5,1,5,4,3,2,1,1,5,1,2,3", string.Join ( ',', capacitor ) );
   }
 
   [TestMethod]
@@ -6918,5 +7145,27 @@ public class CapacitorTest
 
     capacitor = new () { LockGrowFactor = true, GrowFactor = GrowFactor.Five, };
     Assert.AreEqual ( GrowFactor.Two, capacitor.GrowFactor );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Style", "IDE0058:Expression value is never used", Justification = "Readme style." )]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Readme style." )]
+  async public Task Capacitor_InsertWithPreCapacitation_Sample ()
+  {
+    Capacitor<int> capacitor = new ();
+
+    await capacitor.Add ( Generator ( CancellationToken.None ), roomRequest: 100 );
+    Assert.IsTrue ( Enumerable.Range ( 1, 100 ).SequenceEqual ( capacitor ) );
+    Assert.AreEqual ( 100, capacitor.Capacity );
+
+    static async IAsyncEnumerable<int> Generator ( [EnumeratorCancellation] CancellationToken token )
+    {
+      TimeSpan period = TimeSpan.FromMilliseconds(25);
+      using PeriodicTimer timer = new (period);
+      int loopsCount = 100;
+
+      while (loopsCount-- > 0 && await timer.WaitForNextTickAsync ( token ))
+        yield return 99 - loopsCount + 1;
+    }
   }
 }

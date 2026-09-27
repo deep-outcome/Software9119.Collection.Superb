@@ -10,21 +10,21 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Software9119.Collection.Superb.Storing;
 
 static class Capacitor
 {
-  static internal ArgumentNullException NullAction ( string action ) => new ( paramName: action, "Action must be provided." );
-  static internal ArgumentNullException NullMatchPredicate ( string match ) => new ( paramName: match, "Match predicate must be provided." );
-  static internal ArgumentNullException NullTargetArray ( string array )
-    => new ( paramName: array, "Target array must be provided." );
-  static internal ArgumentNullException NullComparer ( string comparer )
-    => new ( paramName: comparer, "Comparer must be provided." );
-  static internal ArgumentOutOfRangeException InsufficientTargetArray ( string array, int length, int count )
+  static internal ArgNullExc NullAction ( string action ) => new ( paramName: action, "Action must be provided." );
+  static internal ArgNullExc NullComparer ( string comparer ) => new ( paramName: comparer, "Comparer must be provided." );
+  static internal ArgNullExc NullConverter ( string converter ) => new ( paramName: converter, "Converter must be provided." );
+  static internal ArgNullExc NullMatchPredicate ( string match ) => new ( paramName: match, "Match predicate must be provided." );
+  static internal ArgNullExc NullTargetArray ( string array ) => new ( paramName: array, "Target array must be provided." );
+
+
+  static internal ArgOutOfRanExc InsufficientTargetArray ( string array, int length, int count )
     => new ( paramName: array, $"Insufficient target array size, available length {length} cannot accomodate {count} items." );
-  static internal ArgumentNullException NullConverter ( string comparer )
-    => new ( paramName: comparer, "Converter must be provided." );
 
   static readonly internal string[] OffsetCountParamNames = ["offset", "count"];
   static internal Func<string []> OffsetCountParametersGetter = () => OffsetCountParamNames;
@@ -173,12 +173,50 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
       int index = offset.value;
       int tailSize = ItemsCountToEndInclusive(index);
       tail = new T [ tailSize ];
-      CopyTo ( tail, 0, index, tailSize );
 
+      Array.Copy ( store, index, tail, 0, tailSize );
       Count = index;
     }
 
     foreach (T? i in items)
+      Add ( i );
+
+    if (inserting)
+      _ = Add ( tail );
+
+    return true;
+  }
+
+  /// <summary>
+  /// Internals for: 
+  /// <list type="bullet">
+  /// <item><see cref="Insert(NonNegativeInt32, IAsyncEnumerable{T?}?, NonNegativeInt32)"/></item>
+  /// <item><see cref="Add(IAsyncEnumerable{T?}?, NonNegativeInt32)"/></item>
+  /// </list>
+  /// </summary>    
+  async protected internal Task<bool> AddOrInsert ( AddOrInsertOffset offset, IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
+  {
+    DebugValidateOffset ( offset );
+
+    if (items == null)
+      return false;
+
+    _ = CapacitateForNext ( roomRequest );
+
+    T[]? tail = null;
+
+    bool inserting = offset.inserting;
+    if (inserting)
+    {
+      int index = offset.value;
+      int tailSize = ItemsCountToEndInclusive(index);
+      tail = new T [ tailSize ];
+
+      Array.Copy ( store, index, tail, 0, tailSize );
+      Count = index;
+    }
+
+    await foreach (T? i in items.ConfigureAwait ( false ))
       Add ( i );
 
     if (inserting)
@@ -600,9 +638,28 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </item>
   /// </list>
   /// </summary>  
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>    
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>Use <c>0</c> for <paramref name="roomRequest"/> for no room request.</item>
+  /// <item>No capacitation happens when <see langword="false"/> is returned.</item>
+  /// </list>
+  /// </remarks>
   public bool Add ( IEnumerable<T?>? items, NonNegativeInt32 roomRequest )
     => AddOrInsert ( CreateAddInsOffset ( Count ), items, roomRequest );
+
+  /// <summary>
+  /// Stores <paramref name="items"/> using pre-capacitation and auto-capacitation.  
+  /// </summary>  
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>Use <c>0</c> for <paramref name="roomRequest"/> for no room request.</item>
+  /// <item>No capacitation happens when <see langword="false"/> is returned.</item>
+  /// </list>
+  /// </remarks>
+  async public Task<bool> Add ( IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
+    => await AddOrInsert ( CreateAddInsOffset ( Count ), items, roomRequest ).ConfigureAwait ( false );
 
   /// <summary>
   /// Stores <paramref name="items"/> using exact capacitation.
@@ -1953,12 +2010,37 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </summary>  
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>   
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>Use <c>0</c> for <paramref name="roomRequest"/> for no room request.</item>
+  /// <item>No capacitation happens when <see langword="false"/> is returned.</item>
+  /// </list>
+  /// </remarks>
   public bool Insert ( NonNegativeInt32 offset, IEnumerable<T?>? items, NonNegativeInt32 roomRequest )
   {
     if (ValidateInsertionIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
     return AddOrInsert ( CreateAddInsOffset ( offset ), items, roomRequest );
+  }
+
+  /// <summary>
+  /// Stores <paramref name="items"/> using pre-capacitation and auto-capacitation.  
+  /// </summary>  
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>   
+  /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>Use <c>0</c> for <paramref name="roomRequest"/> for no room request.</item>
+  /// <item>No capacitation happens when <see langword="false"/> is returned.</item>
+  /// </list>
+  /// </remarks>
+  async public Task<bool> Insert ( NonNegativeInt32 offset, IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
+  {
+    if (ValidateInsertionIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
+      throw e;
+
+    return await AddOrInsert ( CreateAddInsOffset ( offset ), items, roomRequest ).ConfigureAwait ( false );
   }
 
   /// <summary>
