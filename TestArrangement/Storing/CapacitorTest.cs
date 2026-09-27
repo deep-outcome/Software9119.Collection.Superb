@@ -101,8 +101,9 @@ public class CapacitorTest
     int []? store = size is int ? new int[size.Value] : null;
     Capacitor<int> capacitor = new (count, store);
 
-    Assert.IsTrue ( ReferenceEquals ( store ?? capacitor.store, capacitor.store ) );
+    Assert.IsTrue ( ReferenceEquals ( store ?? Array.Empty<int> (), capacitor.store ) );
     Assert.AreEqual ( index, capacitor.storeIndex );
+
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
@@ -111,8 +112,10 @@ public class CapacitorTest
   public void Constructor_Parameterless ()
   {
     Capacitor<int> capacitor = new ();
+
     Assert.AreEqual ( Array.Empty<int> (), capacitor.store );
     Assert.AreEqual ( 0, capacitor.storeIndex );
+
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
@@ -123,36 +126,137 @@ public class CapacitorTest
   public void Constructor_Capacity ( int capacity )
   {
     Capacitor<int> capacitor = new (capacity);
+    Assert.AreEqual ( capacity == 0, ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+
     Assert.AreEqual ( capacity, capacitor.store.Length );
     Assert.AreEqual ( 0, capacitor.storeIndex );
+
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
+
+  [TestMethod]
+  public void Constructor_Enumerable_NullItems ()
+  {
+    Capacitor<int> capacitor = new ((IEnumerable<int>?)null);
+
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+
+    Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.IsFalse ( capacitor.LockGrowFactor );
+  }
+
 
   [TestMethod]
   public void Constructor_Enumerable_Enumerable ()
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 9);
     Capacitor<int> capacitor = new (source);
+
     Assert.AreEqual ( 16, capacitor.store.Length );
     Assert.AreEqual ( 9, capacitor.storeIndex );
+    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
+
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
-
-    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
-  public void Constructor_Enumerable_NotEnumerable ()
+  public void Constructor_Enumerable_EmptyEnumerable ()
   {
-    IEnumerable<int> source = Enumerable.Range(0, 9);
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 0);
     Capacitor<int> capacitor = new (source);
+
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+  }
+
+  [TestMethod]
+  public void Constructor_Enumerable_Array ()
+  {
+    int[] source = Enumerable.Range(0, 9).ToArray();
+    Capacitor<int> capacitor = new (source);
+
     Assert.AreEqual ( 9, capacitor.store.Length );
     Assert.AreEqual ( 9, capacitor.storeIndex );
+    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
+
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+  }
 
+  [TestMethod]
+  public void Constructor_Enumerable_EmptyArray ()
+  {
+    int[] source = new int[0];
+    Capacitor<int> capacitor = new (source);
+
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+  }
+
+  [TestMethod]
+  public void Constructor_Enumerable_Collection ()
+  {
+    XCollection<int> source = new(Enumerable.Range(0, 9).ToList());
+    Capacitor<int> capacitor = new (source);
+
+    Assert.AreEqual ( 9, capacitor.store.Length );
+    Assert.AreEqual ( 9, capacitor.storeIndex );
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
+
+    Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.IsFalse ( capacitor.LockGrowFactor );
+  }
+
+  [TestMethod]
+  public void Constructor_Enumerable_EmptyCollection ()
+  {
+    XCollection<int> source = new ([]);
+    Capacitor<int> capacitor = new (source);
+
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+  }
+
+  [TestMethod]
+  public void Constructor_Enumerable_ReadOnlyCollection ()
+  {
+    XReadOnlyCollection<int> source = new(Enumerable.Range(0, 9).ToList());
+    Capacitor<int> capacitor = new (source);
+
+    Assert.AreEqual ( 9, capacitor.store.Length );
+    Assert.AreEqual ( 9, capacitor.storeIndex );
+    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
+
+    Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.IsFalse ( capacitor.LockGrowFactor );
+  }
+
+  [TestMethod]
+  public void Constructor_Enumerable_EmptyReadOnlyCollection ()
+  {
+    XReadOnlyCollection<int> source = new ([]);
+    Capacitor<int> capacitor = new (source);
+
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 10 )]
+  public void Constructor_CapacityAndEnumerable_NullItems ( int capacity )
+  {
+    Capacitor<int> capacitor = new (null, capacity);
+
+    Assert.AreEqual ( capacity, capacitor.store.Length );
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+    Assert.AreEqual ( capacity == 0, ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+
+    Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
   [TestMethod]
@@ -160,25 +264,111 @@ public class CapacitorTest
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 9);
     Capacitor<int> capacitor = new (source, 1000);
+
     Assert.AreEqual ( 1000, capacitor.store.Length );
     Assert.AreEqual ( 9, capacitor.storeIndex );
+    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
+
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
-
-    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
-  public void Constructor_CapacityAndEnumerable_NotEnumerable ()
+  [DataRow ( 0 )]
+  [DataRow ( 10 )]
+  public void Constructor_CapacityAndEnumerable_EmptyEnumerable ( int capacity )
   {
-    IList<int> source = (IList<int>)Enumerable.Range(0, 9);
+    IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 0);
+    Capacitor<int> capacitor = new (source, capacity);
+
+    Assert.AreEqual ( capacity, capacitor.store.Length );
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+
+    Assert.AreEqual ( capacity == 0, ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+  }
+
+  [TestMethod]
+  public void Constructor_CapacityAndEnumerable_Array ()
+  {
+    int[] source = XEnumerable.RangeEnumerable(0, 9).ToArray();
     Capacitor<int> capacitor = new (source, 1000);
+
     Assert.AreEqual ( 1000, capacitor.store.Length );
     Assert.AreEqual ( 9, capacitor.storeIndex );
+    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
+
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+  }
 
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 10 )]
+  public void Constructor_CapacityAndEnumerable_EmptyArray ( int capacity )
+  {
+    int[] source = new int[0];
+    Capacitor<int> capacitor = new (source, capacity);
+
+    Assert.AreEqual ( capacity, capacitor.store.Length );
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+
+    Assert.AreEqual ( capacity == 0, ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+  }
+
+  [TestMethod]
+  public void Constructor_CapacityAndEnumerable_Collection ()
+  {
+    XCollection<int> source = new (XEnumerable.RangeEnumerable(0, 9).ToList());
+    Capacitor<int> capacitor = new (source, 1000);
+
+    Assert.AreEqual ( 1000, capacitor.store.Length );
+    Assert.AreEqual ( 9, capacitor.storeIndex );
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
+
+    Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.IsFalse ( capacitor.LockGrowFactor );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 10 )]
+  public void Constructor_CapacityAndEnumerable_EmptyCollection ( int capacity )
+  {
+    XCollection<int> source = new ([]);
+    Capacitor<int> capacitor = new (source, capacity);
+
+    Assert.AreEqual ( capacity, capacitor.store.Length );
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+
+    Assert.AreEqual ( capacity == 0, ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+  }
+
+  [TestMethod]
+  public void Constructor_CapacityAndEnumerable_ReadOnlyCollection ()
+  {
+    XReadOnlyCollection<int> source = new (XEnumerable.RangeEnumerable(0, 9).ToList());
+    Capacitor<int> capacitor = new (source, 1000);
+
+    Assert.AreEqual ( 1000, capacitor.store.Length );
+    Assert.AreEqual ( 9, capacitor.storeIndex );
+    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
+
+    Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.IsFalse ( capacitor.LockGrowFactor );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 10 )]
+  public void Constructor_CapacityAndEnumerable_EmptyReadOnlyCollection ( int capacity )
+  {
+    XReadOnlyCollection<int> source = new([]);
+    Capacitor<int> capacitor = new (source, capacity);
+
+    Assert.AreEqual ( capacity, capacitor.store.Length );
+    Assert.AreEqual ( 0, capacitor.storeIndex );
+
+    Assert.AreEqual ( capacity == 0, ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
   }
 
   [TestMethod]

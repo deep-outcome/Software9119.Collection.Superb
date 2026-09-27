@@ -33,11 +33,27 @@ static class Capacitor
 /// <summary>
 /// Auto-expanding data storing structure designed specifically for managing internal store capacity with ease:
 /// <list type="bullet">
-/// <item>Uses exact capacitation for batch storing operations when source length can be determined.</item>
-/// <item>Exposes various pre-capacitation options for client code.</item>
-/// <item>Auto-capacitation operates whenever is needed, see also <see cref="GrowFactor"/>.</item>
+/// <item>Uses Batch Capacitation for batch storing operations when source length can be determined.</item>
+/// <item>Exposes various Pre Capacitation options for client code.</item>
+/// <item>Auto Capacitation operates whenever is needed, see also <see cref="GrowFactor"/>.</item>
+/// <item>Features classic <see cref="Array"/> and <see cref="List{T}"/> function and more.</item>
+/// <item>Open for user extensions.</item>
 /// </list>
 /// </summary>
+/// <remarks>
+/// Note 3 types of capacitations for clarity:
+/// <list type="number">
+/// <item>
+/// Pre Capacitation – means capacity is extended via capacity room request.
+/// </item>
+/// <item>
+/// Batch Capacitation – means, if items count to be stored is obtainable, capacity is ensured exactly to suffice such items count. 
+/// </item>
+/// <item>
+/// Auto Capacitation – means auto-grow logic and it is used whenever capacity is insufficient.
+/// </item>
+/// </list>
+/// </remarks>
 [SuppressMessage ( "Naming", "CA1710:Identifiers should have correct suffix", Justification = "No." )]
 [SuppressMessage ( "Design", "CA1051:Do not declare visible instance fields", Justification = "Inheritance design." )]
 [DebuggerDisplay ( "(Count={Count},Capacity={Capacity})" )]
@@ -47,38 +63,38 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   IEquatable<Capacitor<T>>, ICloneable
 {
   /// <summary>
-  /// Constructor allowing to 'start' <see cref="Accumulator{T}"/> with pre-created internal store.
+  /// Constructor allowing to 'start' <see cref="Capacitor{T}"/> with pre-created internal store.
   /// </summary>
   /// <param name="count">How much of <paramref name="store"/> is considered populated.</param>
   /// <param name="store">Defaults to <see cref="Array.Empty{T}"/> when <see langword="null"/>.</param>
   /// <remarks>
-  /// <paramref name="count"/> greater to store length is adjusted to fit it.
+  /// <paramref name="count"/> greater to <paramref name="store"/> length is adjusted to fit it.
   /// </remarks>
   protected internal Capacitor ( NonNegativeInt32 count, T? []? store )
   {
     store ??= Array.Empty<T?> ();
+    this.store = store;
 
     int length = store.Length;
     storeIndex = Math.Min ( length, count );
-    this.store = store;
   }
 
   /// <summary>
   /// Default constructor.
   /// </summary>
-  public Capacitor () : this ( null!, default ) { }
+  public Capacitor () : this ( null, 0 ) { }
 
   /// <summary>
   /// Constructor with initial capacity.
   /// </summary>
-  public Capacitor ( NonNegativeInt32 capacity ) : this ( (IEnumerable<T?>?) null, capacity ) { }
+  public Capacitor ( NonNegativeInt32 capacity ) : this ( null, capacity ) { }
 
   /// <summary>
   /// Constructor with initial items.
   /// </summary>
   /// <remarks>
-  /// Stores <paramref name="items"/> using exact capacitation or using auto-capacitation, 
-  /// based on possibility to obtain <paramref name="items"/> length.
+  /// Stores <paramref name="items"/> using Batch Capacitation or using Auto Capacitation, 
+  /// based on possibility to obtain <paramref name="items"/> count.
   /// </remarks>
   public Capacitor ( IEnumerable<T?>? items ) : this ( items, 0 ) { }
 
@@ -86,8 +102,8 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// Constructor with initial capacity and initial items.
   /// </summary>  
   /// <remarks>
-  /// Sets store capacity to <paramref name="capacity"/> and then stores <paramref name="items"/> using exact
-  /// capacitation or auto-capacitation for eventual next capacitation, based on possibility to obtain <paramref name="items"/> length.
+  /// Sets store capacity to <paramref name="capacity"/> and then stores <paramref name="items"/>. For eventual next capacitation
+  /// uses Batch Capacitation or Auto Capacitation, based on possibility to obtain <paramref name="items"/> count.
   /// </remarks>  
   public Capacitor ( IEnumerable<T?>? items, NonNegativeInt32 capacity )
   {
@@ -631,9 +647,9 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
 
   /// <summary>
   /// <list type="bullet">
-  /// <item>Stores <paramref name="items"/> using exact capacitation or using pre-capacitation and auto-capacitation.</item>
+  /// <item>Stores <paramref name="items"/> using Batch Capacitation or using Pre Capacitation and Auto Capacitation.</item>
   /// <item>
-  /// <paramref name="roomRequest"/> is used only when exact length of <paramref name="items"/> cannot be determined
+  /// <paramref name="roomRequest"/> is used only when exact count of <paramref name="items"/> cannot be determined
   /// and ensures store capacity for <paramref name="roomRequest"/> more items.
   /// </item>
   /// </list>
@@ -649,7 +665,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     => AddOrInsert ( CreateAddInsOffset ( Count ), items, roomRequest );
 
   /// <summary>
-  /// Stores <paramref name="items"/> using pre-capacitation and auto-capacitation.  
+  /// Stores <paramref name="items"/> using Pre Capacitation and Auto Capacitation.  
   /// </summary>  
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
   /// <remarks>
@@ -662,19 +678,19 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     => await AddOrInsert ( CreateAddInsOffset ( Count ), items, roomRequest ).ConfigureAwait ( false );
 
   /// <summary>
-  /// Stores <paramref name="items"/> using exact capacitation.
+  /// Stores <paramref name="items"/> using Batch Capacitation.
   /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
   public bool Add ( T? []? items ) => AddOrInsert ( CreateAddInsOffset ( Count ), items );
 
   /// <summary>
-  /// Stores <paramref name="items"/> using exact capacitation.
+  /// Stores <paramref name="items"/> using Batch Capacitation.
   /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
   public bool Add ( ICollection<T?>? items ) => AddOrInsert ( CreateAddInsOffset ( Count ), items );
 
   /// <summary>
-  /// Stores <paramref name="items"/> using exact capacitation.
+  /// Stores <paramref name="items"/> using Batch Capacitation.
   /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
   public bool Add ( IReadOnlyCollection<T?>? items ) => AddOrInsert ( CreateAddInsOffset ( Count ), items );
@@ -2001,9 +2017,9 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
 
   /// <summary>
   /// <list type="bullet">
-  /// <item>Stores <paramref name="items"/> using exact capacitation or using pre-capacitation and auto-capacitation.</item>
+  /// <item>Stores <paramref name="items"/> using Batch Capacitation or using Pre Capacitation and Auto Capacitation.</item>
   /// <item>
-  /// <paramref name="roomRequest"/> is used only when exact length of <paramref name="items"/> cannot be determined
+  /// <paramref name="roomRequest"/> is used only when exact count of <paramref name="items"/> cannot be determined
   /// and ensures store capacity for <paramref name="roomRequest"/> more items.
   /// </item>
   /// </list>
@@ -2025,7 +2041,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   }
 
   /// <summary>
-  /// Stores <paramref name="items"/> using pre-capacitation and auto-capacitation.  
+  /// Stores <paramref name="items"/> using Pre Capacitation and Auto Capacitation.  
   /// </summary>  
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>   
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
@@ -2044,7 +2060,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   }
 
   /// <summary>
-  /// Using exact capacitation, inserts <paramref name="items"/> into store starting at <paramref name="offset"/>.
+  /// Using Batch Capacitation, inserts <paramref name="items"/> into store starting at <paramref name="offset"/>.
   /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
@@ -2057,7 +2073,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   }
 
   /// <summary>
-  /// Using exact capacitation, inserts <paramref name="items"/> into store starting at <paramref name="offset"/>.
+  /// Using Batch Capacitation, inserts <paramref name="items"/> into store starting at <paramref name="offset"/>.
   /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
@@ -2070,7 +2086,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   }
 
   /// <summary>
-  /// Using exact capacitation, inserts <paramref name="items"/> into store starting at <paramref name="offset"/>.
+  /// Using Batch Capacitation, inserts <paramref name="items"/> into store starting at <paramref name="offset"/>.
   /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
