@@ -14,7 +14,7 @@ public class AddOrInsertOffsetTest
   [DataRow ( 333, true )]
   public void Constructor ( int value, bool inserting )
   {
-    AddOrInsertOffset test = new (value, inserting);
+    AddInsertOffset test = new (value, inserting);
     Assert.AreEqual ( value, test.value );
     Assert.AreEqual ( inserting, test.inserting );
   }
@@ -26,7 +26,7 @@ public class AddOrInsertOffsetTest
   [DataRow ( 1, 1, false )]
   public void CreateUsingCount ( int value, int count, bool inserting )
   {
-    AddOrInsertOffset test = AddOrInsertOffset.CreateUsingCount(value, count);
+    AddInsertOffset test = AddInsertOffset.CreateUsingCount(value, count);
     Assert.AreEqual ( value, test.value );
     Assert.AreEqual ( inserting, test.inserting );
   }
@@ -34,11 +34,11 @@ public class AddOrInsertOffsetTest
   [TestMethod]
   public void ImplicitCastOperator_FromOffsetToInt32 ()
   {
-    AddOrInsertOffset offset = new (999, default);
+    AddInsertOffset offset = new (999, default);
     int test = offset;
     Assert.AreEqual ( offset.value, test );
 
-    test = AddOrInsertOffset.ToInt32 ( offset );
+    test = AddInsertOffset.ToInt32 ( offset );
     Assert.AreEqual ( offset.value, test );
   }
 
@@ -47,11 +47,11 @@ public class AddOrInsertOffsetTest
   [DataRow ( false )]
   public void ImplicitCastOperator_FromOffsetToBoolean ( bool inserting )
   {
-    AddOrInsertOffset offset = new (default, inserting);
+    AddInsertOffset offset = new (default, inserting);
     bool test = offset;
     Assert.AreEqual ( inserting, test );
 
-    test = AddOrInsertOffset.ToBoolean ( offset );
+    test = AddInsertOffset.ToBoolean ( offset );
     Assert.AreEqual ( inserting, test );
   }
 
@@ -60,18 +60,18 @@ public class AddOrInsertOffsetTest
   [DataRow ( 20, false )]
   public void GetHashCodeTest ( int value, bool inserting )
   {
-    AddOrInsertOffset test = new (value, inserting);
+    AddInsertOffset test = new (value, inserting);
     Assert.AreEqual ( HashCode.Combine ( value, inserting ), test.GetHashCode () );
   }
 
   [TestMethod]
   public void EqualsOperator ()
   {
-    AddOrInsertOffset a = new (999, true);
-    AddOrInsertOffset b = new (999, true);
+    AddInsertOffset a = new (999, true);
+    AddInsertOffset b = new (999, true);
 
-    AddOrInsertOffset c = new (999, false);
-    AddOrInsertOffset d = new (998, true);
+    AddInsertOffset c = new (999, false);
+    AddInsertOffset d = new (998, true);
 
     Assert.IsTrue ( a == b );
     Assert.IsFalse ( a == c );
@@ -81,11 +81,11 @@ public class AddOrInsertOffsetTest
   [TestMethod]
   public void NotEqualOperator ()
   {
-    AddOrInsertOffset a = new (999, true);
-    AddOrInsertOffset b = new (999, true);
+    AddInsertOffset a = new (999, true);
+    AddInsertOffset b = new (999, true);
 
-    AddOrInsertOffset c = new (999, false);
-    AddOrInsertOffset d = new (998, true);
+    AddInsertOffset c = new (999, false);
+    AddInsertOffset d = new (998, true);
 
     Assert.IsFalse ( a != b );
     Assert.IsTrue ( a != c );
@@ -95,10 +95,10 @@ public class AddOrInsertOffsetTest
   [TestMethod]
   public void Equals_Object ()
   {
-    AddOrInsertOffset a = new (999, true);
+    AddInsertOffset a = new (999, true);
 
-    AddOrInsertOffset b = new (999, false);
-    AddOrInsertOffset c = new (998, true);
+    AddInsertOffset b = new (999, false);
+    AddInsertOffset c = new (998, true);
 
     Assert.IsTrue ( a.Equals ( (object) a ) );
     Assert.IsFalse ( a.Equals ( (object) b ) );
@@ -109,10 +109,10 @@ public class AddOrInsertOffsetTest
   [TestMethod]
   public void Equals ()
   {
-    AddOrInsertOffset a = new (999, true);
+    AddInsertOffset a = new (999, true);
 
-    AddOrInsertOffset b = new (999, false);
-    AddOrInsertOffset c = new (998, true);
+    AddInsertOffset b = new (999, false);
+    AddInsertOffset c = new (998, true);
 
     Assert.IsTrue ( a.Equals ( a ) );
     Assert.IsFalse ( a.Equals ( b ) );

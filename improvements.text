@@ -1,7 +1,8 @@
-- add .netstandard 2.0 support
 - add to ILIst segments extension methods
 - add AsOrToCapacitor and AsOrToAccumulator
 - CopyTo(SameType) for segments (as ArraySegment do)
+
+- add .netstandard 2.0 support
 - IndexingValidator.ValidateSegmentation can return -2 for empty source and -1 for empty segment
 
 - capacitor

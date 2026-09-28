@@ -102,19 +102,23 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// Constructor with initial capacity and initial items.
   /// </summary>  
   /// <remarks>
-  /// Sets store capacity to <paramref name="capacity"/> and then stores <paramref name="items"/>. For eventual next capacitation
-  /// uses Batch Capacitation or Auto Capacitation, based on possibility to obtain <paramref name="items"/> count.
+  /// <list type="bullet">
+  /// <item>Sets store capacity to <paramref name="capacity"/> and then stores <paramref name="items"/>.</item>
+  /// <item>
+  /// For eventual next capacitation uses Batch Capacitation or Auto Capacitation, based on possibility to obtain <paramref name="items"/> count.
+  /// </item>
+  /// </list>
   /// </remarks>  
   public Capacitor ( IEnumerable<T?>? items, NonNegativeInt32 capacity )
   {
     SetStoreWithCapacity ( capacity );
-    _ = Add ( items, capacity );
+    _ = Add ( items, 0 );
   }
 
   /// <summary>
   /// Empty capacitor of <typeparamref name="T"/>.
   /// </summary>
-  [SuppressMessage ( "Design", "CA1000:Do not declare static members on generic types", Justification = "Run-tim type is constructed anyway." )]
+  [SuppressMessage ( "Design", "CA1000:Do not declare static members on generic types", Justification = "Run-time type is constructed anyway." )]
   static public Capacitor<T> Empty => new ();
 
   /// <summary>
@@ -143,9 +147,15 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   readonly protected internal bool itemShouldDefault = RuntimeHelpers.IsReferenceOrContainsReferences<T>();
 
   /// <summary>
-  /// Internals for <see cref="Insert(int, T?)"/>.
+  /// Creates offset with current <see cref="Count"/>;
   /// </summary>
-  protected internal void AddOrInsert ( AddOrInsertOffset offset, T? item )
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
+  protected internal AddInsertOffset AddInsOffset ( int offset ) => AddInsertOffset.CreateUsingCount ( offset, Count );
+
+  /// <remarks>
+  /// Internals for <see cref="Insert(int, T?)"/>.
+  /// </remarks>
+  protected internal void AddInsert ( AddInsertOffset offset, T? item )
   {
     _ = AutoGrow ();
 
@@ -156,99 +166,77 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     ++Count;
   }
 
-  /// <summary>
+  /// <remarks>
   /// Internals for: 
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, IEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// <item><see cref="Add(IEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// </list>
-  /// </summary>  
-  protected internal bool AddOrInsert ( AddOrInsertOffset offset, IEnumerable<T?>? items, NonNegativeInt32 roomRequest )
+  /// </remarks>  
+  protected internal bool AddInsert ( AddInsertOffset offset, IEnumerable<T?>? items, NonNegativeInt32 roomRequest )
   {
-    DebugValidateOffset ( offset );
+    DebugValidateAddInsOffset ( offset );
 
     if (items == null)
       return false;
 
     if (items is T? [] a)
-      return AddOrInsert ( offset, a );
+      return AddInsert ( offset, a );
 
     if (items is ICollection<T?> c)
-      return AddOrInsert ( offset, c );
+      return AddInsert ( offset, c );
 
     if (items is IReadOnlyCollection<T?> rc)
-      return AddOrInsert ( offset, rc );
+      return AddInsert ( offset, rc );
 
     _ = CapacitateForNext ( roomRequest );
 
-    T[]? tail = null;
-
-    bool inserting = offset.inserting;
-    if (inserting)
-    {
-      int index = offset.value;
-      int tailSize = ItemsCountToEndInclusive(index);
-      tail = new T [ tailSize ];
-
-      Array.Copy ( store, index, tail, 0, tailSize );
-      Count = index;
-    }
+    T?[]? tail = TailBackUp(offset);
 
     foreach (T? i in items)
       Add ( i );
 
-    if (inserting)
+    if (tail is not null)
       _ = Add ( tail );
 
     return true;
   }
 
-  /// <summary>
+  /// <remarks>
   /// Internals for: 
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, IAsyncEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// <item><see cref="Add(IAsyncEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// </list>
-  /// </summary>    
-  async protected internal Task<bool> AddOrInsert ( AddOrInsertOffset offset, IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
+  /// </remarks>    
+  async protected internal Task<bool> AddInsert ( AddInsertOffset offset, IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
   {
-    DebugValidateOffset ( offset );
+    DebugValidateAddInsOffset ( offset );
 
     if (items == null)
       return false;
 
     _ = CapacitateForNext ( roomRequest );
 
-    T[]? tail = null;
-
-    bool inserting = offset.inserting;
-    if (inserting)
-    {
-      int index = offset.value;
-      int tailSize = ItemsCountToEndInclusive(index);
-      tail = new T [ tailSize ];
-
-      Array.Copy ( store, index, tail, 0, tailSize );
-      Count = index;
-    }
+    T?[]? tail = TailBackUp(offset);
 
     await foreach (T? i in items.ConfigureAwait ( false ))
       Add ( i );
 
-    if (inserting)
+    if (tail is not null)
       _ = Add ( tail );
 
     return true;
   }
 
-  /// <summary>
+  /// <remarks>
   /// Internals for: 
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, T?[])"/></item>
   /// <item><see cref="Add(T?[])"/></item>
   /// </list>
-  /// </summary>
-  protected internal bool AddOrInsert ( AddOrInsertOffset offset, T? []? items )
+  /// </remarks>
+  protected internal bool AddInsert ( AddInsertOffset offset, T? []? items )
   {
     if (items == null)
       return false;
@@ -262,14 +250,14 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     return true;
   }
 
-  /// <summary>
+  /// <remarks>
   /// Internals for: 
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, ICollection{T?}?)"/></item>
   /// <item><see cref="Add(ICollection{T?}?)"/></item>
   /// </list>
-  /// </summary>
-  protected internal bool AddOrInsert ( AddOrInsertOffset offset, ICollection<T?>? items )
+  /// </remarks>
+  protected internal bool AddInsert ( AddInsertOffset offset, ICollection<T?>? items )
   {
     if (items == null)
       return false;
@@ -283,23 +271,23 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     return true;
   }
 
-  /// <summary>
+  /// <remarks>
   /// Internals for: 
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, IReadOnlyCollection{T?}?)"/></item>
   /// <item><see cref="Add(IReadOnlyCollection{T?}?)"/></item>
   /// </list>
-  /// </summary>
-  protected internal bool AddOrInsert ( AddOrInsertOffset offset, IReadOnlyCollection<T?>? items )
+  /// </remarks>
+  protected internal bool AddInsert ( AddInsertOffset offset, IReadOnlyCollection<T?>? items )
   {
     if (items == null)
       return false;
 
     if (items is T? [] a)
-      return AddOrInsert ( offset, a );
+      return AddInsert ( offset, a );
 
     if (items is ICollection<T?> c)
-      return AddOrInsert ( offset, c );
+      return AddInsert ( offset, c );
 
     int itemsCount = items.Count;
     PrepareStoreForAddIns ( offset, itemsCount );
@@ -350,12 +338,6 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   protected internal void Capacitate ( int to ) => Array.Resize ( ref store, to );
 
   /// <summary>
-  /// Creates offset with current <see cref="Count"/>;
-  /// </summary>
-  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
-  protected internal AddOrInsertOffset CreateAddInsOffset ( int offset ) => AddOrInsertOffset.CreateUsingCount ( offset, Count );
-
-  /// <summary>
   /// Creates clone of this instance but with <paramref name="store"/> and <paramref name="count"/>.
   /// </summary>
   protected internal Capacitor<U> CloneWithStoreAndCount<U> ( U? [] store, int count )
@@ -389,7 +371,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// Intended for internal methods.
   /// </remarks>
   [Conditional ( "DEBUG" )]
-  protected internal void DebugValidateOffset ( AddOrInsertOffset offset )
+  protected internal void DebugValidateAddInsOffset ( AddInsertOffset offset )
   {
     if (ValidateInsertionIndex ( offset.value, out IndexOutOfBoundariesException? e, "" ))
       throw e;
@@ -422,6 +404,22 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   protected internal int ItemsCountToEndInclusive ( int fromIndex ) => IndexingValidator.IndexToCountInclusiveDifference ( fromIndex, Count );
 
   /// <summary>
+  /// Prepares store for insertion or addition of items, if needed.
+  /// </summary>
+  protected internal void PrepareStoreForAddIns ( AddInsertOffset offset, int itemsCount )
+  {
+    DebugValidateAddInsOffset ( offset );
+
+    // mainly, prevents useless shift call
+    if (itemsCount == 0)
+      return;
+
+    _ = CapacitateForNext ( itemsCount );
+    if (offset.inserting)
+      ShiftItemsToRight ( offset, itemsCount );
+  }
+
+  /// <summary>
   /// Removes item at index from store.
   /// </summary>
   protected internal T? RemoveAndReturn ( int atIndex )
@@ -446,22 +444,6 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   }
 
   /// <summary>
-  /// Prepares store for insertion or addition of items, if needed.
-  /// </summary>
-  protected internal void PrepareStoreForAddIns ( AddOrInsertOffset offset, int itemsCount )
-  {
-    DebugValidateOffset ( offset );
-
-    // mainly, prevents useless shift call
-    if (itemsCount == 0)
-      return;
-
-    _ = CapacitateForNext ( itemsCount );
-    if (offset.inserting)
-      ShiftItemsToRight ( offset, itemsCount );
-  }
-
-  /// <summary>
   /// Initializes store with capacity of <paramref name="capacity"/>.
   /// </summary>
   [MemberNotNull ( nameof ( store ) )]
@@ -477,6 +459,24 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
 
     int count = ItemsCountToEndInclusive(from);
     Array.Copy ( store, from, store, from + byPositions, count );
+  }
+
+  /// <summary>
+  /// Copies items to end from <paramref name="offset"/> to backup array.
+  /// </summary>
+  protected internal T? []? TailBackUp ( AddInsertOffset offset )
+  {
+    T[]? tail = null;
+    if (offset)
+    {
+      int tailSize = ItemsCountToEndInclusive(offset);
+      tail = new T [ tailSize ];
+
+      Array.Copy ( store, offset, tail, 0, tailSize );
+      Count = offset;
+    }
+
+    return tail;
   }
 
   /// <summary>
@@ -643,7 +643,11 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// Stores <paramref name="item"/> using auto-grow capacitation, see <see cref="GrowFactor"/>.
   /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
-  public void Add ( T? item ) => AddOrInsert ( CreateAddInsOffset ( Count ), item );
+  public void Add ( T? item )
+  {
+    _ = AutoGrow ();
+    store [ storeIndex++ ] = item;
+  }
 
   /// <summary>
   /// <list type="bullet">
@@ -662,7 +666,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </list>
   /// </remarks>
   public bool Add ( IEnumerable<T?>? items, NonNegativeInt32 roomRequest )
-    => AddOrInsert ( CreateAddInsOffset ( Count ), items, roomRequest );
+    => AddInsert ( AddInsOffset ( Count ), items, roomRequest );
 
   /// <summary>
   /// Stores <paramref name="items"/> using Pre Capacitation and Auto Capacitation.  
@@ -675,25 +679,25 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </list>
   /// </remarks>
   async public Task<bool> Add ( IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
-    => await AddOrInsert ( CreateAddInsOffset ( Count ), items, roomRequest ).ConfigureAwait ( false );
+    => await AddInsert ( AddInsOffset ( Count ), items, roomRequest ).ConfigureAwait ( false );
 
   /// <summary>
   /// Stores <paramref name="items"/> using Batch Capacitation.
   /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
-  public bool Add ( T? []? items ) => AddOrInsert ( CreateAddInsOffset ( Count ), items );
+  public bool Add ( T? []? items ) => AddInsert ( AddInsOffset ( Count ), items );
 
   /// <summary>
   /// Stores <paramref name="items"/> using Batch Capacitation.
   /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
-  public bool Add ( ICollection<T?>? items ) => AddOrInsert ( CreateAddInsOffset ( Count ), items );
+  public bool Add ( ICollection<T?>? items ) => AddInsert ( AddInsOffset ( Count ), items );
 
   /// <summary>
   /// Stores <paramref name="items"/> using Batch Capacitation.
   /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
-  public bool Add ( IReadOnlyCollection<T?>? items ) => AddOrInsert ( CreateAddInsOffset ( Count ), items );
+  public bool Add ( IReadOnlyCollection<T?>? items ) => AddInsert ( AddInsOffset ( Count ), items );
 
   /// <returns><see langword="true"/> if all stored items conform to <paramref name="match"/> predicate.</returns>  
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
@@ -2012,7 +2016,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (ValidateInsertionIndex ( index, out IndexOutOfBoundariesException? e, nameof ( index ) ))
       throw e;
 
-    AddOrInsert ( CreateAddInsOffset ( index ), item );
+    AddInsert ( AddInsOffset ( index ), item );
   }
 
   /// <summary>
@@ -2037,7 +2041,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (ValidateInsertionIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return AddOrInsert ( CreateAddInsOffset ( offset ), items, roomRequest );
+    return AddInsert ( AddInsOffset ( offset ), items, roomRequest );
   }
 
   /// <summary>
@@ -2056,7 +2060,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (ValidateInsertionIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return await AddOrInsert ( CreateAddInsOffset ( offset ), items, roomRequest ).ConfigureAwait ( false );
+    return await AddInsert ( AddInsOffset ( offset ), items, roomRequest ).ConfigureAwait ( false );
   }
 
   /// <summary>
@@ -2069,7 +2073,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (ValidateInsertionIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return AddOrInsert ( CreateAddInsOffset ( offset ), items );
+    return AddInsert ( AddInsOffset ( offset ), items );
   }
 
   /// <summary>
@@ -2082,7 +2086,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (ValidateInsertionIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return AddOrInsert ( CreateAddInsOffset ( offset ), items );
+    return AddInsert ( AddInsOffset ( offset ), items );
   }
 
   /// <summary>
@@ -2095,7 +2099,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (ValidateInsertionIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return AddOrInsert ( CreateAddInsOffset ( offset ), items );
+    return AddInsert ( AddInsOffset ( offset ), items );
   }
 
   /// <summary>
