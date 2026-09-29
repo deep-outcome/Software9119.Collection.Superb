@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace Software9119.Collection.Superb.Numerics;
+namespace Software9119.Collection.Superb.Indexing;
 
 /// <summary>
 /// Offset carrying information about operation type.

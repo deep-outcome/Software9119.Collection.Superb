@@ -8,26 +8,90 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Software9119.Collection.Superb.Storing;
 
-static class Capacitor
+/// <summary>
+/// <see cref="Capacitor{T}"/> base class mostly hold static logic.
+/// </summary>
+[SuppressMessage ( "Design", "CA1052:Static holder types should be Static or NotInheritable", Justification = "Inherited." )]
+public class Capacitor
 {
-  static internal ArgNullExc NullAction ( string action ) => new ( paramName: action, "Action must be provided." );
-  static internal ArgNullExc NullComparer ( string comparer ) => new ( paramName: comparer, "Comparer must be provided." );
-  static internal ArgNullExc NullConverter ( string converter ) => new ( paramName: converter, "Converter must be provided." );
-  static internal ArgNullExc NullMatchPredicate ( string match ) => new ( paramName: match, "Match predicate must be provided." );
-  static internal ArgNullExc NullTargetArray ( string array ) => new ( paramName: array, "Target array must be provided." );
+  /// <summary>
+  /// Gets <see cref="ArgumentNullException"/> for <see langword="null"/> action.
+  /// </summary>
+  static protected internal ArgNullExc NullAction ( string action ) => new ( paramName: action, "Action must be provided." );
+  /// <summary>
+  /// Gets <see cref="ArgumentNullException"/> for <see langword="null"/> comparer.
+  /// </summary>
+  static protected internal ArgNullExc NullComparer ( string comparer ) => new ( paramName: comparer, "Comparer must be provided." );
+  /// <summary>
+  /// Gets <see cref="ArgumentNullException"/> for <see langword="null"/> convertor.
+  /// </summary>
+  static protected internal ArgNullExc NullConverter ( string converter ) => new ( paramName: converter, "Converter must be provided." );
+  /// <summary>
+  /// Gets <see cref="ArgumentNullException"/> for <see langword="null"/> match predicate.
+  /// </summary>
+  static protected internal ArgNullExc NullMatchPredicate ( string match ) => new ( paramName: match, "Match predicate must be provided." );
+  /// <summary>
+  /// Gets <see cref="ArgumentNullException"/> for <see langword="null"/> target array.
+  /// </summary>
+  static protected internal ArgNullExc NullTargetArray ( string array ) => new ( paramName: array, "Target array must be provided." );
 
-
-  static internal ArgOutOfRanExc InsufficientTargetArray ( string array, int length, int count )
+  /// <summary>
+  /// Gets <see cref="ArgumentOutOfRangeException"/> for insufficient array.
+  /// </summary>
+  static protected internal ArgOutOfRanExc InsufficientTargetArray ( string array, int length, int count )
     => new ( paramName: array, $"Insufficient target array size, available length {length} cannot accomodate {count} items." );
 
+  /// <summary>
+  /// Gets <see cref="InvalidOperationException"/> for unsupported validation result.
+  /// </summary>
+  static protected internal InvalidOperationException UnsupportedValidationResult ( int validation )
+    => new ( $"Unsupported validation result, '{validation}'." );
+
   static readonly internal string[] OffsetCountParamNames = ["offset", "count"];
-  static internal Func<string []> OffsetCountParametersGetter = () => OffsetCountParamNames;
+  static readonly internal string[] RearSetCountParamNames = ["rearSet", "count"];
+
+  /// <summary>
+  /// Parameter names getter for: 'offset' and 'count'.
+  /// </summary>
+  static protected internal Func<string []> OffsetCountParametersGetter => () => OffsetCountParamNames;
+
+  /// <summary>
+  /// Parameter names getter for: 'rearSet' and 'count'.
+  /// </summary>
+  static protected internal Func<string []> RearSetCountParametersGetter => () => RearSetCountParamNames;
+
+  /// <summary>
+  /// Computes <paramref name="forCount"/> and <paramref name="fromIndex"/> difference.
+  /// </summary>
+  static protected internal int AvailableCount ( int fromIndex, int forCount )
+    => IndexingValidator.IndexToCountInclusiveDifference ( fromIndex, forCount );
+
+  /// <summary>
+  /// Creates store with capacity of <paramref name="capacity"/>.
+  /// </summary>  
+  static protected internal T [] GetStoreWithCapacity<T> ( int capacity ) => capacity == 0 ? Array.Empty<T> () : new T [ capacity ];
+
+  /// <summary>
+  /// Empty <see cref="Capacitor{T}"/>
+  /// </summary>
+  static public Capacitor<T> Empty<T> () => new ();
+
+  /// <summary>
+  /// Validates segmentation possibility over available.
+  /// </summary>
+  static protected internal int ValidateSegmentation
+  (
+    NonNegativeInt32 available, NonNegativeInt32 offset, NonNegativeInt32 count,
+    out int limit,
+    [NotNullWhen ( true )] out ImpossibleSegmentationException? e,
+    Func<string []>? parametersGetter
+  )
+    => IxValidator.ValidateSegmentation ( available, offset, count, out limit, out e, parametersGetter );
 }
 
 /// <summary>
@@ -57,7 +121,8 @@ static class Capacitor
 [SuppressMessage ( "Naming", "CA1710:Identifiers should have correct suffix", Justification = "No." )]
 [SuppressMessage ( "Design", "CA1051:Do not declare visible instance fields", Justification = "Inheritance design." )]
 [DebuggerDisplay ( "(Count={Count},Capacity={Capacity})" )]
-public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
+public class Capacitor<T> : Capacitor,
+  IEnumerable, IEnumerable<T?>,
   ICollection<T?>, IReadOnlyCollection<T?>,
   IList<T?>, IReadOnlyList<T?>,
   IEquatable<Capacitor<T>>, ICloneable
@@ -116,12 +181,6 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   }
 
   /// <summary>
-  /// Empty capacitor of <typeparamref name="T"/>.
-  /// </summary>
-  [SuppressMessage ( "Design", "CA1000:Do not declare static members on generic types", Justification = "Run-time type is constructed anyway." )]
-  static public Capacitor<T> Empty => new ();
-
-  /// <summary>
   /// Internal store.
   /// </summary>
   protected internal T? [] store;
@@ -157,6 +216,8 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </remarks>
   protected internal void AddInsert ( AddInsertOffset offset, T? item )
   {
+    DevValidateAddInsOffset ( offset );
+
     _ = AutoGrow ();
 
     if (offset.inserting)
@@ -175,7 +236,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </remarks>  
   protected internal bool AddInsert ( AddInsertOffset offset, IEnumerable<T?>? items, NonNegativeInt32 roomRequest )
   {
-    DebugValidateAddInsOffset ( offset );
+    DevValidateAddInsOffset ( offset );
 
     if (items == null)
       return false;
@@ -191,7 +252,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
 
     _ = CapacitateForNext ( roomRequest );
 
-    T?[]? tail = TailBackUp(offset);
+    T?[]? tail = BackUpTail(offset);
 
     foreach (T? i in items)
       Add ( i );
@@ -211,14 +272,14 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </remarks>    
   async protected internal Task<bool> AddInsert ( AddInsertOffset offset, IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
   {
-    DebugValidateAddInsOffset ( offset );
+    DevValidateAddInsOffset ( offset );
 
     if (items == null)
       return false;
 
     _ = CapacitateForNext ( roomRequest );
 
-    T?[]? tail = TailBackUp(offset);
+    T?[]? tail = BackUpTail(offset);
 
     await foreach (T? i in items.ConfigureAwait ( false ))
       Add ( i );
@@ -238,14 +299,17 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </remarks>
   protected internal bool AddInsert ( AddInsertOffset offset, T? []? items )
   {
+    DevValidateAddInsOffset ( offset );
+
     if (items == null)
       return false;
 
     int itemsLength = items.Length;
-    PrepareStoreForAddIns ( offset, itemsLength );
-
-    Array.Copy ( items, 0, store, offset, itemsLength );
-    Count += itemsLength;
+    if (PrepareStoreForAddIns ( offset, itemsLength ))
+    {
+      Array.Copy ( items, 0, store, offset, itemsLength );
+      Count += itemsLength;
+    }
 
     return true;
   }
@@ -259,14 +323,17 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </remarks>
   protected internal bool AddInsert ( AddInsertOffset offset, ICollection<T?>? items )
   {
+    DevValidateAddInsOffset ( offset );
+
     if (items == null)
       return false;
 
     int itemsCount = items.Count;
-    PrepareStoreForAddIns ( offset, itemsCount );
-
-    items.CopyTo ( store, offset );
-    Count += itemsCount;
+    if (PrepareStoreForAddIns ( offset, itemsCount ))
+    {
+      items.CopyTo ( store, offset );
+      Count += itemsCount;
+    }
 
     return true;
   }
@@ -280,6 +347,8 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </remarks>
   protected internal bool AddInsert ( AddInsertOffset offset, IReadOnlyCollection<T?>? items )
   {
+    DevValidateAddInsOffset ( offset );
+
     if (items == null)
       return false;
 
@@ -290,18 +359,20 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
       return AddInsert ( offset, c );
 
     int itemsCount = items.Count;
-    PrepareStoreForAddIns ( offset, itemsCount );
+    if (PrepareStoreForAddIns ( offset, itemsCount ))
+    {
+      int index = offset.value;
+      foreach (T? i in items)
+        store [ index++ ] = i;
 
-    int index = offset.value;
-    foreach (T? i in items)
-      store [ index++ ] = i;
+      Count += itemsCount;
+    }
 
-    Count += itemsCount;
     return true;
   }
 
   /// <summary>
-  /// Invokes auto-grow using <see cref="GrowFactor"/> when store fully utilized.
+  /// Invokes auto-grow using <see cref="GrowFactor"/> when store is fully utilized.
   /// </summary>
   /// <returns><see langword="true"/> when capacity is changed.</returns>
   protected internal bool AutoGrow ()
@@ -326,10 +397,24 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   }
 
   /// <summary>
-  /// Computes <paramref name="forCount"/> and <paramref name="fromIndex"/> difference.
+  /// Copies all stored items from <paramref name="offset"/> to backup array.
   /// </summary>
-  static protected internal int AvailableCount ( int fromIndex, int forCount )
-    => IndexingValidator.IndexToCountInclusiveDifference ( fromIndex, forCount );
+  protected internal T? []? BackUpTail ( AddInsertOffset offset )
+  {
+    DevValidateAddInsOffset ( offset );
+
+    T[]? tail = null;
+    if (offset)
+    {
+      int tailSize = ItemsCountToEndInclusive(offset);
+      tail = new T [ tailSize ];
+
+      Array.Copy ( store, offset, tail, 0, tailSize );
+      Count = offset;
+    }
+
+    return tail;
+  }
 
   /// <summary>
   /// Resizes store to new capacity.
@@ -357,10 +442,10 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// <remarks>
   /// Intended for internal methods.
   /// </remarks>
-  [Conditional ( "DEBUG" )]
-  protected internal void DebugValidateIndex ( int index )
+  [Conditional ( "DEV_VALS" )]
+  protected internal void DevValidateIndex ( int index, [CallerArgumentExpression ( nameof ( index ) )] string? param = null )
   {
-    if (IndexingValidator.ValidateIndex ( index, Count, out IndexOutOfBoundariesException? e ))
+    if (ValidateIndex ( index, out IndexOutOfBoundariesException? e, param! ))
       throw e;
   }
 
@@ -370,68 +455,71 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// <remarks>
   /// Intended for internal methods.
   /// </remarks>
-  [Conditional ( "DEBUG" )]
-  protected internal void DebugValidateAddInsOffset ( AddInsertOffset offset )
+  [Conditional ( "DEV_VALS" )]
+  protected internal void DevValidateAddInsOffset ( AddInsertOffset offset, [CallerArgumentExpression ( nameof ( offset ) )] string? param = null )
   {
-    if (ValidateInsertionIndex ( offset.value, out IndexOutOfBoundariesException? e, "" ))
+    if (ValidateInsertionIndex ( offset.value, out IndexOutOfBoundariesException? e, param! ))
       throw e;
+
+    if (offset == false && Count != offset.value)
+      throw new InvalidOperationException ( "Addition offset misuse." );
   }
 
   /// <summary>
   /// Index validation existing only in debug compilation. 
   /// </summary>
   /// <remarks>
-  /// Intended for internal methods.
+  /// <list type="bullet">
+  /// <item>Intended for internal methods.</item>
+  /// <item>Permissive towards empty moves.</item>
+  /// </list>
   /// </remarks>
-  [Conditional ( "DEBUG" )]
-  protected internal void DebugValidateRightShift ( int index, int count )
+  [Conditional ( "DEV_VALS" )]
+  protected internal void DevValidateRightShift ( int index, int count )
   {
-    if (IndexingValidator.ValidateIndex ( index, Capacity, out IndexOutOfBoundariesException? e1 ))
+    if (IxValidator.ValidateIndex ( index, Capacity, out IndexOutOfBoundariesException? e1 ))
       throw e1;
 
     if (FreeCapacity < count)
       throw new InvalidOperationException ( "Shift is possible only up to free capacity." );
   }
 
-  /// <summary>
-  /// Creates store with capacity of <paramref name="capacity"/>.
-  /// </summary>
-  [MemberNotNull ( nameof ( store ) )]
-  static protected internal U [] GetStoreWithCapacity<U> ( int capacity ) => capacity == 0 ? Array.Empty<U> () : new U [ capacity ];
-
   /// <returns>Count of stored items starting at <paramref name="fromIndex"/>.</returns>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
-  protected internal int ItemsCountToEndInclusive ( int fromIndex ) => IndexingValidator.IndexToCountInclusiveDifference ( fromIndex, Count );
+  protected internal int ItemsCountToEndInclusive ( int fromIndex ) => IxValidator.IndexToCountInclusiveDifference ( fromIndex, Count );
 
   /// <summary>
   /// Prepares store for insertion or addition of items, if needed.
   /// </summary>
-  protected internal void PrepareStoreForAddIns ( AddInsertOffset offset, int itemsCount )
+  /// <returns><see langword="true"/> when <paramref name="itemsCount"/> is greater than <c>0</c>.</returns>
+  protected internal bool PrepareStoreForAddIns ( AddInsertOffset offset, int itemsCount )
   {
-    DebugValidateAddInsOffset ( offset );
+    DevValidateAddInsOffset ( offset );
 
     // mainly, prevents useless shift call
     if (itemsCount == 0)
-      return;
+      return false;
 
     _ = CapacitateForNext ( itemsCount );
-    if (offset.inserting)
+    if (offset)
       ShiftItemsToRight ( offset, itemsCount );
+
+    return true;
   }
 
   /// <summary>
-  /// Removes item at index from store.
+  /// Removes item at <paramref name="atIndex"/> index from store and returns it.
   /// </summary>
   protected internal T? RemoveAndReturn ( int atIndex )
   {
-    DebugValidateIndex ( atIndex );
+    DevValidateIndex ( atIndex );
 
     T? [] store = this.store;
     T? item = store [ atIndex ];
 
     int sourceIndex = atIndex + 1;
     int itemsToEnd = ItemsCountToEndInclusive(sourceIndex);
-    if (itemsToEnd != 0) // how does happend to be 0 here?
+    if (itemsToEnd != 0)
       Array.Copy ( store, sourceIndex, store, atIndex, itemsToEnd );
 
     int count = Count;
@@ -455,28 +543,10 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   protected internal void ShiftItemsToRight ( int from, int byPositions )
   {
-    DebugValidateRightShift ( from, byPositions );
+    DevValidateRightShift ( from, byPositions );
 
     int count = ItemsCountToEndInclusive(from);
     Array.Copy ( store, from, store, from + byPositions, count );
-  }
-
-  /// <summary>
-  /// Copies items to end from <paramref name="offset"/> to backup array.
-  /// </summary>
-  protected internal T? []? TailBackUp ( AddInsertOffset offset )
-  {
-    T[]? tail = null;
-    if (offset)
-    {
-      int tailSize = ItemsCountToEndInclusive(offset);
-      tail = new T [ tailSize ];
-
-      Array.Copy ( store, offset, tail, 0, tailSize );
-      Count = offset;
-    }
-
-    return tail;
   }
 
   /// <summary>
@@ -501,26 +571,12 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// Validates backward directed segmentation, i.e. from <paramref name="rearSet"/> by <paramref name="count"/> back to start.
   /// </summary>
   [SuppressMessage ( "Style", "IDE0047:Remove unnecessary parentheses", Justification = "" )]
-  protected internal bool ValidateRearSetConfiguration (
+  protected internal int ValidateRearSetConfiguration (
     NonNegativeInt32 rearSet,
     NonNegativeInt32 count,
-    [NotNullWhen ( true )] out ImpSegExc? e,
-    string paramNames
-  )
-  {
-    int itemsCount = Count;
-    if (rearSet > itemsCount || rearSet + 1 < count || (rearSet == itemsCount && count != 0))
-    {
-      string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing. (Parameters {3})";
-      msg = string.Format ( CultureInfo.InvariantCulture, msg, itemsCount, rearSet, count, paramNames );
-
-      e = new ImpossibleSegmentationException ( msg );
-      return true;
-    }
-
-    e = null;
-    return false;
-  }
+    out ImpSegExc? e,
+    Func<string []>? parametersGetter
+  ) => IxValidator.ValidateBackwardSegmentation ( Count, rearSet, count, out e, parametersGetter );
 
   /// <summary>
   /// Validates segmentation possibility.
@@ -530,22 +586,9 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     NonNegativeInt32 offset, NonNegativeInt32 count,
     out int limit,
     [NotNullWhen ( true )] out ImpossibleSegmentationException? e,
-    Func<string []>? parametersGetter = null
+    Func<string []>? parametersGetter
   )
     => IxValidator.ValidateSegmentation ( Count, offset, count, out limit, out e, parametersGetter );
-
-
-  /// <summary>
-  /// Validates segmentation possibility over available.
-  /// </summary>
-  static protected internal int ValidateSegmentation
-  (
-    NonNegativeInt32 available, NonNegativeInt32 offset, NonNegativeInt32 count,
-    out int limit,
-    [NotNullWhen ( true )] out ImpossibleSegmentationException? e,
-    Func<string []>? parametersGetter = null
-  )
-    => IxValidator.ValidateSegmentation ( available, offset, count, out limit, out e, parametersGetter );
 
   /// <summary>
   /// Zero based-indexer.
@@ -572,7 +615,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   }
 
   /// <summary>
-  /// Current store capacity.
+  /// Current storage capacity.
   /// </summary>  
   public int Capacity
   {
@@ -602,16 +645,16 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
 
   /// <summary>
   /// Storage grow factor used for its auto-expansion, default is <see cref="GrowFactor.Two"/>.
-  /// </summary>
-  /// <remarks>Cannot be set when <see cref="LockGrowFactor"/> is set to <see langword="true"/>.</remarks>
+  /// </summary>  
   /// <exception cref="ArgumentOutOfRangeException">Upon try to set invalid <see cref="Storing.GrowFactor"/>.</exception>
+  /// <exception cref="InvalidOperationException">Upon try to set value when <see cref="LockGrowFactor"/> is <see langword="true"/>.</exception>
   public GrowFactor GrowFactor
   {
     get => growFactor;
     set
     {
       if (LockGrowFactor)
-        return;
+        throw new InvalidOperationException ( "Grow factor is locked." );
 
       if (value.ToFloat ( out _ ) == false)
         throw new ArgumentOutOfRangeException ( paramName: nameof ( value ), $"Unsupported grow factor, '{value}'." );
@@ -621,7 +664,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   }
 
   /// <summary>
-  /// Determines whether store capacity is fully utilized.
+  /// Store is full when <see cref="Capacity"/> is fully utilized.
   /// </summary>
   public bool IsFull
   {
@@ -640,7 +683,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public bool LockGrowFactor { get; init; }
 
   /// <summary>
-  /// Stores <paramref name="item"/> using auto-grow capacitation, see <see cref="GrowFactor"/>.
+  /// Stores <paramref name="item"/> using Auto Capacitation.
   /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   public void Add ( T? item )
@@ -658,7 +701,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </item>
   /// </list>
   /// </summary>  
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   /// <remarks>
   /// <list type="bullet">
   /// <item>Use <c>0</c> for <paramref name="roomRequest"/> for no room request.</item>
@@ -671,7 +714,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// <summary>
   /// Stores <paramref name="items"/> using Pre Capacitation and Auto Capacitation.  
   /// </summary>  
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <returns>Async <see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   /// <remarks>
   /// <list type="bullet">
   /// <item>Use <c>0</c> for <paramref name="roomRequest"/> for no room request.</item>
@@ -684,19 +727,19 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// <summary>
   /// Stores <paramref name="items"/> using Batch Capacitation.
   /// </summary>
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   public bool Add ( T? []? items ) => AddInsert ( AddInsOffset ( Count ), items );
 
   /// <summary>
   /// Stores <paramref name="items"/> using Batch Capacitation.
   /// </summary>
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   public bool Add ( ICollection<T?>? items ) => AddInsert ( AddInsOffset ( Count ), items );
 
   /// <summary>
   /// Stores <paramref name="items"/> using Batch Capacitation.
   /// </summary>
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   public bool Add ( IReadOnlyCollection<T?>? items ) => AddInsert ( AddInsOffset ( Count ), items );
 
   /// <returns><see langword="true"/> if all stored items conform to <paramref name="match"/> predicate.</returns>  
@@ -704,7 +747,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public bool AllMatches ( Predicate<T?> match )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
     T? [] store = this.store;
     int length = store.Length;
@@ -724,7 +767,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public int BinarySearch ( T value, IComparer<T?>? comparer )
   {
     if (comparer == null)
-      throw Capacitor.NullComparer ( nameof ( comparer ) );
+      throw NullComparer ( nameof ( comparer ) );
 
     return Array.BinarySearch ( store, 0, Count, value, comparer );
   }
@@ -738,7 +781,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public int BinarySearch ( T value, NonNegativeInt32 offset, IComparer<T?>? comparer )
   {
     if (comparer == null)
-      throw Capacitor.NullComparer ( nameof ( comparer ) );
+      throw NullComparer ( nameof ( comparer ) );
 
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
@@ -759,10 +802,16 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public int BinarySearch ( NonNegativeInt32 offset, NonNegativeInt32 count, T value, IComparer<T?>? comparer )
   {
     if (comparer == null)
-      throw Capacitor.NullComparer ( nameof ( comparer ) );
+      throw NullComparer ( nameof ( comparer ) );
 
-    if (ValidateSegmentation ( offset, count, out _, out ImpSegExc? e ) == 1)
-      throw e!;
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
+    switch (validation)
+    {
+      case 0:
+      case -1: break; // let binary search return 'correct' negative index
+      case 1: throw e!;
+      default: throw UnsupportedValidationResult ( validation );
+    }
 
     return Array.BinarySearch ( store, offset, count, value, comparer );
   }
@@ -876,15 +925,15 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public Capacitor<To> Convert<To> ( Converter<T?, To> converter, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (converter == null)
-      throw Capacitor.NullConverter ( nameof ( converter ) );
+      throw NullConverter ( nameof ( converter ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0:
       case -1: break;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     T?[] store = this.store;
@@ -905,11 +954,11 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public void CopyTo ( T? [] array )
   {
     if (array == null)
-      throw Capacitor.NullTargetArray ( nameof ( array ) );
+      throw NullTargetArray ( nameof ( array ) );
 
     int count = Count;
     if (array.Length < count)
-      throw Capacitor.InsufficientTargetArray ( nameof ( array ), array.Length, count );
+      throw InsufficientTargetArray ( nameof ( array ), array.Length, count );
 
     Array.Copy ( store, 0, array, 0, count );
   }
@@ -924,14 +973,14 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public void CopyTo ( T? [] array, int arrayIndex )
   {
     if (array == null)
-      throw Capacitor.NullTargetArray ( nameof ( array ) );
+      throw NullTargetArray ( nameof ( array ) );
 
     int length = array.Length;
     int availableLength = AvailableCount(arrayIndex, length);
 
     int count = Count;
     if (availableLength < count)
-      throw Capacitor.InsufficientTargetArray ( nameof ( array ), availableLength, count );
+      throw InsufficientTargetArray ( nameof ( array ), availableLength, count );
 
     Array.Copy ( store, 0, array, arrayIndex, count );
   }
@@ -952,7 +1001,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public void CopyTo ( T? [] array, NonNegativeInt32 arrayIndex, NonNegativeInt32 fromIndex, NonNegativeInt32 count )
   {
     if (array == null)
-      throw Capacitor.NullTargetArray ( nameof ( array ) );
+      throw NullTargetArray ( nameof ( array ) );
 
     Func<string[]> targetParams = () => [nameof ( array ), nameof ( arrayIndex ), nameof ( count )];
     int validation = ValidateSegmentation (array.Length, arrayIndex, count, out _, out ImpSegExc? e1, targetParams);
@@ -962,7 +1011,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
       case -1: // let validate source segment even for empty target segment
         break;
       case 1: throw e1!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     Func<string[]> sourceParams = () => [nameof ( fromIndex ), nameof ( count )];
@@ -972,7 +1021,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
       case 0: break;
       case -1: return;
       case 1: throw e2!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     Array.Copy ( store, fromIndex, array, arrayIndex, count );
@@ -1052,13 +1101,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// <remarks>Stored items are shallow-cloned to new internal store with capacity of <paramref name="count"/>.</remarks>
   public Capacitor<T> Clone ( NonNegativeInt32 offset, NonNegativeInt32 count )
   {
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0:
       case -1: break;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     T [] store = GetStoreWithCapacity<T>(count);
@@ -1121,13 +1170,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </exception>
   public void Fill ( T? item, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     Array.Fill ( store, item, offset, count );
@@ -1238,13 +1287,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (match == null)
       throw Capacitor.NullMatchPredicate ( nameof ( match ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return -1;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     return Array.FindIndex ( store, offset, count, match );
@@ -1327,7 +1376,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (match == null)
       throw Capacitor.NullMatchPredicate ( nameof ( match ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
@@ -1337,7 +1386,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
         return false;
       }
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     int index = Array.FindIndex ( store, offset, count, match );
@@ -1423,13 +1472,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (match == null)
       throw Capacitor.NullMatchPredicate ( nameof ( match ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return -1;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     return Array.FindLastIndex ( store, offset + count - 1, count, match );
@@ -1447,14 +1496,16 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public int FindLastIndex ( NonNegativeInt32 rearSet, NonNegativeInt32 count, Predicate<T?> match )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
-    const string paramNames = $"'{nameof(rearSet)}','{nameof(count)}'";
-    if (ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, paramNames ))
-      throw e;
-
-    if (count == 0 || Count == 0)
-      return -1;
+    int validation = ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, RearSetCountParametersGetter);
+    switch (validation)
+    {
+      case 0: break;
+      case -1: return -1;
+      case 1: throw e!;
+      default: throw UnsupportedValidationResult ( validation );
+    }
 
     return Array.FindLastIndex ( store, rearSet, count, match );
   }
@@ -1601,14 +1652,16 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public int FindMthIndex ( Predicate<T?> match, PositiveInt32 mth, NonNegativeInt32 rearSet, NonNegativeInt32 count )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
-    const string paramNames = $"'{nameof(rearSet)}','{nameof(count)}'";
-    if (ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, paramNames ))
-      throw e;
-
-    if (count == 0 || Count == 0)
-      return -1;
+    int validation = ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, RearSetCountParametersGetter);
+    switch (validation)
+    {
+      case 0: break;
+      case -1: return -1;
+      case 1: throw e!;
+      default: throw UnsupportedValidationResult ( validation );
+    }
 
     T? [] store = this.store;
 
@@ -1730,13 +1783,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (match == null)
       throw Capacitor.NullMatchPredicate ( nameof ( match ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return -1;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     T? [] store = this.store;
@@ -1867,13 +1920,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (match == null)
       throw Capacitor.NullMatchPredicate ( nameof ( match ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return false;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     return Array.FindIndex ( store, offset, count, match ) != -1;
@@ -1927,13 +1980,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (action == null)
       throw Capacitor.NullAction ( nameof ( action ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     T? [] store = this.store;
@@ -1995,13 +2048,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </exception>
   public int IndexOf ( T? item, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return -1;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     return Array.IndexOf ( store, item, offset, count );
@@ -2028,7 +2081,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </item>
   /// </list>
   /// </summary>  
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>   
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>   
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
   /// <remarks>
   /// <list type="bullet">
@@ -2047,7 +2100,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// <summary>
   /// Stores <paramref name="items"/> using Pre Capacitation and Auto Capacitation.  
   /// </summary>  
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>   
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>   
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
   /// <remarks>
   /// <list type="bullet">
@@ -2066,7 +2119,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// <summary>
   /// Using Batch Capacitation, inserts <paramref name="items"/> into store starting at <paramref name="offset"/>.
   /// </summary>
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
   public bool Insert ( NonNegativeInt32 offset, T? []? items )
   {
@@ -2079,7 +2132,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// <summary>
   /// Using Batch Capacitation, inserts <paramref name="items"/> into store starting at <paramref name="offset"/>.
   /// </summary>
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
   public bool Insert ( NonNegativeInt32 offset, ICollection<T?>? items )
   {
@@ -2092,7 +2145,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// <summary>
   /// Using Batch Capacitation, inserts <paramref name="items"/> into store starting at <paramref name="offset"/>.
   /// </summary>
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is null.</returns>
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
   public bool Insert ( NonNegativeInt32 offset, IReadOnlyCollection<T?>? items )
   {
@@ -2160,13 +2213,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </exception>
   public int LastIndexOf ( T? item, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e , OffsetCountParametersGetter);
     switch (validation)
     {
       case 0: break;
       case -1: return -1;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     return Array.LastIndexOf ( store, item, offset + count - 1, count );
@@ -2182,12 +2235,14 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </exception>
   public int LastIndexOf ( NonNegativeInt32 rearSet, NonNegativeInt32 count, T? item )
   {
-    const string paramNames = $"'{nameof(rearSet)}','{nameof(count)}'";
-    if (ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, paramNames ))
-      throw e;
-
-    if (count == 0 || Count == 0)
-      return -1;
+    int validation = ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, RearSetCountParametersGetter);
+    switch (validation)
+    {
+      case 0: break;
+      case -1: return -1;
+      case 1: throw e!;
+      default: throw UnsupportedValidationResult ( validation );
+    }
 
     return Array.LastIndexOf ( store, item, rearSet, count );
   }
@@ -2221,13 +2276,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </exception>
   public int NthIndexOf ( T? item, PositiveInt32 nth, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return -1;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     T? [] store = this.store;
@@ -2290,12 +2345,14 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   public int MthIndexOf ( T? item, PositiveInt32 mth, NonNegativeInt32 rearSet, NonNegativeInt32 count )
   {
 
-    const string paramNames = $"'{nameof(rearSet)}','{nameof(count)}'";
-    if (ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, paramNames ))
-      throw e;
-
-    if (count == 0 || Count == 0)
-      return -1;
+    int validation = ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, RearSetCountParametersGetter);
+    switch (validation)
+    {
+      case 0: break;
+      case -1: return -1;
+      case 1: throw e!;
+      default: throw UnsupportedValidationResult ( validation );
+    }
 
     T? [] store = this.store;
 
@@ -2361,13 +2418,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (comparer == null)
       throw Capacitor.NullComparer ( nameof ( comparer ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     Array.Sort ( store, offset, count, comparer );
@@ -2414,13 +2471,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (comparison == null)
       throw Capacitor.NullComparer ( nameof ( comparison ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     BinaryInsertionOrder.Order ( store, offset, count, comparison );
@@ -2464,13 +2521,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
   /// </exception>
   public void Remove ( NonNegativeInt32 offset, NonNegativeInt32 count )
   {
-    int validation = ValidateSegmentation ( offset, count, out int index, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out int index, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     T? [] store = this.store;
@@ -2567,13 +2624,13 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
     if (match == null)
       throw Capacitor.NullMatchPredicate ( nameof ( match ) );
 
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e );
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
     {
       case 0: break;
       case -1: return 0;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     // mutation of of MS List<T>.RemoveAll implementation
@@ -2651,7 +2708,7 @@ public class Capacitor<T> : IEnumerable, IEnumerable<T?>,
       case 0: break;
       case -1: return;
       case 1: throw e!;
-      default: throw new InvalidOperationException ( $"Unsupported validation result, '{validation}'." );
+      default: throw UnsupportedValidationResult ( validation );
     }
 
     Array.Reverse ( store, offset, count );

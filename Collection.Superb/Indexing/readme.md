@@ -44,3 +44,5 @@ Assert.AreEqual ( numbers.Sum (), sum );
 ```
 
 - [`IndexingValidator`](./IndexingValidator.cs) – semi-public validator, useful mostly for APIs which adopted Software9119.Collection.Superb.Numerics types
+
+- [`AddInsertOffset`](./AddInsertOffset.cs) – mostly internal type with ability to distinguish between insertion and addition by relation of index to target length.

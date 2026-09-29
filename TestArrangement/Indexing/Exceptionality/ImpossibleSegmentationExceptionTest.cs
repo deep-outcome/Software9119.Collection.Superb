@@ -2,7 +2,6 @@
 
 using Software9119.Collection.Superb.Indexing;
 
-using System;
 using System.Globalization;
 
 namespace Software9119.Collection.Superb.TestArrangement.Indexing.Exceptionality;
@@ -26,9 +25,9 @@ public class ImpossibleSegmentationExceptionTest
   }
 
   [TestMethod]
-  public void OufRangeMsg ()
+  public void ForwardSegmentationMsg ()
   {
-    ImpossibleSegmentationException e = ImpossibleSegmentationException.OufRangeMsg (1, 2, 3);
+    ImpossibleSegmentationException e = ImpossibleSegmentationException.ForwardSegmentationMsg (1, 2, 3);
     string expMsg = "With available 1, given offset 2 and count 3 produce out-of indexing.";
     Assert.AreEqual ( expMsg, e.Message );
   }
@@ -37,7 +36,7 @@ public class ImpossibleSegmentationExceptionTest
   [DataRow ( null )]
   [DataRow ( false )]
   [DataRow ( true )]
-  public void OufRangeMsg ( bool? withParamaters )
+  public void ForwardSegmentationMsg ( bool? withParamaters )
   {
     string[]? parameters = withParamaters == null
       ? null
@@ -45,7 +44,7 @@ public class ImpossibleSegmentationExceptionTest
         ? [ "AB", "C", "DE" ]
         : [];
 
-    ImpossibleSegmentationException e = ImpossibleSegmentationException.OufRangeMsg (1, 2, 3,parameters);
+    ImpossibleSegmentationException e = ImpossibleSegmentationException.ForwardSegmentationMsg (1, 2, 3,parameters);
     string msg = "With available 1, given offset 2 and count 3 produce out-of indexing.{0}";
     string paramsString = withParamaters == true ? " (Parameters 'AB','C','DE')" : "";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsString );
@@ -54,13 +53,47 @@ public class ImpossibleSegmentationExceptionTest
   }
 
   [TestMethod]
-  [DataRow ( -1, 0, 0, DisplayName = "Negative available." )]
-  [DataRow ( 0, -1, 0, DisplayName = "Negative offset." )]
-  [DataRow ( 0, 0, -1, DisplayName = "Negative count." )]
-  public void OufRangeMsg ( int available, int offset, int count )
+  public void BackwardSegmentationMsg ()
   {
-    Action test = () => _ = ImpossibleSegmentationException.OufRangeMsg ( available, offset: offset, count: count);
-    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException>( test );
-    Assert.AreEqual ( "Value must be non-negative integer, but it is '-1'.", e?.Message );
+    ImpossibleSegmentationException e = ImpossibleSegmentationException.BackwardSegmentationMsg (1, 2, 3);
+    string expMsg = "With available 1, given rearSet 2 and count 3 produce out-of indexing.";
+    Assert.AreEqual ( expMsg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( null )]
+  [DataRow ( false )]
+  [DataRow ( true )]
+  public void BackwardSegmentationMsg ( bool? withParamaters )
+  {
+    string[]? parameters = withParamaters == null
+      ? null
+      : withParamaters == true
+        ? [ "AB", "C", "DE" ]
+        : [];
+
+    ImpossibleSegmentationException e = ImpossibleSegmentationException.BackwardSegmentationMsg (1, 2, 3,parameters);
+    string msg = "With available 1, given rearSet 2 and count 3 produce out-of indexing.{0}";
+    string paramsString = withParamaters == true ? " (Parameters 'AB','C','DE')" : "";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsString );
+
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( null )]
+  [DataRow ( "" )]
+  [DataRow ( "aaa,abc" )]
+  public void ParamsString ( string paramsStr )
+  {
+    string[]? parameters = paramsStr?.Split(',');
+    string test = ImpossibleSegmentationException.ParamsString(parameters);
+
+    string expectation = paramsStr == null
+      ? ""
+      : paramsStr == ""
+        ? " (Parameters '')"
+        : " (Parameters 'aaa','abc')";
+    Assert.AreEqual ( expectation, test );
   }
 }

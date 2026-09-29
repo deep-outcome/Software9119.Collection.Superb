@@ -50,7 +50,7 @@ public class IndexOutOfBoundariesExceptionTest
   [DataRow ( "yourParam" )]
   public void NegativeIndexMsg ( string paramName )
   {
-    string msg = "Index must be non-negative, but it is '-1'.";
+    string msg = "Index must be non-negative integer, but it is '-1'.";
     string paramString = paramName == "yourParam" ? $" (Parameter '{paramName}')" : "";
     msg += paramString;
 

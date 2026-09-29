@@ -45,4 +45,12 @@
     </PackageReference>
   </ItemGroup>
 
+  <PropertyGroup Label="Symbols">
+    <UseDevVals>true</UseDevVals>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(UseDevVals)' == 'true'" Label="Symbols">
+    <DefineConstants>$(DefineConstants);DEV_VALS</DefineConstants>
+  </PropertyGroup>
+
 </Project>

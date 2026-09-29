@@ -1,7 +1,7 @@
 ﻿namespace Software9119.Collection.Superb.Storing;
 
 /// <summary>
-/// Internal store auto-grow factor.
+/// Internal store auto-grow factor used by Auto Capacitation.
 /// </summary>
 public enum GrowFactor
 {

@@ -26,7 +26,7 @@ public class ImpossibleSegmentationException : ArgumentOutOfRangeException
     return new ImpossibleSegmentationException ( msg );
   }
 
-  static public ImpossibleSegmentationException OufRangeMsg
+  static public ImpossibleSegmentationException ForwardSegmentationMsg
   (
     NonNegativeInt32 available,
     NonNegativeInt32 offset,
@@ -35,12 +35,33 @@ public class ImpossibleSegmentationException : ArgumentOutOfRangeException
   )
   {
     const string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing.{3}";
-
-    int paramsLength = parameters?.Length ?? 0;
-    string paramsString = paramsLength == 0 ? "" : $" (Parameters '{string.Join("','", parameters!)}')";
+    string paramsString = ParamsString(parameters);
 
     string errMsg = string.Format ( msg, available, offset, count, paramsString );
     return new ImpossibleSegmentationException ( errMsg );
+  }
+
+  static public ImpossibleSegmentationException BackwardSegmentationMsg
+  (
+    NonNegativeInt32 available,
+    NonNegativeInt32 rearSet,
+    NonNegativeInt32 count,
+    string []? parameters = null
+  )
+  {
+    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.{3}";
+    string paramsString = ParamsString(parameters);
+
+    string errMsg = string.Format ( msg, available, rearSet, count, paramsString );
+    return new ImpossibleSegmentationException ( errMsg );
+  }
+
+  static internal string ParamsString ( string []? parameters )
+  {
+    int paramsLength = parameters?.Length ?? 0;
+    string paramsString = paramsLength == 0 ? "" : $" (Parameters '{string.Join("','", parameters!)}')";
+
+    return paramsString;
   }
 
   public ImpossibleSegmentationException ( SerializationInfo info, StreamingContext context ) : base ( info, context ) { }

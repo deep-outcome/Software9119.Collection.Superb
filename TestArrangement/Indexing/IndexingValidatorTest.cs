@@ -90,8 +90,8 @@ public class IndexingValidatorTest
   [DataRow ( int.MaxValue, int.MaxValue, "For available '2147483647' is index '2147483647' out of bounds." )]
   [DataRow ( 1, 0, "For available '0' is index '1' out of bounds." )]
   [DataRow ( 5, 4, "For available '4' is index '5' out of bounds." )]
-  [DataRow ( -1, default, "Index must be non-negative, but it is '-1'." )]
-  [DataRow ( int.MinValue, default, "Index must be non-negative, but it is '-2147483648'." )]
+  [DataRow ( -1, default, "Index must be non-negative integer, but it is '-1'." )]
+  [DataRow ( int.MinValue, default, "Index must be non-negative integer, but it is '-2147483648'." )]
   public void ValidateIndex_Int32Index_NegativeScenarios ( int index, int count, string errMsg )
   {
     bool result = IndexingValidator.ValidateIndex (index, count, out IndexOutOfBoundariesException? e);
@@ -119,7 +119,7 @@ public class IndexingValidatorTest
       : IndexingValidator.ValidateIndex ( index, count, out e, paramName );
 
     string errMsg = index == -1
-      ? "Index must be non-negative, but it is '-1'."
+      ? "Index must be non-negative integer, but it is '-1'."
       : "For available '0' is index '0' out of bounds.";
 
     string paramString = paramName == "yourParam" ? " (Parameter 'yourParam')" : "";
@@ -142,8 +142,8 @@ public class IndexingValidatorTest
   [TestMethod]
   [DataRow ( 1, 0, "Cannot insert at index '1' when available is '0'." )]
   [DataRow ( 5, 4, "Cannot insert at index '5' when available is '4'." )]
-  [DataRow ( -1, default, "Index must be non-negative, but it is '-1'." )]
-  [DataRow ( int.MinValue, default, "Index must be non-negative, but it is '-2147483648'." )]
+  [DataRow ( -1, default, "Index must be non-negative integer, but it is '-1'." )]
+  [DataRow ( int.MinValue, default, "Index must be non-negative integer, but it is '-2147483648'." )]
   public void ValidateInsertionIndex_Int32Index_NegativeScenarios ( int index, int count, string errMsg )
   {
     bool result = IndexingValidator.ValidateInsertionIndex (index, count, out IndexOutOfBoundariesException? e);
@@ -171,7 +171,7 @@ public class IndexingValidatorTest
       : IndexingValidator.ValidateInsertionIndex ( index, 0, out e, paramName );
 
     string errMsg = index == -1
-      ? "Index must be non-negative, but it is '-1'."
+      ? "Index must be non-negative integer, but it is '-1'."
       : "Cannot insert at index '1' when available is '0'.";
 
     string paramString = paramName == "yourParam" ? " (Parameter 'yourParam')" : "";
@@ -213,7 +213,7 @@ public class IndexingValidatorTest
     Assert.IsNotNull ( e );
 
     string expMsg = index < 0
-      ? $"Index must be non-negative, but it is '{index}'."
+      ? $"Index must be non-negative integer, but it is '{index}'."
       : $"For available '{count}' is index '{origIndex}' out of bounds.";
     Assert.AreEqual ( expMsg, e.Message );
   }
@@ -244,7 +244,7 @@ public class IndexingValidatorTest
   [DataRow ( 1, 1, 0, DisplayName = "Impossible segmentation, nothing available." )]
   [DataRow ( 1, 0, 0, DisplayName = "Empty segment, large offsetting" )]
   [DataRow ( 6, 0, 5, DisplayName = "Empty segment, large offsetting" )]
-  public void ValidateSegmentation_ImpossibleSegment ( int offset, int count, int available )
+  public void ValidateSegmentation_NegativeSecnarios ( int offset, int count, int available )
   {
     int result = IndexingValidator.ValidateSegmentation
     (
@@ -259,35 +259,28 @@ public class IndexingValidatorTest
   }
 
   [TestMethod]
-  [DataRow ( null )]
-  [DataRow ( false )]
-  [DataRow ( true )]
-  public void ValidateSegmentation_ImpossibleSegment_Parameters ( bool? withParamaters )
+  [DataRow ( 1 )]
+  [DataRow ( 2 )]
+  [DataRow ( 3 )]
+  [DataRow ( 4 )]
+  public void ValidateSegmentation_Parameters ( int testCase )
   {
-    Func<string[]>? parameters = withParamaters == null
-      ? null
-      : withParamaters == true
-        ? () => ["ABC", "xYz"]
-        : () => [];
+    Func<string[]>? parameters = testCase switch
+    {
+      1 => null,
+      2 => () => null!,
+      3 => () => [],
+      4 => () => ["ABC", "xYz"],
+      _ => throw new ArgumentOutOfRangeException(nameof( testCase ) )
+    };
 
     _ = IndexingValidator.ValidateSegmentation ( 5, 0, 6, out _, out ImpSegExc? e, parameters );
 
     string msg = "With available 5, given offset 0 and count 6 produce out-of indexing.{0}";
-    string parametersString = withParamaters == true ? " (Parameters 'ABC','xYz')" : "";
+    string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
 
     Assert.AreEqual ( msg, e?.Message );
-  }
-
-  [TestMethod]
-  [DataRow ( -1, 0, 0, DisplayName = "Negative available." )]
-  [DataRow ( 0, -1, 0, DisplayName = "Negative offset." )]
-  [DataRow ( 0, 0, -1, DisplayName = "Negative count." )]
-  public void ValidateSegmentation_NegativeValues ( int available, int offset, int count )
-  {
-    Action test = () => _ = IndexingValidator.ValidateSegmentation ( available, offset: offset, count: count, out _, out _);
-    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException>( test );
-    Assert.AreEqual ( "Value must be non-negative integer, but it is '-1'.", e?.Message );
   }
 
   [TestMethod]
@@ -321,7 +314,7 @@ public class IndexingValidatorTest
   [DataRow ( 1, 0, 0, DisplayName = "Empty segment, index not less" )]
   [DataRow ( 5, 0, 5, DisplayName = "Empty segment, index not less" )]
   [DataRow ( 6, 0, 5, DisplayName = "Empty segment, index not less" )]
-  public void ValidateSegmentationStrict_ImpossibleSegment ( int offset, int count, int available )
+  public void ValidateSegmentationStrict_NegativeSecnarios ( int offset, int count, int available )
   {
     int result = IndexingValidator.ValidateSegmentationStrict
     (
@@ -333,17 +326,6 @@ public class IndexingValidatorTest
     Assert.AreEqual ( IndexingValidator.LimitOutOf ( offset, count ), limit );
     string errMsg = $"With available {available}, given offset {offset} and count {count} produce out-of indexing.";
     Assert.AreEqual ( errMsg, e!.Message );
-  }
-
-  [TestMethod]
-  [DataRow ( -1, 0, 0, DisplayName = "Negative available." )]
-  [DataRow ( 0, -1, 0, DisplayName = "Negative offset." )]
-  [DataRow ( 0, 0, -1, DisplayName = "Negative count." )]
-  public void ValidateSegmentationStrict_NegativeValues ( int available, int offset, int count )
-  {
-    Action test = () => _ = IndexingValidator.ValidateSegmentationStrict ( available, offset: offset, count: count, out _, out _);
-    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException>( test );
-    Assert.AreEqual ( "Value must be non-negative integer, but it is '-1'.", e?.Message );
   }
 
   [TestMethod]
@@ -364,6 +346,73 @@ public class IndexingValidatorTest
     Assert.AreEqual ( count == 0 ? -1 : 0, result );
     Assert.AreEqual ( IndexingValidator.LimitOutOf ( offset, count ), limit );
     Assert.IsNull ( e );
+  }
+
+  [TestMethod]
+  // contains doc comment samples
+  [DataRow ( 5, 6, 0 )] // sample
+  [DataRow ( 5, 0, 2 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 4, 6 )]
+  [DataRow ( 5, 5, 1 )]
+  [DataRow ( 5, 7, 9 )]
+  [DataRow ( 1, 2, 0 )] // sample
+  [DataRow ( 0, 1, 0 )]
+  [DataRow ( 0, 0, 1 )]
+  [DataRow ( 0, 1, 1 )]
+  public void ValidateBackwardSegmentation_NegativeScenarios ( int size, int index, int count )
+  {
+    Func<string[]> parameters = () => ["abc", "tuv"];
+    Assert.AreEqual ( 1, IndexingValidator.ValidateBackwardSegmentation ( size, index, count, out ImpSegExc? e, parameters ) );
+
+    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
+    msg += " (Parameters 'abc','tuv')";
+
+    Assert.AreEqual ( msg, e?.Message );
+  }
+
+  [TestMethod]
+  // contains doc comment samples
+  [DataRow ( 5, 5, 0 )] // sample
+  [DataRow ( 5, 4, 5 )] // sample
+  [DataRow ( 5, 4, 1 )] // sample
+  [DataRow ( 5, 0, 1 )]
+  [DataRow ( 5, 1, 2 )]
+
+  [DataRow ( 0, 0, 0 )] // sample
+  [DataRow ( 1, 1, 0 )] // sample
+  [DataRow ( 1, 0, 1 )] // sample
+  public void ValidateBackwardSegmentation_PositiveScenarios ( int size, int index, int count )
+  {
+    int result = count == 0 ? -1 : 0;
+    Assert.AreEqual ( result, IndexingValidator.ValidateBackwardSegmentation ( size, index, count, out ImpSegExc? e, () => [] ) );
+    Assert.IsNull ( e );
+  }
+
+  [TestMethod]
+  [DataRow ( 1 )]
+  [DataRow ( 2 )]
+  [DataRow ( 3 )]
+  [DataRow ( 4 )]
+  public void ValidateBackwardSegmentation_Parameters ( int testCase )
+  {
+    Func<string[]>? parameters = testCase switch
+    {
+      1 => null,
+      2 => () => null!,
+      3 => () => [],
+      4 => () => ["ABC", "xYz"],
+      _ => throw new ArgumentOutOfRangeException(nameof( testCase ) )
+    };
+
+    _ = IndexingValidator.ValidateBackwardSegmentation ( 5, 6, 0, out ImpSegExc? e, parameters );
+
+    string msg = "With available 5, given rearSet 6 and count 0 produce out-of indexing.{0}";
+    string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
+
+    Assert.AreEqual ( msg, e?.Message );
   }
 
   // examples

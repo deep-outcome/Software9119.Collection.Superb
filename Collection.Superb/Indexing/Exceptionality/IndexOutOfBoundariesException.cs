@@ -26,7 +26,7 @@ public class IndexOutOfBoundariesException : ArgumentOutOfRangeException
 
   static public IndexOutOfBoundariesException NegativeIndexMsg ( NegativeInt32 index, string? paramName = null )
   {
-    string msg = $"Index must be non-negative, but it is '{index}'.";
+    string msg = $"Index must be non-negative integer, but it is '{index}'.";
     return new IndexOutOfBoundariesException ( msg, paramName: paramName );
   }
 

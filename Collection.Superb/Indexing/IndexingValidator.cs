@@ -177,7 +177,7 @@ static public class IndexingValidator
   /// <item>Segment <c>|offset,count|</c> translates to half-open interval <c>[offset, offset+count)</c>.</item>
   /// <item>
   /// <paramref name="offset"/> is always validated to be less than <paramref name="available"/> with exception 
-  /// for case <c>|offset=length,0| → [length,length) = [length,length-1]</c> which is common practice.
+  /// for case <c>|offset=available,0| → [available,available) = [available,available-1]</c>.
   /// </item>  
   /// <item>
   /// See <see cref="ValidateSegmentationStrict(NonNegativeInt32, NonNegativeInt32, NonNegativeInt32, out int, out ImpSegExc?)"/> 
@@ -200,7 +200,7 @@ static public class IndexingValidator
     if (limit > available)
     {
       string []? parameters = parametersGetter?.Invoke();
-      e = ImpossibleSegmentationException.OufRangeMsg ( available: available, offset: offset, count, parameters );
+      e = ImpossibleSegmentationException.ForwardSegmentationMsg ( available: available, offset: offset, count, parameters );
       return 1;
     }
 
@@ -254,7 +254,7 @@ static public class IndexingValidator
 
     if ((offset == available && offset != 0) || limit > available)
     {
-      e = ImpossibleSegmentationException.OufRangeMsg ( available: available, offset: offset, count );
+      e = ImpossibleSegmentationException.ForwardSegmentationMsg ( available: available, offset: offset, count );
       return 1;
     }
 
@@ -265,6 +265,65 @@ static public class IndexingValidator
     }
 
     e = null;
+    return 0;
+  }
+
+  /// <summary>
+  /// Validates whether <paramref name="count"/> and <paramref name="rearSet"/> create
+  /// valid backward segmentation over source of length/count <paramref name="available"/>.
+  /// </summary>
+  /// <returns>
+  /// <list type="bullet">
+  /// <item><c>-1</c> – for empty segment</item>
+  /// <item><c>0</c>  – for valid segment</item>
+  /// <item><c>1</c>  – for invalid segment</item>
+  /// </list>
+  /// </returns>  
+  /// <remarks>
+  /// Beware of <b>false allowance</b> for empty segments.
+  /// <code>
+  /// ┌───────────┬────────┬───────┬──────────────────┐
+  /// │ available │ offset │ count │      valid       │
+  /// ├───────────┼────────┼───────┼──────────────────┤
+  /// │         0 │      0 │     0 │ valid by formula │
+  /// │         1 │      1 │     0 │ valid by formula │
+  /// │         1 │      0 │     1 │ completely valid │
+  /// │         1 │      2 │     0 │ invalid (empty)  │
+  /// │         5 │      5 │     0 │ valid by formula │
+  /// │         5 │      4 │     5 │ completely valid │  
+  /// │         5 │      4 │     1 │ completely valid │
+  /// │         5 │      6 │     0 │ invalid (empty)  │
+  /// └───────────┴────────┴───────┴──────────────────┘
+  /// </code>
+  /// <list type="bullet">
+  /// <item>Segment <c>|offset,count|</c> translates to half-open interval <c>[offset, offset+count)</c>.</item>
+  /// <item>
+  /// <paramref name="rearSet"/> is always validated to be less than <paramref name="available"/> with exception 
+  /// for case <c>|offset=available,0| → [available,available) = [available,available-1]</c>.
+  /// </item>
+  /// </list>
+  /// </remarks>
+  [SuppressMessage ( "Style", "IDE0047:Remove unnecessary parentheses", Justification = "" )]
+  static public int ValidateBackwardSegmentation (
+    NonNegativeInt32 available,
+    NonNegativeInt32 rearSet,
+    NonNegativeInt32 count,
+    [NotNullWhen ( true )] out ImpSegExc? e,
+    Func<string []>? parametersGetter = null
+  )
+  {
+    bool empty = count == 0;
+    if (rearSet > available || rearSet + 1 < count || (rearSet == available && empty == false))
+    {
+      string []? parameters = parametersGetter?.Invoke();
+      e = ImpossibleSegmentationException.BackwardSegmentationMsg ( available, rearSet, count, parameters );
+      return 1;
+    }
+
+    e = null;
+    if (empty)
+      return -1;
+
     return 0;
   }
 }

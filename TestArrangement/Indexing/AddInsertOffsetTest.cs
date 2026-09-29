@@ -1,13 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Software9119.Collection.Superb.Numerics;
+using Software9119.Collection.Superb.Indexing;
 
 using System;
 
-namespace Software9119.Collection.Superb.TestArrangement.Numerics;
+namespace Software9119.Collection.Superb.TestArrangement.Indexing;
 
 [TestClass]
-public class AddOrInsertOffsetTest
+public class AddInsertOffsetTest
 {
   [TestMethod]
   [DataRow ( 222, false )]

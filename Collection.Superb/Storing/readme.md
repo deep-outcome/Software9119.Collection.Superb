@@ -20,12 +20,12 @@ foreach (int item in capacitor)
 // 3,2,1,5,1, 5,4,3,2,1, 1,5,1,2,3, fancy number generation: mission succesful
 ```
 ```csharp
-// to advert unwanted changes to auto-grow size, grow factor can be locked
+// to advert unwanted changes to auto-grow factorization, grow factor can be locked
 capacitor = new() { GrowFactor = GrowFactor.OneAndHalf, LockGrowFactor = true, };
 
 // but beware of properties order in object initializer
 capacitor = new() { LockGrowFactor = true, GrowFactor = GrowFactor.Five, };
-_ = capacitor.GrowFactor == GrowFactor.Two; // true
+// throws InvalidOperationException
 ```
 ```csharp
 // take advantage of your knowledge and capacitate beforehand whenever you like to

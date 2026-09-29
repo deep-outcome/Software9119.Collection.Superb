@@ -135,7 +135,7 @@ public class IReadOnlyListOfTSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( 0, 5, -1, "Index must be non-negative, but it is '-1'." )]
+  [DataRow ( 0, 5, -1, "Index must be non-negative integer, but it is '-1'." )]
   [DataRow ( 0, 5, 5, "For available '5' is index '5' out of bounds." )]
   [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds." )]
   [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds." )]
@@ -199,7 +199,7 @@ public class IReadOnlyListOfTSegmentTest
     Assert.AreEqual ( origIndex, index );
     Assert.IsNotNull ( e );
     string expMsg = index < 0
-      ? $"Index must be non-negative, but it is '{index}'."
+      ? $"Index must be non-negative integer, but it is '{index}'."
       : $"For available '{count}' is index '{origIndex}' out of bounds.";
     Assert.AreEqual ( expMsg, e.Message );
   }
