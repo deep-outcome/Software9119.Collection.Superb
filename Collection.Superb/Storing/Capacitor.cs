@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -74,6 +75,7 @@ public class Capacitor
   /// <summary>
   /// Computes <paramref name="forCount"/> and <paramref name="fromIndex"/> difference.
   /// </summary>
+  [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   static protected internal int AvailableCount ( int fromIndex, int forCount )
     => IndexingValidator.IndexToCountInclusiveDifference ( fromIndex, forCount );
 
@@ -789,7 +791,7 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return AllMatches ( match, offset, Count - offset ) == 1;
+    return AllMatches ( match, offset, ItemsCountToEndInclusive ( offset ) ) == 1;
   }
 
   /// <summary>
@@ -858,7 +860,7 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return Array.BinarySearch ( store, offset, Count - offset, value, comparer );
+    return Array.BinarySearch ( store, offset, ItemsCountToEndInclusive ( offset ), value, comparer );
   }
 
   /// <summary>
@@ -938,13 +940,9 @@ public class Capacitor<T> : Capacitor,
     return false;
   }
 
-  // check once again binary search and folks above for limits
-  // copy after cl
-
   /// <summary>
-  /// Sets all items stored to <see langword="default(T)"/> and <see cref="Count"/> to <c>0</c>.
-  /// </summary>
-  /// <remarks>Clears to <see cref="Count"/>.</remarks>
+  /// Sets all items stored to <c>default(<typeparamref name="T"/>)</c> and <see cref="Count"/> to <c>0</c>.
+  /// </summary>  
   public void Clear ()
   {
     int count = Count;
@@ -956,7 +954,20 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Sets whole store up to <see cref="Capacity"/> to <see langword="default(T)"/>  and <see cref="Count"/> to <c>0</c>.
+  /// Sets all items stored, starting at <paramref name="offset"/> specified
+  /// to <c>default(<typeparamref name="T"/>)</c> and <see cref="Count"/> to <paramref name="offset"/>.
+  /// </summary>  
+  public void Clear ( NonNegativeInt32 offset )
+  {
+    if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
+      throw e;
+
+    Array.Clear ( store, offset, ItemsCountToEndInclusive ( offset ) );
+    Count = offset;
+  }
+
+  /// <summary>
+  /// Sets whole store up to <see cref="Capacity"/> to <c>default(<typeparamref name="T"/>)</c> and <see cref="Count"/> to <c>0</c>.
   /// </summary>
   /// <remarks>
   /// Can be usefull, for instance, before call to <see cref="ExtractStore(bool, NonNegativeInt32)"/>.
@@ -974,7 +985,7 @@ public class Capacitor<T> : Capacitor,
   /// <summary>
   /// Clones current instance state and items.
   /// </summary>
-  /// <remarks>Stored items are shallow-cloned to new store with capacity fitting <see cref="Count"/>.</remarks>
+  /// <remarks>Stored items are shallow-cloned to new store with capacity of <see cref="Count"/>.</remarks>
   public object Clone ()
   {
     int count = Count;
@@ -989,15 +1000,17 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Clones current instance state and items, starting at <paramref name="offset"/> specified.
-  /// </summary>
+  /// </summary>  
+  /// <remarks>
+  /// Stored items are shallow-cloned to new internal store with exact capacity to accomodate items from <paramref name="offset"/>.
+  /// </remarks>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
-  /// <remarks>Stored items are shallow-cloned to new internal store with exact capacity for items from <paramref name="offset"/>.</remarks>
   public Capacitor<T> Clone ( NonNegativeInt32 offset )
   {
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    int count = Count - offset;
+    int count = ItemsCountToEndInclusive(offset);
     T? [] store = new T?[count];
     Array.Copy ( this.store, offset, store, 0, count );
 
@@ -1019,13 +1032,14 @@ public class Capacitor<T> : Capacitor,
     switch (validation)
     {
       case 0:
-      case -1: break;
+      case -1:
+        break;
       case 1: throw e!;
       default: throw UnsupportedValidationResult ( validation );
     }
 
     T? [] store = GetStoreWithCapacity<T>(count);
-    if (validation == 0)
+    if (0 == validation)
       Array.Copy ( this.store, offset, store, 0, count );
 
     Capacitor<T> segment = CloneWithStoreAndCount(store, count);
@@ -1033,7 +1047,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>Verifies <paramref name="item"/> presence among stored items.</summary>
-  /// <returns><see langword="true"/> when <paramref name="item"/> item is present.</returns>
+  /// <returns><see langword="true"/> when <paramref name="item"/> is present.</returns>
   public bool Contains ( T? item ) => Array.IndexOf ( store, item, 0, Count ) != -1;
 
   /// <summary>Verifies <paramref name="item"/> presence among stored items, starting at <paramref name="offset"/> specified.</summary>
@@ -1044,11 +1058,12 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return Array.IndexOf ( store, item, offset, Count - offset ) != -1;
+    return Array.IndexOf ( store, item, offset, ItemsCountToEndInclusive ( offset ) ) != -1;
   }
 
   /// <summary>
-  /// Verifies <paramref name="item"/> presence among stored items in segment specified by <paramref name="count"/> and <paramref name="offset"/>.
+  /// Verifies <paramref name="item"/> presence among stored items
+  /// in segment specified by <paramref name="count"/> and <paramref name="offset"/>.
   /// </summary>    
   /// <returns><see langword="true"/> when <paramref name="item"/> item is present.</returns>
   /// <exception cref="ImpossibleSegmentationException">
@@ -1086,7 +1101,7 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return Convert ( converter, offset, Count - offset );
+    return Convert ( converter, offset, ItemsCountToEndInclusive ( offset ) );
   }
 
   /// <summary>
@@ -1317,7 +1332,7 @@ public class Capacitor<T> : Capacitor,
   public bool Equals ( Capacitor<T>? other ) => ReferenceEquals ( this, other );
 
   /// <summary>
-  /// Extracts internal store and resets store to new.
+  /// Extracts current store and resets.
   /// </summary>
   /// <remarks>
   /// Calls to <see cref="ResetStore(NonNegativeInt32)"/> with <paramref name="resetCapacity"/>.
@@ -1346,7 +1361,7 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    Array.Fill ( store, item, offset, Count - offset );
+    Array.Fill ( store, item, offset, ItemsCountToEndInclusive ( offset ) );
   }
 
   /// <summary>
@@ -1372,38 +1387,74 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Overwrites whole store with <paramref name="item"/> up to current <see cref="Capacity"/> and
-  /// sets <see cref="Count"/> accordingly.
+  /// sets <see cref="Count"/> equal capacity.
   /// </summary>
   public void FillToCapacity ( T? item )
   {
+    int capacity = Capacity;
+    if (capacity == 0)
+      return;
+
     Array.Fill ( store, item );
-    Count = Capacity;
+    Count = capacity;
   }
 
   /// <summary>
   /// Finds all indexes of stored items matching <paramref name="match"/> predicate.
   /// </summary>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
-  public IEnumerable<int> FindAllIndexes ( Predicate<T?> match )
+  public IEnumerable<int> FindAllIndexes ( Predicate<T?> match ) => FindAllIndexes ( match, 0, Count );
+
+  /// <summary>
+  /// Finds all indexes of stored items matching <paramref name="match"/> predicate, starting at <paramref name="offset"/> specified.
+  /// </summary>
+  /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
+  /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
+  public IEnumerable<int> FindAllIndexes ( Predicate<T?> match, NonNegativeInt32 offset )
+  {
+    if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
+      throw e;
+
+    return FindAllIndexes ( match, offset, ItemsCountToEndInclusive ( offset ) );
+  }
+
+  /// <summary>
+  /// Finds all indexes of stored items matching <paramref name="match"/> predicate,
+  /// in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
+  /// </summary>
+  /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
+  /// <exception cref="ImpossibleSegmentationException">
+  /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
+  /// </exception>
+  public IEnumerable<int> FindAllIndexes ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
-    int count = Count;
-    if (count == 0)
-      yield break;
-
-    T? [] store = this.store;
-    int index = -1;
-    for ( ; ; )
+    int validation = ValidateSegmentation ( offset, count, out int limit, out ImpSegExc? e, OffsetCountParametersGetter );
+    switch (validation)
     {
-      index += 1;
-      index = Array.FindIndex ( store, index, count - index, match );
+      case 0: break;
+      case -1: return Enumerable.Empty<int> ();
+      case 1: throw e!;
+      default: throw UnsupportedValidationResult ( validation );
+    }
 
-      if (index == -1 || index == count)
-        yield break;
+    return Enumerator ();
+    IEnumerable<int> Enumerator ()
+    {
+      T? [] store = this.store;
+      int index = offset;
 
-      yield return index;
+      for (; index < limit ; ++index)
+      {
+        index = Array.FindIndex ( store, index, limit - index, match );
+
+        if (index == -1)
+          yield break;
+
+        yield return index;
+      }
     }
   }
 
@@ -1411,16 +1462,40 @@ public class Capacitor<T> : Capacitor,
   /// Finds all stored items matching <paramref name="match"/> predicate.
   /// </summary>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
-  public IEnumerable<T?> FindAllItems ( Predicate<T?> match )
+  public IEnumerable<T?> FindAllItems ( Predicate<T?> match ) => FindAllItems ( match, 0, Count );
+
+  /// <summary>
+  /// Finds all stored items matching <paramref name="match"/> predicate, starting at <paramref name="offset"/> specified.
+  /// </summary>
+  /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
+  /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
+  public IEnumerable<T?> FindAllItems ( Predicate<T?> match, NonNegativeInt32 offset )
   {
-    if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+    if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
+      throw e;
 
-    if (Count == 0)
-      yield break;
+    return FindAllItems ( match, offset, ItemsCountToEndInclusive ( offset ) );
+  }
 
-    foreach (int i in FindAllIndexes ( match ))
-      yield return store [ i ];
+  /// <summary>
+  /// Finds all stored items matching <paramref name="match"/> predicate,
+  /// in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
+  /// </summary>
+  /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
+  /// <exception cref="ImpossibleSegmentationException">
+  /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
+  /// </exception>
+  public IEnumerable<T?> FindAllItems ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count )
+  {
+    IEnumerable<int> allIndexes = FindAllIndexes ( match, offset, count );
+
+    return AllItems ();
+    IEnumerable<T?> AllItems ()
+    {
+      T?[] store = this.store;
+      foreach (int i in allIndexes)
+        yield return store [ i ];
+    }
   }
 
   /// <summary>
@@ -1428,17 +1503,7 @@ public class Capacitor<T> : Capacitor,
   /// </summary>
   /// <returns><c>-1</c> when no item matches predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
-  public int FindFirstIndex ( Predicate<T?> match )
-  {
-    if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
-
-    int count = Count;
-    if (count == 0)
-      return -1;
-
-    return Array.FindIndex ( store, 0, count, match );
-  }
+  public int FindFirstIndex ( Predicate<T?> match ) => FindFirstIndex ( match, 0, Count );
 
   /// <summary>
   /// Finds index of first item matching <paramref name="match"/> predicate, starting at <paramref name="offset"/> specified.
@@ -1448,22 +1513,15 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
   public int FindFirstIndex ( Predicate<T?> match, NonNegativeInt32 offset )
   {
-    if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
-
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    int count = Count;
-    if (count == 0)
-      return -1;
-
-    return Array.FindIndex ( store, offset, count - offset, match );
+    return FindFirstIndex ( match, offset, ItemsCountToEndInclusive ( offset ) );
   }
 
   /// <summary>
-  /// Finds index of first item matching <paramref name="match"/> predicate in store segment specified by <paramref name="offset"/>
-  /// and <paramref name="count"/>.
+  /// Finds index of first item matching <paramref name="match"/> predicate,
+  /// in store segment specified by <paramref name="offset"/> and <paramref name="count"/>.
   /// </summary>
   /// <returns><c>-1</c> when no item matches predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
@@ -1473,7 +1531,7 @@ public class Capacitor<T> : Capacitor,
   public int FindFirstIndex ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
     int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
@@ -1491,93 +1549,38 @@ public class Capacitor<T> : Capacitor,
   /// Finds first item matching <paramref name="match"/> predicate.
   /// </summary>
   /// <returns><see langword="true"/> when item is found.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
-  public bool FindFirstItem ( Predicate<T?> match, out T? item )
-  {
-    if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
-
-    int count = Count;
-    if (count == 0)
-    {
-      item = default ( T? );
-      return false;
-    }
-
-    int index = Array.FindIndex ( store, 0, count, match );
-    if (index == -1)
-    {
-      item = default ( T? );
-      return false;
-    }
-
-    item = store [ index ];
-    return true;
-  }
+  public bool FindFirstItem ( Predicate<T?> match, out T? item ) => FindFirstItem ( match, 0, Count, out item );
 
   /// <summary>
   /// Finds first item matching <paramref name="match"/> predicate, starting at <paramref name="offset"/> specified.
   /// </summary>
   /// <returns><see langword="true"/> when item is found.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
   public bool FindFirstItem ( Predicate<T?> match, NonNegativeInt32 offset, out T? item )
   {
-    if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
-
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    int count = Count;
-    if (count == 0)
-    {
-      item = default ( T? );
-      return false;
-    }
-
-    int index = Array.FindIndex ( store, offset, count -offset, match );
-    if (index == -1)
-    {
-      item = default ( T? );
-      return false;
-    }
-
-    item = store [ index ];
-    return true;
+    return FindFirstItem ( match, offset, ItemsCountToEndInclusive ( offset ), out item );
   }
 
   /// <summary>
-  /// Finds first item matching <paramref name="match"/> predicate in store segment specified by <paramref name="offset"/>
-  /// and <paramref name="count"/>.
+  /// Finds first item matching <paramref name="match"/> predicate,
+  /// in store segment specified by <paramref name="offset"/> and <paramref name="count"/>.
   /// </summary>
   /// <returns><see langword="true"/> when item is found.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
   /// </exception>
   public bool FindFirstItem ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count, out T? item )
   {
-    if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
-
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
-    switch (validation)
-    {
-      case 0: break;
-      case -1:
-      {
-        item = default ( T? );
-        return false;
-      }
-      case 1: throw e!;
-      default: throw UnsupportedValidationResult ( validation );
-    }
-
-    int index = Array.FindIndex ( store, offset, count, match );
+    int index = FindFirstIndex(match, offset, count);
     if (index == -1)
     {
       item = default ( T? );
@@ -1593,62 +1596,40 @@ public class Capacitor<T> : Capacitor,
   /// </summary>
   /// <returns><c>-1</c> when no item matches predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
-  public int FindLastIndex ( Predicate<T?> match )
-  {
-    if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
-
-    int count = Count;
-    if (count == 0)
-      return -1;
-
-    return Array.FindLastIndex ( store, count - 1, count, match );
-  }
+  public int FindLastIndex ( Predicate<T?> match ) => FindLastIndex ( match, 0, Count );
 
   /// <summary>
-  /// Finds index of last item matching <paramref name="match"/> predicate in store segment from <paramref name="offset"/> to <see cref="Count"/>.
+  /// Finds index of last item matching <paramref name="match"/> predicate,
+  /// in store segment from <paramref name="offset"/> to <see cref="Count"/>.
   /// </summary>
   /// <returns><c>-1</c> when no item matches predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
   public int FindLastIndex ( Predicate<T?> match, NonNegativeInt32 offset )
   {
-    if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
-
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    int count = Count;
-    if (count == 0)
-      return -1;
-
-    return Array.FindLastIndex ( store, count - 1, count - offset, match );
+    return FindLastIndex ( match, offset, ItemsCountToEndInclusive ( offset ) );
   }
 
   /// <summary>
-  /// Finds index of last item matching <paramref name="match"/> predicate in store segment from start to <paramref name="rearSet"/>.
+  /// Finds index of last item matching <paramref name="match"/> predicate, in store segment from start to <paramref name="rearSet"/>.
   /// </summary>
   /// <returns><c>-1</c> when no item matches predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="rearSet"/> is greater or equal to <see cref="Count"/>.</exception>
   public int FindLastIndex ( NonNegativeInt32 rearSet, Predicate<T?> match )
   {
-    if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
-
     if (ValidateIndex ( rearSet, out IndexOutOfBoundariesException? e, nameof ( rearSet ) ))
       throw e;
 
-    int count = Count;
-    if (count == 0)
-      return -1;
-
-    return Array.FindLastIndex ( store, rearSet, rearSet + 1, match );
+    return FindLastIndex ( rearSet, rearSet + 1, match );
   }
 
   /// <summary>
-  /// Finds index of last item matching <paramref name="match"/> predicate in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
+  /// Finds index of last item matching <paramref name="match"/> predicate,
+  /// in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
   /// </summary>
   /// <returns><c>-1</c> when no item matches predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
@@ -1658,7 +1639,7 @@ public class Capacitor<T> : Capacitor,
   public int FindLastIndex ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
     int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
@@ -1673,7 +1654,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds index of last item matching <paramref name="match"/> predicate 
+  /// Finds index of last item matching <paramref name="match"/> predicate,
   /// in store segment of <paramref name="count"/> from <paramref name="rearSet"/> backwards.
   /// </summary>
   /// <returns><c>-1</c> when no item matches predicate.</returns>
@@ -1702,7 +1683,7 @@ public class Capacitor<T> : Capacitor,
   /// Finds last item matching <paramref name="match"/> predicate.
   /// </summary>
   /// <returns><see langword="true"/> when item is found.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   public bool FindLastItem ( Predicate<T?> match, out T? item )
   {
@@ -1718,10 +1699,10 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds last item matching <paramref name="match"/> predicate in store segment from <paramref name="offset"/> to <see cref="Count"/>.
+  /// Finds last item matching <paramref name="match"/> predicate, in store segment from <paramref name="offset"/> to <see cref="Count"/>.
   /// </summary>
   /// <returns><see langword="true"/> when item is found.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
   public bool FindLastItem ( Predicate<T?> match, NonNegativeInt32 offset, out T? item )
@@ -1738,10 +1719,10 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds last item matching <paramref name="match"/> predicate in store segment from start to <paramref name="rearSet"/>.
+  /// Finds last item matching <paramref name="match"/> predicate, in store segment from start to <paramref name="rearSet"/>.
   /// </summary>
   /// <returns><see langword="true"/> when item is found.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="rearSet"/> is greater or equal to <see cref="Count"/>.</exception>
   public bool FindLastItem ( NonNegativeInt32 rearSet, Predicate<T?> match, out T? item )
@@ -1758,10 +1739,10 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds last item matching <paramref name="match"/> predicate in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
+  /// Finds last item matching <paramref name="match"/> predicate, in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
   /// </summary>
   /// <returns><see langword="true"/> when item is found.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
@@ -1780,11 +1761,11 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds item matching <paramref name="match"/> predicate
+  /// Finds item matching <paramref name="match"/> predicate,
   /// in store segment of <paramref name="count"/> from <paramref name="rearSet"/> backwards.
   /// </summary>
   /// <returns><see langword="true"/> when item is found.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
@@ -1815,7 +1796,7 @@ public class Capacitor<T> : Capacitor,
 
 
   /// <summary>
-  /// Finds index of mth last item matching <paramref name="match"/> predicate in store segment from start to <paramref name="rearSet"/>.
+  /// Finds index of mth last item matching <paramref name="match"/> predicate, in store segment from start to <paramref name="rearSet"/>.
   /// </summary>
   /// <returns><c>-1</c> when not enough items match predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
@@ -1829,7 +1810,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds index of mth last item matching <paramref name="match"/> predicate
+  /// Finds index of mth last item matching <paramref name="match"/> predicate,
   /// in store segment of <paramref name="count"/> from <paramref name="rearSet"/> backwards.
   /// </summary>
   /// <returns><c>-1</c> when not enough items match predicate.</returns>
@@ -1879,7 +1860,7 @@ public class Capacitor<T> : Capacitor,
   /// Finds mth last item matching <paramref name="match"/> predicate.
   /// </summary>
   /// <returns><see langword="false"/> when not enough items match predicate.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   public bool FindMthItem ( Predicate<T?> match, PositiveInt32 mth, out T? item )
   {
@@ -1895,10 +1876,10 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds mth last item matching <paramref name="match"/> predicate in store segment from start to <paramref name="rearSet"/>.
+  /// Finds mth last item matching <paramref name="match"/> predicate, in store segment from start to <paramref name="rearSet"/>.
   /// </summary>
   /// <returns><see langword="false"/> when not enough items match predicate.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="rearSet"/> is greater or equal to <see cref="Count"/>.</exception>
   public bool FindMthItem ( Predicate<T?> match, PositiveInt32 mth, NonNegativeInt32 rearSet, out T? item )
@@ -1915,11 +1896,11 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds mth last item matching <paramref name="match"/> predicate
+  /// Finds mth last item matching <paramref name="match"/> predicate,
   /// in store segment of <paramref name="count"/> from <paramref name="rearSet"/> backwards.
   /// </summary>
   /// <returns><see langword="false"/> when not enough items match predicate.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
@@ -1945,7 +1926,8 @@ public class Capacitor<T> : Capacitor,
   public int FindNthIndex ( Predicate<T?> match, PositiveInt32 nth ) => FindNthIndex ( match, nth, 0, Count );
 
   /// <summary>
-  /// Finds index of nth item matching <paramref name="match"/> predicate in store segment from <paramref name="offset"/> to <see cref="Count"/>.
+  /// Finds index of nth item matching <paramref name="match"/> predicate,
+  /// in store segment from <paramref name="offset"/> to <see cref="Count"/>.
   /// </summary>
   /// <returns><c>-1</c> when not enough items match predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
@@ -1955,11 +1937,12 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return FindNthIndex ( match, nth, offset, Count - offset );
+    return FindNthIndex ( match, nth, offset, ItemsCountToEndInclusive ( offset ) );
   }
 
   /// <summary>
-  /// Finds index of nth item matching <paramref name="match"/> predicate in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
+  /// Finds index of nth item matching <paramref name="match"/> predicate,
+  /// in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
   /// </summary>
   /// <returns><c>-1</c> when not enough items match predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
@@ -1969,7 +1952,7 @@ public class Capacitor<T> : Capacitor,
   public int FindNthIndex ( Predicate<T?> match, PositiveInt32 nth, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
     int validation = ValidateSegmentation ( offset, count, out int limit, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
@@ -2005,7 +1988,7 @@ public class Capacitor<T> : Capacitor,
   /// Finds nth item matching <paramref name="match"/> predicate.
   /// </summary>
   /// <returns><see langword="false"/> when not enough items match predicate.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   public bool FindNthItem ( Predicate<T?> match, PositiveInt32 nth, out T? item )
   {
@@ -2021,10 +2004,10 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds nth item matching <paramref name="match"/> predicate in store segment from <paramref name="offset"/> to <see cref="Count"/>.
+  /// Finds nth item matching <paramref name="match"/> predicate, in store segment from <paramref name="offset"/> to <see cref="Count"/>.
   /// </summary>
   /// <returns><see langword="false"/> when not enough items match predicate.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
   public bool FindNthItem ( Predicate<T?> match, PositiveInt32 nth, NonNegativeInt32 offset, out T? item )
@@ -2041,7 +2024,8 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Finds nth item matching <paramref name="match"/> predicate in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
+  /// Finds nth item matching <paramref name="match"/> predicate,
+  /// in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
   /// </summary>
   /// <returns><c>-1</c> when not enough items match predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
@@ -2069,7 +2053,7 @@ public class Capacitor<T> : Capacitor,
   public bool FindMatch ( Predicate<T?> match )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
     if (Count == 0)
       return false;
@@ -2086,12 +2070,12 @@ public class Capacitor<T> : Capacitor,
   public bool FindMatch ( Predicate<T?> match, NonNegativeInt32 offset )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return Array.FindIndex ( store, offset, Count - offset, match ) != -1;
+    return Array.FindIndex ( store, offset, ItemsCountToEndInclusive ( offset ), match ) != -1;
   }
 
   /// <summary>
@@ -2105,7 +2089,7 @@ public class Capacitor<T> : Capacitor,
   public bool FindMatch ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
     int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
@@ -2126,7 +2110,7 @@ public class Capacitor<T> : Capacitor,
   public void ForEach ( Action<T?> action )
   {
     if (action == null)
-      throw Capacitor.NullAction ( nameof ( action ) );
+      throw NullAction ( nameof ( action ) );
 
     T? [] store = this.store;
     int count = Count;
@@ -2136,14 +2120,14 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Runs <paramref name="action"/> on each stored item in store segment from <paramref name="offset"/> to <see cref="Count"/>.
+  /// Runs <paramref name="action"/> on each stored item in segment from <paramref name="offset"/> to <see cref="Count"/>.
   /// </summary>
   /// <exception cref="ArgumentNullException">Whem <paramref name="action"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
   public void ForEach ( Action<T?> action, NonNegativeInt32 offset )
   {
     if (action == null)
-      throw Capacitor.NullAction ( nameof ( action ) );
+      throw NullAction ( nameof ( action ) );
 
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
@@ -2156,7 +2140,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Runs <paramref name="action"/> on each stored item in store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
+  /// Runs <paramref name="action"/> on each stored item in segment specified by <paramref name="count"/> and <paramref name="offset"/>.
   /// </summary>
   /// <exception cref="ArgumentNullException">Whem <paramref name="action"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
@@ -2165,7 +2149,7 @@ public class Capacitor<T> : Capacitor,
   public void ForEach ( Action<T?> action, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (action == null)
-      throw Capacitor.NullAction ( nameof ( action ) );
+      throw NullAction ( nameof ( action ) );
 
     int validation = ValidateSegmentation ( offset, count, out int limit, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
@@ -2217,7 +2201,7 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return Array.IndexOf ( store, item, offset, Count - offset );
+    return Array.IndexOf ( store, item, offset, ItemsCountToEndInclusive ( offset ) );
   }
 
   /// <summary>
@@ -2450,7 +2434,7 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return NthIndexOf ( item, nth, offset, Count - offset );
+    return NthIndexOf ( item, nth, offset, ItemsCountToEndInclusive ( offset ) );
   }
 
   /// <summary>
@@ -2569,7 +2553,7 @@ public class Capacitor<T> : Capacitor,
   public void Order ( IComparer<T?> comparer )
   {
     if (comparer == null)
-      throw Capacitor.NullComparer ( nameof ( comparer ) );
+      throw NullComparer ( nameof ( comparer ) );
 
     Array.Sort ( store, 0, Count, comparer );
   }
@@ -2582,12 +2566,12 @@ public class Capacitor<T> : Capacitor,
   public void Order ( IComparer<T?> comparer, NonNegativeInt32 offset )
   {
     if (comparer == null)
-      throw Capacitor.NullComparer ( nameof ( comparer ) );
+      throw NullComparer ( nameof ( comparer ) );
 
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    Array.Sort ( store, offset, Count - offset, comparer );
+    Array.Sort ( store, offset, ItemsCountToEndInclusive ( offset ), comparer );
   }
 
   /// <summary>
@@ -2601,7 +2585,7 @@ public class Capacitor<T> : Capacitor,
   public void Order ( IComparer<T?> comparer, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (comparer == null)
-      throw Capacitor.NullComparer ( nameof ( comparer ) );
+      throw NullComparer ( nameof ( comparer ) );
 
     int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
@@ -2622,7 +2606,7 @@ public class Capacitor<T> : Capacitor,
   public void Order ( Comparison<T?> comparison )
   {
     if (comparison == null)
-      throw Capacitor.NullComparer ( nameof ( comparison ) );
+      throw NullComparer ( nameof ( comparison ) );
 
     BinaryInsertionOrder.Order ( store, 0, Count, comparison );
   }
@@ -2635,12 +2619,12 @@ public class Capacitor<T> : Capacitor,
   public void Order ( Comparison<T?> comparison, NonNegativeInt32 offset )
   {
     if (comparison == null)
-      throw Capacitor.NullComparer ( nameof ( comparison ) );
+      throw NullComparer ( nameof ( comparison ) );
 
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    BinaryInsertionOrder.Order ( store, offset, Count - offset, comparison );
+    BinaryInsertionOrder.Order ( store, offset, ItemsCountToEndInclusive ( offset ), comparison );
   }
 
   /// <summary>
@@ -2654,7 +2638,7 @@ public class Capacitor<T> : Capacitor,
   public void Order ( Comparison<T?> comparison, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (comparison == null)
-      throw Capacitor.NullComparer ( nameof ( comparison ) );
+      throw NullComparer ( nameof ( comparison ) );
 
     int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
@@ -2744,7 +2728,7 @@ public class Capacitor<T> : Capacitor,
   /// Removes item from store start, if store is not empty, and sets it to <paramref name="item"/>.
   /// </summary>  
   /// <returns><see langword="true"/> if item is removed.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   public bool RemoveFirst ( out T? item )
   {
     if (Count == 0)
@@ -2761,7 +2745,7 @@ public class Capacitor<T> : Capacitor,
   /// Removes item from store end, if store is not empty, and sets it to <paramref name="item"/>.
   /// </summary>  
   /// <returns><see langword="true"/> if item is removed.</returns>
-  /// <remarks>If <see langword="false"/> returned, <paramref name="item"/> is set to <c>default(T?)</c>.</remarks>
+  /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   public bool RemoveLast ( out T? item )
   {
     int count = Count;
@@ -2792,7 +2776,7 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    return RemoveMatches ( match, offset, Count - offset );
+    return RemoveMatches ( match, offset, ItemsCountToEndInclusive ( offset ) );
   }
 
   /// <summary>
@@ -2807,7 +2791,7 @@ public class Capacitor<T> : Capacitor,
   public int RemoveMatches ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count )
   {
     if (match == null)
-      throw Capacitor.NullMatchPredicate ( nameof ( match ) );
+      throw NullMatchPredicate ( nameof ( match ) );
 
     int validation = ValidateSegmentation ( offset, count, out int limit, out ImpSegExc? e, OffsetCountParametersGetter );
     switch (validation)
@@ -2875,7 +2859,7 @@ public class Capacitor<T> : Capacitor,
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
 
-    Array.Reverse ( store, offset, Count - offset );
+    Array.Reverse ( store, offset, ItemsCountToEndInclusive ( offset ) );
   }
 
   /// <summary>

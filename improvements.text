@@ -9,4 +9,4 @@
 	- replace various segmented methods with internal capacitor-slice with call to simplest method possible
 
 ArraySegment<T> extension methods
- - extends AS capabilities to System.Array level
+ - extends capabilities to System.Array level

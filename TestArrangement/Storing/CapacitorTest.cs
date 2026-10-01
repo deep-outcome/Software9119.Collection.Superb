@@ -1619,7 +1619,7 @@ public class CapacitorTest
   [DataRow ( 0, 1, 1 )]
   public void ValidateRearSetConfiguration_NegativeScenarios ( int size, int index, int count )
   {
-    Capacitor<int> capacitor = new(new int[size]);
+    Capacitor<int> capacitor = new(new int[size], 10);
 
     Assert.AreEqual ( 1, capacitor.ValidateRearSetConfiguration ( index, count, out ImpSegExc? e, () => [] ) );
 
@@ -1703,7 +1703,7 @@ public class CapacitorTest
   [DataRow ( 4, 2 )]
   public void ValidateSegmentation_NegativeScenarios ( int offset, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new([1,2,3,4,5], 6);
     int test = capacitor.ValidateSegmentation
     (
       (NonNegativeInt32) offset, (NonNegativeInt32) count,
@@ -2277,7 +2277,7 @@ public class CapacitorTest
   [DataRow ( 4, 2 )]
   public void AllMatches_OffsetCount_InvalidSegment ( int offset, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new([1,2,3,4,5],6);
     Action test = () => _ = capacitor.AllMatches(x => true, offset, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
@@ -2366,10 +2366,12 @@ public class CapacitorTest
   [TestMethod]
   [DataRow ( 1, 0, 9 )]
   [DataRow ( 1, 9, 9 )]
+  [DataRow ( 2, 0, 8 )]
   [DataRow ( 5, 0, 5 )]
   [DataRow ( 5, 6, -1 )]
   [DataRow ( 6, 0, 4 )]
   [DataRow ( 6, 5, -1 )]
+  [DataRow ( 9, 1, 1 )]
   [DataRow ( 10, 0, 0 )]
   [DataRow ( 10, 1, -1 )]
   public void BinarySearch_Offset_EvenCount ( int value, int offset, int index )
@@ -2432,8 +2434,10 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [DataRow ( 1, 0, 0, 1 )]
   [DataRow ( 1, 0, 0, 10 )]
   [DataRow ( 1, -1, 1, 9 )]
+  [DataRow ( 2, 1, 1, 9 )]
   [DataRow ( 5, 4, 2, 6 )]
   [DataRow ( 5, -1, 0, 4 )]
   [DataRow ( 5, -1, 5, 5 )]
@@ -2441,7 +2445,9 @@ public class CapacitorTest
   [DataRow ( 6, -1, 0, 5 )]
   [DataRow ( 6, -1, 6, 4 )]
   [DataRow ( 10, 9, 0, 10 )]
+  [DataRow ( 10, 9, 9, 1 )]
   [DataRow ( 10, -1, 0, 9 )]
+  [DataRow ( 9, 8, 0, 9 )]
   public void BinarySearch_OffsetCountComparer_EvenCount ( int value, int result, int offset, int count )
   {
     Capacitor<int> capacitor = new(10, [1,2,3,4,5, 6,7,8,9,10, 11,12,13]);
@@ -2514,7 +2520,7 @@ public class CapacitorTest
   [DataRow ( 4, 2 )]
   public void BinarySearch_OffsetCountComparer_InvalidSegment ( int offset, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new([1,2,3,4,5],6);
     Action test = () => _ = capacitor.BinarySearch(offset, count, default, Comparer<int>.Default);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
@@ -2596,7 +2602,7 @@ public class CapacitorTest
   [DataRow ( 5 )]
   public void Clear ( int count )
   {
-    int[] source = [1,2,3,4,5,6,7,8];
+    int[] source = [1,2,3,4,5, 6,7,8];
     Capacitor<int> capacitor = new(count, source.ToArray());
     capacitor.Clear ();
 
@@ -2612,11 +2618,50 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void Clear_EmptyCapacitor () => new Capacitor<int> ().Clear ();
+
+  [TestMethod]
+  [DataRow ( 1, 0 )]
+  [DataRow ( 5, 0 )]
+  [DataRow ( 5, 1 )]
+  [DataRow ( 5, 4 )]
+  public void Clear_Offset ( int count, int offset )
+  {
+    int[] source = [1,2,3,4,5, 6,7,8];
+    Capacitor<int> capacitor = new(count, source.ToArray());
+    capacitor.Clear ( offset );
+
+    Assert.AreEqual ( 8, capacitor.Capacity );
+    Assert.AreEqual ( offset, capacitor.Count );
+
+    IEnumerable<int> zero = capacitor.Skip(offset).Take(count - offset);
+    Assert.AreEqual ( 0, zero.Sum () );
+
+    Assert.IsTrue ( ArrSeg ( source, 0, offset ).SequenceEqual ( ArrSeg ( capacitor.store, 0, offset ) ) );
+    int tailLength = 8 - count;
+    Assert.IsTrue ( ArrSeg ( source, count, tailLength ).SequenceEqual ( ArrSeg ( capacitor.store, count, tailLength ) ) );
+  }
+
+  [TestMethod]
   [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void Clear_Offset_IndexOutOfBound ( int size )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    Action test = () => capacitor.Clear(size);
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 1 )]
   [DataRow ( 5 )]
   public void ClearToCapacity ( int count )
   {
-    int[] source = Enumerable.Range(0, count).ToArray();
+    int[] source = Enumerable.Range(1, count).ToArray();
     Capacitor<int> capacitor = new(2, source);
     capacitor.ClearToCapacity ();
 
@@ -2627,6 +2672,7 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 0 )]
+  [DataRow ( 1 )]
   [DataRow ( 5 )]
   public void Clone ( int count )
   {
@@ -2666,6 +2712,7 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 0 )]
+  [DataRow ( 1 )]
   [DataRow ( 5 )]
   public void Clone_Offset ( int offset )
   {
@@ -2701,12 +2748,14 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 0, 5 )]
+  [DataRow ( 0, 1 )]
+  [DataRow ( 4, 1 )]
   [DataRow ( 1, 4 )]
   [DataRow ( 0, 4 )]
   [DataRow ( 1, 3 )]
   public void Clone_OffsetCount ( int index, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5])
+    Capacitor<int> capacitor = new(5, [1,2,3,4,5, 6,7,8])
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
@@ -2748,7 +2797,7 @@ public class CapacitorTest
   [DataRow ( 5, 0 )]
   [DataRow ( 5, 4 )]
   [DataRow ( 5, 5 )]
-  public void Clone_EmptySegment ( int size, int index )
+  public void Clone_OffsetCount_EmptySegment ( int size, int index )
   {
     Capacitor<int> capacitor = new(new int [size])
     {
@@ -2771,9 +2820,9 @@ public class CapacitorTest
   [DataRow ( 1, 5 )]
   [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  public void Clone_InvalidSegment ( int index, int count )
+  public void Clone_OffsetCount_InvalidSegment ( int index, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new([1,2,3,4,5],6);
     Action test = () => capacitor.Clone ( index, count );
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
@@ -2784,10 +2833,27 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [DataRow ( 5, 0, 5 )]
+  [DataRow ( 5, 0, 1 )]
+  [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
+  [DataRow ( 0, 0, 0 )]
+  public void Clone_OffsetCount_ValidSegment ( int size, int index, int count )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    _ = capacitor.Clone ( index, count );
+  }
+
+  [TestMethod]
   public void Contains ()
   {
     Capacitor<int> capacitor = new(5, [1,2,3,4,5, 6,7,8]);
     Assert.IsTrue ( capacitor.Contains ( 1 ) );
+    Assert.IsTrue ( capacitor.Contains ( 3 ) );
     Assert.IsTrue ( capacitor.Contains ( 5 ) );
     Assert.IsFalse ( capacitor.Contains ( 6 ) );
   }
@@ -2802,6 +2868,7 @@ public class CapacitorTest
   [TestMethod]
   [DataRow ( 1, 0, true )]
   [DataRow ( 1, 1, true )]
+  [DataRow ( 1, 4, false )]
   [DataRow ( 6, 0, true )]
   [DataRow ( 6, 5, true )]
   [DataRow ( 8, 0, false )]
@@ -2820,7 +2887,6 @@ public class CapacitorTest
   public void Contains_Offset_IndexOutOfBounds ( int size )
   {
     Capacitor<int> capacitor = new(new int[size]);
-    Action<int> action = x => { };
     Action test = () => capacitor.Contains(0, size);
 
     IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
@@ -2830,15 +2896,17 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 1, 0, 6, true )]
-  [DataRow ( 1, 1, 3, true )]
   [DataRow ( 1, 0, 1, true )]
-  [DataRow ( 3, 3, 3, true )]
-  [DataRow ( 3, 5, 1, true )]
-  [DataRow ( 6, 0, 6, false )]
+  [DataRow ( 6, 0, 6, true )]
+  [DataRow ( 6, 5, 1, true )]
+  [DataRow ( 2, 1, 5, true )]
+  [DataRow ( 5, 0, 5, true )]
+  [DataRow ( 4, 3, 1, true )]
+  [DataRow ( 7, 0, 6, false )]
   [DataRow ( 0, 0, 6, false )]
   public void Contains_OffsetCount ( int value, int offset, int count, bool result )
   {
-    Capacitor<int> capacitor = new(6, [1,2,3, 1,2,3, 6,7]);
+    Capacitor<int> capacitor = new(6, [1,2,3, 4,5,6, 7,8]);
 
     Assert.AreEqual ( result, capacitor.Contains ( value, offset, count ) );
   }
@@ -2869,7 +2937,7 @@ public class CapacitorTest
   [DataRow ( 4, 2 )]
   public void Contains_OffsetCount_InvalidSegment ( int index, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new([1,2,3,4,5],6);
     Action test = () => capacitor.Contains(-2, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
@@ -2944,6 +3012,7 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 0 )]
+  [DataRow ( 1 )]
   [DataRow ( 3 )]
   [DataRow ( 5 )]
   public void Convert_Offset ( int offset )
@@ -3072,7 +3141,7 @@ public class CapacitorTest
   [DataRow ( 4, 2 )]
   public void Convert_OffsetCount_InvalidSegment ( int index, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new([1,2,3,4,5],6);
 
     Converter<int, long> convertor = x => x;
     Action test = () => capacitor.Convert ( convertor, index, count );
@@ -3282,7 +3351,7 @@ public class CapacitorTest
   [DataRow ( 4, 2 )]
   public void CopyTo_ArrayFromIndexCount_InvalidSegment ( int index, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new([1,2,3,4,5],6);
     Action test = () => capacitor.CopyTo(index, count, new int[5]);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
@@ -3542,7 +3611,7 @@ public class CapacitorTest
   [DataRow ( 4, 2 )]
   public void CopyTo_ArrayArrayIndexFromIndexCount_InvalidSegment ( int index, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new([1,2,3,4,5],6);
     Action test = () => capacitor.CopyTo(new int[6], 0, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
@@ -3569,6 +3638,7 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [SuppressMessage ( "Maintainability", "CA1508:Avoid dead conditional code", Justification = "Explicit null equality check." )]
   public void Equals ()
   {
     Capacitor<int> c1 = new  ();
@@ -3579,6 +3649,9 @@ public class CapacitorTest
 
     Assert.IsFalse ( c1.Equals ( c2 ) );
     Assert.IsFalse ( c1.Equals ( (object) c2 ) );
+
+    Assert.IsFalse ( c1.Equals ( null ) );
+    Assert.IsFalse ( c1.Equals ( (object?) null ) );
   }
 
   [TestMethod]
@@ -3605,8 +3678,16 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void ExtractStore_EmptyCapacitor ()
+  {
+    Assert.AreEqual ( Array.Empty<int> (), new Capacitor<int> ().ExtractStore () );
+  }
+
+  [TestMethod]
   [DataRow ( 0 )]
+  [DataRow ( 1 )]
   [DataRow ( 5 )]
+  [DataRow ( 7 )]
   [DataRow ( 8 )]
   public void Fill ( int count )
   {
@@ -3614,16 +3695,12 @@ public class CapacitorTest
     Capacitor<int> capacitor = new(count, source.ToArray());
     capacitor.Fill ( 9 );
 
-    (int endIndex, int endCount) = GetEndSegment ( count );
+    (int endIndex, int endCount) = GetTailSegment ( count );
 
-    ArraySegment<int> expectation = new(source,endIndex, endCount);
-    ArraySegment<int> test = new(capacitor.store, endIndex, endCount);
-
-    Assert.AreEqual ( count, capacitor.Count );
-    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+    Assert.IsTrue ( ArrSeg ( source, endIndex, endCount ).SequenceEqual ( ArrSeg ( capacitor.store, endIndex, endCount ) ) );
     Assert.IsTrue ( capacitor.All ( x => x == 9 ) );
 
-    static (int, int) GetEndSegment ( int count ) => (count % 8, 8 - count);
+    static (int, int) GetTailSegment ( int count ) => (count % 8, 8 - count);
   }
 
   [TestMethod]
@@ -3635,7 +3712,8 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 0 )]
-  [DataRow ( 2 )]
+  [DataRow ( 1 )]
+  [DataRow ( 4 )]
   [DataRow ( 5 )]
   public void Fill_Offset ( int offset )
   {
@@ -3643,11 +3721,10 @@ public class CapacitorTest
     Capacitor<int> capacitor = new(6, source.ToArray());
     capacitor.Fill ( 9, offset );
 
-    Assert.IsTrue ( ArrSeg ( source, 0, offset ).SequenceEqual ( ArrSeg ( capacitor.store, 0, offset ) ) );
-    Assert.IsTrue ( ArrSeg ( capacitor.store, offset, 6 - offset ).All ( x => x == 9 ) );
+    Assert.IsTrue ( ArrSeg ( source, 0, offset ).SequenceEqual ( IListSeg ( capacitor, 0, offset ) ) );
+    Assert.IsTrue ( IListSeg ( capacitor, offset, 6 - offset ).All ( x => x == 9 ) );
     Assert.IsTrue ( ArrSeg ( source, 6, 3 ).SequenceEqual ( ArrSeg ( capacitor.store, 6, 3 ) ) );
   }
-
 
   [TestMethod]
   [DataRow ( 0 )]
@@ -3655,7 +3732,7 @@ public class CapacitorTest
   public void Fill_Offset_IndexOutOfBounds ( int size )
   {
     Capacitor<int> capacitor = new(new int[size]);
-    Action test = () => capacitor.Fill(0, size);
+    Action test = () => capacitor.Fill(-2, size);
 
     IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
     string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
@@ -3664,34 +3741,22 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 0, 5 )]
+  [DataRow ( 0, 1 )]
+  [DataRow ( 4, 1 )]
   [DataRow ( 1, 4 )]
   [DataRow ( 0, 4 )]
   [DataRow ( 1, 3 )]
   public void Fill_OffsetCount ( int index, int count )
   {
-    int[] source = [1,2,3,4,5];
-    Capacitor<int> capacitor = new(source);
+    int[] source = [1,2,3,4,5, 6,7,8];
+    Capacitor<int> capacitor = new(5, source.ToArray());
 
     capacitor.Fill ( 9, index, count );
 
-    (int endIndex, int endCount) = GetEndSegment ( index, count );
-
-    ArraySegment<int> e1 = new(source, 0, index);
-    ArraySegment<int> e3 = new(source, endIndex, endCount);
-
-    IListSegment<int> t1 = new(capacitor, 0, index);
-    IListSegment<int> t2 = new(capacitor, index, count);
-    IListSegment<int> t3 = new(capacitor, endIndex, endCount);
-
-    Assert.IsTrue ( e1.SequenceEqual ( t1 ) );
-    Assert.IsTrue ( t2.All ( x => x == 9 ) );
-    Assert.IsTrue ( e3.SequenceEqual ( t3 ) );
-
-    static (int, int) GetEndSegment ( int index, int count )
-    {
-      int end = index + count;
-      return (end % 5, 5 - end);
-    }
+    int limit = IndexingValidator.LimitOutOf(index, count);
+    Assert.IsTrue ( ArrSeg ( source, 0, index ).SequenceEqual ( IListSeg ( capacitor, 0, index ) ) );
+    Assert.IsTrue ( IListSeg ( capacitor, index, count ).All ( x => x == 9 ) );
+    Assert.IsTrue ( source.Skip ( limit ).SequenceEqual ( capacitor.store.Skip ( limit ) ) );
   }
 
   [TestMethod]
@@ -3711,7 +3776,7 @@ public class CapacitorTest
     int[] source = [1,2,3,4,5];
     Capacitor<int> capacitor = new(source);
 
-    capacitor.Fill ( default, index, 0 );
+    capacitor.Fill ( -2, index, 0 );
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
   }
 
@@ -3723,14 +3788,30 @@ public class CapacitorTest
   [DataRow ( 4, 2 )]
   public void Fill_OffsetCount_InvalidSegment ( int index, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
-    Action test = () => capacitor.Fill (default, index, count );
+    Capacitor<int> capacitor = new([1,2,3,4,5], 6);
+    Action test = () => capacitor.Fill (-2, index, count );
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
     string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 5, 0, 5 )]
+  [DataRow ( 5, 0, 1 )]
+  [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
+  [DataRow ( 0, 0, 0 )]
+  public void Fill_OffsetCount_ValidSegment ( int size, int index, int count )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    capacitor.Fill ( -2, index, count );
   }
 
   [TestMethod]
@@ -3743,30 +3824,30 @@ public class CapacitorTest
     capacitor.FillToCapacity ( 9 );
 
     Assert.AreEqual ( 8, capacitor.Count );
-    Assert.IsTrue ( capacitor.store.All ( x => x == 9 ) );
+    Assert.IsTrue ( capacitor.All ( x => x == 9 ) );
   }
 
   [TestMethod]
-  [DataRow ( 0, 0, "1,3,4,7,8" )]
-  [DataRow ( 1, 1, "0,2,3,6" )]
-  [DataRow ( 1, 2, "0,2,3" )]
-  public void FindAllIndexes ( int offsetStart, int offsetEnd, string result )
+  public void FillToCapacity_ZeroCapacityCapacitor ()
   {
-    int[] baseSource = [1, 2, 1, 2, 2, 1, 1, 2, 2,   2, 1, 2, 2 ];
-    int length = baseSource.Length - offsetStart;
-    int count = length - 4 - offsetEnd;
+    Capacitor<int> capacitor = new();
+    Assert.AreEqual ( 0, capacitor.Capacity );
+    capacitor.FillToCapacity ( -2 );
+  }
 
-    ArraySegment<int> source = new (baseSource, offsetStart, length );
-    Capacitor<int> capacitor = new(count, source.ToArray());
+  [TestMethod]
+  public void FindAllIndexes ()
+  {
+    IEnumerable<int> test;
+    Capacitor<int> capacitor = new(9,[ 1,2,1,2, 2,1,1,2,1,  2,1,2,1 ]);
 
-    Predicate<int> predicate = x => x == 2;
-    IEnumerable<int> test = capacitor.FindAllIndexes(predicate);
+    test = capacitor.FindAllIndexes ( x => x == 1 );
+    Assert.IsTrue ( GetResults ( "0,2,5,6,8" ).SequenceEqual ( test ) );
 
-    IEnumerable<int> indexes = result.Split(',').Select(int.Parse);
-    Assert.IsTrue ( indexes.SequenceEqual ( test ) );
+    test = capacitor.FindAllIndexes ( x => x == 2 );
+    Assert.IsTrue ( GetResults ( "1,3,4,7" ).SequenceEqual ( test ) );
 
-    predicate = x => x == 3;
-    Assert.HasCount ( 0, capacitor.FindAllIndexes ( predicate ) );
+    static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
   }
 
   [TestMethod]
@@ -3774,85 +3855,334 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new();
 
-    Predicate<int> predicate = x => true;
-    IEnumerable<int> test = capacitor.FindAllIndexes(predicate);
-    Assert.HasCount ( 0, test );
+    IEnumerable<int> test = capacitor.FindAllIndexes(x => true);
+    Assert.IsFalse ( test.Any () );
   }
 
   [TestMethod]
-  public void FindAllIndexes_OneElements ()
+  [DataRow ( 1 )]
+  [DataRow ( 2 )]
+  [DataRow ( 3 )]
+  public void FindAllIndexes_ShortArrays ( int size )
   {
-    Capacitor<int> c1 = new([1]);
-    Capacitor<int> c2 = new([2]);
-
-    Predicate<int> predicate = x => x == 2;
-    IEnumerable<int> test = c1.FindAllIndexes(predicate);
-    Assert.HasCount ( 0, test );
-
-    test = c2.FindAllIndexes ( predicate );
-    Assert.HasCount ( 1, test );
-    Assert.AreEqual ( 0, test.First () );
-  }
-
-  [TestMethod]
-  public void FindAllIndexes_NoIndexingBehindArray ()
-  {
-    Capacitor<int> capacitor = new(5, [2, 2, 2, 2, 2]);
-
-    Predicate<int> predicate = x => x == 2;
-    _ = capacitor.FindAllIndexes ( predicate );
+    Capacitor<int> capacitor = new(new int [size]);
+    IEnumerable<int> test = capacitor.FindAllIndexes(x => x == 0);
+    Assert.IsTrue ( Enumerable.Range ( 0, size ).SequenceEqual ( test ) );
   }
 
   [TestMethod]
   public void FindAllIndexes_NullPredicate ()
   {
     Capacitor<int> capacitor = new();
-    Predicate<int> predicate = null!;
-    Action test = () => _ = capacitor.FindAllIndexes(predicate).First();
+    Action test = () => _ = capacitor.FindAllIndexes((Predicate<int>)null!);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
   }
 
   [TestMethod]
-  [DataRow ( 0, 0, "2,4,6,8,10" )]
-  [DataRow ( 1, 1, "2,4,6,8" )]
-  [DataRow ( 2, 2, "4,6" )]
-  public void FindAllItems ( int offsetStart, int offsetEnd, string result )
+  [DataRow ( 0, "0,1,5,7,8" )]
+  [DataRow ( 1, "1,5,7,8" )]
+  [DataRow ( 7, "7,8" )]
+  [DataRow ( 8, "8" )]
+  public void FindAllIndexes_Offset ( int offset, string result )
   {
-    int[] baseSource = [1, 2, 1, 4, 6, 1, 1, 8, 10,   2, 1, 2, 2 ];
-    int length = baseSource.Length - offsetStart;
-    int count = length - 4 - offsetEnd;
+    IEnumerable<int> test;
+    Capacitor<int> capacitor = new(9,[ 1,1,2,2, 2,1,2,1,1,  2,1,2,1 ]);
 
-    ArraySegment<int> source = new (baseSource, offsetStart, length );
-    Capacitor<int> capacitor = new(count, source.ToArray());
+    test = capacitor.FindAllIndexes ( x => x == 1, offset );
+    Assert.IsTrue ( GetResults ( result ).SequenceEqual ( test ) );
 
-    Predicate<int> predicate = x => (x & 1) == 0;
+    static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
+  }
+
+  [TestMethod]
+  [DataRow ( 1, 0 )]
+  [DataRow ( 2, 0 )]
+  [DataRow ( 2, 1 )]
+  [DataRow ( 3, 0 )]
+  [DataRow ( 3, 2 )]
+  public void FindAllIndexes_Offset_ShortArrays ( int size, int offset )
+  {
+    Capacitor<int> capacitor = new(new int [size]);
+    IEnumerable<int> test = capacitor.FindAllIndexes(x => x == 0, offset);
+    Assert.IsTrue ( Enumerable.Range ( 0, size ).Skip ( offset ).SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  public void FindAllIndexes_Offset_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new([0]);
+    Action test = () => _ = capacitor.FindAllIndexes((Predicate<int>)null!, 0);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void FindAllIndexes_Offset_IndexOutOfBounds ( int size )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    Action test = () => _ = capacitor.FindAllIndexes(x => default, size);
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 9, "0,1,5,7,8" )]
+  [DataRow ( 1, 8, "1,5,7,8" )]
+  [DataRow ( 0, 8, "0,1,5,7" )]
+  [DataRow ( 0, 1, "0" )]
+  [DataRow ( 8, 1, "8" )]
+  [DataRow ( 1, 5, "1,5" )]
+  public void FindAllIndexes_OffsetCount ( int index, int count, string result )
+  {
+    IEnumerable<int> test;
+    Capacitor<int> capacitor = new(9,[ 1,1,2,2, 2,1,2,1,1,  2,1,2,1 ]);
+
+    test = capacitor.FindAllIndexes ( x => x == 1, index, count );
+    Assert.IsTrue ( GetResults ( result ).SequenceEqual ( test ) );
+
+    static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
+  }
+
+  [TestMethod]
+  [DataRow ( 1, 0, 1 )]
+  [DataRow ( 2, 0, 1 )]
+  [DataRow ( 2, 1, 1 )]
+  [DataRow ( 6, 0, 5 )]
+  [DataRow ( 6, 1, 5 )]
+  [DataRow ( 6, 0, 1 )]
+  [DataRow ( 6, 5, 1 )]
+  [DataRow ( 6, 1, 4 )]
+  public void FindAllIndexes_OffsetCount_ShortArrays ( int size, int offset, int count )
+  {
+    int[] source = new int [size];
+    Array.Fill ( source, 1, offset, count );
+    Capacitor<int> capacitor = new(source);
+    IEnumerable<int> test = capacitor.FindAllIndexes(x => x == 1, offset, count);
+    Assert.IsTrue ( Enumerable.Range ( 0, size ).Skip ( offset ).Take ( count ).SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  public void FindAllIndexes_OffsetCount_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new();
+    _ = capacitor.FindAllIndexes ( x => default, 0, 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 1 )]
+  [DataRow ( 4 )]
+  [DataRow ( 5 )]
+  public void FindAllIndexes_OffsetCount_EmptySegment ( int index )
+  {
+    int[] source = [1,2,3,4,5];
+    Capacitor<int> capacitor = new(source);
+
+    _ = capacitor.FindAllIndexes ( x => default, index, 0 );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 6 )]
+  [DataRow ( 6, 0 )]
+  [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
+  [DataRow ( 4, 2 )]
+  public void FindAllIndexes_OffsetCount_InvalidSegment ( int index, int count )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5], 6);
+    Action test = () => _ = capacitor.FindAllIndexes (x => default, index, count );
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
+
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 5, 0, 5 )]
+  [DataRow ( 5, 0, 1 )]
+  [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
+  [DataRow ( 0, 0, 0 )]
+  public void FindAllIndexes_OffsetCount_ValidSegment ( int size, int index, int count )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    _ = capacitor.FindAllIndexes ( x => default, index, count );
+  }
+
+  [TestMethod]
+  public void FindAllIndexes_OffsetCount_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => _ = capacitor.FindAllIndexes((Predicate<int>)null!, 0, 0);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
+  public void FindAllItems ()
+  {
+    Capacitor<int> capacitor = new(9, [ 1,2,3,4, 5,6,7,8, 9, 10,11]);
+
+    Predicate<int> predicate = x => (x & 1) == 1;
     IEnumerable<int> test = capacitor.FindAllItems(predicate);
 
-    IEnumerable<int> indexes = result.Split(',').Select(int.Parse);
-    Assert.IsTrue ( indexes.SequenceEqual ( test ) );
+    Assert.IsTrue ( GetResults ( "1,3,5,7,9" ).SequenceEqual ( test ) );
 
-    predicate = x => x == 3;
-    Assert.HasCount ( 0, capacitor.FindAllIndexes ( predicate ) );
+    static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
   }
 
   [TestMethod]
   public void FindAllItems_EmptyCapacitor ()
   {
     Capacitor<int> capacitor = new();
+    IEnumerable<int> test = capacitor.FindAllItems(x => true);
 
-    Predicate<int> predicate = x => true;
-    IEnumerable<int> test = capacitor.FindAllItems(predicate);
-    Assert.HasCount ( 0, test );
+    Assert.IsFalse ( test.Any () );
   }
 
   [TestMethod]
   public void FindAllItems_NullPredicate ()
   {
     Capacitor<int> capacitor = new();
-    Predicate<int> predicate = null!;
-    Action test = () => _ = capacitor.FindAllItems(predicate).First();
+    Action test = () => _ = capacitor.FindAllItems((Predicate<int>)null!);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, "1,1,3,5,7,9,9" )]
+  [DataRow ( 1, "1,3,5,7,9,9" )]
+  [DataRow ( 4, "5,7,9,9" )]
+  [DataRow ( 7, "9,9" )]
+  [DataRow ( 8, "9" )]
+  public void FindAllItems_Offset ( int offset, string result )
+  {
+    Capacitor<int> capacitor = new(9, [ 1,1,3,4, 5,6,7,9, 9, 10,11]);
+
+    Predicate<int> predicate = x => (x & 1) == 1;
+    IEnumerable<int> test = capacitor.FindAllItems(predicate, offset);
+
+    Assert.IsTrue ( GetResults ( result ).SequenceEqual ( test ) );
+
+    static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void FindAllItems_Offset_IndexOutOfBounds ( int size )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    Action test = () => _ = capacitor.FindAllItems(x => default, size);
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  public void FindAllItems_Offset_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new([0]);
+    Action test = () => _ = capacitor.FindAllItems((Predicate<int>)null!,0);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 9, "1,-1,3,5,7,-9,9" )]
+  [DataRow ( 0, 8, "1,-1,3,5,7,-9" )]
+  [DataRow ( 1, 8, "-1,3,5,7,-9,9" )]
+  [DataRow ( 1, 7, "-1,3,5,7,-9" )]
+  [DataRow ( 0, 1, "1" )]
+  [DataRow ( 8, 1, "9" )]
+  [DataRow ( 4, 1, "5" )]
+  public void FindAllItems_OffsetCount ( int index, int count, string result )
+  {
+    IEnumerable<int> test;
+    Capacitor<int> capacitor = new(9, [ 1,-1,3,4, 5,6,7,-9,9, 10,11]);
+
+    Predicate<int> predicate = x => (x & 1) == 1;
+    test = capacitor.FindAllItems ( predicate, index, count );
+    Assert.IsTrue ( GetResults ( result ).SequenceEqual ( test ) );
+
+    static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
+  }
+
+  [TestMethod]
+  public void FindAllItems_OffsetCount_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.HasCount ( 0, capacitor.FindAllItems ( x => default, 0, 0 ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 1 )]
+  [DataRow ( 4 )]
+  [DataRow ( 5 )]
+  public void FindAllItems_OffsetCount_EmptySegment ( int index )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+
+    Assert.HasCount ( 0, capacitor.FindAllItems ( x => default, index, 0 ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 6 )]
+  [DataRow ( 6, 0 )]
+  [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
+  [DataRow ( 4, 2 )]
+  public void FindAllItems_OffsetCount_InvalidSegment ( int index, int count )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5], 6);
+    Action test = () => _ = capacitor.FindAllItems (x => default, index, count );
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
+
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 5, 0, 5 )]
+  [DataRow ( 5, 0, 1 )]
+  [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
+  [DataRow ( 0, 0, 0 )]
+  public void FindAllItems_OffsetCount_ValidSegment ( int size, int index, int count )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    _ = capacitor.FindAllItems ( x => default, index, count );
+  }
+
+  [TestMethod]
+  public void FindAllItems_OffsetCount_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => _ = capacitor.FindAllItems((Predicate<int>)null!, 0, 0);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
@@ -3897,32 +4227,21 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 1, 0, 0 )]
-  [DataRow ( 1, 1, 3 )]
+  [DataRow ( 1, 3, 3 )]
   [DataRow ( 2, 1, 1 )]
-  [DataRow ( 2, 2, 4 )]
-  [DataRow ( 3, 2, 2 )]
-  [DataRow ( 3, 3, 5 )]
+  [DataRow ( 2, 4, 4 )]
+  [DataRow ( 6, 5, 5 )]
+  [DataRow ( 6, 0, 5 )]
   [DataRow ( 8, 0, -1 )]
   [DataRow ( 0, 0, -1 )]
   public void FindFirstIndex_Offset ( int value, int offset, int result )
   {
-    Capacitor<int> capacitor = new(6, [1,2,3,1,2,3,8,9]);
+    Capacitor<int> capacitor = new(6, [1,2,3,1,2,6, 8,9]);
 
     Predicate<int> predicate = x => x == value;
     int test = capacitor.FindFirstIndex(predicate, offset);
 
     Assert.AreEqual ( result, test );
-  }
-
-  [TestMethod]
-  public void FindFirstIndex_Offset_NullPredicate ()
-  {
-    Capacitor<int> capacitor = new();
-    Predicate<int> predicate = null!;
-    Action test = () => _ = capacitor.FindFirstIndex(predicate, 0);
-
-    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
-    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
   }
 
   [TestMethod]
@@ -3937,6 +4256,17 @@ public class CapacitorTest
     IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
     string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
     Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  public void FindFirstIndex_Offset_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new([0]);
+    Predicate<int> predicate = null!;
+    Action test = () => _ = capacitor.FindFirstIndex(predicate, 0);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
   }
 
   [TestMethod]
@@ -4032,12 +4362,13 @@ public class CapacitorTest
   [TestMethod]
   [DataRow ( 1, 0 )]
   [DataRow ( 4, 5 )]
+  [DataRow ( 3, 2 )]
   [DataRow ( 6, -1 )]
   [DataRow ( 0, -1 )]
   public void FindFirstItem ( int value, int position )
   {
-    int [] rawSource = [1,2,3,1,2,4,6,7];
-    PVI[] source = rawSource.Select((x,i) => new PVI(x,i)).ToArray();
+    int [] rawSource = [1,2,3,1,2,4, 6,7];
+    PVI[] source = rawSource.Select((x,i) => (PVI)(x,i)).ToArray();
 
     Capacitor<PVI> capacitor = new(6, source);
     Predicate<PVI> predicate = x => x.Value == value;
@@ -4070,17 +4401,16 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 1, 0, 0 )]
-  [DataRow ( 1, 1, 3 )]
+  [DataRow ( 5, 0, 5 )]
   [DataRow ( 2, 1, 1 )]
-  [DataRow ( 2, 2, 4 )]
-  [DataRow ( 3, 2, 2 )]
-  [DataRow ( 3, 3, 5 )]
+  [DataRow ( 2, 4, 4 )]
+  [DataRow ( 5, 5, 5 )]
   [DataRow ( 6, 0, -1 )]
   [DataRow ( 0, 0, -1 )]
   public void FindFirstItem_Offset ( int value, int offset, int position )
   {
-    int [] rawSource = [1,2,3,1,2,3,6,7];
-    PVI[] source = rawSource.Select((x,i) => new PVI(x,i)).ToArray();
+    int [] rawSource = [1,2,3, 1,2,5, 6,7];
+    PVI[] source = rawSource.Select((x,i) => (PVI)(x,i)).ToArray();
 
     Capacitor<PVI> capacitor = new(6, source);
     Predicate<PVI> predicate = x => x.Value == value;
@@ -4088,17 +4418,6 @@ public class CapacitorTest
     bool finds = position != -1;
     Assert.AreEqual ( finds, capacitor.FindFirstItem ( predicate, offset, out PVI test ) );
     Assert.AreEqual ( position, test.Position );
-  }
-
-  [TestMethod]
-  public void FindFirstItem_Offset_NullPredicate ()
-  {
-    Capacitor<int> capacitor = new();
-    Predicate<int> predicate = null!;
-    Action test = () => _ = capacitor.FindFirstItem(predicate, 0, out _);
-
-    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
-    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
   }
 
   [TestMethod]
@@ -4116,17 +4435,30 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void FindFirstItem_Offset_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new([0]);
+    Predicate<int> predicate = null!;
+    Action test = () => _ = capacitor.FindFirstItem(predicate, 0, out _);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 1, 0, 6, 0 )]
-  [DataRow ( 1, 1, 3, 3 )]
-  [DataRow ( 1, 3, 3, 3 )]
-  [DataRow ( 3, 0, 6, 2 )]
-  [DataRow ( 3, 3, 3, 5 )]
-  [DataRow ( 6, 0, 6, -1 )]
+  [DataRow ( 1, 0, 1, 0 )]
+  [DataRow ( 1, 1, 5, -1 )]
+  [DataRow ( 6, 0, 6, 5 )]
+  [DataRow ( 6, 0, 5, -1 )]
+  [DataRow ( 6, 5, 1, 5 )]
+  [DataRow ( 5, 1, 4, 4 )]
+  [DataRow ( 7, 0, 6, -1 )]
   [DataRow ( 0, 0, 6, -1 )]
   public void FindFirstItem_OffsetCount ( int value, int offset, int count, int position )
   {
-    int [] rawSource = [1,2,3,1,2,3,6,7];
-    PVI[] source = rawSource.Select((x,i) => new PVI(x,i)).ToArray();
+    int [] rawSource = [ 1,2,3, 4,5,6, 7,8];
+    PVI[] source = rawSource.Select((x,i) => (PVI)(x,i)).ToArray();
 
     Capacitor<PVI> capacitor = new(6, source);
     Predicate<PVI> predicate = x => x.Value == value;
@@ -4199,13 +4531,26 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 3, 5 )]
-  [DataRow ( 4, 0 )]
-  [DataRow ( 6, -1 )]
-  [DataRow ( 8, -1 )]
+  public void FindFirstItem_OffsetCount_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new([0]);
+    Predicate<int> predicate = null!;
+    Action test = () => _ = capacitor.FindFirstItem(predicate, 0, 0, out _);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 6, 5 )]
+  [DataRow ( 5, 4 )]
+  [DataRow ( 1, 0 )]
+  [DataRow ( 2, 1 )]
+  [DataRow ( 7, -1 )]
+  [DataRow ( 0, -1 )]
   public void FindLastIndex ( int value, int index )
   {
-    Capacitor<int> capacitor = new(6, [4,2,3,1,2,3,6,7]);
+    Capacitor<int> capacitor = new(6, [1,2,5, 4,5,6, 7,8]);
     Predicate<int> predicate = x => x == value;
 
     Assert.AreEqual ( index, capacitor.FindLastIndex ( predicate ) );
@@ -4233,28 +4578,21 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 2, 0, 4 )]
-  [DataRow ( 1, 4, -1 )]
-  [DataRow ( 3, 5, 5 )]
-  [DataRow ( 6, 0, -1 )]
-  [DataRow ( 0, 0, -1 )]
-  public void FindLastIndex_Offset ( int value, int offset, int index )
+  [DataRow ( 6, 5, 0 )]
+  [DataRow ( 6, 5, 5 )]
+  [DataRow ( 5, 4, 0 )]
+  [DataRow ( 5, 4, 4 )]
+  [DataRow ( 1, 0, 0 )]
+  [DataRow ( 1, -1, 1 )]
+  [DataRow ( 2, 1, 1 )]
+  [DataRow ( 7, -1, 0 )]
+  [DataRow ( 0, -1, 0 )]
+  public void FindLastIndex_Offset ( int value, int result, int offset )
   {
-    Capacitor<int> capacitor = new(6, [4,2,3,1,2,3,6,7]);
+    Capacitor<int> capacitor = new(6, [1,2,5, 4,5,6, 7,8]);
     Predicate<int> predicate = x => x == value;
 
-    Assert.AreEqual ( index, capacitor.FindLastIndex ( predicate, offset ) );
-  }
-
-  [TestMethod]
-  public void FindLastIndex_Offset_NullPredicate ()
-  {
-    Capacitor<int> capacitor = new();
-    Predicate<int> predicate = null!;
-    Action test = () => _ = capacitor.FindLastIndex(predicate, 0);
-
-    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
-    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+    Assert.AreEqual ( result, capacitor.FindLastIndex ( predicate, offset ) );
   }
 
   [TestMethod]
@@ -4272,28 +4610,29 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 2, 5, 4 )]
-  [DataRow ( 1, 2, -1 )]
-  [DataRow ( 3, 5, 5 )]
-  [DataRow ( 6, 5, -1 )]
-  [DataRow ( 0, 5, -1 )]
-  public void FindLastIndex_RearSet ( int value, int rearSet, int index )
+  public void FindLastIndex_Offset_NullPredicate ()
   {
-    Capacitor<int> capacitor = new(6, [4,2,3,1,2,3,6,7]);
-    Predicate<int> predicate = x => x == value;
-
-    Assert.AreEqual ( index, capacitor.FindLastIndex ( rearSet, predicate ) );
-  }
-
-  [TestMethod]
-  public void FindLastIndex_RearSet_NullPredicate ()
-  {
-    Capacitor<int> capacitor = new();
+    Capacitor<int> capacitor = new([0]);
     Predicate<int> predicate = null!;
-    Action test = () => _ = capacitor.FindLastIndex(0, predicate);
+    Action test = () => _ = capacitor.FindLastIndex(predicate, 0);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 6, 5, 5 )]
+  [DataRow ( 6, 4, -1 )]
+  [DataRow ( 1, 0, 0 )]
+  [DataRow ( 1, 5, 0 )]
+  [DataRow ( 4, 5, 3 )]
+  [DataRow ( 4, 3, 3 )]
+  public void FindLastIndex_RearSet ( int value, int rearSet, int index )
+  {
+    Capacitor<int> capacitor = new(6, [1,4,3,4,5,6, 7,8]);
+    Predicate<int> predicate = x => x == value;
+
+    Assert.AreEqual ( index, capacitor.FindLastIndex ( rearSet, predicate ) );
   }
 
   [TestMethod]
@@ -4311,17 +4650,28 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 5, 0, 8, 7 )]
-  [DataRow ( 5, 0, 7, -1 )]
-  [DataRow ( 1, 0, 8, 3 )]
-  [DataRow ( 1, 0, 3, 0 )]
-  [DataRow ( 2, 1, 4, 4 )]
-  [DataRow ( 2, 1, 3, 1 )]
-  [DataRow ( 8, 0, 8, -1 )]
+  public void FindLastIndex_RearSet_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new([0]);
+    Predicate<int> predicate = null!;
+    Action test = () => _ = capacitor.FindLastIndex(0, predicate);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 8, 0, 8, 7 )]
+  [DataRow ( 8, 0, 7, -1 )]
+  [DataRow ( 1, 0, 8, 0 )]
+  [DataRow ( 1, 1, 7, -1 )]
+  [DataRow ( 2, 1, 7, 4 )]
+  [DataRow ( 4, 3, 1, 3 )]
+  [DataRow ( 9, 0, 8, -1 )]
   [DataRow ( 0, 0, 8, -1 )]
   public void FindLastIndex_OffsetCount ( int value, int offset, int count, int result )
   {
-    Capacitor<int> capacitor = new(8, [1,2,3,1,2,3,4,5,7,8]);
+    Capacitor<int> capacitor = new(8, [ 1,2,3,4 ,2,6,7,8, 9,10]);
 
     Predicate<int> predicate = x => x == value;
     int test = capacitor.FindLastIndex(predicate, offset, count);
@@ -4402,17 +4752,18 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 5, 7, 8, 7 )]
-  [DataRow ( 5, 6, 7, -1 )]
-  [DataRow ( 1, 7, 8, 3 )]
-  [DataRow ( 1, 2, 3, 0 )]
-  [DataRow ( 2, 4, 5, 4 )]
-  [DataRow ( 2, 1, 2, 1 )]
-  [DataRow ( 8, 7, 8, -1 )]
+  [DataRow ( 8, 7, 8, 7 )]
+  [DataRow ( 8, 6, 7, -1 )]
+  [DataRow ( 1, 7, 8, 0 )]
+  [DataRow ( 1, 7, 7, -1 )]
+  [DataRow ( 2, 7, 8, 5 )]
+  [DataRow ( 2, 4, 5, 1 )]
+  [DataRow ( 2, 1, 1, 1 )]
+  [DataRow ( 9, 7, 8, -1 )]
   [DataRow ( 0, 7, 8, -1 )]
   public void FindLastIndex_RearSetCount ( int value, int rearSet, int count, int result )
   {
-    Capacitor<int> capacitor = new(8, [1,2,3,1,2,3,4,5,7,8]);
+    Capacitor<int> capacitor = new(8, [1,2,3,4, 5,2,7,8, 9,10]);
 
     Predicate<int> predicate = x => x == value;
     int test = capacitor.FindLastIndex(rearSet, count, predicate);
@@ -4446,10 +4797,9 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 6, 0 )]
-  [DataRow ( 5, 0, 2 )]
-  [DataRow ( 5, 1, 3 )]
-  [DataRow ( 5, 4, 6 )]
   [DataRow ( 5, 5, 1 )]
+  [DataRow ( 5, 0, 2 )]
+  [DataRow ( 5, 4, 6 )]
   [DataRow ( 5, 7, 7 )]
   [DataRow ( 0, 1, 0 )]
   [DataRow ( 0, 0, 1 )]
@@ -4467,12 +4817,11 @@ public class CapacitorTest
     Assert.AreEqual ( msg, e.Message );
   }
 
-
   [TestMethod]
   [DataRow ( 5, 5, 0 )]
   [DataRow ( 5, 4, 5 )]
   [DataRow ( 5, 0, 1 )]
-  [DataRow ( 5, 1, 2 )]
+  [DataRow ( 5, 3, 3 )]
   [DataRow ( 0, 0, 0 )]
   public void FindLastIndex_RearSetCount_ValidSegment ( int size, int index, int count )
   {
@@ -4497,11 +4846,11 @@ public class CapacitorTest
   [DataRow ( 3, 5 )]
   [DataRow ( 4, 0 )]
   [DataRow ( 6, -1 )]
-  [DataRow ( 8, -1 )]
+  [DataRow ( 0, -1 )]
   public void FindLastItem ( int value, int index )
   {
-    int[] rawSource = [4,2,3,1,2,3,6,7];
-    PVI [] source = rawSource.Select((x,i) => new PVI(x,i)).ToArray();
+    int[] rawSource = [ 4,2,3, 1,2,3, 6,7];
+    PVI [] source = rawSource.Select((x,i) => (PVI)(x,i)).ToArray();
 
     Capacitor<PVI> capacitor = new(6, source);
     Predicate<PVI> predicate = x => x.Value == value;
@@ -4555,7 +4904,7 @@ public class CapacitorTest
   [TestMethod]
   public void FindLastItem_Offset_NullPredicate ()
   {
-    Capacitor<int> capacitor = new();
+    Capacitor<int> capacitor = new([0]);
     Predicate<int> predicate = null!;
     Action test = () => _ = capacitor.FindLastItem(predicate, 0, out _);
 
@@ -4600,7 +4949,7 @@ public class CapacitorTest
   [TestMethod]
   public void FindLastItem_RearSet_NullPredicate ()
   {
-    Capacitor<int> capacitor = new();
+    Capacitor<int> capacitor = new([0]);
     Predicate<int> predicate = null!;
     Action test = () => _ = capacitor.FindLastItem(0, predicate, out _);
 

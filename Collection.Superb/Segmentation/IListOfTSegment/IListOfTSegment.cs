@@ -148,7 +148,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   }
 
   /// <summary>
-  /// Sets segment values to <c>default(T)</c>.
+  /// Sets segment values to <c>default(<typeparamref name="T"/>)</c>.
   /// </summary>
   readonly public void Clear ()
   {

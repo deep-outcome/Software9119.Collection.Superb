@@ -134,7 +134,7 @@ public ref struct IListRefSegment<T, U>
   }
 
   /// <summary>
-  /// Sets segment values to <c>default(U)</c>.
+  /// Sets segment values to <c>default(<typeparamref name="U"/>)</c>.
   /// </summary>
   readonly public void Clear ()
   {

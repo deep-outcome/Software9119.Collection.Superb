@@ -54,17 +54,17 @@ public struct CapacitorStoreEnumerator<T> : IEnumerator<T?>
   }
 
   /// <summary>
-  /// Current element or <see langword="default(T)"/>, if enumeration is not yet started.
+  /// Current element or <c>default(<typeparamref name="T"/>)</c>, if enumeration is not yet started.
   /// </summary>  
   /// <remarks>Keeps last enumeration item after enumeration end.</remarks>
-  /// <exception cref="NullReferenceException">For <c>default(CapacitorStoreEnumerator&lt;T&gt;)</c>.</exception>
+  /// <exception cref="NullReferenceException">For <c>default(<see cref="CapacitorStoreEnumerator{T}"/>)</c>.</exception>
   readonly public T? Current => index == resetIndex ? default ( T? ) : store [ index ];
 
   /// <summary>
-  /// Current element or <see langword="default(T)"/>, if enumeration is not yet started.
+  /// Current element or <c>default(<typeparamref name="T"/>)</c>, if enumeration is not yet started.
   /// </summary>
   /// <remarks>Keeps last enumeration item after enumeration end.</remarks>
-  /// <exception cref="NullReferenceException">For <c>default(CapacitorStoreEnumerator&lt;T&gt;)</c>.</exception>
+  /// <exception cref="NullReferenceException">For <c>default(<see cref="CapacitorStoreEnumerator{T}"/>)</c>.</exception>
   readonly object? IEnumerator.Current => Current;
 
   /// <summary>
