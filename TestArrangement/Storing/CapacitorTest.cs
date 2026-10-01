@@ -88,6 +88,22 @@ public class CapacitorTest
     Assert.IsTrue ( ReferenceEquals ( Capacitor.OffsetCountParamNames, test ) );
   }
 
+  [TestMethod]
+  public void FromIndexCountParamNames ()
+  {
+    string [] test = Capacitor.FromIndexCountParamNames;
+    Assert.AreEqual ( 2, test.Length );
+    Assert.IsTrue ( test.Contains ( "fromIndex" ) );
+    Assert.IsTrue ( test.Contains ( "count" ) );
+  }
+
+  [TestMethod]
+  public void FromIndexCountParametersGetter ()
+  {
+    string [] test = Capacitor.FromIndexCountParametersGetter();
+    Assert.IsTrue ( ReferenceEquals ( Capacitor.FromIndexCountParamNames, test ) );
+  }
+
 
   [TestMethod]
   public void RearSetCountParamNames ()
@@ -136,6 +152,36 @@ public class CapacitorTest
     Assert.IsFalse ( empty.LockGrowFactor );
   }
 
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 1 )]
+  public void ValidateIndex_Static_Int32_PositiveScenarios ( int index )
+  {
+    Assert.IsFalse ( Capacitor.ValidateIndex ( index, 2, out IndexOutOfBoundariesException? e, "" ) );
+    Assert.IsNull ( e );
+  }
+
+  [TestMethod]
+  [DataRow ( -1, "" )]
+  [DataRow ( -1, null )]
+  [DataRow ( -1, "yourParam" )]
+  [DataRow ( 2, "" )]
+  [DataRow ( 2, null )]
+  [DataRow ( 2, "yourParam" )]
+  public void ValidateIndex_Static_Int32_NegativeScenarios ( int index, string paramName )
+  {
+    string errMsg = index == -1
+      ? "Index must be non-negative integer, but it is '-1'."
+      : "For available '2' is index '2' out of bounds.";
+
+    string paramString = paramName == "yourParam" ? " (Parameter 'yourParam')" : "";
+    errMsg += paramString;
+
+    Assert.IsTrue ( Capacitor.ValidateIndex ( index, 2, out IndexOutOfBoundariesException? e, paramName ) );
+    Assert.AreEqual ( errMsg, e?.Message );
+  }
+
   [TestMethod]
   [DataRow ( 0, 5 )]
   [DataRow ( 0, 1 )]
@@ -158,10 +204,11 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 6, 0 )]
   [DataRow ( 0, 6 )]
-  [DataRow ( 4, 2 )]
+  [DataRow ( 6, 0 )]
+  [DataRow ( 1, 5 )]
   [DataRow ( 5, 1 )]
+  [DataRow ( 4, 2 )]
   public void ValidateSegmentation_Static_NegativeScenarios ( int offset, int count )
   {
     int result = Capacitor.ValidateSegmentation
@@ -1599,7 +1646,7 @@ public class CapacitorTest
     };
 
     Capacitor<int> capacitor = new(new int[5]);
-    Assert.AreEqual ( 1, capacitor.ValidateRearSetConfiguration ( 4, 6, out ImpSegExc? e, parameters ) );
+    Assert.AreEqual ( 1, capacitor.ValidateRearSetConfiguration ( 4, 6, out ImpSegExc? e, parameters! ) );
 
     string msg = "With available 5, given rearSet 4 and count 6 produce out-of indexing.{0}";
     string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
@@ -1651,8 +1698,9 @@ public class CapacitorTest
   [TestMethod]
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
-  [DataRow ( 4, 2 )]
+  [DataRow ( 1, 5 )]
   [DataRow ( 5, 1 )]
+  [DataRow ( 4, 2 )]
   public void ValidateSegmentation_NegativeScenarios ( int offset, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -1688,7 +1736,7 @@ public class CapacitorTest
       _ => throw new ArgumentOutOfRangeException(nameof( testCase ) )
     };
 
-    _ = capacitor.ValidateSegmentation ( 0, 6, out _, out ImpSegExc? e, parameters );
+    _ = capacitor.ValidateSegmentation ( 0, 6, out _, out ImpSegExc? e, parameters! );
 
     string msg = "With available 5, given offset 0 and count 6 produce out-of indexing.{0}";
     string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
@@ -1880,6 +1928,7 @@ public class CapacitorTest
     Capacitor<int> capacitor = new();
     Assert.IsFalse ( capacitor.Add ( (IEnumerable<int>?) null, 1000 ) );
     Assert.AreEqual ( 0, capacitor.Count );
+    Assert.AreEqual ( 0, capacitor.Capacity );
   }
 
   [TestMethod]
@@ -1973,80 +2022,13 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  public void Add_Array ()
-  {
-    int[]? addition;
-    Capacitor<int> capacitor = new();
-
-    const int count = 5;
-    addition = XEnumerable.RangeEnumerable ( 1, count ).ToArray ();
-    Assert.IsTrue ( capacitor.Add ( addition ) );
-    Assert.AreEqual ( count, capacitor.Count );
-    Assert.AreEqual ( count, capacitor.Capacity );
-
-    addition = XEnumerable.RangeEnumerable ( 6, count ).ToArray ();
-    Assert.IsTrue ( capacitor.Add ( addition ) );
-    Assert.AreEqual ( 10, capacitor.Count );
-    Assert.AreEqual ( 10, capacitor.Capacity );
-
-    Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
-
-    addition = null;
-    Assert.IsFalse ( capacitor.Add ( addition ) );
-  }
-
-  [TestMethod]
-  public void Add_Collection ()
-  {
-    List<int>? addition;
-    Capacitor<int> capacitor = new();
-
-    const int count = 5;
-    addition = XEnumerable.RangeEnumerable ( 1, count ).ToList ();
-    Assert.IsTrue ( capacitor.Add ( (ICollection<int>) addition ) );
-    Assert.AreEqual ( count, capacitor.Count );
-    Assert.AreEqual ( count, capacitor.Capacity );
-
-    addition = XEnumerable.RangeEnumerable ( 6, count ).ToList ();
-    Assert.IsTrue ( capacitor.Add ( (ICollection<int>) addition ) );
-    Assert.AreEqual ( 10, capacitor.Count );
-    Assert.AreEqual ( 10, capacitor.Capacity );
-
-    Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
-
-    addition = null;
-    Assert.IsFalse ( capacitor.Add ( (ICollection<int>?) addition ) );
-  }
-
-  [TestMethod]
-  public void Add_ReadOnlyCollection ()
-  {
-    XReadOnlyCollection<int>? addition;
-    Capacitor<int> capacitor = new();
-
-    const int count = 5;
-    addition = new ( XEnumerable.RangeEnumerable ( 1, count ).ToList () );
-    Assert.IsTrue ( capacitor.Add ( addition ) );
-    Assert.AreEqual ( count, capacitor.Count );
-    Assert.AreEqual ( count, capacitor.Capacity );
-
-    addition = new ( XEnumerable.RangeEnumerable ( 6, count ).ToList () );
-    Assert.IsTrue ( capacitor.Add ( addition ) );
-    Assert.AreEqual ( 10, capacitor.Count );
-    Assert.AreEqual ( 10, capacitor.Capacity );
-
-    Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
-
-    addition = null;
-    Assert.IsFalse ( capacitor.Add ( addition ) );
-  }
-
-  [TestMethod]
   [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
   async public Task Add_AsyncEnumerableRoomRequest_NullItems ()
   {
     Capacitor<int> capacitor = new();
-    Assert.IsFalse ( await capacitor.Add ( (IAsyncEnumerable<int>?) null, 0 ) );
+    Assert.IsFalse ( await capacitor.Add ( (IAsyncEnumerable<int>?) null, 1000 ) );
+    Assert.AreEqual ( 0, capacitor.Count );
+    Assert.AreEqual ( 0, capacitor.Capacity );
   }
 
   [TestMethod]
@@ -2063,7 +2045,11 @@ public class CapacitorTest
     Assert.AreEqual ( 8, capacitor.Capacity );
 
     addition = new TestAide.AsyncEnumerable ( 6, count );
-    Assert.IsTrue ( await capacitor.Add ( addition, count + 1 ) );
+    Assert.IsTrue ( await capacitor.Add ( addition, count ) );
+
+    addition = new TestAide.AsyncEnumerable ( 0, 0 );
+    Assert.IsTrue ( await capacitor.Add ( addition, 1 ) );
+
     Assert.AreEqual ( 10, capacitor.Count );
     Assert.AreEqual ( 11, capacitor.Capacity );
 
@@ -2071,9 +2057,102 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void Add_Array_NullItems ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsFalse ( capacitor.Add ( (int []?) null ) );
+    Assert.AreEqual ( 0, capacitor.Count );
+    Assert.AreEqual ( 0, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  public void Add_Array ()
+  {
+    int[]? addition;
+    Capacitor<int> capacitor = new();
+
+    const int count = 5;
+    addition = XEnumerable.RangeEnumerable ( 1, count ).ToArray ();
+    Assert.IsTrue ( capacitor.Add ( addition ) );
+    Assert.AreEqual ( count, capacitor.Count );
+    Assert.AreEqual ( count, capacitor.Capacity );
+
+    addition = XEnumerable.RangeEnumerable ( 6, count ).ToArray ();
+    Assert.IsTrue ( capacitor.Add ( addition ) );
+    Assert.IsTrue ( capacitor.Add ( new int [ 0 ] ) );
+
+    Assert.AreEqual ( 10, capacitor.Count );
+    Assert.AreEqual ( 10, capacitor.Capacity );
+
+    Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void Add_Collection_NullItems ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsFalse ( capacitor.Add ( (ICollection<int>?) null ) );
+    Assert.AreEqual ( 0, capacitor.Count );
+    Assert.AreEqual ( 0, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  public void Add_Collection ()
+  {
+    List<int>? addition;
+    Capacitor<int> capacitor = new();
+
+    const int count = 5;
+    addition = XEnumerable.RangeEnumerable ( 1, count ).ToList ();
+    Assert.IsTrue ( capacitor.Add ( (ICollection<int>) addition ) );
+    Assert.AreEqual ( count, capacitor.Count );
+    Assert.AreEqual ( count, capacitor.Capacity );
+
+    addition = XEnumerable.RangeEnumerable ( 6, count ).ToList ();
+    Assert.IsTrue ( capacitor.Add ( (ICollection<int>) addition ) );
+    Assert.IsTrue ( capacitor.Add ( (ICollection<int>) new int [ 0 ] ) );
+
+    Assert.AreEqual ( 10, capacitor.Count );
+    Assert.AreEqual ( 10, capacitor.Capacity );
+
+    Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void Add_ReadOnlyCollection_NullItems ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsFalse ( capacitor.Add ( (IReadOnlyCollection<int>?) null ) );
+    Assert.AreEqual ( 0, capacitor.Count );
+    Assert.AreEqual ( 0, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  public void Add_ReadOnlyCollection ()
+  {
+    XReadOnlyCollection<int>? addition;
+    Capacitor<int> capacitor = new();
+
+    const int count = 5;
+    addition = new ( XEnumerable.RangeEnumerable ( 1, count ).ToList () );
+    Assert.IsTrue ( capacitor.Add ( addition ) );
+    Assert.AreEqual ( count, capacitor.Count );
+    Assert.AreEqual ( count, capacitor.Capacity );
+
+    addition = new ( XEnumerable.RangeEnumerable ( 6, count ).ToList () );
+    Assert.IsTrue ( capacitor.Add ( addition ) );
+    Assert.IsTrue ( capacitor.Add ( new XReadOnlyCollection<int> ( [] ) ) );
+
+    Assert.AreEqual ( 10, capacitor.Count );
+    Assert.AreEqual ( 10, capacitor.Capacity );
+
+    Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   public void AllMatches ()
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new(5, [1,2,3,4,5, 10,11,12]);
 
     Predicate<int> all = i => i < 10;
     Predicate<int> none = i => i < 0;
@@ -2081,11 +2160,18 @@ public class CapacitorTest
     Predicate<int> start = i => i != 1;
     Predicate<int> end = i => i != 5;
 
-    Assert.IsTrue ( capacitor.AllMatches ( all ) );
-    Assert.IsFalse ( capacitor.AllMatches ( none ) );
-    Assert.IsFalse ( capacitor.AllMatches ( some ) );
-    Assert.IsFalse ( capacitor.AllMatches ( start ) );
-    Assert.IsFalse ( capacitor.AllMatches ( end ) );
+    Assert.AreEqual ( 1, capacitor.AllMatches ( all ) );
+    Assert.AreEqual ( 0, capacitor.AllMatches ( none ) );
+    Assert.AreEqual ( 0, capacitor.AllMatches ( some ) );
+    Assert.AreEqual ( 0, capacitor.AllMatches ( start ) );
+    Assert.AreEqual ( 0, capacitor.AllMatches ( end ) );
+  }
+
+  [TestMethod]
+  public void AllMatches_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new([]);
+    Assert.AreEqual ( -1, capacitor.AllMatches ( x => true ) );
   }
 
   [TestMethod]
@@ -2099,6 +2185,135 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void AllMatches_Offset ()
+  {
+    Capacitor<int> capacitor = new(8, [1,2,3,4,5,6,7,8, 10,11,12]);
+
+    Predicate<int> all = i => i < 10;
+    Predicate<int> start = i => i != 1;
+    Predicate<int> some = i => i != 5;
+    Predicate<int> end = i => i != 8;
+
+    Assert.IsTrue ( capacitor.AllMatches ( all, 0 ) );
+
+    Assert.IsFalse ( capacitor.AllMatches ( start, 0 ) );
+    Assert.IsTrue ( capacitor.AllMatches ( start, 1 ) );
+
+    Assert.IsFalse ( capacitor.AllMatches ( some, 0 ) );
+    Assert.IsTrue ( capacitor.AllMatches ( some, 5 ) );
+
+    Assert.IsFalse ( capacitor.AllMatches ( end, 0 ) );
+    Assert.IsFalse ( capacitor.AllMatches ( end, 7 ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void AllMatches_Offset_IndexOutOfBounds ( int size )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    Action test = () => _ = capacitor.AllMatches(x => true, size);
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  public void AllMatches_Offset_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new([1]);
+    Action test = () => capacitor.AllMatches ( null!, 0 );
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
+  public void AllMatches_OffsetCount ()
+  {
+    Capacitor<int> capacitor = new(8, [1,2,3,4,5,6,7,8, 10,11,12]);
+
+    Predicate<int> all = i => i < 10;
+    Predicate<int> start = i => i != 1;
+    Predicate<int> some = i => i != 5;
+    Predicate<int> end = i => i != 8;
+
+    Assert.AreEqual ( 1, capacitor.AllMatches ( all, 0, 8 ) );
+
+    Assert.AreEqual ( 0, capacitor.AllMatches ( start, 0, 1 ) );
+    Assert.AreEqual ( 1, capacitor.AllMatches ( start, 1, 1 ) );
+
+    Assert.AreEqual ( 0, capacitor.AllMatches ( some, 0, 5 ) );
+    Assert.AreEqual ( 1, capacitor.AllMatches ( some, 5, 3 ) );
+
+    Assert.AreEqual ( 0, capacitor.AllMatches ( end, 7, 1 ) );
+    Assert.AreEqual ( 1, capacitor.AllMatches ( end, 6, 1 ) );
+  }
+
+  [TestMethod]
+  public void AllMatches_OffsetCount_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.AreEqual ( -1, capacitor.AllMatches ( x => true, 0, 0 ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 2 )]
+  [DataRow ( 4 )]
+  [DataRow ( 5 )]
+  public void AllMatches_OffsetCount_EmptySegment ( int offset )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Assert.AreEqual ( -1, capacitor.AllMatches ( x => true, offset, 0 ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 6 )]
+  [DataRow ( 6, 0 )]
+  [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
+  [DataRow ( 4, 2 )]
+  public void AllMatches_OffsetCount_InvalidSegment ( int offset, int count )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Action test = () => _ = capacitor.AllMatches(x => true, offset, count);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    string msg = $"With available 5, given offset {offset} and count {count} produce out-of indexing. (Parameters 'offset','count')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 5, 0, 5 )]
+  [DataRow ( 5, 0, 1 )]
+  [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
+  [DataRow ( 0, 0, 0 )]
+  public void AllMatches_OffsetCount_ValidSegment ( int size, int index, int count )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+
+    int result = count == 0 ? -1 : 1;
+    Assert.AreEqual ( result, capacitor.AllMatches ( x => true, index, count ) );
+  }
+
+  [TestMethod]
+  public void AllMatches_OffsetCount_NullPredicate ()
+  {
+    Capacitor<int> capacitor = new([1]);
+    Action test = () => capacitor.AllMatches ( null!, 0, 0 );
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 1 )]
   [DataRow ( 5 )]
   [DataRow ( 6 )]
@@ -2106,10 +2321,10 @@ public class CapacitorTest
   public void BinarySearch_EvenCount ( int value )
   {
     RevertedComparer comparer = new (1, 10);
-    Capacitor<int> capacitor = new([1,2,3,4,5,6,7,8,9,10]);
+    Capacitor<int> capacitor = new(10, [1,2,3,4,5, 6,7,8,9,10, 11,12,13]);
     int test = capacitor.BinarySearch(value, comparer);
 
-    Assert.AreNotEqual ( -1, test );
+    Assert.IsGreaterThanOrEqualTo ( 0, test );
     int antiValue = RevertedComparer.Revert(value, comparer.reversor);
     Assert.AreEqual ( antiValue - 1, test );
   }
@@ -2123,12 +2338,19 @@ public class CapacitorTest
   public void BinarySearch_OddCount ( int value )
   {
     RevertedComparer comparer = new (1, 11);
-    Capacitor<int> capacitor = new([1,2,3,4,5,6,7,8,9,10,11]);
+    Capacitor<int> capacitor = new(11, [1,2,3,4,5, 6,7,8,9,10,11, 12,13]);
     int test = capacitor.BinarySearch(value, comparer);
 
-    Assert.AreNotEqual ( -1, test );
+    Assert.IsGreaterThanOrEqualTo ( 0, test );
     int antiValue = RevertedComparer.Revert(value, comparer.reversor);
     Assert.AreEqual ( antiValue - 1, test );
+  }
+
+  [TestMethod]
+  public void BinarySearch_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsLessThan ( 0, capacitor.BinarySearch ( 0, Comparer<int>.Default ) );
   }
 
   [TestMethod]
@@ -2153,11 +2375,11 @@ public class CapacitorTest
   public void BinarySearch_Offset_EvenCount ( int value, int offset, int index )
   {
     RevertedComparer comparer = new (1, 10);
-    Capacitor<int> capacitor = new([1,2,3,4,5,6,7,8,9,10]);
+    Capacitor<int> capacitor = new(10, [1,2,3,4,5, 6,7,8,9,10, 11,12,13]);
     int test = capacitor.BinarySearch(value, offset, comparer);
 
     if (index < 0)
-      Assert.IsLessThanOrEqualTo ( -1, test );
+      Assert.IsLessThan ( 0, test );
     else
       Assert.AreEqual ( index, test );
   }
@@ -2176,12 +2398,12 @@ public class CapacitorTest
   public void BinarySearch_Offset_OddCount ( int value, int offset, int index )
   {
     RevertedComparer comparer = new (1, 11);
-    Capacitor<int> capacitor = new([1,2,3,4,5,6,7,8,9,10,11]);
+    Capacitor<int> capacitor = new(11, [1,2,3,4,5, 6,7,8,9,10,11, 12,13]);
 
     int test = capacitor.BinarySearch(value, offset, comparer);
 
     if (index < 0)
-      Assert.IsLessThanOrEqualTo ( -1, test );
+      Assert.IsLessThan ( 0, test );
     else
       Assert.AreEqual ( index, test );
   }
@@ -2212,21 +2434,21 @@ public class CapacitorTest
   [TestMethod]
   [DataRow ( 1, 0, 0, 10 )]
   [DataRow ( 1, -1, 1, 9 )]
-  [DataRow ( 5, 4, 2, 8 )]
+  [DataRow ( 5, 4, 2, 6 )]
   [DataRow ( 5, -1, 0, 4 )]
   [DataRow ( 5, -1, 5, 5 )]
-  [DataRow ( 6, 5, 2, 8 )]
+  [DataRow ( 6, 5, 2, 6 )]
   [DataRow ( 6, -1, 0, 5 )]
   [DataRow ( 6, -1, 6, 4 )]
   [DataRow ( 10, 9, 0, 10 )]
   [DataRow ( 10, -1, 0, 9 )]
   public void BinarySearch_OffsetCountComparer_EvenCount ( int value, int result, int offset, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5,6,7,8,9,10]);
+    Capacitor<int> capacitor = new(10, [1,2,3,4,5, 6,7,8,9,10, 11,12,13]);
     int test = capacitor.BinarySearch(offset, count, value, Comparer<int>.Default);
 
-    Assert.AreEqual ( result < 0, test < 0 );
-    Assert.AreEqual ( result < 0 ? test : result, test );
+    Assert.AreEqual ( result == -1, test < 0 );
+    Assert.AreEqual ( result == -1 ? test : result, test );
   }
 
   [TestMethod]
@@ -2245,11 +2467,11 @@ public class CapacitorTest
   [DataRow ( 11, -1, 0, 10 )]
   public void BinarySearch_OffsetCountComparer_OddCount ( int value, int result, int offset, int count )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5,6,7,8,9,10,11]);
+    Capacitor<int> capacitor = new(11, [1,2,3,4,5, 6,7,8,9,10,11, 12,13]);
     int test = capacitor.BinarySearch(offset, count, value, Comparer<int>.Default);
 
-    Assert.AreEqual ( result < 0, test < 0 );
-    Assert.AreEqual ( result < 0 ? test : result, test );
+    Assert.AreEqual ( result == -1, test < 0 );
+    Assert.AreEqual ( result == -1 ? test : result, test );
   }
 
   [TestMethod]
@@ -2258,29 +2480,38 @@ public class CapacitorTest
   public void BinarySearch_OffsetCountComparer_Comparer ( int value, int result )
   {
     RevertedComparer comparer = new (1, 10);
-    Capacitor<int> capacitor = new([1,2,3,4,5,6,7,8,9,10]);
+    Capacitor<int> capacitor = new(10, [1,2,3,4,5, 6,7,8,9,10, 11,12,13]);
     int test = capacitor.BinarySearch(0, 10, value, comparer);
 
     Assert.AreEqual ( result, test );
   }
 
   [TestMethod]
-  [DataRow ( 1, 0, 0 )]
-  [DataRow ( 11, 10, 0 )]
-  [DataRow ( 11, 11, 0 )]
-  public void BinarySearch_OffsetCountComparer_EmptySegment ( int value, int offset, int count )
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  [DataRow ( 10 )]
+  [DataRow ( 11 )]
+  public void BinarySearch_OffsetCountComparer_EmptySegment ( int offset )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5,6,7,8,9,10,11]);
-    int test = capacitor.BinarySearch(offset, count, value, Comparer<int>.Default);
+    Capacitor<int> capacitor = new([1,2,3,4,5, 6,7,8,9,10,11]);
+    int test = capacitor.BinarySearch(offset, 0, -2, Comparer<int>.Default);
 
     Assert.IsLessThan ( 0, test );
   }
 
   [TestMethod]
+  public void BinarySearch_OffsetCountComparer_EmptyComparer ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsLessThan ( 0, capacitor.BinarySearch ( 0, 0, 0, Comparer<int>.Default ) );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 6 )]
+  [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
   [DataRow ( 5, 1 )]
-  [DataRow ( 6, 0 )]
+  [DataRow ( 4, 2 )]
   public void BinarySearch_OffsetCountComparer_InvalidSegment ( int offset, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -2293,9 +2524,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void BinarySearch_OffsetCountComparer_ValidSegment ( int size, int index, int count )
   {
@@ -2313,20 +2548,33 @@ public class CapacitorTest
     Assert.AreEqual ( "Comparer must be provided. (Parameter 'comparer')", e.Message );
   }
 
-
+  [TestMethod]
+  [DataRow ( 4, 10, false )]
+  [DataRow ( 10, 10, false )]
+  [DataRow ( 5, 10, true )]
+  [DataRow ( 5, 5, false )]
+  [DataRow ( 6, 10, true )]
+  [DataRow ( 11, 10, true )]
+  public void CapacitateExactly ( int to, int capacity, bool result )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5], capacity);
+    bool test = capacitor.CapacitateExactly(to);
+    Assert.AreEqual ( result, test );
+    Assert.AreEqual ( result ? to : capacity, capacitor.Capacity );
+  }
 
   [TestMethod]
-  [DataRow ( 4, false )]
-  [DataRow ( 10, false )]
-  [DataRow ( 5, true )]
+  [DataRow ( 5, false )]
   [DataRow ( 6, true )]
-  [DataRow ( 11, true )]
-  public void CapacitateExact ( int to, bool result )
+  public void CapacitateExactlyToCount ( int capacity, bool result )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5], 10);
-    bool test = capacitor.CapacitateExact(to);
-    Assert.AreEqual ( result, test );
-    Assert.AreEqual ( result ? to : 10, capacitor.Capacity );
+    int[] source = [1,2,3,4,5];
+    Capacitor<int> capacitor = new(source, capacity);
+    Assert.AreEqual ( result, capacitor.CapacitateExactlyToCount () );
+
+    Assert.AreEqual ( 5, capacitor.Count );
+    Assert.AreEqual ( 5, capacitor.Capacity );
+    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
   }
 
 
@@ -2344,26 +2592,115 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 5, false )]
-  [DataRow ( 8, true )]
-  public void CapacitateToCount ( int capacity, bool result )
+  public void Contains ()
   {
-    int[] source = [1,2,3,4,5];
-    Capacitor<int> capacitor = new(source, capacity);
-    Assert.AreEqual ( result, capacitor.CapacitateToCount () );
-
-    Assert.AreEqual ( 5, capacitor.Count );
-    Assert.AreEqual ( 5, capacitor.Capacity );
-    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
+    Capacitor<int> capacitor = new(5, [1,2,3,4,5, 6,7,8]);
+    Assert.IsTrue ( capacitor.Contains ( 1 ) );
+    Assert.IsTrue ( capacitor.Contains ( 5 ) );
+    Assert.IsFalse ( capacitor.Contains ( 6 ) );
   }
 
   [TestMethod]
-  public void Contains ()
+  public void Contains_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsFalse ( capacitor.Contains ( 0 ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 1, 0, true )]
+  [DataRow ( 1, 1, true )]
+  [DataRow ( 6, 0, true )]
+  [DataRow ( 6, 5, true )]
+  [DataRow ( 8, 0, false )]
+  [DataRow ( 0, 0, false )]
+  public void Contains_Offset ( int value, int offset, bool result )
+  {
+    Capacitor<int> capacitor = new(6, [1,2,3, 1,2,6, 8,9]);
+    bool test = capacitor.Contains(value, offset);
+
+    Assert.AreEqual ( result, test );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void Contains_Offset_IndexOutOfBounds ( int size )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    Action<int> action = x => { };
+    Action test = () => capacitor.Contains(0, size);
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 1, 0, 6, true )]
+  [DataRow ( 1, 1, 3, true )]
+  [DataRow ( 1, 0, 1, true )]
+  [DataRow ( 3, 3, 3, true )]
+  [DataRow ( 3, 5, 1, true )]
+  [DataRow ( 6, 0, 6, false )]
+  [DataRow ( 0, 0, 6, false )]
+  public void Contains_OffsetCount ( int value, int offset, int count, bool result )
+  {
+    Capacitor<int> capacitor = new(6, [1,2,3, 1,2,3, 6,7]);
+
+    Assert.AreEqual ( result, capacitor.Contains ( value, offset, count ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 1 )]
+  [DataRow ( 4 )]
+  [DataRow ( 5 )]
+  public void Contains_OffsetCount_EmptySegment ( int index )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
-    Assert.IsTrue ( capacitor.Contains ( 1 ) );
-    Assert.IsTrue ( capacitor.Contains ( 5 ) );
-    Assert.IsFalse ( capacitor.Contains ( -1 ) );
+    Assert.IsFalse ( capacitor.Contains ( -2, index, 0 ) );
+  }
+
+  [TestMethod]
+  public void Contains_OffsetCount_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsFalse ( capacitor.Contains ( -2, 0, 0 ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 6 )]
+  [DataRow ( 6, 0 )]
+  [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
+  [DataRow ( 4, 2 )]
+  public void Contains_OffsetCount_InvalidSegment ( int index, int count )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Action test = () => capacitor.Contains(-2, index, count);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
+
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 5, 0, 5 )]
+  [DataRow ( 5, 0, 1 )]
+  [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
+  [DataRow ( 0, 0, 0 )]
+  public void Contains_OffsetCount_ValidSegment ( int size, int index, int count )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    Assert.IsFalse ( capacitor.Contains ( -2, index, count ) );
   }
 
   [TestMethod]
@@ -2378,10 +2715,10 @@ public class CapacitorTest
     Converter<int, long> convertor = x => x;
     Capacitor<long> test = capacitor.Convert ( convertor );
 
-    Assert.AreEqual ( capacitor.Count, test.Count );
-    Assert.AreEqual ( capacitor.Count, test.Capacity );
-    Assert.AreEqual ( capacitor.GrowFactor, test.GrowFactor );
-    Assert.AreEqual ( capacitor.LockGrowFactor, test.LockGrowFactor );
+    Assert.AreEqual ( 6, test.Count );
+    Assert.AreEqual ( 6, test.Capacity );
+    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
+    Assert.AreEqual ( true, test.LockGrowFactor );
     Assert.IsTrue ( capacitor.Select ( x => (long) x ).SequenceEqual ( test ) );
   }
 
@@ -2399,8 +2736,8 @@ public class CapacitorTest
 
     Assert.AreEqual ( 0, test.Count );
     Assert.AreEqual ( 0, test.Capacity );
-    Assert.AreEqual ( capacitor.GrowFactor, test.GrowFactor );
-    Assert.AreEqual ( capacitor.LockGrowFactor, test.LockGrowFactor );
+    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
+    Assert.AreEqual ( true, test.LockGrowFactor );
   }
 
   [TestMethod]
@@ -2431,8 +2768,8 @@ public class CapacitorTest
     int count = 6 - offset;
     Assert.AreEqual ( count, test.Count );
     Assert.AreEqual ( count, test.Capacity );
-    Assert.AreEqual ( capacitor.GrowFactor, test.GrowFactor );
-    Assert.AreEqual ( capacitor.LockGrowFactor, test.LockGrowFactor );
+    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
+    Assert.AreEqual ( true, test.LockGrowFactor );
 
     Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
     Assert.IsTrue ( IListSeg ( capacitor, offset, count ).Select ( x => (long) x ).SequenceEqual ( test ) );
@@ -2455,7 +2792,7 @@ public class CapacitorTest
   [TestMethod]
   public void Convert_Offset_NullConvertor ()
   {
-    Capacitor<int> capacitor = new();
+    Capacitor<int> capacitor = new([1]);
     Action test = () => capacitor.Convert ( (Converter<int, int>) null!, 0 );
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
@@ -2539,8 +2876,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void Convert_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -2557,9 +2894,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void Convert_OffsetCountComparer_ValidSegment ( int size, int index, int count )
   {
@@ -2582,7 +2923,7 @@ public class CapacitorTest
   [TestMethod]
   public void CopyTo_Array ()
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new(5, [1,2,3,4,5, 6,7,8]);
 
     int[] test = new int[5];
     capacitor.CopyTo ( test );
@@ -2629,9 +2970,167 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  public void CopyTo_ArrayArrayIndex ()
+  [DataRow ( 0, 5 )]
+  [DataRow ( 0, 6 )]
+  [DataRow ( 4, 1 )]
+  [DataRow ( 4, 2 )]
+  [DataRow ( 2, 4 )]
+  public void CopyTo_ArrayFromIndex ( int offset, int size )
+  {
+    Capacitor<int> capacitor = new(5, [1,2,3,4,5, 6,7,8]);
+
+    int[] test = new int[size];
+    capacitor.CopyTo ( offset, test );
+
+    int count = 5 - offset;
+    IListSegment<int> expectation = IListSeg ( capacitor, offset, count );
+    Assert.IsTrue ( expectation.SequenceEqual ( test.Take ( count ) ) );
+
+    Assert.IsTrue ( test.Skip ( count ).All ( x => x == 0 ) );
+  }
+
+  [TestMethod]
+  public void CopyTo_ArrayFromIndex_NullArray ()
+  {
+    Capacitor<int> capacitor = new([]);
+    Action test = () => capacitor.CopyTo(0, (int[])null!);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Target array must be provided. (Parameter 'array')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void CopyTo_ArrayFromIndex_IndexOutOfBounds ( int size )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    Action test = () => capacitor.CopyTo(size, new int[0] );
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'fromIndex')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 4, 0 )]
+  [DataRow ( 3, 1 )]
+  public void CopyTo_ArrayFromIndex_ArrayOfInsufficientLength ( int size, int index )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Action test = () => capacitor.CopyTo(index, new int[size]);
+
+    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
+    string msg = "Insufficient target array size, available length {0} cannot accomodate {1} items. (Parameter 'array')";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, size, 5 - index );
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 5, 5 )]
+  [DataRow ( 0, 5, 6 )]
+  [DataRow ( 0, 1, 1 )]
+  [DataRow ( 0, 1, 2 )]
+  [DataRow ( 7, 1, 1 )]
+  [DataRow ( 7, 1, 2 )]
+  [DataRow ( 1, 6, 6 )]
+  [DataRow ( 1, 6, 8 )]
+  public void CopyTo_ArrayFromIndexCount ( int offset, int count, int size )
+  {
+    Capacitor<int> capacitor = new(8, [ 1,2,3,4, 5,6,7,8, 9,10]);
+
+    int[] test = new int[size];
+    capacitor.CopyTo ( offset, count, test );
+
+    IListSegment<int> expectation = IListSeg ( capacitor, offset, count );
+    Assert.IsTrue ( expectation.SequenceEqual ( test.Take ( count ) ) );
+
+    Assert.IsTrue ( test.Skip ( count ).All ( x => x == 0 ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 1 )]
+  [DataRow ( 4 )]
+  [DataRow ( 5 )]
+  public void CopyTo_ArrayFromIndexCount_EmptySegment ( int index )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    capacitor.CopyTo ( index, 0, new int [ 0 ] );
+  }
+
+  [TestMethod]
+  public void CopyTo_ArrayFromIndexCount_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new();
+    capacitor.CopyTo ( 0, 0, new int [ 0 ] );
+  }
+
+  [TestMethod]
+  [DataRow ( 5, 0, 5 )]
+  [DataRow ( 5, 0, 1 )]
+  [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
+  [DataRow ( 0, 0, 0 )]
+  public void CopyTo_ArrayFromIndexCount_ValidSegment ( int size, int index, int count )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    capacitor.CopyTo ( index, count, new int [ count ] );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 6 )]
+  [DataRow ( 6, 0 )]
+  [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
+  [DataRow ( 4, 2 )]
+  public void CopyTo_ArrayFromIndexCount_InvalidSegment ( int index, int count )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Action test = () => capacitor.CopyTo(index, count, new int[5]);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'fromIndex','count')";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
+
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  public void CopyTo_ArrayFromIndexCount_NullArray ()
+  {
+    Capacitor<int> capacitor = new([]);
+    Action test = () => capacitor.CopyTo(0, 0, (int[])null!);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Target array must be provided. (Parameter 'array')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 5 )]
+  [DataRow ( 0, 1 )]
+  [DataRow ( 4, 1 )]
+  [DataRow ( 2, 3 )]
+  public void CopyTo_ArrayFromIndexCount_ArrayOfInsufficientLength ( int index, int count )
+  {
+    int size = count - 1;
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Action test = () => capacitor.CopyTo(index, count, new int[size]);
+
+    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
+    string msg = "Insufficient target array size, available length {0} cannot accomodate {1} items. (Parameter 'array')";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, size, count );
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  public void CopyTo_ArrayArrayIndex ()
+  {
+    Capacitor<int> capacitor = new(5, [1,2,3,4,5, 6,7,8]);
 
     int[] test = new int[5];
     capacitor.CopyTo ( test, 0 );
@@ -2649,11 +3148,9 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new();
 
-    int[] test = new int[5];
+    int[] test = new int[1];
     capacitor.CopyTo ( test, 0 );
     Assert.AreEqual ( 0, test.Sum () );
-
-    capacitor.CopyTo ( new int [ 0 ], 0 );
   }
 
   [TestMethod]
@@ -2667,47 +3164,153 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 0, 0 )]
+  [DataRow ( -1, "Index must be non-negative integer, but it is '-1'. (Parameter 'arrayIndex')" )]
+  [DataRow ( 0, "For available '0' is index '0' out of bounds. (Parameter 'arrayIndex')" )]
+  [DataRow ( 5, "For available '5' is index '5' out of bounds. (Parameter 'arrayIndex')" )]
+  public void CopyTo_ArrayArrayIndex_IndexOutOfBounds ( int index, string errMsg )
+  {
+    int size = index == -1 ? 5 : index;
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.CopyTo(new int[size], index);
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    Assert.AreEqual ( errMsg, e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 4, 0 )]
   [DataRow ( 5, 1 )]
-  [DataRow ( 5, 5 )]
   public void CopyTo_ArrayArrayIndex_ArrayOfInsufficientLength ( int size, int index )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
     Action test = () => capacitor.CopyTo(new int[size], index);
 
     ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
-    string msg = "Insufficient target array size, available length {0} cannot accomodate 5 items. (Parameter 'array')";
-    msg = string.Format ( CultureInfo.InvariantCulture, msg, size - index );
+    string msg = "Insufficient target array size, available length 4 cannot accomodate 5 items. (Parameter 'array')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0, 8 )]
+  [DataRow ( 0, 0, 9 )]
+  [DataRow ( 0, 1, 9 )]
+  [DataRow ( 0, 1, 10 )]
+  [DataRow ( 1, 0, 7 )]
+  [DataRow ( 7, 0, 1 )]
+  public void CopyTo_ArrayArrayIndexFromIndex ( int sourceIndex, int targetIndex, int size )
+  {
+    Capacitor<int> capacitor = new(8, [ 1,2,3,4, 5,6,7,8, 9,10]);
+
+    int[] test = new int[size];
+    capacitor.CopyTo ( test, targetIndex, sourceIndex );
+
+    int count = 8 - sourceIndex;
+    IListSegment<int> expectation = IListSeg ( capacitor, sourceIndex, count );
+    Assert.IsTrue ( expectation.SequenceEqual ( test.Skip ( targetIndex ).Take ( count ) ) );
+
+    Assert.IsTrue ( test.Take ( targetIndex ).All ( x => x == 0 ) );
+    Assert.IsTrue ( test.Skip ( targetIndex + count ).All ( x => x == 0 ) );
+  }
+
+  [TestMethod]
+  public void CopyTo_ArrayArrayIndexFromIndex_NullArray ()
+  {
+    Capacitor<int> capacitor = new([]);
+    Action test = () => capacitor.CopyTo((int[])null!, 0, 0);
+
+    ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
+    Assert.AreEqual ( "Target array must be provided. (Parameter 'array')", e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void CopyTo_ArrayArrayIndexFromIndex_IndexOutOfBounds_Source ( int size )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    Action test = () => capacitor.CopyTo(new int[1], 0, size );
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'fromIndex')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void CopyTo_ArrayArrayIndexFromIndex_IndexOutOfBounds_TargetArray ( int size )
+  {
+    Capacitor<int> capacitor = new(new int[1]);
+    Action test = () => capacitor.CopyTo(new int[size], size, 0 );
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'arrayIndex')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 4, 0, 0 )]
+  [DataRow ( 5, 1, 0 )]
+  [DataRow ( 3, 0, 1 )]
+  [DataRow ( 4, 1, 1 )]
+  public void CopyTo_ArrayArrayIndexFromIndex_ArrayOfInsufficientLength ( int size, int targetIndex, int sourceIndex )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Action test = () => capacitor.CopyTo(new int[size], targetIndex, sourceIndex);
+
+    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
+    string msg = "Insufficient target array size, available length {0} cannot accomodate {1} items. (Parameter 'array')";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, size - targetIndex, 5 - sourceIndex );
     Assert.AreEqual ( msg, e.Message );
   }
 
   [TestMethod]
   [DataRow ( 5, 0, 0, 5, "1,2,3,4,5" )]
-  [DataRow ( 6, 1, 0, 5, "0,1,2,3,4,5" )]
   [DataRow ( 7, 1, 0, 5, "0,1,2,3,4,5,0" )]
   [DataRow ( 7, 2, 1, 3, "0,0,2,3,4,0,0" )]
+  [DataRow ( 1, 0, 0, 1, "1" )]
+  [DataRow ( 2, 1, 0, 1, "0,1" )]
+  [DataRow ( 1, 0, 4, 1, "5" )]
+  [DataRow ( 2, 0, 4, 1, "5,0" )]
   public void CopyTo_ArrayArrayIndexFromIndexCount ( int size, int index, int fromIndex, int count, string result )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Capacitor<int> capacitor = new(5, [1,2,3,4,5, 6,7,8]);
 
     int[] test = new int[size];
     capacitor.CopyTo ( test, index, fromIndex, count );
-    List<int> expectation = result.Split(',').Select(int.Parse).ToList();
+    List<int> expectation = result.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
 
     Assert.IsTrue ( expectation.SequenceEqual ( test ) );
   }
 
   [TestMethod]
-  public void CopyTo_ArrayArrayIndexFromIndexCount_EmptyCapacitor ()
+  [DataRow ( 0, 0 )]
+  [DataRow ( 1, 1 )]
+  [DataRow ( 5, 0 )]
+  [DataRow ( 5, 5 )]
+  public void CopyTo_ArrayArrayIndexFromIndexCount_EmptyCapacitor ( int size, int index )
   {
     Capacitor<int> capacitor = new();
+    int[] test = new int[size];
 
-    int[] test = new int[5];
-    capacitor.CopyTo ( test, 4, 0, 0 );
+    capacitor.CopyTo ( test, index, 0, 0 );
     Assert.AreEqual ( 0, test.Sum () );
+  }
 
-    capacitor.CopyTo ( new int [ 0 ], 0, 0, 0 );
+  [TestMethod]
+  [DataRow ( 0, 0, 0 )]
+  [DataRow ( 0, 0, 4 )]
+  [DataRow ( 0, 0, 5 )]
+  [DataRow ( 5, 0, 0 )]
+  [DataRow ( 5, 4, 0 )]
+  [DataRow ( 5, 5, 0 )]
+  public void CopyTo_ArrayArrayIndexFromIndexCount_EmptySegment ( int size, int index, int fromIndex )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    int [] test = new int[size];
+
+    capacitor.CopyTo ( test, index, fromIndex, 0 );
+    Assert.AreEqual ( 0, test.Sum () );
   }
 
   [TestMethod]
@@ -2726,6 +3329,7 @@ public class CapacitorTest
   [DataRow ( 4, 0, 5 )]
   [DataRow ( 4, 5, 0 )]
   [DataRow ( 4, 1, 4 )]
+  [DataRow ( 4, 4, 1 )]
   public void CopyTo_ArrayArrayIndexFromIndexCount_ArrayOfInsufficientLength ( int size, int index, int count )
   {
     Capacitor<int> capacitor = new();
@@ -2742,6 +3346,7 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
   public void CopyTo_ArrayArrayIndexFromIndexCount_InvalidSegment ( int index, int count )
   {
@@ -2757,26 +3362,18 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void CopyTo_ArrayArrayIndexFromIndexCount_ValidSegment ( int size, int index, int count )
   {
     Capacitor<int> capacitor = new(new int[size]);
     capacitor.CopyTo ( new int [ size ], 0, index, count );
-  }
-
-  [TestMethod]
-  [DataRow ( 0 )]
-  [DataRow ( 5 )]
-  public void CopyTo_ArrayArrayIndexFromIndexCount_EmptySegment ( int index )
-  {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
-    int [] test = new int[5];
-    capacitor.CopyTo ( test, index, index, 0 );
-
-    Assert.AreEqual ( 0, test.Sum () );
   }
 
   [TestMethod]
@@ -2957,8 +3554,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void Clone_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -3122,8 +3719,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void Fill_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -3388,8 +3985,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void FindFirstIndex_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -3405,9 +4002,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void FindFirstIndex_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -3563,8 +4164,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void FindFirstItem_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -3580,9 +4181,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void FindFirstItem_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -3752,8 +4357,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void FindLastIndex_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new(new int[5]);
@@ -3769,9 +4374,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void FindLastIndex_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -4082,9 +4691,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void FindLastItem_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -4696,9 +5309,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void FindNthIndex_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -4875,9 +5492,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void FindNthItem_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -5012,8 +5633,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void FindMatch_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -5029,9 +5650,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void FindMatch_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -5176,8 +5801,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void ForEach_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -5193,9 +5818,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void ForEach_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -5328,8 +5957,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void IndexOf_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
@@ -5344,9 +5973,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void IndexOf_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -6037,8 +6670,8 @@ public class CapacitorTest
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
-  [DataRow ( 7, 7 )]
   public void LastIndexOf_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<float> capacitor = new(new float[5]);
@@ -6053,9 +6686,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void LastIndexOf_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -6253,9 +6890,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void NthIndexOf_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -6510,9 +7151,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void Order_Comparer_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -6661,9 +7306,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void Order_Comparison_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -6914,9 +7563,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void Remove_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -7298,9 +7951,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void RemoveMatches_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -7459,9 +8116,13 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 5, 0, 5 )]
-  [DataRow ( 5, 5, 0 )]
-  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 1 )]
   [DataRow ( 5, 4, 1 )]
+  [DataRow ( 5, 1, 4 )]
+  [DataRow ( 5, 0, 4 )]
+  [DataRow ( 5, 1, 3 )]
+  [DataRow ( 5, 5, 0 )]
+  [DataRow ( 5, 0, 0 )]
   [DataRow ( 0, 0, 0 )]
   public void Reverse_OffsetCount_ValidSegment ( int size, int index, int count )
   {
@@ -7617,13 +8278,13 @@ public class CapacitorTest
   [TestMethod]
   public void Capacitor_GrowFactor_Sample ()
   {
-    Capacitor<int> capacitor;
-
-    capacitor = new () { GrowFactor = GrowFactor.OneAndHalf, LockGrowFactor = true, };
+    Capacitor<int> capacitor = new () { GrowFactor = GrowFactor.OneAndHalf, LockGrowFactor = true, };
     Assert.AreEqual ( GrowFactor.OneAndHalf, capacitor.GrowFactor );
 
-    capacitor = new () { LockGrowFactor = true, GrowFactor = GrowFactor.Five, };
-    Assert.AreEqual ( GrowFactor.Two, capacitor.GrowFactor );
+    _ = Assert.ThrowsExactly<InvalidOperationException>
+    (
+      () => _ = new Capacitor<int> () { LockGrowFactor = true, GrowFactor = GrowFactor.Five, }
+    );
   }
 
   [TestMethod]
