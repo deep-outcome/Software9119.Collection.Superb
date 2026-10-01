@@ -2592,6 +2592,198 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void Clear ( int count )
+  {
+    int[] source = [1,2,3,4,5,6,7,8];
+    Capacitor<int> capacitor = new(count, source.ToArray());
+    capacitor.Clear ();
+
+    Assert.AreEqual ( 8, capacitor.Capacity );
+    Assert.AreEqual ( 0, capacitor.Count );
+
+    ArraySegment<int> zero = new (capacitor.store, 0, count);
+    Assert.AreEqual ( 0, zero.Sum () );
+
+    ArraySegment<int> expectation = new (source, count, 8-count);
+    ArraySegment<int> test = new (capacitor.store, count, 8-count);
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void ClearToCapacity ( int count )
+  {
+    int[] source = Enumerable.Range(0, count).ToArray();
+    Capacitor<int> capacitor = new(2, source);
+    capacitor.ClearToCapacity ();
+
+    Assert.AreEqual ( 0, capacitor.Count );
+    Assert.AreEqual ( count, capacitor.Capacity );
+    Assert.AreEqual ( 0, capacitor.store.Sum () );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void Clone ( int count )
+  {
+    Capacitor<int> capacitor = new(count, [1,2,3,4,5, 7,8,9])
+    {
+      GrowFactor = GrowFactor.Five,
+      LockGrowFactor = true,
+    };
+
+    Capacitor<int> test = (Capacitor<int>)capacitor.Clone();
+
+    Assert.AreEqual ( count, test.Count );
+    Assert.AreEqual ( count, test.Capacity );
+    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
+    Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
+    Assert.IsTrue ( IListSeg ( capacitor, 0, count ).SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  public void Clone_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new()
+    {
+      GrowFactor = GrowFactor.Five,
+      LockGrowFactor = true,
+    };
+
+    Capacitor<int> test = (Capacitor<int>)capacitor.Clone();
+
+    Assert.AreEqual ( 0, test.Count );
+    Assert.AreEqual ( 0, test.Capacity );
+    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
+    Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.store ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void Clone_Offset ( int offset )
+  {
+    Capacitor<int> capacitor = new(6, [1,2,3,4,5,6, 7,8,9])
+    {
+      GrowFactor = GrowFactor.Five,
+      LockGrowFactor = true,
+    };
+
+    Capacitor<int> test = capacitor.Clone(offset);
+
+    int count = 6 - offset;
+    Assert.AreEqual ( count, test.Count );
+    Assert.AreEqual ( count, test.Capacity );
+    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
+    Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
+    Assert.IsTrue ( IListSeg ( capacitor, offset, count ).SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0 )]
+  [DataRow ( 5 )]
+  public void Clone_Offset_IndexOutOfBounds ( int size )
+  {
+    Capacitor<int> capacitor = new(new int[size]);
+    Action test = () => capacitor.Clone(size);
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 5 )]
+  [DataRow ( 1, 4 )]
+  [DataRow ( 0, 4 )]
+  [DataRow ( 1, 3 )]
+  public void Clone_OffsetCount ( int index, int count )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5])
+    {
+      GrowFactor = GrowFactor.Five,
+      LockGrowFactor = true,
+    };
+
+    Capacitor<int> test = capacitor.Clone(index, count);
+    IListSegment<int> expectation = new(capacitor, index, count);
+
+    Assert.AreEqual ( count, test.Count );
+    Assert.AreEqual ( count, test.Capacity );
+    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
+    Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
+    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+  }
+
+  [TestMethod]
+  public void Clone_OffsetCount_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new()
+    {
+      GrowFactor = GrowFactor.Five,
+      LockGrowFactor = true,
+    };
+
+    Capacitor<int> test = capacitor.Clone(0, 0);
+
+    Assert.AreEqual ( 0, test.Count );
+    Assert.AreEqual ( 0, test.Capacity );
+    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
+    Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.store ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 0 )]
+  [DataRow ( 1, 0 )]
+  [DataRow ( 1, 1 )]
+  [DataRow ( 5, 0 )]
+  [DataRow ( 5, 4 )]
+  [DataRow ( 5, 5 )]
+  public void Clone_EmptySegment ( int size, int index )
+  {
+    Capacitor<int> capacitor = new(new int [size])
+    {
+      GrowFactor = GrowFactor.Five,
+      LockGrowFactor = true,
+    };
+
+    Capacitor<int> test = capacitor.Clone(index, 0);
+
+    Assert.AreEqual ( 0, test.Count );
+    Assert.AreEqual ( 0, test.Capacity );
+    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
+    Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.store ) );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, 6 )]
+  [DataRow ( 6, 0 )]
+  [DataRow ( 1, 5 )]
+  [DataRow ( 5, 1 )]
+  [DataRow ( 4, 2 )]
+  public void Clone_InvalidSegment ( int index, int count )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    Action test = () => capacitor.Clone ( index, count );
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
+
+    Assert.AreEqual ( msg, e.Message );
+  }
+
+  [TestMethod]
   public void Contains ()
   {
     Capacitor<int> capacitor = new(5, [1,2,3,4,5, 6,7,8]);
@@ -3374,198 +3566,6 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new(new int[size]);
     capacitor.CopyTo ( new int [ size ], 0, index, count );
-  }
-
-  [TestMethod]
-  [DataRow ( 0 )]
-  [DataRow ( 5 )]
-  public void Clear ( int count )
-  {
-    int[] source = [1,2,3,4,5,6,7,8];
-    Capacitor<int> capacitor = new(count, source.ToArray());
-    capacitor.Clear ();
-
-    Assert.AreEqual ( 8, capacitor.Capacity );
-    Assert.AreEqual ( 0, capacitor.Count );
-
-    ArraySegment<int> zero = new (capacitor.store, 0, count);
-    Assert.AreEqual ( 0, zero.Sum () );
-
-    ArraySegment<int> expectation = new (source, count, 8-count);
-    ArraySegment<int> test = new (capacitor.store, count, 8-count);
-    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
-  }
-
-  [TestMethod]
-  [DataRow ( 0 )]
-  [DataRow ( 5 )]
-  public void ClearToCapacity ( int count )
-  {
-    int[] source = Enumerable.Range(0, count).ToArray();
-    Capacitor<int> capacitor = new(2, source);
-    capacitor.ClearToCapacity ();
-
-    Assert.AreEqual ( 0, capacitor.Count );
-    Assert.AreEqual ( count, capacitor.Capacity );
-    Assert.AreEqual ( 0, capacitor.store.Sum () );
-  }
-
-  [TestMethod]
-  [DataRow ( 0 )]
-  [DataRow ( 5 )]
-  public void Clone ( int count )
-  {
-    Capacitor<int> capacitor = new(count, [1,2,3,4,5, 7,8,9])
-    {
-      GrowFactor = GrowFactor.Five,
-      LockGrowFactor = true,
-    };
-
-    Capacitor<int> test = (Capacitor<int>)capacitor.Clone();
-
-    Assert.AreEqual ( count, test.Count );
-    Assert.AreEqual ( count, test.Capacity );
-    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
-    Assert.AreEqual ( true, test.LockGrowFactor );
-    Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
-    Assert.IsTrue ( IListSeg ( capacitor, 0, count ).SequenceEqual ( test ) );
-  }
-
-  [TestMethod]
-  public void Clone_EmptyCapacitor ()
-  {
-    Capacitor<int> capacitor = new()
-    {
-      GrowFactor = GrowFactor.Five,
-      LockGrowFactor = true,
-    };
-
-    Capacitor<int> test = (Capacitor<int>)capacitor.Clone();
-
-    Assert.AreEqual ( 0, test.Count );
-    Assert.AreEqual ( 0, test.Capacity );
-    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
-    Assert.AreEqual ( true, test.LockGrowFactor );
-    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.store ) );
-  }
-
-  [TestMethod]
-  [DataRow ( 0 )]
-  [DataRow ( 5 )]
-  public void Clone_Offset ( int offset )
-  {
-    Capacitor<int> capacitor = new(6, [1,2,3,4,5,6, 7,8,9])
-    {
-      GrowFactor = GrowFactor.Five,
-      LockGrowFactor = true,
-    };
-
-    Capacitor<int> test = capacitor.Clone(offset);
-
-    int count = 6 - offset;
-    Assert.AreEqual ( count, test.Count );
-    Assert.AreEqual ( count, test.Capacity );
-    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
-    Assert.AreEqual ( true, test.LockGrowFactor );
-    Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
-    Assert.IsTrue ( IListSeg ( capacitor, offset, count ).SequenceEqual ( test ) );
-  }
-
-  [TestMethod]
-  [DataRow ( 0 )]
-  [DataRow ( 5 )]
-  public void Clone_Offset_IndexOutOfBounds ( int size )
-  {
-    Capacitor<int> capacitor = new(new int[size]);
-    Action test = () => capacitor.Clone(size);
-
-    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
-    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
-    Assert.AreEqual ( msg, e.Message );
-  }
-
-  [TestMethod]
-  [DataRow ( 0, 5 )]
-  [DataRow ( 1, 4 )]
-  [DataRow ( 0, 4 )]
-  [DataRow ( 1, 3 )]
-  public void Clone_OffsetCount ( int index, int count )
-  {
-    Capacitor<int> capacitor = new([1,2,3,4,5])
-    {
-      GrowFactor = GrowFactor.Five,
-      LockGrowFactor = true,
-    };
-
-    Capacitor<int> test = capacitor.Clone(index, count);
-    IListSegment<int> expectation = new(capacitor, index, count);
-
-    Assert.AreEqual ( count, test.Count );
-    Assert.AreEqual ( count, test.Capacity );
-    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
-    Assert.AreEqual ( true, test.LockGrowFactor );
-    Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
-    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
-  }
-
-  [TestMethod]
-  public void Clone_OffsetCount_EmptyCapacitor ()
-  {
-    Capacitor<int> capacitor = new()
-    {
-      GrowFactor = GrowFactor.Five,
-      LockGrowFactor = true,
-    };
-
-    Capacitor<int> test = capacitor.Clone(0, 0);
-
-    Assert.AreEqual ( 0, test.Count );
-    Assert.AreEqual ( 0, test.Capacity );
-    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
-    Assert.AreEqual ( true, test.LockGrowFactor );
-    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.store ) );
-  }
-
-  [TestMethod]
-  [DataRow ( 0, 0 )]
-  [DataRow ( 1, 0 )]
-  [DataRow ( 1, 1 )]
-  [DataRow ( 5, 0 )]
-  [DataRow ( 5, 4 )]
-  [DataRow ( 5, 5 )]
-  public void Clone_EmptySegment ( int size, int index )
-  {
-    Capacitor<int> capacitor = new(new int [size])
-    {
-      GrowFactor = GrowFactor.Five,
-      LockGrowFactor = true,
-    };
-
-    Capacitor<int> test = capacitor.Clone(index, 0);
-
-    Assert.AreEqual ( 0, test.Count );
-    Assert.AreEqual ( 0, test.Capacity );
-    Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
-    Assert.AreEqual ( true, test.LockGrowFactor );
-    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.store ) );
-  }
-
-  [TestMethod]
-  [DataRow ( 0, 6 )]
-  [DataRow ( 6, 0 )]
-  [DataRow ( 1, 5 )]
-  [DataRow ( 5, 1 )]
-  [DataRow ( 4, 2 )]
-  public void Clone_InvalidSegment ( int index, int count )
-  {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
-    Action test = () => capacitor.Clone ( index, count );
-
-    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
-    msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
-
-    Assert.AreEqual ( msg, e.Message );
   }
 
   [TestMethod]

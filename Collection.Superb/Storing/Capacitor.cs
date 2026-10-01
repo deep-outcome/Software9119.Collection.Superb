@@ -938,6 +938,100 @@ public class Capacitor<T> : Capacitor,
     return false;
   }
 
+  // check once again binary search and folks above for limits
+  // copy after cl
+
+  /// <summary>
+  /// Sets all items stored to <see langword="default(T)"/> and <see cref="Count"/> to <c>0</c>.
+  /// </summary>
+  /// <remarks>Clears to <see cref="Count"/>.</remarks>
+  public void Clear ()
+  {
+    int count = Count;
+    if (count == 0)
+      return;
+
+    Array.Clear ( store, 0, count );
+    Count = 0;
+  }
+
+  /// <summary>
+  /// Sets whole store up to <see cref="Capacity"/> to <see langword="default(T)"/>  and <see cref="Count"/> to <c>0</c>.
+  /// </summary>
+  /// <remarks>
+  /// Can be usefull, for instance, before call to <see cref="ExtractStore(bool, NonNegativeInt32)"/>.
+  /// </remarks>
+  public void ClearToCapacity ()
+  {
+    int count = Capacity;
+    if (count == 0)
+      return;
+
+    Array.Clear ( store, 0, count );
+    Count = 0;
+  }
+
+  /// <summary>
+  /// Clones current instance state and items.
+  /// </summary>
+  /// <remarks>Stored items are shallow-cloned to new store with capacity fitting <see cref="Count"/>.</remarks>
+  public object Clone ()
+  {
+    int count = Count;
+    T?[] store = GetStoreWithCapacity<T>(count);
+
+    if (count != 0)
+      Array.Copy ( this.store, 0, store, 0, count );
+
+    Capacitor<T> clone = CloneWithStoreAndCount(store, count);
+    return clone;
+  }
+
+  /// <summary>
+  /// Clones current instance state and items, starting at <paramref name="offset"/> specified.
+  /// </summary>
+  /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
+  /// <remarks>Stored items are shallow-cloned to new internal store with exact capacity for items from <paramref name="offset"/>.</remarks>
+  public Capacitor<T> Clone ( NonNegativeInt32 offset )
+  {
+    if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
+      throw e;
+
+    int count = Count - offset;
+    T? [] store = new T?[count];
+    Array.Copy ( this.store, offset, store, 0, count );
+
+    Capacitor<T> segment = CloneWithStoreAndCount(store, count);
+    return segment;
+  }
+
+  /// <summary>
+  /// Clones current instance state and items from
+  /// store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
+  /// </summary>    
+  /// <exception cref="ImpossibleSegmentationException">
+  /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
+  /// </exception>
+  /// <remarks>Stored items are shallow-cloned to new internal store with capacity of <paramref name="count"/>.</remarks>
+  public Capacitor<T> Clone ( NonNegativeInt32 offset, NonNegativeInt32 count )
+  {
+    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
+    switch (validation)
+    {
+      case 0:
+      case -1: break;
+      case 1: throw e!;
+      default: throw UnsupportedValidationResult ( validation );
+    }
+
+    T? [] store = GetStoreWithCapacity<T>(count);
+    if (validation == 0)
+      Array.Copy ( this.store, offset, store, 0, count );
+
+    Capacitor<T> segment = CloneWithStoreAndCount(store, count);
+    return segment;
+  }
+
   /// <summary>Verifies <paramref name="item"/> presence among stored items.</summary>
   /// <returns><see langword="true"/> when <paramref name="item"/> item is present.</returns>
   public bool Contains ( T? item ) => Array.IndexOf ( store, item, 0, Count ) != -1;
@@ -1210,97 +1304,6 @@ public class Capacitor<T> : Capacitor,
     }
 
     Array.Copy ( store, fromIndex, array, arrayIndex, count );
-  }
-
-  /// <summary>
-  /// Sets all items stored to <see langword="default(T)"/> and <see cref="Count"/> to <c>0</c>.
-  /// </summary>
-  /// <remarks>Clears to <see cref="Count"/>.</remarks>
-  public void Clear ()
-  {
-    int count = Count;
-    if (count == 0)
-      return;
-
-    Array.Clear ( store, 0, count );
-    Count = 0;
-  }
-
-  /// <summary>
-  /// Sets whole store up to <see cref="Capacity"/> to <see langword="default(T)"/>  and <see cref="Count"/> to <c>0</c>.
-  /// </summary>
-  /// <remarks>
-  /// Can be usefull, for instance, before call to <see cref="ExtractStore(bool, NonNegativeInt32)"/>.
-  /// </remarks>
-  public void ClearToCapacity ()
-  {
-    int count = Capacity;
-    if (count == 0)
-      return;
-
-    Array.Clear ( store, 0, count );
-    Count = 0;
-  }
-
-  /// <summary>
-  /// Clones current instance state and items.
-  /// </summary>
-  /// <remarks>Stored items are shallow-cloned to new store with capacity fitting <see cref="Count"/>.</remarks>
-  public object Clone ()
-  {
-    int count = Count;
-    T?[] store = GetStoreWithCapacity<T>(count);
-
-    if (count != 0)
-      Array.Copy ( this.store, 0, store, 0, count );
-
-    Capacitor<T> clone = CloneWithStoreAndCount(store, count);
-    return clone;
-  }
-
-  /// <summary>
-  /// Clones current instance state and items, starting at <paramref name="offset"/> specified.
-  /// </summary>
-  /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
-  /// <remarks>Stored items are shallow-cloned to new internal store with exact capacity for items from <paramref name="offset"/>.</remarks>
-  public Capacitor<T> Clone ( NonNegativeInt32 offset )
-  {
-    if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
-      throw e;
-
-    int count = Count - offset;
-    T? [] store = new T?[count];
-    Array.Copy ( this.store, offset, store, 0, count );
-
-    Capacitor<T> segment = CloneWithStoreAndCount(store, count);
-    return segment;
-  }
-
-  /// <summary>
-  /// Clones current instance state and items from
-  /// store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
-  /// </summary>    
-  /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
-  /// </exception>
-  /// <remarks>Stored items are shallow-cloned to new internal store with capacity of <paramref name="count"/>.</remarks>
-  public Capacitor<T> Clone ( NonNegativeInt32 offset, NonNegativeInt32 count )
-  {
-    int validation = ValidateSegmentation ( offset, count, out _, out ImpSegExc? e, OffsetCountParametersGetter );
-    switch (validation)
-    {
-      case 0:
-      case -1: break;
-      case 1: throw e!;
-      default: throw UnsupportedValidationResult ( validation );
-    }
-
-    T? [] store = GetStoreWithCapacity<T>(count);
-    if (validation == 0)
-      Array.Copy ( this.store, offset, store, 0, count );
-
-    Capacitor<T> segment = CloneWithStoreAndCount(store, count);
-    return segment;
   }
 
   /// <summary>
