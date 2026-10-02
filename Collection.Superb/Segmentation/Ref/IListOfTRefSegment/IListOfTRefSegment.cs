@@ -183,12 +183,12 @@ public ref struct IListRefSegment<T, U>
   }
 
   /// <returns>
-  /// Returns index of first item occurence, if found in segment. <c>-1</c> otherwise.
+  /// Returns index of first item occurrence, if found in segment. <c>-1</c> otherwise.
   /// </returns>
   readonly public int IndexOf ( U? item ) => IndexOf ( item, EqualityComparer );
 
   /// <returns>
-  /// Returns index of first item occurence, if found in segment. <c>-1</c> otherwise.
+  /// Returns index of first item occurrence, if found in segment. <c>-1</c> otherwise.
   /// </returns>
   /// <param name="comparer"> defaults to <see cref="EqualityComparer"/>.</param>
   readonly public int IndexOf ( U? item, IEqualityComparer<U> comparer )
