@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <PropertyGroup Label="Symbols">
-    <UseDevVals>true</UseDevVals>
+    <UseDevVals>false</UseDevVals>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(UseDevVals)' == 'true'" Label="Symbols">
