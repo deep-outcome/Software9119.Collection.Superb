@@ -42,7 +42,7 @@ readonly public struct NegativeInt32 : IEquatable<NegativeInt32>
 
   /// <summary>
   /// This instance value.
-  /// </summary>  
+  /// </summary>
   public int Value
   {
     [MethodImpl ( MethodImplOptions.AggressiveInlining )]

@@ -140,9 +140,9 @@ public ref struct IListRefSegment<T> : IList
   }
 
   readonly internal bool ValidateSetup
-  ( 
+  (
     NonNegativeInt32 count, out int limit,
-    [NotNullWhen ( true )] out ImpossibleSegmentationException? e 
+    [NotNullWhen ( true )] out ImpossibleSegmentationException? e
   )
   {
     return IxValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e ) == 1;

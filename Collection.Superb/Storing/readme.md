@@ -5,7 +5,7 @@ This namespace contains collection data types and types for supporting them.
 ### Types Available
 
 - [`GrowFactor`](./GrowFactor.cs) – grow factor enumeration, used by auto-grow capacitation calculation
-- [`Capacitor<T>`](./Capacitor.cs) – `List<T>`-like collection type featuring all capabilities of .NET old-timers `List<T>` and `T[]` and more but w/o list versioning       
+- [`Capacitor<T>`](./Capacitor.cs) – `List<T>`-like collection type featuring all capabilities of .NET old-timers `List<T>` and `T[]` and more but w/o list versioning
 - [`CapacitorStoreEnumerator<T>`](./CapacitorStoreEnumerator.cs) – `Capacitor<T>` enumerator
 ```csharp
 // versioning does not exist thus version match is not enforced during enumeration

@@ -28,7 +28,7 @@ static public class BinaryInsertionOrder
 
   /// <summary>
   /// Orders array segment defined by <paramref name="count"/> and <paramref name="offset"/> using <paramref name="comparer"/>.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="ArgumentNullException">When <paramref name="array"/> or <paramref name="comparer"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segment over <paramref name="array"/>.
@@ -86,8 +86,8 @@ static public class BinaryInsertionOrder
 
   /// <summary>
   /// Orders whole span using <paramref name="comparer"/>.
-  /// </summary>  
-  /// <exception cref="ArgumentNullException">When <paramref name="comparer"/> is <see langword="null"/>.</exception>  
+  /// </summary>
+  /// <exception cref="ArgumentNullException">When <paramref name="comparer"/> is <see langword="null"/>.</exception>
   static public void Order<T> ( Span<T> span, Comparison<T> comparer )
   {
     if (comparer == null)

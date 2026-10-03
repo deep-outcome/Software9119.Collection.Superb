@@ -80,7 +80,7 @@ public class IListRefSegmentTest
     Assert.AreSame ( EqualityComparer<object>.Default, segment.EqualityComparer );
   }
 
-  [TestMethod]  
+  [TestMethod]
   public void OffsetCtor_InvalidSegmentation ( )
   {
     NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );

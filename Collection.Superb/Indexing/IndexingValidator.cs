@@ -154,7 +154,7 @@ static public class IndexingValidator
   /// <item><c>0</c>  – for valid segment</item>
   /// <item><c>1</c>  – for invalid segment</item>
   /// </list>
-  /// </returns>  
+  /// </returns>
   /// <param name="limit">Is exclusive upper bound for <paramref name="offset"/> and <paramref name="count"/>.</param>
   /// <remarks>
   /// Beware of <b>false allowance</b> for empty segments.
@@ -176,11 +176,11 @@ static public class IndexingValidator
   /// <list type="bullet">
   /// <item>Segment <c>|offset,count|</c> translates to half-open interval <c>[offset, offset+count)</c>.</item>
   /// <item>
-  /// <paramref name="offset"/> is always validated to be less than <paramref name="available"/> with exception 
+  /// <paramref name="offset"/> is always validated to be less than <paramref name="available"/> with exception
   /// for case <c>|offset=available,0| → [available,available) = [available,available-1]</c>.
-  /// </item>  
+  /// </item>
   /// <item>
-  /// See <see cref="ValidateSegmentationStrict(NonNegativeInt32, NonNegativeInt32, NonNegativeInt32, out int, out ImpSegExc?)"/> 
+  /// See <see cref="ValidateSegmentationStrict(NonNegativeInt32, NonNegativeInt32, NonNegativeInt32, out int, out ImpSegExc?)"/>
   /// for less permissive version of this validation method.
   /// </item>
   /// </list>
@@ -238,7 +238,7 @@ static public class IndexingValidator
   /// <item><c>0</c>  – for valid segment</item>
   /// <item><c>1</c>  – for invalid segment</item>
   /// </list>
-  /// </returns>  
+  /// </returns>
   /// <param name="limit">Is exclusive upper bound for <paramref name="offset"/> and <paramref name="count"/>.</param>
   [SuppressMessage ( "Style", "IDE0047:Remove unnecessary parentheses", Justification = "Who remembers precedence of logical operators?" )]
   static public int ValidateSegmentationStrict
@@ -278,7 +278,7 @@ static public class IndexingValidator
   /// <item><c>0</c>  – for valid segment</item>
   /// <item><c>1</c>  – for invalid segment</item>
   /// </list>
-  /// </returns>  
+  /// </returns>
   /// <remarks>
   /// Beware of <b>false allowance</b> for empty segments.
   /// <code>
@@ -290,7 +290,7 @@ static public class IndexingValidator
   /// │         1 │      0 │     1 │ completely valid │
   /// │         1 │      2 │     0 │ invalid (empty)  │
   /// │         5 │      5 │     0 │ valid by formula │
-  /// │         5 │      4 │     5 │ completely valid │  
+  /// │         5 │      4 │     5 │ completely valid │
   /// │         5 │      4 │     1 │ completely valid │
   /// │         5 │      6 │     0 │ invalid (empty)  │
   /// └───────────┴────────┴───────┴──────────────────┘
@@ -298,7 +298,7 @@ static public class IndexingValidator
   /// <list type="bullet">
   /// <item>Segment <c>|offset,count|</c> translates to half-open interval <c>[offset, offset+count)</c>.</item>
   /// <item>
-  /// <paramref name="rearSet"/> is always validated to be less than <paramref name="available"/> with exception 
+  /// <paramref name="rearSet"/> is always validated to be less than <paramref name="available"/> with exception
   /// for case <c>|offset=available,0| → [available,available) = [available,available-1]</c>.
   /// </item>
   /// </list>

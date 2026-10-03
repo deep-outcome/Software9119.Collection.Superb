@@ -81,7 +81,7 @@ public class Capacitor
 
   /// <summary>
   /// Creates store with capacity of <paramref name="capacity"/>.
-  /// </summary>  
+  /// </summary>
   static protected internal T [] GetStoreWithCapacity<T> ( int capacity ) => capacity == 0 ? Array.Empty<T> () : new T [ capacity ];
 
   /// <summary>
@@ -130,7 +130,7 @@ public class Capacitor
 /// Pre Capacitation – means capacity is extended via capacity room request.
 /// </item>
 /// <item>
-/// Batch Capacitation – means, if items count to be stored is obtainable, capacity is ensured exactly to suffice such count. 
+/// Batch Capacitation – means, if items count to be stored is obtainable, capacity is ensured exactly to suffice such count.
 /// </item>
 /// <item>
 /// Auto Capacitation – means auto-grow logic and it is used whenever capacity is insufficient for store operation.
@@ -180,14 +180,14 @@ public class Capacitor<T> : Capacitor,
   /// Constructor with initial items.
   /// </summary>
   /// <remarks>
-  /// Stores <paramref name="items"/> using Batch Capacitation or using Auto Capacitation, 
+  /// Stores <paramref name="items"/> using Batch Capacitation or using Auto Capacitation,
   /// based on possibility to obtain <paramref name="items"/> count.
   /// </remarks>
   public Capacitor ( IEnumerable<T?>? items ) : this ( items, 0 ) { }
 
   /// <summary>
   /// Constructor with initial capacity and initial items.
-  /// </summary>  
+  /// </summary>
   /// <remarks>
   /// <list type="bullet">
   /// <item>Sets store capacity to <paramref name="capacity"/> and then stores <paramref name="items"/>.</item>
@@ -195,7 +195,7 @@ public class Capacitor<T> : Capacitor,
   /// For eventual next capacitation uses Batch Capacitation or Auto Capacitation, based on possibility to obtain <paramref name="items"/> count.
   /// </item>
   /// </list>
-  /// </remarks>  
+  /// </remarks>
   public Capacitor ( IEnumerable<T?>? items, NonNegativeInt32 capacity )
   {
     SetStoreWithCapacity ( capacity );
@@ -250,12 +250,12 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <remarks>
-  /// Internals for: 
+  /// Internals for:
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, IEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// <item><see cref="Add(IEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// </list>
-  /// </remarks>  
+  /// </remarks>
   protected internal bool AddInsert ( AddInsertOffset offset, IEnumerable<T?>? items, NonNegativeInt32 roomRequest )
   {
     DevValidateAddInsOffset ( offset );
@@ -286,12 +286,12 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <remarks>
-  /// Internals for: 
+  /// Internals for:
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, IAsyncEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// <item><see cref="Add(IAsyncEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// </list>
-  /// </remarks>    
+  /// </remarks>
   async protected internal Task<bool> AddInsert ( AddInsertOffset offset, IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
   {
     DevValidateAddInsOffset ( offset );
@@ -313,7 +313,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <remarks>
-  /// Internals for: 
+  /// Internals for:
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, T?[])"/></item>
   /// <item><see cref="Add(T?[])"/></item>
@@ -337,7 +337,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <remarks>
-  /// Internals for: 
+  /// Internals for:
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, ICollection{T?}?)"/></item>
   /// <item><see cref="Add(ICollection{T?}?)"/></item>
@@ -361,7 +361,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <remarks>
-  /// Internals for: 
+  /// Internals for:
   /// <list type="bullet">
   /// <item><see cref="Insert(NonNegativeInt32, IReadOnlyCollection{T?}?)"/></item>
   /// <item><see cref="Add(IReadOnlyCollection{T?}?)"/></item>
@@ -440,7 +440,7 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Resizes store to new capacity.
-  /// </summary>  
+  /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   protected internal void Capacitate ( int to ) => Array.Resize ( ref store, to );
 
@@ -459,7 +459,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Index validation existing only in debug compilation. 
+  /// Index validation existing only in debug compilation.
   /// </summary>
   /// <remarks>
   /// Intended for internal methods.
@@ -472,7 +472,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Index validation existing only in debug compilation. 
+  /// Index validation existing only in debug compilation.
   /// </summary>
   /// <remarks>
   /// Intended for internal methods.
@@ -489,7 +489,7 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Index validation existing only in debug compilation. 
+  /// Index validation existing only in debug compilation.
   /// </summary>
   /// <remarks>
   /// <list type="bullet">
@@ -580,7 +580,7 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Shifts stored items from <paramref name="from"/> by <paramref name="byPositions"/>.
-  /// </summary>  
+  /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
   protected internal void ShiftItemsToRight ( int from, int byPositions )
   {
@@ -657,7 +657,7 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Current storage capacity.
-  /// </summary>  
+  /// </summary>
   public int Capacity
   {
     [MethodImpl ( MethodImplOptions.AggressiveInlining )]
@@ -686,7 +686,7 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Storage grow factor used for its auto-expansion, default is <see cref="GrowFactor.Two"/>.
-  /// </summary>  
+  /// </summary>
   /// <exception cref="ArgumentOutOfRangeException">Upon try to set invalid <see cref="Storing.GrowFactor"/>.</exception>
   /// <exception cref="InvalidOperationException">Upon try to set value when <see cref="LockGrowFactor"/> is <see langword="true"/>.</exception>
   public GrowFactor GrowFactor
@@ -741,7 +741,7 @@ public class Capacitor<T> : Capacitor,
   /// and ensures store capacity for <paramref name="roomRequest"/> more items.
   /// </item>
   /// </list>
-  /// </summary>  
+  /// </summary>
   /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   /// <remarks>
   /// <list type="bullet">
@@ -753,8 +753,8 @@ public class Capacitor<T> : Capacitor,
     => AddInsert ( AddInsOffset ( Count ), items, roomRequest );
 
   /// <summary>
-  /// Stores <paramref name="items"/> using Pre Capacitation and Auto Capacitation.  
-  /// </summary>  
+  /// Stores <paramref name="items"/> using Pre Capacitation and Auto Capacitation.
+  /// </summary>
   /// <returns>Async <see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   /// <remarks>
   /// <list type="bullet">
@@ -792,8 +792,8 @@ public class Capacitor<T> : Capacitor,
   /// <item><c>1</c> when all items conform <paramref name="match"/> predicate.</item>
   /// <item><c>-1</c> when store is empty.</item>
   /// </list>
-  /// </returns>  
-  /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>  
+  /// </returns>
+  /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   public int AllMatches ( Predicate<T?> match ) => AllMatches ( match, 0, Count );
 
   /// <summary>
@@ -801,7 +801,7 @@ public class Capacitor<T> : Capacitor,
   /// </summary>
   /// <returns>
   /// <see langword="true"/> when all items conform <paramref name="match"/> predicate.
-  /// </returns>  
+  /// </returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
   public bool AllMatches ( Predicate<T?> match, NonNegativeInt32 offset )
@@ -822,7 +822,7 @@ public class Capacitor<T> : Capacitor,
   /// <item><c>1</c> when all items conform <paramref name="match"/> predicate.</item>
   /// <item><c>-1</c> when segment (or store) is empty.</item>
   /// </list>
-  /// </returns>  
+  /// </returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
@@ -854,7 +854,7 @@ public class Capacitor<T> : Capacitor,
   /// <summary>
   /// Fast search on ordered store.
   /// </summary>
-  /// <returns>Item index, or negative number if not found.</returns>  
+  /// <returns>Item index, or negative number if not found.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="comparer"/> is <see langword="null"/>.</exception>
   public int BinarySearch ( T? value, IComparer<T?> comparer )
   {
@@ -867,7 +867,7 @@ public class Capacitor<T> : Capacitor,
   /// <summary>
   /// Fast search on ordered store, starting at <paramref name="offset"/> specified.
   /// </summary>
-  /// <returns>Item index, or negative number if not found.</returns>  
+  /// <returns>Item index, or negative number if not found.</returns>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is greater or equal to <see cref="Count"/>.</exception>
   /// <exception cref="ArgumentNullException">When <paramref name="comparer"/> is <see langword="null"/>.</exception>
   public int BinarySearch ( T? value, NonNegativeInt32 offset, IComparer<T?> comparer )
@@ -882,11 +882,11 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Fast search on ordered store 
+  /// Fast search on ordered store
   /// in segment specified by <paramref name="offset"/>
   /// and <paramref name="count"/>.
   /// </summary>
-  /// <returns>Item index, or negative number if not found.</returns>  
+  /// <returns>Item index, or negative number if not found.</returns>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
   /// </exception>
@@ -900,7 +900,7 @@ public class Capacitor<T> : Capacitor,
     switch (validation)
     {
       case 0:
-      case -1: // let binary search return 'correct' negative index 
+      case -1: // let binary search return 'correct' negative index
         break;
       case 1: throw e!;
       default: throw UnsupportedValidationResult ( validation );
@@ -910,11 +910,11 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Changes storage capacity exactly to capacity specified by <paramref name="to"/>, unless 
+  /// Changes storage capacity exactly to capacity specified by <paramref name="to"/>, unless
   /// <paramref name="to"/> is less than <see cref="Count"/>, or equal to
   /// current <see cref="Capacity"/>.
   /// </summary>
-  /// <returns><see langword="true"/> when capacity is updated.</returns>  
+  /// <returns><see langword="true"/> when capacity is updated.</returns>
   public bool CapacitateExactly ( NonNegativeInt32 to )
   {
     if (to < Count)
@@ -930,7 +930,7 @@ public class Capacitor<T> : Capacitor,
   /// <summary>
   /// Sets capacity exactly to current <see cref="Count"/>, if not of that size already.
   /// </summary>
-  /// <returns><see langword="true"/> when capacity is updated.</returns>  
+  /// <returns><see langword="true"/> when capacity is updated.</returns>
   public bool CapacitateExactlyToCount ()
   {
     if (IsFull)
@@ -960,7 +960,7 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Sets all items stored to <c>default(<typeparamref name="T"/>)</c> and <see cref="Count"/> to <c>0</c>.
-  /// </summary>  
+  /// </summary>
   public void Clear ()
   {
     int count = Count;
@@ -974,7 +974,7 @@ public class Capacitor<T> : Capacitor,
   /// <summary>
   /// Sets all items stored, starting at <paramref name="offset"/> specified
   /// to <c>default(<typeparamref name="T"/>)</c> and <see cref="Count"/> to <paramref name="offset"/>.
-  /// </summary>  
+  /// </summary>
   public void Clear ( NonNegativeInt32 offset )
   {
     if (ValidateIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
@@ -1018,7 +1018,7 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Clones current instance state and items, starting at <paramref name="offset"/> specified.
-  /// </summary>  
+  /// </summary>
   /// <remarks>
   /// Stored items are shallow-cloned to new internal store with exact capacity to accomodate items from <paramref name="offset"/>.
   /// </remarks>
@@ -1039,7 +1039,7 @@ public class Capacitor<T> : Capacitor,
   /// <summary>
   /// Clones current instance state and items from
   /// store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
-  /// </summary>    
+  /// </summary>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
   /// </exception>
@@ -1082,7 +1082,7 @@ public class Capacitor<T> : Capacitor,
   /// <summary>
   /// Verifies <paramref name="item"/> presence among stored items
   /// in segment specified by <paramref name="count"/> and <paramref name="offset"/>.
-  /// </summary>    
+  /// </summary>
   /// <returns><see langword="true"/> when <paramref name="item"/> item is present.</returns>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
@@ -1265,7 +1265,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="IndexOutOfBoundariesException">
   /// <list type="bullet">
   /// <item>When <paramref name="arrayIndex"/> is greater or equal to <paramref name="array"/> length.</item>
-  /// <item>When <paramref name="fromIndex"/> is greater or equal to <see cref="Count"/>.</item>  
+  /// <item>When <paramref name="fromIndex"/> is greater or equal to <see cref="Count"/>.</item>
   /// </list>
   /// </exception>
   /// <exception cref="ArgumentOutOfRangeException">
@@ -1299,7 +1299,7 @@ public class Capacitor<T> : Capacitor,
   /// Copies stored items from segment specified by <paramref name="count"/> and <paramref name="fromIndex"/>
   /// into targed <paramref name="array"/>, starting at its <paramref name="arrayIndex"/>.
   /// </summary>
-  /// <exception cref="ArgumentNullException">When <paramref name="array"/> is <see langword="null"/>.</exception>  
+  /// <exception cref="ArgumentNullException">When <paramref name="array"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="fromIndex"/> and <paramref name="count"/> create impossible segmentation over store.</item>
@@ -1669,7 +1669,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
-  /// </exception>  
+  /// </exception>
   public int FindLastIndex ( NonNegativeInt32 rearSet, NonNegativeInt32 count, Predicate<T?> match )
   {
     if (match == null)
@@ -2122,8 +2122,8 @@ public class Capacitor<T> : Capacitor,
   /// and ensures store capacity for <paramref name="roomRequest"/> more items.
   /// </item>
   /// </list>
-  /// </summary>  
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>     
+  /// </summary>
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   /// <remarks>
   /// <list type="bullet">
   /// <item>Use <c>0</c> for <paramref name="roomRequest"/> for no room request.</item>
@@ -2140,9 +2140,9 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Stores <paramref name="items"/> using Pre Capacitation and Auto Capacitation.  
-  /// </summary>  
-  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>     
+  /// Stores <paramref name="items"/> using Pre Capacitation and Auto Capacitation.
+  /// </summary>
+  /// <returns><see langword="false"/> when <paramref name="items"/> parameter is <see langword="null"/>.</returns>
   /// <remarks>
   /// <list type="bullet">
   /// <item>Use <c>0</c> for <paramref name="roomRequest"/> for no room request.</item>
@@ -2319,7 +2319,7 @@ public class Capacitor<T> : Capacitor,
   /// Finds index of <paramref name="mth"/> last <paramref name="item"/> match
   /// in store segment of <paramref name="count"/> from <paramref name="rearSet"/> backwards.
   /// </summary>
-  /// <returns><c>-1</c> when not enough items match.</returns>  
+  /// <returns><c>-1</c> when not enough items match.</returns>
   /// <exception cref="ImpossibleSegmentationException">
   /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
   /// </exception>
@@ -2605,7 +2605,7 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Removes item from store start and sets it to <paramref name="item"/>.
-  /// </summary>  
+  /// </summary>
   /// <returns><see langword="false"/> when store is empty.</returns>
   /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   public bool RemoveFirst ( out T? item )
@@ -2622,7 +2622,7 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Removes item from store end and sets it to <paramref name="item"/>.
-  /// </summary>  
+  /// </summary>
   /// <returns><see langword="false"/> when store is empty.</returns>
   /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   public bool RemoveLast ( out T? item )
@@ -2640,14 +2640,14 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// Removes all items matching <paramref name="match"/> predicate from store.
-  /// </summary>  
+  /// </summary>
   /// <returns>Count of items removed.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   public int RemoveMatches ( Predicate<T?> match ) => RemoveMatches ( match, 0, Count );
 
   /// <summary>
   /// Removes all items matching <paramref name="match"/> predicate from store, starting at <paramref name="offset"/> specified.
-  /// </summary>  
+  /// </summary>
   /// <returns>Count of items removed.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   public int RemoveMatches ( Predicate<T?> match, NonNegativeInt32 offset )
@@ -2659,9 +2659,9 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Removes all items matching <paramref name="match"/> predicate 
+  /// Removes all items matching <paramref name="match"/> predicate
   /// from store segment specified by <paramref name="count"/> and <paramref name="offset"/>.
-  /// </summary>  
+  /// </summary>
   /// <returns>Count of items removed.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
@@ -2871,6 +2871,6 @@ public class Capacitor<T> : Capacitor,
 
   /// <summary>
   /// String representation.
-  /// </summary>  
+  /// </summary>
   override public string ToString () => $"{nameof ( Capacitor<> )}#{GetHashCode ()}: Capacity={Capacity}, Count={Count}";
 }

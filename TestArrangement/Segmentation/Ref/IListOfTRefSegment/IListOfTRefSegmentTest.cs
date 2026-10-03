@@ -80,7 +80,7 @@ public class IListOfTRefSegmentTest
     Assert.AreSame ( EqualityComparer<string>.Default, segment.EqualityComparer );
   }
 
-  [TestMethod]  
+  [TestMethod]
   public void OffsetCtor_InvalidSegmentation ()
   {
     ArraySegment<string?> list = new(["a", "b", "c", "d", "e",]);

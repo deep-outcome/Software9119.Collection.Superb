@@ -123,9 +123,9 @@ public struct IReadOnlyListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable
   }
 
   readonly internal bool ValidateSetup
-  ( 
+  (
     NonNegativeInt32 count, out int limit,
-    [NotNullWhen ( true )] out ImpossibleSegmentationException? e 
+    [NotNullWhen ( true )] out ImpossibleSegmentationException? e
   )
   {
     return IxValidator.ValidateSegmentation ( list.Count, offset: offset, count: count, out limit, out e ) == 1;

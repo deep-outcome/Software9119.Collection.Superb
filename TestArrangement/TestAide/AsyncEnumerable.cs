@@ -15,6 +15,6 @@ sealed class AsyncEnumerable ( int start, int count ) : IAsyncEnumerable<int>
       yield return s++;
   }
 
-  public IAsyncEnumerator<int> GetAsyncEnumerator ( CancellationToken cancellationToken = default ) 
+  public IAsyncEnumerator<int> GetAsyncEnumerator ( CancellationToken cancellationToken = default )
     => Generator ().GetAsyncEnumerator ( cancellationToken );
 }

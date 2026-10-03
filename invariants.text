@@ -1,5 +1,5 @@
 
-- methods with offsets validates it 
+- methods with offsets validates it
 	- and documents exception
 
 - methods with offsets+count validates them

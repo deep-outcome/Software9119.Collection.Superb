@@ -27,7 +27,7 @@ readonly public struct AddInsertOffset : IEquatable<AddInsertOffset>
 
   /// <summary>
   /// When <paramref name="value"/> equals <paramref name="count"/>, it's addition operation, otherwise insertion operation.
-  /// </summary>  
+  /// </summary>
   /// <remarks>
   /// Relations of and guarantees about parameters are not validated and are reponsibility of implementors.
   /// </remarks>
