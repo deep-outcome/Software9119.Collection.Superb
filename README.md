@@ -7,8 +7,9 @@ you can use debugging package [Software9119.Collection.Superb.Debug](https://www
 of release build pckg [Software9119.Collection.Superb](https://www.nuget.org/packages/Software9119.Collection.Superb/).
 
 See specific readmes for more:
-- [Software9119.Collection.Superb.Segmentation](./Collection.Superb/Segmentation/readme.md)
-- [Software9119.Collection.Superb.Indexing](./Collection.Superb/Indexing/readme.md)
 - [Software9119.Collection.Superb.Extension](./Collection.Superb/Extension/readme.md)
+- [Software9119.Collection.Superb.Indexing](./Collection.Superb/Indexing/readme.md)
 - [Software9119.Collection.Superb.Numerics](./Collection.Superb/Numerics/readme.md)
 - [Software9119.Collection.Superb.Ordering](./Collection.Superb/Ordering/readme.md)
+- [Software9119.Collection.Superb.Segmentation](./Collection.Superb/Segmentation/readme.md)
+- [Software9119.Collection.Superb.Storing](./Collection.Superb/Storing/readme.md)
