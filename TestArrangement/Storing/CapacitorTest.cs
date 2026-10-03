@@ -7942,7 +7942,7 @@ public class CapacitorTest
   [TestMethod]
   public void Remove_Item ()
   {
-    int[] source = [ 1, 2, 3,  1, 2, 4,  6, 7 ];
+    int[] source = [ 1,2,3,  1,2,4,  6,7 ];
 
     object[] refSource = source.Cast<object>().ToArray();
     VWR[] withRefSource = source.Select(x => (VWR)x).ToArray();
@@ -7956,13 +7956,13 @@ public class CapacitorTest
     List<VWR> withRefExp = withRefSource.Take(6).ToList();
     List<long> valExp = valSource.Take(6).ToList();
 
-    while (refC.Remove ( (object) 1 )) { }
-    while (withRefC.Remove ( (VWR) 1 )) { }
-    while (valC.Remove ( 1L )) { }
+    Assert.IsTrue ( refC.Remove ( (object) 1 ) );
+    Assert.IsTrue ( withRefC.Remove ( (VWR) 1 ) );
+    Assert.IsTrue ( valC.Remove ( 1L ) );
 
-    while (refExp.Remove ( 1 )) { }
-    while (withRefExp.Remove ( 1 )) { }
-    while (valExp.Remove ( 1 )) { }
+    _ = refExp.Remove ( 1 );
+    _ = withRefExp.Remove ( 1 );
+    _ = valExp.Remove ( 1 );
 
     Assert.IsTrue ( refC.Remove ( (object) 4 ) );
     Assert.IsTrue ( withRefC.Remove ( (VWR) 4 ) );
@@ -7984,13 +7984,23 @@ public class CapacitorTest
     Assert.IsTrue ( withRefExp.SequenceEqual ( withRefC ) );
     Assert.IsTrue ( valExp.SequenceEqual ( valC ) );
 
-    Assert.AreEqual ( null, refC.store [ 5 ] );
-    Assert.AreEqual ( true, withRefC.store [ 5 ].IsUninitialized () );
-    Assert.AreEqual ( valSource [ 5 ], valC.store [ 5 ] );
+    for (int i = 4 ; i < 6 ; ++i)
+    {
+      Assert.AreEqual ( null, refC.store [ i ] );
+      Assert.AreEqual ( true, withRefC.store [ i ].IsUninitialized () );
+      Assert.AreEqual ( valSource [ i ], valC.store [ i ] );
+    }
 
     Assert.IsTrue ( ArrSeg ( refSource, 6, 2 ).SequenceEqual ( ArrSeg ( refC.store, 6, 2 ) ) );
     Assert.IsTrue ( ArrSeg ( withRefSource, 6, 2 ).SequenceEqual ( ArrSeg ( withRefC.store, 6, 2 ) ) );
     Assert.IsTrue ( ArrSeg ( valSource, 6, 2 ).SequenceEqual ( ArrSeg ( valC.store, 6, 2 ) ) );
+  }
+
+  [TestMethod]
+  public void Remove_Item_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsFalse ( capacitor.Remove ( -2 ) );
   }
 
   [TestMethod]
@@ -7999,7 +8009,7 @@ public class CapacitorTest
   [DataRow ( 0 )]
   public void Remove_Index ( int index )
   {
-    int[] source = [ 1, 2, 3,  1, 2, 4,  6, 7 ];
+    int[] source = [ 1,2,3,  1,2,4,  6,7 ];
 
     object[] refSource = source.Cast<object>().ToArray();
     VWR[] withRefSource = source.Select(x => (VWR)x).ToArray();
@@ -8071,6 +8081,7 @@ public class CapacitorTest
 
     Assert.HasCount ( expectation.Count, capacitor );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+    Assert.IsTrue ( ArrSeg ( capacitor.store, 10 - count, count ).All ( x => x == null ) );
 
     bool tailOkay = ArrSeg ( source, 10, 2 ).SequenceEqual ( ArrSeg ( capacitor.store, 10, 2 ) );
     Assert.IsTrue ( tailOkay );
@@ -8137,8 +8148,10 @@ public class CapacitorTest
   [DataRow ( 5 )]
   public void Remove_OffsetCount_EmptySegment ( int index )
   {
-    Capacitor<int> capacitor = new([1,2,3,4,5]);
+    int[] source = [1,2,3,4,5];
+    Capacitor<int> capacitor = new(source);
     capacitor.Remove ( index, 0 );
+    Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
@@ -8185,12 +8198,12 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 4 )]
-  [DataRow ( 2 )]
+  [DataRow ( 5 )]
+  [DataRow ( 3 )]
   [DataRow ( 0 )]
-  public void RemoveAt_Index ( int index )
+  public void RemoveAt ( int index )
   {
-    int[] source = [ 1, 2, 3,  1, 2, 4,  6, 7 ];
+    int[] source = [ 1,2,3,  1,2,4,  6,7 ];
 
     object[] refSource = source.Cast<object>().ToArray();
     VWR[] withRefSource = source.Select(x => (VWR)x).ToArray();
@@ -8205,7 +8218,7 @@ public class CapacitorTest
     List<long> valExp = valSource.Take(6).ToList();
 
     refC.RemoveAt ( index );
-    withRefC.RemoveAt ( (NonNegativeInt32) index );
+    withRefC.RemoveAt ( index );
     valC.RemoveAt ( index );
 
     refExp.RemoveAt ( index );
@@ -8230,16 +8243,18 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 0 )]
-  [DataRow ( 5 )]
-  public void RemoveAt_Index_IndexOutOfBounds ( int size )
+  [DataRow ( 0, "For available '0' is index '0' out of bounds. (Parameter 'index')" )]
+  [DataRow ( 5, "For available '5' is index '5' out of bounds. (Parameter 'index')" )]
+  [DataRow ( -1, "Index must be non-negative integer, but it is '-1'. (Parameter 'index')" )]
+  [DataRow ( -2, "Index must be non-negative integer, but it is '-2'. (Parameter 'index')" )]
+  public void RemoveAt_IndexOutOfBounds ( int index, string errMsg )
   {
+    int size = index < 0 ? 0 : index;
     Capacitor<long> capacitor = new(new long[size]);
-    Action test = () => capacitor.RemoveAt(size);
+    Action test = () => capacitor.RemoveAt(index);
 
     IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
-    string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'index')";
-    Assert.AreEqual ( msg, e.Message );
+    Assert.AreEqual ( errMsg, e.Message );
   }
 
   [TestMethod]
@@ -8365,10 +8380,10 @@ public class CapacitorTest
   {
     object[] data =
     [
-      ((Predicate<int>)(x => x == 1 || x == 6), 2),
-      ((Predicate<int>)(x => x > 1 && x < 6), 4),
-      ((Predicate<int>)(x => true), 6),
-      ((Predicate<int>)(x => false), 0),
+      ((Predicate<int>)(x => x == 1 || x == 6), 2, true),
+      ((Predicate<int>)(x => x > 1 && x < 6), 4, false),
+      ((Predicate<int>)(x => true), 6, true),
+      ((Predicate<int>)(x => false), 0, false),
     ];
 
     return data;
@@ -8376,19 +8391,21 @@ public class CapacitorTest
 
   [TestMethod]
   [DynamicData ( nameof ( RemoveMatchesData ) )]
-  public void RemoveMatches ( Predicate<int> match, int count )
+  public void RemoveMatches ( Predicate<int> match, int count, bool clearLeftBehinds )
   {
     int[] source = [ 1,2,3, 4,5,6, 7,8,9 ];
     Capacitor<int> capacitor = new(6, source.ToArray());
 
     List<int> expectation = source.Take(6).ToList();
 
+    Reflection.SetNonPublicFieldValue ( capacitor, "itemShouldDefault", clearLeftBehinds );
     Assert.AreEqual ( count, capacitor.RemoveMatches ( match ) );
 
     _ = expectation.RemoveAll ( match );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
     Assert.AreEqual ( 6 - count, capacitor.Count );
 
+    Assert.AreEqual ( clearLeftBehinds || count == 0, ArrSeg ( capacitor.store, 6 - count, count ).All ( x => x == 0 ) );
     Assert.IsTrue ( ArrSeg ( source, 6, 3 ).SequenceEqual ( ArrSeg ( capacitor.store, 6, 3 ) ) );
   }
 
@@ -8413,13 +8430,13 @@ public class CapacitorTest
   {
     object[] data =
     [
-      ((Predicate<int>)(x => x == 1 || x == 6), 2, 0),
-      ((Predicate<int>)(x => x == 1 || x == 6), 1, 1),
-      ((Predicate<int>)(x => x == 1 || x == 6), 1, 5),
-      ((Predicate<int>)(x => x > 1 && x < 6), 4, 0),
-      ((Predicate<int>)(x => true), 6, 0),
-      ((Predicate<int>)(x => true), 3, 3),
-      ((Predicate<int>)(x => false), 0, 0),
+      ((Predicate<int>)(x => x == 1 || x == 6), 2, 0, true),
+      ((Predicate<int>)(x => x == 1 || x == 6), 1, 1, false),
+      ((Predicate<int>)(x => x == 1 || x == 6), 1, 5, true),
+      ((Predicate<int>)(x => x > 1 && x < 6), 4, 0, true),
+      ((Predicate<int>)(x => true), 6, 0, true),
+      ((Predicate<int>)(x => true), 3, 3, false),
+      ((Predicate<int>)(x => false), 0, 0, false),
     ];
 
     return data;
@@ -8427,11 +8444,12 @@ public class CapacitorTest
 
   [TestMethod]
   [DynamicData ( nameof ( RemoveMatchesData_Offset ) )]
-  public void RemoveMatches_Offset ( Predicate<int> match, int count, int offset )
+  public void RemoveMatches_Offset ( Predicate<int> match, int count, int offset, bool clearLeftBehinds )
   {
     int[] source = [ 1,2,3, 4,5,6, 7,8,9 ];
     Capacitor<int> capacitor = new(6, source.ToArray());
 
+    Reflection.SetNonPublicFieldValue ( capacitor, "itemShouldDefault", clearLeftBehinds );
     Assert.AreEqual ( count, capacitor.RemoveMatches ( match, offset ) );
 
     List<int> expectation = source.Take(6).ToList();
@@ -8444,6 +8462,7 @@ public class CapacitorTest
     int expCount = 6 - count;
     Assert.AreEqual ( expCount, capacitor.Count );
 
+    Assert.AreEqual ( clearLeftBehinds || count == 0, ArrSeg ( capacitor.store, expCount, count ).All ( x => x == 0 ) );
     Assert.IsTrue ( ArrSeg ( source, 6, 3 ).SequenceEqual ( ArrSeg ( capacitor.store, 6, 3 ) ) );
   }
 
@@ -8475,18 +8494,21 @@ public class CapacitorTest
   {
     object[] data =
     [
-      ((Predicate<object>)(x => x.Equals(1) || x.Equals(9)), 0, 9, 2),
-      ((Predicate<object>)(x => x.Equals(1) || x.Equals(9)), 1, 8, 1),
-      ((Predicate<object>)(x => x.Equals(1) || x.Equals(9)), 0, 8, 1),
-      ((Predicate<object>)(x => x.Equals(1) || x.Equals(9)), 0, 1, 1),
-      ((Predicate<object>)(x => x.Equals(1) || x.Equals(9)), 8, 1, 1),
+      ((Predicate<int>)(x => x== 1 || x== 9), 0, 9, 2, true),
+      ((Predicate<int>)(x => x== 1 || x== 9), 0, 8, 1, true),
+      ((Predicate<int>)(x => x== 1 || x== 9), 1, 8, 1, false),
+      ((Predicate<int>)(x => x== 1 || x== 9), 0, 1, 1, false),
+      ((Predicate<int>)(x => x== 1 || x== 9), 8, 1, 1, true),
 
-      ((Predicate<object>)(x => ((int)x > 3 && (int)x < 7) || x.Equals(2) || x.Equals(8)), 0, 9, 5),
-      ((Predicate<object>)(x => (int)x>3 && (int)x<7), 0, 9, 3),
-      ((Predicate<object>)(x => (int)x>3 && (int)x<7), 3, 3, 3),
-      ((Predicate<object>)(x => (int)x>3 && (int)x<7), 4, 2, 2),
-      ((Predicate<object>)(x => true), 0, 9, 9),
-      ((Predicate<object>)(x => false), 0, 9, 0),
+      ((Predicate<int>)(x => x== 3 || x== 7), 1, 7, 2, true),
+      ((Predicate<int>)(x => (x > 3 && x < 7) || x== 2 || x== 8), 0, 9, 5, true),
+      ((Predicate<int>)(x => (x > 2 && x < 5) || (x > 6 && x < 9)), 0, 9, 4, true),
+      ((Predicate<int>)(x => x>3 && x<7), 0, 9, 3, true),
+      ((Predicate<int>)(x => x>3 && x<7), 3, 3, 3, true),
+      ((Predicate<int>)(x => x>3 && x<7), 2, 5, 3, false),
+      ((Predicate<int>)(x => x>3 && x<7), 4, 1, 1, false),
+      ((Predicate<int>)(x => true), 0, 9, 9, true),
+      ((Predicate<int>)(x => false), 0, 9, 0, false),
     ];
 
     return data;
@@ -8494,20 +8516,19 @@ public class CapacitorTest
 
   [TestMethod]
   [DynamicData ( nameof ( RemoveMatchesData_OffsetCount ) )]
-  public void RemoveMatches_OffsetCount_Value ( Predicate<object?> match, int offset, int count, int removed )
+  public void RemoveMatches_OffsetCount_Value ( Predicate<int> match, int offset, int count, int removed, bool clearLeftBehinds )
   {
-    object[] source = new int []{ 1,2,3, 4,5,6, 7,8,9, 1,2,3 }.Cast<object>().ToArray();
-    Capacitor<object> capacitor = new(9, source.ToArray());
+    int[] source = [1,2,3, 4,5,6, 7,8,9, 11,12,13 ];
+    Capacitor<int> capacitor = new(9, source.ToArray());
 
+    Reflection.SetNonPublicFieldValue ( capacitor, "itemShouldDefault", clearLeftBehinds );
     Assert.AreEqual ( removed, capacitor.RemoveMatches ( match, offset, count ) );
 
-    List<object> expectation = source.Take(9).ToList();
+    List<int> expectation = source.Take(9).ToList();
 
-#pragma warning disable IDE0220
-    foreach (int item in ArrSeg ( source, offset, count )!)
+    foreach (int item in ArrSeg ( source, offset, count ))
       if (match ( item ))
         _ = expectation.Remove ( item );
-#pragma warning restore IDE0220
 
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
 
@@ -8515,7 +8536,7 @@ public class CapacitorTest
     Assert.AreEqual ( expCount, capacitor.Count );
 
     Assert.IsTrue ( ArrSeg ( source, 9, 3 ).SequenceEqual ( ArrSeg ( capacitor.store, 9, 3 ) ) );
-    Assert.IsTrue ( ArrSeg ( capacitor.store, expCount, removed ).All ( x => x == null ) );
+    Assert.AreEqual ( clearLeftBehinds || removed == 0, ArrSeg ( capacitor.store, expCount, removed ).All ( x => x == 0 ) );
   }
 
   [TestMethod]
@@ -8590,6 +8611,7 @@ public class CapacitorTest
   {
     int[] source = [1,2,3,4,5];
     Capacitor<int> capacitor = new(5, source);
+    Assert.AreEqual ( 5, capacitor.Count );
 
     Assert.IsTrue ( ReferenceEquals ( source, capacitor.store ) );
 
@@ -8598,11 +8620,38 @@ public class CapacitorTest
     else
       capacitor.ResetStore ();
 
+    Assert.AreEqual ( 0, capacitor.Count );
+
     Assert.IsFalse ( ReferenceEquals ( source, capacitor.store ) );
     Assert.AreEqual ( capacity ?? 0, capacitor.Capacity );
 
     if ((capacity ?? 0) == 0)
       Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+  }
+
+
+  [TestMethod]
+  public void ResetStore_EmptyCapacitor ()
+  {
+    Capacitor<int> capacitor = new();
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+    Assert.AreEqual ( 0, capacitor.Count );
+
+    capacitor.ResetStore ();
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+    Assert.AreEqual ( 0, capacitor.Count );
+
+    capacitor.ResetStore ( 0 );
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+    Assert.AreEqual ( 0, capacitor.Count );
+
+    capacitor.ResetStore ( default );
+    Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+    Assert.AreEqual ( 0, capacitor.Count );
+
+    capacitor.ResetStore ( 1 );
+    Assert.AreEqual ( 1, capacitor.store.Length );
+    Assert.AreEqual ( 0, capacitor.Count );
   }
 
   [TestMethod]
@@ -8628,9 +8677,9 @@ public class CapacitorTest
 
   [TestMethod]
   [DataRow ( 0 )]
-  [DataRow ( 5 )]
   [DataRow ( 1 )]
-  [DataRow ( 3 )]
+  [DataRow ( 4 )]
+  [DataRow ( 5 )]
   public void Reverse_Offset ( int offset )
   {
     int[] source = [ 1,2,3, 4,5,6, 7,8,9 ];
@@ -8659,27 +8708,30 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 0, 6 )]
-  [DataRow ( 1, 5 )]
-  [DataRow ( 0, 5 )]
-  [DataRow ( 1, 4 )]
+  [DataRow ( 0, 9 )]
+  [DataRow ( 1, 8 )]
+  [DataRow ( 0, 8 )]
+  [DataRow ( 1, 7 )]
   [DataRow ( 2, 2 )]
+  [DataRow ( 2, 3 )]
+  [DataRow ( 2, 4 )]
+  [DataRow ( 2, 5 )]
   public void Reverse_OffsetCount ( int offset, int count )
   {
-    int[] source = [ 1,2,3, 4,5,6, 7,8,9 ];
-    Capacitor<int> capacitor = new(6, source.ToArray());
+    int[] source = [ 1,2,3, 4,5,6, 7,8,9, 10,11,12 ];
+    Capacitor<int> capacitor = new(9, source.ToArray());
 
     capacitor.Reverse ( offset, count );
 
     IEnumerable<int> reversion = source.Skip(offset).Take(count).Reverse();
     ArraySegment<int> head = ArrSeg(source, 0, offset);
     int limit = IndexingValidator.LimitOutOf(offset, count);
-    ArraySegment<int> tail = ArrSeg(source, limit, 6 - limit);
+    ArraySegment<int> tail = ArrSeg(source, limit, 9 - limit);
 
     IEnumerable<int> expectation =  head.Concat(reversion).Concat(tail);
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
 
-    Assert.IsTrue ( ArrSeg ( source, 6, 3 ).SequenceEqual ( ArrSeg ( capacitor.store, 6, 3 ) ) );
+    Assert.IsTrue ( ArrSeg ( source, 9, 3 ).SequenceEqual ( ArrSeg ( capacitor.store, 9, 3 ) ) );
   }
 
   [TestMethod]
@@ -8743,8 +8795,8 @@ public class CapacitorTest
     Capacitor<int> capacitor = new(6, [1,2,3,4,5,6, 7,8,9]);
 
     int[] test = capacitor.ToArray();
-    IListSegment<int> expectation = new(capacitor, 0, 6);
-    Assert.IsTrue ( expectation.SequenceEqual ( test ) );
+    Assert.AreEqual ( 6, test.Length );
+    Assert.IsTrue ( capacitor.SequenceEqual ( test ) );
   }
 
   [TestMethod]
@@ -8860,6 +8912,18 @@ public class CapacitorTest
     Assert.AreEqual ( 0, capacitor.Count );
     Assert.AreEqual ( 35, capacitor.Capacity );
     Assert.IsFalse ( ReferenceEquals ( source, capacitor.store ) );
+  }
+
+  [TestMethod]
+  public void ToStringTest ()
+  {
+    int [] source = [1,2,3,4,5,6, 7,8,9];
+    Capacitor<int> capacitor = new(6, source);
+
+    string test = capacitor.ToString ();
+
+    string expectation = $"Capacitor#{capacitor.GetHashCode()}: Capacity=9, Count=6";
+    Assert.AreEqual ( expectation, test );
   }
 
 

@@ -2532,9 +2532,9 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Removes first occurrence of <paramref name="item"/> from store, or does nothing if not present.
+  /// Removes first occurrence of <paramref name="item"/> from store.
   /// </summary>
-  /// <returns><see langword="true"/> when item was removed.</returns>
+  /// <returns><see langword="false"/> when item is not present.</returns>
   public bool Remove ( T? item )
   {
     int index = IndexOf ( item );
@@ -2604,9 +2604,9 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Removes item from store start, if store is not empty, and sets it to <paramref name="item"/>.
+  /// Removes item from store start and sets it to <paramref name="item"/>.
   /// </summary>  
-  /// <returns><see langword="true"/> if item is removed.</returns>
+  /// <returns><see langword="false"/> when store is empty.</returns>
   /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   public bool RemoveFirst ( out T? item )
   {
@@ -2621,9 +2621,9 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Removes item from store end, if store is not empty, and sets it to <paramref name="item"/>.
+  /// Removes item from store end and sets it to <paramref name="item"/>.
   /// </summary>  
-  /// <returns><see langword="true"/> if item is removed.</returns>
+  /// <returns><see langword="false"/> when store is empty.</returns>
   /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   public bool RemoveLast ( out T? item )
   {
@@ -2688,8 +2688,14 @@ public class Capacitor<T> : Capacitor,
     int freeIndex = offset;
     T?[] store = this.store;
 
-    while (freeIndex < limit && !match ( store [ freeIndex ] )) freeIndex++;
-    if (freeIndex == limit) return 0;
+    for ( ; ; )
+    {
+      if (match ( store [ freeIndex ] ))
+        break;
+
+      if (++freeIndex == limit)
+        return 0;
+    }
 
     int current = freeIndex + 1;
     int itemsCount = Count;
@@ -2713,14 +2719,14 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
-  /// Resets <see cref="Capacitor{T}"/> store <paramref name="toCapacity"/>.
+  /// Resets <see cref="Capacitor{T}"/> store <paramref name="withCapacity"/>.
   /// </summary>
   /// <remarks>
-  /// Creates new internal store and sets <see cref="Count"/> to <c>0</c>.
+  /// Creates new internal store and sets <see cref="Count"/> to <c>0</c>, always.
   /// </remarks>
-  public void ResetStore ( NonNegativeInt32 toCapacity = default )
+  public void ResetStore ( NonNegativeInt32 withCapacity = default )
   {
-    SetStoreWithCapacity ( toCapacity );
+    SetStoreWithCapacity ( withCapacity );
     Count = 0;
   }
 
@@ -2766,8 +2772,9 @@ public class Capacitor<T> : Capacitor,
   /// </summary>
   public T? [] ToArray ()
   {
-    T? [] array = GetStoreWithCapacity<T>(Count);
-    CopyTo ( array );
+    int count = Count;
+    T? [] array = GetStoreWithCapacity<T>(count);
+    Array.Copy ( store, 0, array, 0, count );
     return array;
   }
 
@@ -2865,5 +2872,5 @@ public class Capacitor<T> : Capacitor,
   /// <summary>
   /// String representation.
   /// </summary>  
-  override public string ToString () => $"{nameof ( Capacitor<> )}: Capacity={Capacity}, Count={Count}";
+  override public string ToString () => $"{nameof ( Capacitor<> )}#{GetHashCode ()}: Capacity={Capacity}, Count={Count}";
 }

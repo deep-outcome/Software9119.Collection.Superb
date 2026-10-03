@@ -1,12 +1,17 @@
 - add to ILIst segments extension methods
 - add AsOrToCapacitor and AsOrToAccumulator
-- CopyTo(SameType) for segments (as ArraySegment do)
 
 - add .netstandard 2.0 support
-- IndexingValidator.ValidateSegmentation can return -2 for empty source and -1 for empty segment
-
-- capacitor
-	- replace various segmented methods with internal capacitor-slice with call to simplest method possible
 
 ArraySegment<T> extension methods
  - extends capabilities to System.Array level
+
+Segments
+ - add casts between read-only and alter-also versions
+ - copyTo(SameType) for segments (as ArraySegment do)
+
+
+ - IndexingValidator.ValidateSegmentation can return -2 for empty source and -1 for empty segment
+
+ - capacitor
+	- replace various segmented methods with internal capacitor-slice with call to simplest method possible

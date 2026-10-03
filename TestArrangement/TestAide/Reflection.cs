@@ -18,6 +18,9 @@ static class Reflection
   static public object GetNonPublicFieldValue<Base> ( object of, string fieldName )
   => GetNonPublicField ( typeof ( Base ), fieldName ).GetValue ( of )!;
 
+  static public void SetNonPublicFieldValue ( object of, string fieldName, object value )
+    => GetNonPublicField ( of.GetType (), fieldName ).SetValue ( of, value );
+
   static public object? NonVirtualBaseCall
   (
     Type baseType,
