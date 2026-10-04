@@ -5,7 +5,6 @@
     <File Path=".github/workflows/nupkg-pub+test.yml" />
     <File Path=".gitignore" />
     <File Path="improvements.text" />
-    <File Path="invariants.text" />
     <File Path="note.text" />
     <File Path="README.md" />
     <File Path="SharedProjectConfiguration.props" />

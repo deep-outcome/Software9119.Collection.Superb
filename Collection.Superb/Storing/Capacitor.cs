@@ -53,19 +53,20 @@ public class Capacitor
   static protected internal InvalidOperationException UnsupportedValidationResult ( int validation )
     => new ( $"Unsupported validation result, '{validation}'." );
 
-  static readonly internal string[] OffsetCountParamNames = ["offset", "count"];
-  static readonly internal string[] FromIndexCountParamNames = ["fromIndex", "count"];
+
+  static readonly internal SegmentationParamNames OffsetCountParamNames = new (offset: "offset", "count", null);
+  static readonly internal SegmentationParamNames FromIndexCountParamNames = new (offset: "fromIndex", "count", null);
   static readonly internal string[] RearSetCountParamNames = ["rearSet", "count"];
 
   /// <summary>
   /// Parameter names getter for: 'offset' and 'count'.
   /// </summary>
-  static protected internal Func<string []> OffsetCountParametersGetter => () => OffsetCountParamNames;
+  static protected internal ParamNames<SegmentationParamNames> OffsetCountParametersGetter => () => OffsetCountParamNames;
 
   /// <summary>
   /// Parameter names getter for: 'fromIndex' and 'count'.
   /// </summary>
-  static protected internal Func<string []> FromIndexCountParametersGetter => () => FromIndexCountParamNames;
+  static protected internal ParamNames<SegmentationParamNames> FromIndexCountParametersGetter => () => FromIndexCountParamNames;
 
   /// <summary>
   /// Parameter names getter for: 'rearSet' and 'count'.
@@ -108,9 +109,9 @@ public class Capacitor
     NonNegativeInt32 available, NonNegativeInt32 offset, NonNegativeInt32 count,
     out int limit,
     out ImpossibleSegmentationException? e,
-    Func<string []>? parametersGetter
+    ParamNames<SegmentationParamNames> paramNames
   )
-    => IxValidator.ValidateSegmentation ( available, offset, count, out limit, out e, parametersGetter );
+    => IxValidator.ValidateSegmentation ( available, offset, count, out limit, out e, paramNames );
 }
 
 /// <summary>
@@ -627,9 +628,9 @@ public class Capacitor<T> : Capacitor,
     NonNegativeInt32 offset, NonNegativeInt32 count,
     out int limit,
     out ImpossibleSegmentationException? e,
-    Func<string []> parametersGetter
+    ParamNames<SegmentationParamNames> paramNames
   )
-    => IxValidator.ValidateSegmentation ( Count, offset, count, out limit, out e, parametersGetter );
+    => IxValidator.ValidateSegmentation ( Count, offset, count, out limit, out e, paramNames );
 
   /// <summary>
   /// Zero based-indexer.
@@ -1316,7 +1317,7 @@ public class Capacitor<T> : Capacitor,
     if (array == null)
       throw NullTargetArray ( nameof ( array ) );
 
-    Func<string[]> targetParams = () => [nameof ( array ), nameof ( arrayIndex ), nameof ( count )];
+    ParamNames<SegmentationParamNames> targetParams = () => new (offset: nameof ( arrayIndex ), count: nameof ( count ), nameof ( array ));
     int validation = ValidateSegmentation (array.Length, arrayIndex, count, out _, out e, targetParams);
     switch (validation)
     {

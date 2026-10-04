@@ -108,7 +108,7 @@ public class IListSegmentTest
     List<string?> list = ["a", "b", "c", "d", "e",];
     Func<object> test = () => new IListSegment ( list, offset: 3, 3 );
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    Assert.AreEqual ( "With available 5, given offset 3 and count 3 produce out-of indexing.", e.Message );
+    Assert.AreEqual ( "With available '5', given offset '3' and count '3' produce out-of indexing.", e.Message );
   }
 
   [TestMethod]
@@ -471,7 +471,7 @@ public class IListSegmentTest
     Action test = () => segment.Slice(offset, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing.";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count, offset + count - 1 );
     Assert.AreEqual ( msg, e.Message );
   }

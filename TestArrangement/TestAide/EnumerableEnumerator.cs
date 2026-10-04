@@ -8,3 +8,8 @@ sealed class EnumerableEnumerator<T> ( IEnumerator<T> enumerator ) : IEnumerable
   public IEnumerator<T> GetEnumerator () => enumerator;
   IEnumerator IEnumerable.GetEnumerator () => enumerator;
 }
+
+sealed class EnumerableEnumerator ( IEnumerator enumerator ) : IEnumerable
+{
+  public IEnumerator GetEnumerator () => enumerator;
+}

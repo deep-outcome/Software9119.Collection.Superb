@@ -86,7 +86,7 @@ public class IListRefSegmentTest
     NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );
     Action test = () => _ = new IListRefSegment<NoRefList> ( list, 3, 3 );
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    Assert.AreEqual ( "With available 5, given offset 3 and count 3 produce out-of indexing.", e.Message );
+    Assert.AreEqual ( "With available '5', given offset '3' and count '3' produce out-of indexing.", e.Message );
   }
 
   [TestMethod]
@@ -458,7 +458,7 @@ public class IListRefSegmentTest
     }
     catch (ImpossibleSegmentationException e)
     {
-      string msg = "With available 5, given offset {0} and count {1} produce out-of indexing.";
+      string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing.";
       msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count, offset + count - 1 );
       Assert.AreEqual ( msg, e.Message );
     }

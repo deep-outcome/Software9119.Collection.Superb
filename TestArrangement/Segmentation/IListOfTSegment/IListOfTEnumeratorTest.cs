@@ -39,9 +39,9 @@ public class IListOfTEnumeratorTest
   }
 
   [TestMethod]
-  [DataRow ( 3, 3, "With available 5, given offset 3 and count 3 produce out-of indexing." )]
-  [DataRow ( 3, 4, "With available 5, given offset 3 and count 4 produce out-of indexing." )]
-  [DataRow ( 8, 3, "With available 5, given offset 8 and count 3 produce out-of indexing." )]
+  [DataRow ( 3, 3, "With available '5', given offset '3' and count '3' produce out-of indexing." )]
+  [DataRow ( 3, 4, "With available '5', given offset '3' and count '4' produce out-of indexing." )]
+  [DataRow ( 8, 3, "With available '5', given offset '8' and count '3' produce out-of indexing." )]
   public void PubCtor_InvalidSegmentation ( int offset, int count, string errMsg )
   {
     Action test = () => { using (new IListEnumerator<int> ( offset, count, [ 1, 2, 3, 4, 5 ])) { } };

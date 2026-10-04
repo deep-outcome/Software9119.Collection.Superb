@@ -27,6 +27,19 @@ namespace Software9119.Collection.Superb.TestArrangement.Storing;
 [SuppressMessage ( "Usage", "MSTEST0037:Use proper 'Assert' methods", Justification = @"¯\_x_x_/¯" )]
 public class CapacitorTest
 {
+  static (ParamNames<SegmentationParamNames>?, bool) [] ValidateSegmentationData_Parameters ()
+  {
+    return [
+      (null, false),
+      (() => default, false),
+      (() => new ("IndeX", "NumbeR", "ArraY"), true),
+      (() => new ("", "NumbeR", ""), true),
+      (() => new ("", "", ""), false),
+      (() => new (" ", " ", " "), false),
+      (() => new (null!, null!, null), false),
+    ];
+  }
+
 
   [TestMethod]
   public void NullAction ()
@@ -75,33 +88,41 @@ public class CapacitorTest
   [TestMethod]
   public void OffsetCountParamNames ()
   {
-    string [] test = Capacitor.OffsetCountParamNames;
-    Assert.AreEqual ( 2, test.Length );
-    Assert.IsTrue ( test.Contains ( "offset" ) );
-    Assert.IsTrue ( test.Contains ( "count" ) );
+    SegmentationParamNames test = Capacitor.OffsetCountParamNames;
+    Assert.AreEqual ( 2, test.Count () );
+    Assert.AreEqual ( "offset", test.First () );
+    Assert.AreEqual ( "count", test.Last () );
+
+    Assert.AreEqual ( "offset", test.Offset );
+    Assert.AreEqual ( "count", test.Count );
+    Assert.AreEqual ( "", test.Unit );
   }
 
   [TestMethod]
   public void OffsetCountParametersGetter ()
   {
-    string [] test = Capacitor.OffsetCountParametersGetter();
-    Assert.IsTrue ( ReferenceEquals ( Capacitor.OffsetCountParamNames, test ) );
+    SegmentationParamNames test = Capacitor.OffsetCountParametersGetter();
+    Assert.IsTrue ( ReferenceEquals ( Capacitor.OffsetCountParamNames.parameters, test.parameters ) );
   }
 
   [TestMethod]
   public void FromIndexCountParamNames ()
   {
-    string [] test = Capacitor.FromIndexCountParamNames;
-    Assert.AreEqual ( 2, test.Length );
-    Assert.IsTrue ( test.Contains ( "fromIndex" ) );
-    Assert.IsTrue ( test.Contains ( "count" ) );
+    SegmentationParamNames test = Capacitor.FromIndexCountParamNames;
+    Assert.AreEqual ( 2, test.Count () );
+    Assert.AreEqual ( "fromIndex", test.First () );
+    Assert.AreEqual ( "count", test.Last () );
+
+    Assert.AreEqual ( "fromIndex", test.Offset );
+    Assert.AreEqual ( "count", test.Count );
+    Assert.AreEqual ( "", test.Unit );
   }
 
   [TestMethod]
   public void FromIndexCountParametersGetter ()
   {
-    string [] test = Capacitor.FromIndexCountParametersGetter();
-    Assert.IsTrue ( ReferenceEquals ( Capacitor.FromIndexCountParamNames, test ) );
+    SegmentationParamNames  test = Capacitor.FromIndexCountParametersGetter();
+    Assert.IsTrue ( ReferenceEquals ( Capacitor.FromIndexCountParamNames.parameters, test.parameters ) );
   }
 
 
@@ -218,7 +239,7 @@ public class CapacitorTest
       () => []
     );
 
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing.";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count );
 
     Assert.AreEqual ( 1, result );
@@ -227,22 +248,18 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( null )]
-  [DataRow ( false )]
-  [DataRow ( true )]
-  public void ValidateSegmentation_Static_Parameters ( bool? withParamaters )
+  [DynamicData ( nameof ( ValidateSegmentationData_Parameters ) )]
+  public void ValidateSegmentation_Static_Parameters ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
   {
-    Func<string[]>? parameters = withParamaters == null
-      ? null
-      : withParamaters == true
-        ? () => ["ABC", "xYz"]
-        : () => [];
+    _ = Capacitor.ValidateSegmentation ( 5, 0, 6, out _, out ImpSegExc? e, parameters! );
 
-    _ = Capacitor.ValidateSegmentation ( 5, 0, 6, out _, out ImpSegExc? e, parameters );
-
-    string msg = "With available 5, given offset 0 and count 6 produce out-of indexing.{0}";
-    string parametersString = withParamaters == true ? " (Parameters 'ABC','xYz')" : "";
-    msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
+    string msg = "With available '5', given offset '0' and count '6' produce out-of indexing.{0}";
+    string paramsStr = validParams
+      ?  parameters.SafeGet().Count() == 1
+        ? " (Parameter 'NumbeR')"
+        : " (Parameters 'IndeX','NumbeR','ArraY')"
+      : "";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
 
     Assert.AreEqual ( msg, e?.Message );
   }
@@ -1666,7 +1683,7 @@ public class CapacitorTest
 
     Assert.AreEqual ( 1, capacitor.ValidateRearSetConfiguration ( index, count, out ImpSegExc? e, () => [] ) );
 
-    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.";
+    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
 
     Assert.AreEqual ( msg, e?.Message );
@@ -1691,7 +1708,7 @@ public class CapacitorTest
     Capacitor<int> capacitor = new(new int[5]);
     Assert.AreEqual ( 1, capacitor.ValidateRearSetConfiguration ( 4, 6, out ImpSegExc? e, parameters! ) );
 
-    string msg = "With available 5, given rearSet 4 and count 6 produce out-of indexing.{0}";
+    string msg = "With available '5', given rearSet '4' and count '6' produce out-of indexing.{0}";
     string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
 
@@ -1754,7 +1771,7 @@ public class CapacitorTest
       () => []
     );
 
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing.";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count );
 
     Assert.AreEqual ( 1, test );
@@ -1763,27 +1780,20 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  [DataRow ( 1 )]
-  [DataRow ( 2 )]
-  [DataRow ( 3 )]
-  [DataRow ( 4 )]
-  public void ValidateSegmentation_Parameters ( int testCase )
+  [DynamicData ( nameof ( ValidateSegmentationData_Parameters ) )]
+  public void ValidateSegmentation_Parameters ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
-    Func<string[]>? parameters = testCase switch
-    {
-      1 => null,
-      2 => () => null!,
-      3 => () => [],
-      4 => () => ["ABC", "xYz"],
-      _ => throw new ArgumentOutOfRangeException(nameof( testCase ) )
-    };
 
     _ = capacitor.ValidateSegmentation ( 0, 6, out _, out ImpSegExc? e, parameters! );
 
-    string msg = "With available 5, given offset 0 and count 6 produce out-of indexing.{0}";
-    string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
-    msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
+    string msg = "With available '5', given offset '0' and count '6' produce out-of indexing.{0}";
+    string paramsStr = validParams
+      ?  parameters.SafeGet().Count() == 1
+        ? " (Parameter 'NumbeR')"
+        : " (Parameters 'IndeX','NumbeR','ArraY')"
+      : "";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
 
     Assert.AreEqual ( msg, e?.Message );
   }
@@ -2324,7 +2334,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.AllMatches(x => true, offset, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = $"With available 5, given offset {offset} and count {count} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = $"With available '5', given offset '{offset}' and count '{count}' produce out-of indexing. (Parameters 'offset','count')";
     Assert.AreEqual ( msg, e.Message );
   }
 
@@ -2567,7 +2577,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.BinarySearch(offset, count, default, Comparer<int>.Default);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = $"With available 5, given offset {offset} and count {count} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = $"With available '5', given offset '{offset}' and count '{count}' produce out-of indexing. (Parameters 'offset','count')";
     Assert.AreEqual ( msg, e.Message );
   }
 
@@ -2869,7 +2879,7 @@ public class CapacitorTest
     Action test = () => capacitor.Clone ( index, count );
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -2984,7 +2994,7 @@ public class CapacitorTest
     Action test = () => capacitor.Contains(-2, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -3190,7 +3200,7 @@ public class CapacitorTest
     Action test = () => capacitor.Convert ( convertor, index, count );
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -3398,7 +3408,7 @@ public class CapacitorTest
     Action test = () => capacitor.CopyTo(index, count, new int[5]);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'fromIndex','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'fromIndex','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -3640,8 +3650,8 @@ public class CapacitorTest
     Action test = () => capacitor.CopyTo(new int[size], index, default, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing. {3}";
-    const string paramsString = "(Parameters 'array','arrayIndex','count')";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing. {3}";
+    const string paramsString = "(Parameters 'arrayIndex','count','array')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count, paramsString );
     Assert.AreEqual ( msg, e.Message );
   }
@@ -3658,7 +3668,7 @@ public class CapacitorTest
     Action test = () => capacitor.CopyTo(new int[6], 0, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. {2}";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. {2}";
     const string paramsString = "(Parameters 'fromIndex','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count, paramsString );
     Assert.AreEqual ( msg, e.Message );
@@ -3835,7 +3845,7 @@ public class CapacitorTest
     Action test = () => capacitor.Fill (-2, index, count );
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -4043,7 +4053,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindAllIndexes (x => default, index, count );
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -4199,7 +4209,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindAllItems (x => default, index, count );
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -4367,7 +4377,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindFirstIndex(predicate, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -4548,7 +4558,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindFirstItem(predicate, index, count, out _);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -4759,7 +4769,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindLastIndex(predicate, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -4853,7 +4863,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindLastIndex(index, count, predicate);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.";
+    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
     msg += " (Parameters 'rearSet','count')";
 
@@ -5081,7 +5091,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindLastItem(predicate, index, count, out _);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -5181,7 +5191,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindLastItem(index, count, predicate, out _);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.";
+    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
     msg += " (Parameters 'rearSet','count')";
 
@@ -5353,7 +5363,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindMthIndex(predicate, 1, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.";
+    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
     msg += " (Parameters 'rearSet','count')";
 
@@ -5534,7 +5544,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindMthItem(predicate, 1, index, count, out _);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.";
+    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
     msg += " (Parameters 'rearSet','count')";
 
@@ -5706,7 +5716,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindNthIndex(predicate, 1, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -5890,7 +5900,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindNthItem(predicate, 1, index, count, out _);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -6049,7 +6059,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.FindMatch(predicate, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -6217,7 +6227,7 @@ public class CapacitorTest
     Action test = () => capacitor.ForEach(action, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -6374,7 +6384,7 @@ public class CapacitorTest
     Action test = () => capacitor.IndexOf(-2, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -7259,7 +7269,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.LastIndexOf(-2f, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available 5, given offset {0} and count {1} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -7337,7 +7347,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.LastIndexOf(index, count, -2f);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.";
+    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
     msg += " (Parameters 'rearSet','count')";
 
@@ -7465,7 +7475,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.MthIndexOf(-2, 1, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.";
+    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
     msg += " (Parameters 'rearSet','count')";
 
@@ -7597,7 +7607,7 @@ public class CapacitorTest
     Action test = () => _ = capacitor.NthIndexOf(-2, 1, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -7749,7 +7759,7 @@ public class CapacitorTest
     Action test = () => capacitor.Order(comparer, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -7905,7 +7915,7 @@ public class CapacitorTest
     Action test = () => capacitor.Order(comparer, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -8175,7 +8185,7 @@ public class CapacitorTest
     Action test = () => capacitor.Remove(index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -8571,7 +8581,7 @@ public class CapacitorTest
     Action test = () => capacitor.RemoveMatches( x => default, index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing. (Parameters 'offset','count')";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing. (Parameters 'offset','count')";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
 
     Assert.AreEqual ( msg, e.Message );
@@ -8766,7 +8776,7 @@ public class CapacitorTest
     Action test = () =>  capacitor.Reverse(index, count);
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
-    string msg = "With available {0}, given offset {1} and count {2} produce out-of indexing.";
+    string msg = "With available '{0}', given offset '{1}' and count '{2}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
     msg += " (Parameters 'offset','count')";
 

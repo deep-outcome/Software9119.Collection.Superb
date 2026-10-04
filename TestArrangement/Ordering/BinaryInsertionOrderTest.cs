@@ -33,11 +33,11 @@ public class BinaryInsertionOrderTest
   }
 
   [TestMethod]
-  [DataRow ( 3, 3, "With available 5, given offset 3 and count 3 produce out-of indexing." )]
-  [DataRow ( 3, 5, "With available 5, given offset 3 and count 5 produce out-of indexing." )]
-  [DataRow ( 0, 6, "With available 5, given offset 0 and count 6 produce out-of indexing." )]
-  [DataRow ( 0, 7, "With available 5, given offset 0 and count 7 produce out-of indexing." )]
-  [DataRow ( 6, 0, "With available 5, given offset 6 and count 0 produce out-of indexing." )]
+  [DataRow ( 3, 3, "With available '5', given offset '3' and count '3' produce out-of indexing." )]
+  [DataRow ( 3, 5, "With available '5', given offset '3' and count '5' produce out-of indexing." )]
+  [DataRow ( 0, 6, "With available '5', given offset '0' and count '6' produce out-of indexing." )]
+  [DataRow ( 0, 7, "With available '5', given offset '0' and count '7' produce out-of indexing." )]
+  [DataRow ( 6, 0, "With available '5', given offset '6' and count '0' produce out-of indexing." )]
   public void Order_InvalidSegmenation ( int offset, int count, string errMsg )
   {
     int [] array = [1, 2, 3, 4, 5];

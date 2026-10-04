@@ -6,6 +6,7 @@ using Software9119.Collection.Superb.Numerics;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 
 namespace Software9119.Collection.Superb.TestArrangement.Indexing;
 
@@ -15,7 +16,8 @@ public class IndexingValidatorTest
   [TestMethod]
   public void LimitOutOf ()
   {
-    Assert.AreEqual ( 8, IndexingValidator.LimitOutOf ( (NonNegativeInt32) 3, (NonNegativeInt32) 5 ) );
+    Assert.AreEqual ( 8, IndexingValidator.LimitOutOf ( 3, (NonNegativeInt32) 5 ) );
+    Assert.AreEqual ( 2, IndexingValidator.LimitOutOf ( -3, (NonNegativeInt32) 5 ) );
   }
 
   [TestMethod]
@@ -244,7 +246,8 @@ public class IndexingValidatorTest
   [DataRow ( 1, 1, 0, DisplayName = "Impossible segmentation, nothing available." )]
   [DataRow ( 1, 0, 0, DisplayName = "Empty segment, large offsetting" )]
   [DataRow ( 6, 0, 5, DisplayName = "Empty segment, large offsetting" )]
-  public void ValidateSegmentation_NegativeSecnarios ( int offset, int count, int available )
+  [DataRow ( -1, 5, 5, DisplayName = "Negative offset." )]
+  public void ValidateSegmentation_NegativeScenarios ( int offset, int count, int available )
   {
     int result = IndexingValidator.ValidateSegmentation
     (
@@ -254,31 +257,52 @@ public class IndexingValidatorTest
 
     Assert.AreEqual ( 1, result );
     Assert.AreEqual ( IndexingValidator.LimitOutOf ( offset, count ), limit );
-    string errMsg = $"With available {available}, given offset {offset} and count {count} produce out-of indexing.";
+    string errMsg = offset < 0
+      ? $"Offset must be a non-negative integer, but it is '{offset}'."
+      : $"With available '{available}', given offset '{offset}' and count '{count}' produce out-of indexing.";
     Assert.AreEqual ( errMsg, e!.Message );
   }
 
-  [TestMethod]
-  [DataRow ( 1 )]
-  [DataRow ( 2 )]
-  [DataRow ( 3 )]
-  [DataRow ( 4 )]
-  public void ValidateSegmentation_Parameters ( int testCase )
+  static (ParamNames<SegmentationParamNames>?, bool) [] ValidateSegmentationData_Parameters ()
   {
-    Func<string[]>? parameters = testCase switch
-    {
-      1 => null,
-      2 => () => null!,
-      3 => () => [],
-      4 => () => ["ABC", "xYz"],
-      _ => throw new ArgumentOutOfRangeException(nameof( testCase ) )
-    };
+    return [
+      (null, false),
+      (() => default, false),
+      (() => new ("IndeX", "NumbeR", "ArraY"), true),
+      (() => new ("IndeX", "", ""), true),
+      (() => new ("", "", ""), false),
+      (() => new (" ", " ", " "), false),
+      (() => new (null!, null!, null), false),
+    ];
+  }
 
+  [TestMethod]
+  [DynamicData ( nameof ( ValidateSegmentationData_Parameters ) )]
+  public void ValidateSegmentation_Parameters_InvalidSegment ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
+  {
     _ = IndexingValidator.ValidateSegmentation ( 5, 0, 6, out _, out ImpSegExc? e, parameters );
 
-    string msg = "With available 5, given offset 0 and count 6 produce out-of indexing.{0}";
-    string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
-    msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
+    string msg = "With available '5', given offset '0' and count '6' produce out-of indexing.{0}";
+    string paramsStr = validParams
+      ?  parameters.SafeGet().Count() == 1
+        ? " (Parameter 'IndeX')"
+        : " (Parameters 'IndeX','NumbeR','ArraY')"
+      : "";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
+
+    Assert.AreEqual ( msg, e?.Message );
+  }
+
+  [TestMethod]
+  [DynamicData ( nameof ( ValidateSegmentationData_Parameters ) )]
+  public void ValidateSegmentation_Parameters_NegativeOffset ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
+  {
+    _ = IndexingValidator.ValidateSegmentation ( 0, -1, 0, out _, out ImpSegExc? e, parameters );
+
+    string msg = "Offset must be a non-negative integer, but it is '-1'.{0}";
+    string paramsStr = validParams ? " (Parameter 'IndeX')" : "";
+
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
 
     Assert.AreEqual ( msg, e?.Message );
   }
@@ -314,7 +338,7 @@ public class IndexingValidatorTest
   [DataRow ( 1, 0, 0, DisplayName = "Empty segment, index not less" )]
   [DataRow ( 5, 0, 5, DisplayName = "Empty segment, index not less" )]
   [DataRow ( 6, 0, 5, DisplayName = "Empty segment, index not less" )]
-  public void ValidateSegmentationStrict_NegativeSecnarios ( int offset, int count, int available )
+  public void ValidateSegmentationStrict_NegativeScenarios ( int offset, int count, int available )
   {
     int result = IndexingValidator.ValidateSegmentationStrict
     (
@@ -324,7 +348,7 @@ public class IndexingValidatorTest
 
     Assert.AreEqual ( 1, result );
     Assert.AreEqual ( IndexingValidator.LimitOutOf ( offset, count ), limit );
-    string errMsg = $"With available {available}, given offset {offset} and count {count} produce out-of indexing.";
+    string errMsg = $"With available '{available}', given offset '{offset}' and count '{count}' produce out-of indexing.";
     Assert.AreEqual ( errMsg, e!.Message );
   }
 
@@ -365,7 +389,7 @@ public class IndexingValidatorTest
     Func<string[]> parameters = () => ["abc", "tuv"];
     Assert.AreEqual ( 1, IndexingValidator.ValidateBackwardSegmentation ( size, index, count, out ImpSegExc? e, parameters ) );
 
-    string msg = "With available {0}, given rearSet {1} and count {2} produce out-of indexing.";
+    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
     msg += " (Parameters 'abc','tuv')";
 
@@ -408,7 +432,7 @@ public class IndexingValidatorTest
 
     _ = IndexingValidator.ValidateBackwardSegmentation ( 5, 6, 0, out ImpSegExc? e, parameters );
 
-    string msg = "With available 5, given rearSet 6 and count 0 produce out-of indexing.{0}";
+    string msg = "With available '5', given rearSet '6' and count '0' produce out-of indexing.{0}";
     string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
 

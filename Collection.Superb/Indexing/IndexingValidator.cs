@@ -15,7 +15,7 @@ static public class IndexingValidator
   /// Computes exclusive upper bound for <paramref name="count"/> and <paramref name="offset"/>.
   /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
-  static public int LimitOutOf ( NonNegativeInt32 offset, NonNegativeInt32 count ) => offset + count;
+  static public int LimitOutOf ( int offset, NonNegativeInt32 count ) => offset + count;
 
   /// <summary>
   /// Computes offseted index.
@@ -188,19 +188,26 @@ static public class IndexingValidator
   static public int ValidateSegmentation
   (
     NonNegativeInt32 available,
-    NonNegativeInt32 offset,
+    int offset,
     NonNegativeInt32 count,
     out int limit,
     out ImpossibleSegmentationException? e,
-    Func<string []>? parametersGetter = null
+    ParamNames<SegmentationParamNames>? paramNames = null
   )
   {
     limit = LimitOutOf ( offset, count );
 
+    if (offset < 0)
+    {
+      SegmentationParamNames names = paramNames.SafeGet();
+      e = ImpossibleSegmentationException.NegativeOffsetMsg ( offset, names );
+      return 1;
+    }
+
     if (limit > available)
     {
-      string []? parameters = parametersGetter?.Invoke();
-      e = ImpossibleSegmentationException.ForwardSegmentationMsg ( available: available, offset: offset, count, parameters );
+      SegmentationParamNames names = paramNames.SafeGet();
+      e = ImpossibleSegmentationException.ForwardSegmentationMsg ( available: available, offset: offset, count, names );
       return 1;
     }
 
@@ -227,7 +234,7 @@ static public class IndexingValidator
   /// This means that segment <c>|offset,count|</c> which translates to interval <c>[start=offset, end=offset+count)</c> is
   /// valid only when <c>start</c> &lt; <c>end = length</c> with exception for <c>|0,0| → [0, 0)</c>.
   /// </item>
-  /// <item>See <see cref="ValidateSegmentation(NonNegativeInt32, NonNegativeInt32, NonNegativeInt32, out int, out ImpSegExc?, Func{string[]}?)"/>
+  /// <item>See <see cref="ValidateSegmentation(NonNegativeInt32, int, NonNegativeInt32, out int, out ImpSegExc?, ParamNames{SegParams}?)"/>
   /// for more information.
   /// </item>
   /// </list>

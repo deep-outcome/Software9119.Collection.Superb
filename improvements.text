@@ -1,4 +1,4 @@
-- add to ILIst segments extension methods
+- add to ILIst segments extension methods (and to ArraySegment, Span, roSpan, Memory, roMemory)
 - add AsOrToCapacitor and AsOrToAccumulator
 
 - add .netstandard 2.0 support
