@@ -76,7 +76,7 @@ public class Capacitor
   /// Computes <paramref name="forCount"/> and <paramref name="fromIndex"/> difference.
   /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
-  static protected internal int AvailableCount ( int fromIndex, int forCount )
+  static protected internal int AvailableCount ( NonNegativeInt32 fromIndex, NonNegativeInt32 forCount )
     => IndexingValidator.IndexToCountInclusiveDifference ( fromIndex, forCount );
 
   /// <summary>
@@ -254,7 +254,7 @@ public class Capacitor<T> : Capacitor,
   /// <remarks>
   /// Internals for:
   /// <list type="bullet">
-  /// <item><see cref="Insert(NonNegativeInt32, IEnumerable{T?}?, NonNegativeInt32)"/></item>
+  /// <item><see cref="Insert(int, IEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// <item><see cref="Add(IEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// </list>
   /// </remarks>
@@ -290,7 +290,7 @@ public class Capacitor<T> : Capacitor,
   /// <remarks>
   /// Internals for:
   /// <list type="bullet">
-  /// <item><see cref="Insert(NonNegativeInt32, IAsyncEnumerable{T?}?, NonNegativeInt32)"/></item>
+  /// <item><see cref="Insert(int, IAsyncEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// <item><see cref="Add(IAsyncEnumerable{T?}?, NonNegativeInt32)"/></item>
   /// </list>
   /// </remarks>
@@ -1285,6 +1285,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ArgumentNullException">When <paramref name="array"/> is <see langword="null"/>.</exception>
   /// <exception cref="IndexOutOfBoundariesException">
   /// <list type="bullet">
+  /// <item>When <paramref name="arrayIndex"/> is less than <c>0</c>.</item>
   /// <item>When <paramref name="arrayIndex"/> is greater or equal to <paramref name="array"/> length.</item>
   /// <item>When <paramref name="fromIndex"/> is greater or equal to <see cref="Count"/>.</item>
   /// </list>
@@ -1293,7 +1294,7 @@ public class Capacitor<T> : Capacitor,
   /// When <paramref name="array"/> length from <paramref name="arrayIndex"/> is insufficient.
   /// </exception>
   [SuppressMessage ( "Style", "IDE0018:Inline variable declaration", Justification = "Not this case." )]
-  public void CopyTo ( T? [] array, NonNegativeInt32 arrayIndex, NonNegativeInt32 fromIndex )
+  public void CopyTo ( T? [] array, int arrayIndex, NonNegativeInt32 fromIndex )
   {
     IndexOutOfBoundariesException? e;
 
@@ -1531,9 +1532,12 @@ public class Capacitor<T> : Capacitor,
   /// </summary>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// </list>
   /// </exception>
-  public IEnumerable<T?> FindItems ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count )
+  public IEnumerable<T?> FindItems ( Predicate<T?> match, int offset, NonNegativeInt32 count )
   {
     IEnumerable<int> allIndexes = FindIndexes ( match, offset, count );
 
@@ -1627,9 +1631,12 @@ public class Capacitor<T> : Capacitor,
   /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// </list>
   /// </exception>
-  public bool FindFirstItem ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count, out T? item )
+  public bool FindFirstItem ( Predicate<T?> match, int offset, NonNegativeInt32 count, out T? item )
     => ItemAtIndex ( FindFirstIndex ( match, offset, count ), out item );
 
   /// <summary>
@@ -1677,7 +1684,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public int FindLastIndex ( Predicate<T?> match, int offset, NonNegativeInt32 count )
@@ -1704,9 +1711,10 @@ public class Capacitor<T> : Capacitor,
   /// <returns><c>-1</c> when no item matches predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
+  /// <item>When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>
   /// </exception>
-  public int FindLastIndex ( NonNegativeInt32 rearSet, NonNegativeInt32 count, Predicate<T?> match )
+  public int FindLastIndex ( int rearSet, NonNegativeInt32 count, Predicate<T?> match )
   {
     if (match == null)
       throw NullMatchPredicate ( nameof ( match ) );
@@ -1768,9 +1776,12 @@ public class Capacitor<T> : Capacitor,
   /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// </list>
   /// </exception>
-  public bool FindLastItem ( Predicate<T?> match, NonNegativeInt32 offset, NonNegativeInt32 count, out T? item )
+  public bool FindLastItem ( Predicate<T?> match, int offset, NonNegativeInt32 count, out T? item )
     => ItemAtIndex ( FindLastIndex ( match, offset, count ), out item );
 
   /// <summary>
@@ -1781,9 +1792,12 @@ public class Capacitor<T> : Capacitor,
   /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>  
+  /// </list>
   /// </exception>
-  public bool FindLastItem ( NonNegativeInt32 rearSet, NonNegativeInt32 count, Predicate<T?> match, out T? item )
+  public bool FindLastItem ( int rearSet, NonNegativeInt32 count, Predicate<T?> match, out T? item )
     => ItemAtIndex ( FindLastIndex ( rearSet, count, match ), out item );
 
   /// <summary>
@@ -1820,9 +1834,10 @@ public class Capacitor<T> : Capacitor,
   /// <returns><c>-1</c> when not enough items match predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
+  /// <item>When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>
   /// </exception>
-  public int FindMthIndex ( Predicate<T?> match, PositiveInt32 mth, NonNegativeInt32 rearSet, NonNegativeInt32 count )
+  public int FindMthIndex ( Predicate<T?> match, PositiveInt32 mth, int rearSet, NonNegativeInt32 count )
   {
     if (match == null)
       throw NullMatchPredicate ( nameof ( match ) );
@@ -1886,9 +1901,12 @@ public class Capacitor<T> : Capacitor,
   /// <remarks>If <see langword="false"/> is returned, <paramref name="item"/> is set to <c>default(<typeparamref name="T"/>)</c>.</remarks>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>  
+  /// </list>
   /// </exception>
-  public bool FindMthItem ( Predicate<T?> match, PositiveInt32 mth, NonNegativeInt32 rearSet, NonNegativeInt32 count, out T? item )
+  public bool FindMthItem ( Predicate<T?> match, PositiveInt32 mth, int rearSet, NonNegativeInt32 count, out T? item )
     => ItemAtIndex ( FindMthIndex ( match, mth, rearSet, count ), out item );
 
   /// <summary>
@@ -1984,9 +2002,12 @@ public class Capacitor<T> : Capacitor,
   /// <returns><see langword="false"/> when not enough items match predicate.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="match"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// </list>
   /// </exception>
-  public bool FindNthItem ( Predicate<T?> match, PositiveInt32 nth, NonNegativeInt32 offset, NonNegativeInt32 count, out T? item )
+  public bool FindNthItem ( Predicate<T?> match, PositiveInt32 nth, int offset, NonNegativeInt32 count, out T? item )
     => ItemAtIndex ( FindNthIndex ( match, nth, offset, count ), out item );
 
   /// <summary>
@@ -2180,7 +2201,7 @@ public class Capacitor<T> : Capacitor,
   /// </list>
   /// </remarks>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
-  public bool Insert ( NonNegativeInt32 offset, IEnumerable<T?>? items, NonNegativeInt32 roomRequest )
+  public bool Insert ( int offset, IEnumerable<T?>? items, NonNegativeInt32 roomRequest )
   {
     if (ValidateInsertionIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
@@ -2199,7 +2220,7 @@ public class Capacitor<T> : Capacitor,
   /// </list>
   /// </remarks>
   /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is out of insertion bounds.</exception>
-  async public Task<bool> Insert ( NonNegativeInt32 offset, IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
+  async public Task<bool> Insert ( int offset, IAsyncEnumerable<T?>? items, NonNegativeInt32 roomRequest )
   {
     if (ValidateInsertionIndex ( offset, out IndexOutOfBoundariesException? e, nameof ( offset ) ))
       throw e;
@@ -2325,9 +2346,10 @@ public class Capacitor<T> : Capacitor,
   /// </summary>
   /// <returns><c>-1</c> when item is not present.</returns>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
+  /// <item>When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>
   /// </exception>
-  public int LastIndexOf ( NonNegativeInt32 rearSet, NonNegativeInt32 count, T? item )
+  public int LastIndexOf ( int rearSet, NonNegativeInt32 count, T? item )
   {
     int validation = ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, RearSetCountParametersGetter);
     switch (validation)
@@ -2373,9 +2395,10 @@ public class Capacitor<T> : Capacitor,
   /// </summary>
   /// <returns><c>-1</c> when not enough items match.</returns>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.
+  /// <item>When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.</item>
+  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>
   /// </exception>
-  public int MthIndexOf ( T? item, PositiveInt32 mth, NonNegativeInt32 rearSet, NonNegativeInt32 count )
+  public int MthIndexOf ( T? item, PositiveInt32 mth, int rearSet, NonNegativeInt32 count )
   {
 
     int validation = ValidateRearSetConfiguration ( rearSet, count, out ImpSegExc? e, RearSetCountParametersGetter);

@@ -1,6 +1,5 @@
 ﻿using Software9119.Collection.Superb.Numerics;
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -180,7 +179,7 @@ static public class IndexingValidator
   /// for case <c>|offset=available,0| → [available,available) = [available,available-1]</c>.
   /// </item>
   /// <item>
-  /// See <see cref="ValidateSegmentationStrict(NonNegativeInt32, NonNegativeInt32, NonNegativeInt32, out int, out ImpSegExc?)"/>
+  /// See <see cref="ValidateSegmentationStrict(NonNegativeInt32, int, NonNegativeInt32, out int, out ImpSegExc?)"/>
   /// for less permissive version of this validation method.
   /// </item>
   /// </list>
@@ -251,13 +250,19 @@ static public class IndexingValidator
   static public int ValidateSegmentationStrict
   (
     NonNegativeInt32 available,
-    NonNegativeInt32 offset,
+    int offset,
     NonNegativeInt32 count,
     out int limit,
     out ImpossibleSegmentationException? e
   )
   {
     limit = LimitOutOf ( offset, count );
+
+    if (offset < 0)
+    {
+      e = ImpossibleSegmentationException.NegativeOffsetMsg ( offset );
+      return 1;
+    }
 
     if ((offset == available && offset != 0) || limit > available)
     {

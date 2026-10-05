@@ -341,6 +341,7 @@ public class IndexingValidatorTest
   [DataRow ( 1, 0, 0, DisplayName = "Empty segment, index not less" )]
   [DataRow ( 5, 0, 5, DisplayName = "Empty segment, index not less" )]
   [DataRow ( 6, 0, 5, DisplayName = "Empty segment, index not less" )]
+  [DataRow ( -1, 5, 5, DisplayName = "Negative offset." )]
   public void ValidateSegmentationStrict_NegativeScenarios ( int offset, int count, int available )
   {
     int result = IndexingValidator.ValidateSegmentationStrict
@@ -351,7 +352,10 @@ public class IndexingValidatorTest
 
     Assert.AreEqual ( 1, result );
     Assert.AreEqual ( IndexingValidator.LimitOutOf ( offset, count ), limit );
-    string errMsg = $"With available '{available}', given offset '{offset}' and count '{count}' produce out-of indexing.";
+    string errMsg = offset < 0
+      ? $"Offset must be non-negative integer, but it is '{offset}'."
+      : $"With available '{available}', given offset '{offset}' and count '{count}' produce out-of indexing.";
+
     Assert.AreEqual ( errMsg, e!.Message );
   }
 
