@@ -55,7 +55,7 @@ public class Capacitor
 
   static readonly internal SegmentationParamNames OffsetCountParamNames = new (offset: "offset", "count", null);
   static readonly internal SegmentationParamNames FromIndexCountParamNames = new (offset: "fromIndex", "count", null);
-  static readonly internal string[] RearSetCountParamNames = ["rearSet", "count"];
+  static readonly internal SegmentationParamNames RearSetCountParamNames = new (offset: "rearSet", "count", null);
 
   /// <summary>
   /// Parameter names getter for: 'offset' and 'count'.
@@ -70,7 +70,7 @@ public class Capacitor
   /// <summary>
   /// Parameter names getter for: 'rearSet' and 'count'.
   /// </summary>
-  static protected internal Func<string []> RearSetCountParametersGetter => () => RearSetCountParamNames;
+  static protected internal ParamNames<SegmentationParamNames> RearSetCountParametersGetter => () => RearSetCountParamNames;
 
   /// <summary>
   /// Computes <paramref name="forCount"/> and <paramref name="fromIndex"/> difference.
@@ -105,7 +105,7 @@ public class Capacitor
   /// </summary>
   static protected internal int ValidateSegmentation
   (
-    NonNegativeInt32 available, 
+    NonNegativeInt32 available,
     int offset,
     NonNegativeInt32 count,
     out int limit,
@@ -615,11 +615,11 @@ public class Capacitor<T> : Capacitor,
   /// </summary>
   [SuppressMessage ( "Style", "IDE0047:Remove unnecessary parentheses", Justification = "" )]
   protected internal int ValidateRearSetConfiguration (
-    NonNegativeInt32 rearSet,
+    int rearSet,
     NonNegativeInt32 count,
     out ImpSegExc? e,
-    Func<string []> parametersGetter
-  ) => IxValidator.ValidateBackwardSegmentation ( Count, rearSet, count, out e, parametersGetter );
+    ParamNames<SegmentationParamNames> paramNames
+  ) => IxValidator.ValidateBackwardSegmentation ( Count, rearSet, count, out e, paramNames );
 
   /// <summary>
   /// Validates segmentation possibility.

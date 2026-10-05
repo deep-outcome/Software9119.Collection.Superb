@@ -1,8 +1,6 @@
 ﻿using Software9119.Collection.Superb.Numerics;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Software9119.Collection.Superb.Indexing;
@@ -48,25 +46,24 @@ public class ImpossibleSegmentationException : ArgumentOutOfRangeException
     NonNegativeInt32 available,
     NonNegativeInt32 rearSet,
     NonNegativeInt32 count,
-    string []? parameters = null
+    SegmentationParamNames paramNames = default
   )
   {
     string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.{3}";
-    string paramsString = ParamsString(parameters);
+    string paramsString = ParamsString(paramNames);
 
     string errMsg = string.Format ( msg, available, rearSet, count, paramsString );
     return new ImpossibleSegmentationException ( errMsg );
   }
 
-  static internal string ParamsString ( IEnumerable<string?>? parameters )
+  static internal string ParamsString ( SegmentationParamNames parameters )
   {
-    parameters = parameters?.Where ( x => !string.IsNullOrWhiteSpace ( x ) ) ?? Enumerable.Empty<string> ();
+    int count = parameters.ParamsCount;
+    if (count == 0)
+      return "";
+
     string join = string.Join("','", parameters );
-
-    if (join.Length == 0)
-      return join;
-
-    string intro = parameters.AtLeast(2) ? "Parameters" : "Parameter";
+    string intro = count == 1 ? "Parameter" : "Parameters";
 
     return $" ({intro} '{join}')";
   }

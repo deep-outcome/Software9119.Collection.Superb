@@ -18,7 +18,8 @@ readonly public struct SegmentationParamNames ( string offset, string count, str
   {
     get
     {
-      if (parameters == null || index >= parameters.Length)
+      string [] parameters = Parameters;
+      if (index >= parameters.Length)
         return "";
 
       string name = parameters [ index ];
@@ -44,17 +45,22 @@ readonly public struct SegmentationParamNames ( string offset, string count, str
   public string Unit => this [ 2 ];
 
   /// <summary>
-  /// Enumerator of parameters in order: <see cref="Offset"/>, <see cref="Count"/>, <see cref="Unit"/>.
+  /// Number of valid parameter names for provision.
   /// </summary>
-  /// <remarks>
-  /// Only pure string are enumerated.
-  /// </remarks>
-  public IEnumerator<string> GetEnumerator () => Parameters.Where ( x => !string.IsNullOrWhiteSpace ( x ) ).GetEnumerator ();
+  public int ParamsCount => Parameters.PureStringsOnly ().Count ();
+
   /// <summary>
   /// Enumerator of parameters in order: <see cref="Offset"/>, <see cref="Count"/>, <see cref="Unit"/>.
   /// </summary>
   /// <remarks>
   /// Only pure string are enumerated.
   /// </remarks>
-  IEnumerator IEnumerable.GetEnumerator () => GetEnumerator ();
+  public IEnumerator<string> GetEnumerator () => Parameters.PureStringEnumerator ();
+  /// <summary>
+  /// Enumerator of parameters in order: <see cref="Offset"/>, <see cref="Count"/>, <see cref="Unit"/>.
+  /// </summary>
+  /// <remarks>
+  /// Only pure string are enumerated.
+  /// </remarks>
+  IEnumerator IEnumerable.GetEnumerator () => Parameters.PureStringEnumerator ();
 }

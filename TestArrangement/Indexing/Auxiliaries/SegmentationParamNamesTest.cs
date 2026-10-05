@@ -24,6 +24,8 @@ public class SegmentationParamNamesTest
     Assert.AreEqual ( "", test.Count );
     Assert.AreEqual ( "", test.Unit );
 
+    Assert.AreEqual ( 0, test.ParamsCount );
+
     IEnumerator<string> typedEnumerator = test.GetEnumerator();
     IEnumerator enumerator = ((IEnumerable)test).GetEnumerator();
 
@@ -47,6 +49,8 @@ public class SegmentationParamNamesTest
     Assert.AreEqual ( "", test.Offset );
     Assert.AreEqual ( "", test.Count );
     Assert.AreEqual ( "", test.Unit );
+
+    Assert.AreEqual ( 0, test.ParamsCount );
 
     IEnumerator<string> typedEnumerator = test.GetEnumerator();
     IEnumerator enumerator = ((IEnumerable)test).GetEnumerator();
@@ -86,25 +90,39 @@ public class SegmentationParamNamesTest
   }
 
   [TestMethod]
-  public void Indexer ()
+  public void SafeParametersAccess ()
   {
     SegmentationParamNames test;
 
-    test = default;
-    Assert.AreEqual ( "", test [ -1 ] );
+    test = default;    
     Assert.AreEqual ( "", test [ 0 ] );
     Assert.AreEqual ( "", test [ int.MaxValue ] );
+    Assert.AreEqual ( 0, test.ParamsCount );
 
     test = new ( "index", "number", "array" );
     Assert.AreEqual ( "index", test [ 0 ] );
     Assert.AreEqual ( "number", test [ 1 ] );
     Assert.AreEqual ( "array", test [ 2 ] );
     Assert.AreEqual ( "", test [ 3 ] );
+    Assert.AreEqual ( 3, test.ParamsCount );
 
     test = new ( "index", "number", null );
     Assert.AreEqual ( "index", test [ 0 ] );
     Assert.AreEqual ( "number", test [ 1 ] );
     Assert.AreEqual ( "", test [ 2 ] );
+    Assert.AreEqual ( 2, test.ParamsCount );
+
+    test = new ( "", "", "array" );
+    Assert.AreEqual ( "", test [ 0 ] );
+    Assert.AreEqual ( "", test [ 1 ] );
+    Assert.AreEqual ( "array", test [ 2 ] );
+    Assert.AreEqual ( 1, test.ParamsCount );
+
+    test = new ( null!, null!, null );
+    Assert.AreEqual ( "", test [ 0 ] );
+    Assert.AreEqual ( "", test [ 1 ] );
+    Assert.AreEqual ( "", test [ 2 ] );
+    Assert.AreEqual ( 0, test.ParamsCount );
 
     Action negativeIndex = () => _ = test[-1];
     IndexOutOfRangeException e = Assert.ThrowsExactly<IndexOutOfRangeException> ( negativeIndex );

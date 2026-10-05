@@ -3,7 +3,6 @@
 using Software9119.Collection.Superb.Indexing;
 
 using System;
-using System.Globalization;
 using System.Linq;
 
 namespace Software9119.Collection.Superb.TestArrangement.Indexing.Exceptionality;
@@ -20,9 +19,9 @@ public class ImpossibleSegmentationExceptionTest
       ( new SegmentationParamNames("", "", ""), false),
       ( new SegmentationParamNames(" ", " ", " "), false),
       ( new SegmentationParamNames(null!, null!, null), false),
-      ( new SegmentationParamNames("OffseT", "CounT", null), true),
-      ( new SegmentationParamNames("OffseT", "CounT", "ArraY"), true),
-      ( new SegmentationParamNames("OffseT", "", ""), true),
+      ( new SegmentationParamNames("OutseT", "CounT", null), true),
+      ( new SegmentationParamNames("OutseT", "CounT", "ArraY"), true),
+      ( new SegmentationParamNames("OutseT", "", ""), true),
       ( default, null),
     ];
   }
@@ -52,7 +51,7 @@ public class ImpossibleSegmentationExceptionTest
       : ImpossibleSegmentationException.NegativeOffsetMsg ( -2 );
 
     string msg = "Offset must be non-negative integer, but it is '-2'.";
-    if (valid == true && paramNames.Offset.Length > 0) msg += " (Parameter 'OffseT')";
+    if (valid == true && paramNames.Offset.Length > 0) msg += " (Parameter 'OutseT')";
 
     Assert.AreEqual ( msg, e.Message );
   }
@@ -71,9 +70,9 @@ public class ImpossibleSegmentationExceptionTest
     {
       msg += paramNames.Count () switch
       {
-        1 => " (Parameter 'OffseT')",
-        2 => " (Parameters 'OffseT','CounT')",
-        3 => " (Parameters 'OffseT','CounT','ArraY')",
+        1 => " (Parameter 'OutseT')",
+        2 => " (Parameters 'OutseT','CounT')",
+        3 => " (Parameters 'OutseT','CounT','ArraY')",
         _ => throw new InvalidOperationException ( "Unsupported parameters count." )
       };
     }
@@ -90,43 +89,51 @@ public class ImpossibleSegmentationExceptionTest
   }
 
   [TestMethod]
-  [DataRow ( null )]
-  [DataRow ( false )]
-  [DataRow ( true )]
-  public void BackwardSegmentationMsg ( bool? withParamaters )
+  [DynamicData ( nameof ( ParamNamesData ) )]
+  public void BackwardSegmentationMsg ( SegmentationParamNames paramNames, bool? valid )
   {
-    string[]? parameters = withParamaters == null
-      ? null
-      : withParamaters == true
-        ? [ "AB", "C", "DE" ]
-        : [];
-
-    ImpossibleSegmentationException e = ImpossibleSegmentationException.BackwardSegmentationMsg (1, 2, 3,parameters);
-    string msg = "With available '1', given rearSet '2' and count '3' produce out-of indexing.{0}";
-    string paramsString = withParamaters == true ? " (Parameters 'AB','C','DE')" : "";
-    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsString );
+    ImpossibleSegmentationException e = ImpossibleSegmentationException.BackwardSegmentationMsg (1, 2, 3, paramNames);
+    string msg = "With available '1', given rearSet '2' and count '3' produce out-of indexing.";
+    if (valid == true)
+    {
+      msg += paramNames.Count () switch
+      {
+        1 => " (Parameter 'OutseT')",
+        2 => " (Parameters 'OutseT','CounT')",
+        3 => " (Parameters 'OutseT','CounT','ArraY')",
+        _ => throw new InvalidOperationException ( "Unsupported parameters count." )
+      };
+    }
 
     Assert.AreEqual ( msg, e.Message );
   }
 
-  static (string? []?, string) [] ParamsStringData ()
+  static (SegmentationParamNames, bool) [] ParamsStringData ()
   {
-    return
-    [
-      (null, ""),
-      ( [], ""),
-      ( [ "", "", "" ], ""),
-      ( [ " ", " ", " " ], ""),
-      ( [ null, null, null ], "" ),
-      ( [ "Abc", null, "XyZ"], " (Parameters 'Abc','XyZ')" ),
-      ( [ "Abc", null], " (Parameter 'Abc')" )
+    return [
+      (default, false),
+      (new ("IndeX", "NumbeR", "ArraY"), true),
+      (new ("IndeX", "", "ArraY"), true),
+      (new ("IndeX", "", ""), true),
+      (new ("", "", ""), false),
+      (new (" ", " ", " "), false),
+      (new (null!, null!, null), false),
     ];
   }
 
   [TestMethod]
   [DynamicData ( nameof ( ParamsStringData ) )]
-  public void ParamsString ( string? []? parameters, string expectation )
+  public void ParamsString ( SegmentationParamNames parameters, bool validParams )
   {
+    string expectation = validParams ?  parameters.ParamsCount switch
+    {
+      1 => " (Parameter 'IndeX')",
+      2 => " (Parameters 'IndeX','ArraY')",
+      3 => " (Parameters 'IndeX','NumbeR','ArraY')",
+      _ => throw new InvalidOperationException("Unsupported parameters count.")
+    }
+    : "";
+
     string test = ImpossibleSegmentationException.ParamsString(parameters);
     Assert.AreEqual ( expectation, test );
   }

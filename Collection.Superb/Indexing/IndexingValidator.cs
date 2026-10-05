@@ -313,17 +313,24 @@ static public class IndexingValidator
   [SuppressMessage ( "Style", "IDE0047:Remove unnecessary parentheses", Justification = "" )]
   static public int ValidateBackwardSegmentation (
     NonNegativeInt32 available,
-    NonNegativeInt32 rearSet,
+    int rearSet,
     NonNegativeInt32 count,
     [NotNullWhen ( true )] out ImpSegExc? e,
-    Func<string []>? parametersGetter = null
+    ParamNames<SegmentationParamNames>? paramNames = null
   )
   {
+    if (rearSet < 0)
+    {
+      SegmentationParamNames names = paramNames.SafeGet();
+      e = ImpossibleSegmentationException.NegativeOffsetMsg ( rearSet, names );
+      return 1;
+    }
+
     bool empty = count == 0;
     if (rearSet > available || rearSet + 1 < count || (rearSet == available && empty == false))
     {
-      string []? parameters = parametersGetter?.Invoke();
-      e = ImpossibleSegmentationException.BackwardSegmentationMsg ( available, rearSet, count, parameters );
+      SegmentationParamNames names = paramNames.SafeGet();
+      e = ImpossibleSegmentationException.BackwardSegmentationMsg ( available, rearSet, count, names );
       return 1;
     }
 

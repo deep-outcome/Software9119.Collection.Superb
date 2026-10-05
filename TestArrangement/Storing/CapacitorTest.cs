@@ -40,6 +40,19 @@ public class CapacitorTest
     ];
   }
 
+  static (ParamNames<SegmentationParamNames>?, bool) [] ValidateBackwardSegmentationData_Parameters ()
+  {
+    return [
+      (null, false),
+      (() => default, false),
+      (() => new ("RearSeT", "NumbeR", "ArraY"), true),
+      (() => new ("RearSeT", "", ""), true),
+      (() => new ("", "", ""), false),
+      (() => new (" ", " ", " "), false),
+      (() => new (null!, null!, null), false),
+    ];
+  }
+
   [TestMethod]
   public void NullAction ()
   {
@@ -89,6 +102,7 @@ public class CapacitorTest
   {
     SegmentationParamNames test = Capacitor.OffsetCountParamNames;
     Assert.AreEqual ( 2, test.Count () );
+    Assert.AreEqual ( 2, test.ParamsCount );
     Assert.AreEqual ( "offset", test.First () );
     Assert.AreEqual ( "count", test.Last () );
 
@@ -109,6 +123,7 @@ public class CapacitorTest
   {
     SegmentationParamNames test = Capacitor.FromIndexCountParamNames;
     Assert.AreEqual ( 2, test.Count () );
+    Assert.AreEqual ( 2, test.ParamsCount );
     Assert.AreEqual ( "fromIndex", test.First () );
     Assert.AreEqual ( "count", test.Last () );
 
@@ -120,7 +135,7 @@ public class CapacitorTest
   [TestMethod]
   public void FromIndexCountParametersGetter ()
   {
-    SegmentationParamNames  test = Capacitor.FromIndexCountParametersGetter();
+    SegmentationParamNames test = Capacitor.FromIndexCountParametersGetter();
     Assert.IsTrue ( ReferenceEquals ( Capacitor.FromIndexCountParamNames.parameters, test.parameters ) );
   }
 
@@ -128,17 +143,23 @@ public class CapacitorTest
   [TestMethod]
   public void RearSetCountParamNames ()
   {
-    string [] test = Capacitor.RearSetCountParamNames;
-    Assert.AreEqual ( 2, test.Length );
-    Assert.IsTrue ( test.Contains ( "rearSet" ) );
-    Assert.IsTrue ( test.Contains ( "count" ) );
+    SegmentationParamNames test = Capacitor.RearSetCountParamNames;
+    Assert.AreEqual ( 2, test.ParamsCount );
+    Assert.AreEqual ( 2, test.Count () );
+
+    Assert.AreEqual ( "rearSet", test.First () );
+    Assert.AreEqual ( "count", test.Last () );
+
+    Assert.AreEqual ( "rearSet", test.Offset );
+    Assert.AreEqual ( "count", test.Count );
+    Assert.AreEqual ( "", test.Unit );
   }
 
   [TestMethod]
   public void RearSetCountParametersGetter ()
   {
-    string [] test = Capacitor.RearSetCountParametersGetter();
-    Assert.IsTrue ( ReferenceEquals ( Capacitor.RearSetCountParamNames, test ) );
+    SegmentationParamNames test = Capacitor.RearSetCountParametersGetter();
+    Assert.IsTrue ( ReferenceEquals ( Capacitor.RearSetCountParamNames.parameters, test.parameters ) );
   }
 
   [TestMethod]
@@ -1694,40 +1715,51 @@ public class CapacitorTest
   [DataRow ( 0, 1, 0 )]
   [DataRow ( 0, 0, 1 )]
   [DataRow ( 0, 1, 1 )]
+  [DataRow ( 0, -1, 0 )]
   public void ValidateRearSetConfiguration_NegativeScenarios ( int size, int index, int count )
   {
     Capacitor<int> capacitor = new(new int[size], 10);
 
     Assert.AreEqual ( 1, capacitor.ValidateRearSetConfiguration ( index, count, out ImpSegExc? e, () => [] ) );
 
-    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
+    string msg = index == -1
+      ? "Offset must be non-negative integer, but it is '-1'."
+      : "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
+
     msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
+    Assert.AreEqual ( msg, e?.Message );
+  }
+
+  [TestMethod]
+  [DynamicData ( nameof ( ValidateBackwardSegmentationData_Parameters ) )]
+  public void ValidateRearSetConfiguration_Parameters_Segment ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
+  {
+    Capacitor<int> capacitor = new(new int[5]);
+    Assert.AreEqual ( 1, capacitor.ValidateRearSetConfiguration ( 4, 6, out ImpSegExc? e, parameters! ) );
+
+    string msg = "With available '5', given rearSet '4' and count '6' produce out-of indexing.{0}";
+    string paramsStr = validParams
+      ?  parameters.SafeGet().ParamsCount == 1
+        ? " (Parameter 'RearSeT')"
+        : " (Parameters 'RearSeT','NumbeR','ArraY')"
+      : "";
+
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
 
     Assert.AreEqual ( msg, e?.Message );
   }
 
   [TestMethod]
-  [DataRow ( 1 )]
-  [DataRow ( 2 )]
-  [DataRow ( 3 )]
-  [DataRow ( 4 )]
-  public void ValidateRearSetConfiguration_Parameters ( int testCase )
+  [DynamicData ( nameof ( ValidateBackwardSegmentationData_Parameters ) )]
+  public void ValidateRearSetConfiguration_Parameters_NegativeOffset ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
   {
-    Func<string[]>? parameters = testCase switch
-    {
-      1 => null,
-      2 => () => null!,
-      3 => () => [],
-      4 => () => ["ABC", "xYz"],
-      _ => throw new ArgumentOutOfRangeException(nameof( testCase ) )
-    };
-
     Capacitor<int> capacitor = new(new int[5]);
-    Assert.AreEqual ( 1, capacitor.ValidateRearSetConfiguration ( 4, 6, out ImpSegExc? e, parameters! ) );
+    Assert.AreEqual ( 1, capacitor.ValidateRearSetConfiguration ( -1, 0, out ImpSegExc? e, parameters! ) );
 
-    string msg = "With available '5', given rearSet '4' and count '6' produce out-of indexing.{0}";
-    string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
-    msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
+    string msg = "Offset must be non-negative integer, but it is '-1'.{0}";
+    string paramsStr = validParams ? " (Parameter 'RearSeT')" : "";
+
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
 
     Assert.AreEqual ( msg, e?.Message );
   }

@@ -387,16 +387,16 @@ public class IndexingValidatorTest
   [DataRow ( 0, 1, 0 )]
   [DataRow ( 0, 0, 1 )]
   [DataRow ( 0, 1, 1 )]
+  [DataRow ( 0, -1, 0 )]
   public void ValidateBackwardSegmentation_NegativeScenarios ( int size, int index, int count )
   {
-    Func<string[]> parameters = () => ["abc", "tuv"];
-    Assert.AreEqual ( 1, IndexingValidator.ValidateBackwardSegmentation ( size, index, count, out ImpSegExc? e, parameters ) );
+    Assert.AreEqual ( 1, IndexingValidator.ValidateBackwardSegmentation ( size, index, count, out ImpSegExc? e ) );
 
-    string msg = "With available '{0}', given rearSet '{1}' and count '{2}' produce out-of indexing.";
-    msg = string.Format ( CultureInfo.InvariantCulture, msg, size, index, count );
-    msg += " (Parameters 'abc','tuv')";
+    string errMsg = index < 0
+     ? $"Offset must be non-negative integer, but it is '-1'."
+     : $"With available '{size}', given rearSet '{index}' and count '{count}' produce out-of indexing.";
 
-    Assert.AreEqual ( msg, e?.Message );
+    Assert.AreEqual ( errMsg, e!.Message );
   }
 
   [TestMethod]
@@ -417,27 +417,47 @@ public class IndexingValidatorTest
     Assert.IsNull ( e );
   }
 
-  [TestMethod]
-  [DataRow ( 1 )]
-  [DataRow ( 2 )]
-  [DataRow ( 3 )]
-  [DataRow ( 4 )]
-  public void ValidateBackwardSegmentation_Parameters ( int testCase )
+  static (ParamNames<SegmentationParamNames>?, bool) [] ValidateBackwardSegmentationData_Parameters ()
   {
-    Func<string[]>? parameters = testCase switch
-    {
-      1 => null,
-      2 => () => null!,
-      3 => () => [],
-      4 => () => ["ABC", "xYz"],
-      _ => throw new ArgumentOutOfRangeException(nameof( testCase ) )
-    };
+    return [
+      (null, false),
+      (() => default, false),
+      (() => new ("RearSeT", "NumbeR", "ArraY"), true),
+      (() => new ("RearSeT", "", ""), true),
+      (() => new ("", "", ""), false),
+      (() => new (" ", " ", " "), false),
+      (() => new (null!, null!, null), false),
+    ];
+  }
 
+  [TestMethod]
+  [DynamicData ( nameof ( ValidateBackwardSegmentationData_Parameters ) )]
+  public void ValidateBackwardSegmentation_Parameters_InvalidSegment ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
+  {
     _ = IndexingValidator.ValidateBackwardSegmentation ( 5, 6, 0, out ImpSegExc? e, parameters );
 
     string msg = "With available '5', given rearSet '6' and count '0' produce out-of indexing.{0}";
-    string parametersString = testCase == 4 ? " (Parameters 'ABC','xYz')" : "";
-    msg = string.Format ( CultureInfo.InvariantCulture, msg, parametersString );
+    string paramsStr = validParams
+      ?  parameters.SafeGet().ParamsCount == 1
+        ? " (Parameter 'RearSeT')"
+        : " (Parameters 'RearSeT','NumbeR','ArraY')"
+      : "";
+
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
+
+    Assert.AreEqual ( msg, e?.Message );
+  }
+
+  [TestMethod]
+  [DynamicData ( nameof ( ValidateBackwardSegmentationData_Parameters ) )]
+  public void ValidateBackwardSegmentation_Parameters_NegativeOffset ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
+  {
+    _ = IndexingValidator.ValidateBackwardSegmentation ( 0, -1, 0, out ImpSegExc? e, parameters );
+
+    string msg = "Offset must be non-negative integer, but it is '-1'.{0}";
+    string paramsStr = validParams ? " (Parameter 'RearSeT')" : "";
+
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
 
     Assert.AreEqual ( msg, e?.Message );
   }
