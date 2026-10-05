@@ -47,7 +47,7 @@ readonly public struct SegmentationParamNames ( string offset, string count, str
   /// <summary>
   /// Number of valid parameter names for provision.
   /// </summary>
-  public int ParamsCount => Parameters.PureStringsOnly ().Count ();
+  public int ParamsCount => Parameters.PureStrings ().Count ();
 
   /// <summary>
   /// Enumerator of parameters in order: <see cref="Offset"/>, <see cref="Count"/>, <see cref="Unit"/>.
