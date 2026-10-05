@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Software9119.Collection.Superb.Indexing;
-using Software9119.Collection.Superb.Numerics;
 using Software9119.Collection.Superb.Segmentation;
 using Software9119.Collection.Superb.TestArrangement.Segmentation._equipage;
 using Software9119.Collection.Superb.TestArrangement.TestAide;
@@ -81,7 +80,7 @@ public class IListRefSegmentTest
   }
 
   [TestMethod]
-  public void OffsetCtor_InvalidSegmentation ( )
+  public void OffsetCtor_InvalidSegmentation ()
   {
     NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );
     Action test = () => _ = new IListRefSegment<NoRefList> ( list, 3, 3 );
@@ -90,13 +89,14 @@ public class IListRefSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( -1, 0, "Value must be non-negative integer, but it is '-1'.", DisplayName = "Negative offset." )]
-  [DataRow ( 0, -1, "Value must be non-negative integer, but it is '-1'.", DisplayName = "Negative count." )]
-  public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
+  [DataRow ( -1, 0, "Offset must be non-negative integer, but it is '-1'.", typeof ( ImpossibleSegmentationException ), DisplayName = "Negative offset." )]
+  [DataRow ( 0, -1, "Value must be non-negative integer, but it is '-1'.", typeof ( ArgumentOutOfRangeException ), DisplayName = "Negative count." )]
+  public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg, Type exception )
   {
     NoRefList list = new(new string[] { "a", "b", "c", "d", "e", } );
     Action test = () => _ = new IListRefSegment<NoRefList> ( list, offset: offset, count );
-    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
+    ArgumentOutOfRangeException e = Assert.Throws<ArgumentOutOfRangeException> ( test );
+    Assert.IsTrue ( e.GetType () == exception );
     Assert.AreEqual ( errMsg, e.Message );
   }
 
@@ -116,8 +116,8 @@ public class IListRefSegmentTest
   [TestMethod]
   [DataRow ( 0, 5, -1, "Index must be non-negative integer, but it is '-1'." )]
   [DataRow ( 0, 5, 5, "For available '5' is index '5' out of bounds." )]
-  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds."  )]
-  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds."  )]
+  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds." )]
+  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds." )]
   public void Indexer_Get_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
     RefList list = new (new string [] { "a", "b", "c", "d", "e" });
@@ -149,8 +149,8 @@ public class IListRefSegmentTest
   [TestMethod]
   [DataRow ( 0, 5, -1, "Index must be non-negative integer, but it is '-1'." )]
   [DataRow ( 0, 5, 5, "For available '5' is index '5' out of bounds." )]
-  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds."  )]
-  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds."  )]
+  [DataRow ( 2, 2, 2, "For available '2' is index '2' out of bounds." )]
+  [DataRow ( 0, 0, 0, "For available '0' is index '0' out of bounds." )]
   public void Indexer_Set_NegativeScenarios ( int offset, int count, int index, string expMsg )
   {
     RefList list = new (new string [] { "a", "b", "c", "d", "e" });
@@ -442,6 +442,25 @@ public class IListRefSegmentTest
     Assert.AreEqual ( segment.offset + offset, test.offset );
     Assert.AreEqual ( count, test.Count );
     Assert.IsTrue ( ReferenceEquals ( segment.list.values, test.list.values ) );
+  }
+
+
+  [TestMethod]
+  [DataRow ( -1 )]
+  [DataRow ( int.MinValue )]
+  public void Slice_WithCount_NegativeOffset ( int offset )
+  {
+    RefList list = new ( new int [0] );
+    IListRefSegment<RefList> segment = new ( list );
+    try
+    {
+      _ = segment.Slice ( offset, 0 );
+    }
+    catch (IndexOutOfBoundariesException e)
+    {
+      string msg = $"Index must be non-negative integer, but it is '{offset}'. (Parameter 'offset')";
+      Assert.AreEqual ( msg, e.Message );
+    }
   }
 
   [TestMethod]

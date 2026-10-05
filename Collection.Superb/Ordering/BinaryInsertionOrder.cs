@@ -31,12 +31,15 @@ static public class BinaryInsertionOrder
   /// </summary>
   /// <exception cref="ArgumentNullException">When <paramref name="array"/> or <paramref name="comparer"/> is <see langword="null"/>.</exception>
   /// <exception cref="ImpossibleSegmentationException">
-  /// When <paramref name="count"/> and <paramref name="offset"/> create impossible segment over <paramref name="array"/>.
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over <paramref name="array"/>.</item>
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// </list>
   /// </exception>
   static public void Order<T>
   (
     T [] array,
-    NonNegativeInt32 offset,
+    int offset,
     NonNegativeInt32 count,
     Comparison<T> comparer
   )

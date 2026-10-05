@@ -36,7 +36,7 @@ public class ImpossibleSegmentationExceptionTest
       ? ImpossibleSegmentationException.NegativeCountMsg ( -3, paramNames )
       : ImpossibleSegmentationException.NegativeCountMsg ( -3 );
 
-    string msg = "Count must be a non-negative integer, but it is '-3'.";
+    string msg = "Count must be non-negative integer, but it is '-3'.";
     if (valid == true && paramNames.Count.Length > 0) msg += " (Parameter 'CounT')";
 
     Assert.AreEqual ( msg, e.Message );
@@ -51,7 +51,7 @@ public class ImpossibleSegmentationExceptionTest
       ? ImpossibleSegmentationException.NegativeOffsetMsg ( -2, paramNames)
       : ImpossibleSegmentationException.NegativeOffsetMsg ( -2 );
 
-    string msg = "Offset must be a non-negative integer, but it is '-2'.";
+    string msg = "Offset must be non-negative integer, but it is '-2'.";
     if (valid == true && paramNames.Offset.Length > 0) msg += " (Parameter 'OffseT')";
 
     Assert.AreEqual ( msg, e.Message );

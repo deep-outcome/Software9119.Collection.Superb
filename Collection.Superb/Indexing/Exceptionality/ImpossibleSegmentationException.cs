@@ -14,16 +14,16 @@ namespace Software9119.Collection.Superb.Indexing;
 /// </summary>
 public class ImpossibleSegmentationException : ArgumentOutOfRangeException
 {
-  static public ImpossibleSegmentationException NegativeCountMsg ( int count, SegmentationParamNames paramNames = default )
+  static public ImpossibleSegmentationException NegativeCountMsg ( NegativeInt32 count, SegmentationParamNames paramNames = default )
   {
-    string msg = "Count must be a non-negative integer, but it is '{0}'.";
+    string msg = "Count must be non-negative integer, but it is '{0}'.";
     msg = string.Format ( msg, count );
     return new ImpossibleSegmentationException ( msg, paramName: paramNames.Count );
   }
 
-  static public ImpossibleSegmentationException NegativeOffsetMsg ( int offset, SegmentationParamNames paramNames = default )
+  static public ImpossibleSegmentationException NegativeOffsetMsg ( NegativeInt32 offset, SegmentationParamNames paramNames = default )
   {
-    string msg = "Offset must be a non-negative integer, but it is '{0}'.";
+    string msg = "Offset must be non-negative integer, but it is '{0}'.";
     msg = string.Format ( msg, offset );
     return new ImpossibleSegmentationException ( msg, paramName: paramNames.Offset );
   }

@@ -69,8 +69,13 @@ public ref struct IListRefSegment<T, U>
   /// <param name="offset">Starting index of segment.</param>
   /// <param name="count">Number of items to include.</param>
   /// <exception cref="ArgumentNullException">Thrown when <paramref name="list"/> is null.</exception>
-  /// <exception cref="ImpossibleSegmentationException">Thrown when the segmention settings are impossible.</exception>
-  public IListRefSegment ( T list, NonNegativeInt32 offset, NonNegativeInt32 count, IEqualityComparer<U>? equalityComparer = null )
+  /// <exception cref="ImpossibleSegmentationException">
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over <paramref name="list"/>.</item>
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// </list>
+  /// </exception>
+  public IListRefSegment ( T list, int offset, NonNegativeInt32 count, IEqualityComparer<U>? equalityComparer = null )
   {
     this.list = list;
     this.offset = offset;
@@ -216,10 +221,14 @@ public ref struct IListRefSegment<T, U>
   }
 
   /// <summary>
-  /// Creates slice of this segment, starting at <paramref name="offset"/>.
+  /// Creates slice of this segment, with <paramref name="count"/> starting at <paramref name="offset"/>.
   /// </summary>
-  readonly public IListRefSegment<T, U> Slice ( NonNegativeInt32 offset, NonNegativeInt32 count )
+  /// <exception cref="IndexOutOfBoundariesException">When <paramref name="offset"/> is negative.</exception>
+  readonly public IListRefSegment<T, U> Slice ( int offset, NonNegativeInt32 count )
   {
+    if (offset < 0)
+      throw IndexOutOfBoundariesException.NegativeIndexMsg ( offset, nameof ( offset ) );
+
     int startIndex = IndexingValidator.CorrelateIndex(offset, this.offset);
     return new IListRefSegment<T, U> ( list, startIndex, count );
   }

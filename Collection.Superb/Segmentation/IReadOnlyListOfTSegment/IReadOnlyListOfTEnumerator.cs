@@ -22,9 +22,13 @@ public struct IReadOnlyListEnumerator<T> : IEnumerator<T?>
   /// Public constructor.
   /// </summary>
   /// <exception cref="ArgumentNullException">when <paramref name="list"/> is <see langword="null"/>.</exception>
-  /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
-  /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
-  public IReadOnlyListEnumerator ( NonNegativeInt32 offset, NonNegativeInt32 count, IReadOnlyList<T?> list ) : this ( list, offset, IndexingValidator.LimitOutOf ( offset, count ) )
+  /// <exception cref="ImpossibleSegmentationException">
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over <paramref name="list"/>.</item>
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// </list>
+  /// </exception>
+  public IReadOnlyListEnumerator ( int offset, NonNegativeInt32 count, IReadOnlyList<T?> list ) : this ( list, offset, IndexingValidator.LimitOutOf ( offset, count ) )
   {
     if (SegmentingValidator.ValidateList ( list, out ArgumentNullException? ane ))
       throw ane;

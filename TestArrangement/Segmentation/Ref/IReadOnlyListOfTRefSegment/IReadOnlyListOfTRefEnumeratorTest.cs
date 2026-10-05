@@ -19,9 +19,9 @@ public class IReadOnlyListOfTRefEnumeratorTest
       ReadRefList<int> list = new ([]);
       using (new IReadOnlyListRefEnumerator<ReadRefList<int>, int> ( -1, 0, list )) { }
     }
-    catch (ArgumentOutOfRangeException e)
+    catch (ImpossibleSegmentationException e)
     {
-      const string expMessage = "Value must be non-negative integer, but it is '-1'.";
+      const string expMessage = "Offset must be non-negative integer, but it is '-1'.";
       Assert.AreEqual ( expMessage, e.Message );
     }
   }

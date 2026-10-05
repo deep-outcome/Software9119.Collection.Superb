@@ -19,9 +19,9 @@ public class IListRefEnumeratorTest
       RefList list = new (new int [0]);
       _ = new IListRefEnumerator<RefList> ( -1, 0, list );
     }
-    catch (ArgumentOutOfRangeException e)
+    catch (ImpossibleSegmentationException e)
     {
-      const string expMessage = "Value must be non-negative integer, but it is '-1'.";
+      const string expMessage = "Offset must be non-negative integer, but it is '-1'.";
       Assert.AreEqual ( expMessage, e.Message );
     }
 

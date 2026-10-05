@@ -112,13 +112,14 @@ public class IListSegmentTest
   }
 
   [TestMethod]
-  [DataRow ( -1, 0, "Value must be non-negative integer, but it is '-1'.", DisplayName = "Negative offset." )]
-  [DataRow ( 0, -1, "Value must be non-negative integer, but it is '-1'.", DisplayName = "Negative count." )]
-  public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg )
+  [DataRow ( -1, 0, "Offset must be non-negative integer, but it is '-1'.", typeof ( ImpossibleSegmentationException ), DisplayName = "Negative offset." )]
+  [DataRow ( 0, -1, "Value must be non-negative integer, but it is '-1'.", typeof ( ArgumentOutOfRangeException ), DisplayName = "Negative count." )]
+  public void OffsetCtor_InvalidSegmentation ( int offset, int count, string errMsg, Type exception )
   {
     List<string?> list = ["a", "b", "c", "d", "e",];
     Func<object> test = () => new IListSegment ( list, offset: offset, count );
-    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
+    ArgumentOutOfRangeException e = Assert.Throws<ArgumentOutOfRangeException> ( test );
+    Assert.IsTrue ( e.GetType () == exception );
     Assert.AreEqual ( errMsg, e.Message );
   }
 
@@ -459,6 +460,18 @@ public class IListSegmentTest
     Assert.IsTrue ( ReferenceEquals ( segment.list, test.list ) );
 
     Assert.IsTrue ( arraySegment.SequenceEqual ( test.Cast<object> () ) );
+  }
+
+  [TestMethod]
+  [DataRow ( -1 )]
+  [DataRow ( int.MinValue )]
+  public void Slice_WithCount_NegativeOffset ( int offset )
+  {
+    IListSegment segment = new ( new int [0] );
+    Action test = () => segment.Slice(offset, 0);
+
+    IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
+    Assert.AreEqual ( $"Index must be non-negative integer, but it is '{offset}'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]

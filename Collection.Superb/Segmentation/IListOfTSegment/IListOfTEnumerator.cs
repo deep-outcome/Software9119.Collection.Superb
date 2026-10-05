@@ -22,9 +22,13 @@ public struct IListEnumerator<T> : IEnumerator<T?>
   /// Public constructor.
   /// </summary>
   /// <exception cref="ArgumentNullException">when <paramref name="list"/> is <see langword="null"/>.</exception>
-  /// <exception cref="ImpossibleSegmentationException">For negative <paramref name="offset"/> or negative <paramref name="count"/> or
-  /// when combination of <paramref name="offset"/> and <paramref name="count"/> is invalid.</exception>
-  public IListEnumerator ( NonNegativeInt32 offset, NonNegativeInt32 count, IList<T?> list )
+  /// <exception cref="ImpossibleSegmentationException">
+  /// <list type="bullet">
+  /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over <paramref name="list"/>.</item>
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// </list>
+  /// </exception>
+  public IListEnumerator ( int offset, NonNegativeInt32 count, IList<T?> list )
     : this ( list, offset, IndexingValidator.LimitOutOf ( offset, count ) )
   {
     if (SegmentingValidator.ValidateList ( list, out ArgumentNullException? ane ))

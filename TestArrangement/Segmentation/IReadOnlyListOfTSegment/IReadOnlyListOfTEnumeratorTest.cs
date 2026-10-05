@@ -24,8 +24,8 @@ public class IReadOnlyListOfTEnumeratorTest
   public void PubCtor_NegativeOffset ()
   {
     Action test = () => { using ( new IReadOnlyListEnumerator<int>(-1,0, [])) { } } ;
-    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> (test);
-    const string expMessage = "Value must be non-negative integer, but it is '-1'.";
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> (test);
+    const string expMessage = "Offset must be non-negative integer, but it is '-1'.";
     Assert.AreEqual ( expMessage, e.Message );
   }
 

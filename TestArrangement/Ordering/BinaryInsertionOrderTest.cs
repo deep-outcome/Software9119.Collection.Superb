@@ -46,6 +46,15 @@ public class BinaryInsertionOrderTest
     Assert.AreEqual ( errMsg, e.Message );
   }
 
+  [TestMethod]
+  public void Order_NegativeOffset ()
+  {
+    Action test = () => BinaryInsertionOrder.Order(new int[1], offset: -1, 0, Comparison);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'.", e.Message );
+  }
+
   const int evenSourceSize = 10_000;
   const int oddSourceSize = 7_777;
 

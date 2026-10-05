@@ -23,7 +23,10 @@ public class IndexingValidatorTest
   [TestMethod]
   public void CorrelateIndex ()
   {
-    Assert.AreEqual ( 8, IndexingValidator.CorrelateIndex ( (NonNegativeInt32) 3, (NonNegativeInt32) 5 ) );
+    Assert.AreEqual ( 8, IndexingValidator.CorrelateIndex ( 3, 5 ) );
+    Assert.AreEqual ( -8, IndexingValidator.CorrelateIndex ( -3, -5 ) );
+    Assert.AreEqual ( 2, IndexingValidator.CorrelateIndex ( -3, 5 ) );
+    Assert.AreEqual ( -2, IndexingValidator.CorrelateIndex ( 3, -5 ) );
   }
 
   [TestMethod]
@@ -258,7 +261,7 @@ public class IndexingValidatorTest
     Assert.AreEqual ( 1, result );
     Assert.AreEqual ( IndexingValidator.LimitOutOf ( offset, count ), limit );
     string errMsg = offset < 0
-      ? $"Offset must be a non-negative integer, but it is '{offset}'."
+      ? $"Offset must be non-negative integer, but it is '{offset}'."
       : $"With available '{available}', given offset '{offset}' and count '{count}' produce out-of indexing.";
     Assert.AreEqual ( errMsg, e!.Message );
   }
@@ -299,7 +302,7 @@ public class IndexingValidatorTest
   {
     _ = IndexingValidator.ValidateSegmentation ( 0, -1, 0, out _, out ImpSegExc? e, parameters );
 
-    string msg = "Offset must be a non-negative integer, but it is '-1'.{0}";
+    string msg = "Offset must be non-negative integer, but it is '-1'.{0}";
     string paramsStr = validParams ? " (Parameter 'IndeX')" : "";
 
     msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );

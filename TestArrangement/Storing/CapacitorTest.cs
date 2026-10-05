@@ -33,13 +33,12 @@ public class CapacitorTest
       (null, false),
       (() => default, false),
       (() => new ("IndeX", "NumbeR", "ArraY"), true),
-      (() => new ("", "NumbeR", ""), true),
+      (() => new ("IndeX", "", ""), true),
       (() => new ("", "", ""), false),
       (() => new (" ", " ", " "), false),
       (() => new (null!, null!, null), false),
     ];
   }
-
 
   [TestMethod]
   public void NullAction ()
@@ -230,16 +229,20 @@ public class CapacitorTest
   [DataRow ( 1, 5 )]
   [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
+  [DataRow ( -1, 0 )]
+  [DataRow ( -1, 1 )]
   public void ValidateSegmentation_Static_NegativeScenarios ( int offset, int count )
   {
     int result = Capacitor.ValidateSegmentation
     (
-      5, (NonNegativeInt32) offset, (NonNegativeInt32) count,
+      5, offset, (NonNegativeInt32) count,
       out int limit, out ImpossibleSegmentationException? e,
       () => []
     );
 
-    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing.";
+    string msg = offset < 0
+      ? "Offset must be non-negative integer, but it is '-1'."
+      : "With available '5', given offset '{0}' and count '{1}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count );
 
     Assert.AreEqual ( 1, result );
@@ -249,16 +252,30 @@ public class CapacitorTest
 
   [TestMethod]
   [DynamicData ( nameof ( ValidateSegmentationData_Parameters ) )]
-  public void ValidateSegmentation_Static_Parameters ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
+  public void ValidateSegmentation_Static_Parameters_Segment ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
   {
     _ = Capacitor.ValidateSegmentation ( 5, 0, 6, out _, out ImpSegExc? e, parameters! );
 
     string msg = "With available '5', given offset '0' and count '6' produce out-of indexing.{0}";
     string paramsStr = validParams
       ?  parameters.SafeGet().Count() == 1
-        ? " (Parameter 'NumbeR')"
+        ? " (Parameter 'IndeX')"
         : " (Parameters 'IndeX','NumbeR','ArraY')"
       : "";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
+
+    Assert.AreEqual ( msg, e?.Message );
+  }
+
+
+  [TestMethod]
+  [DynamicData ( nameof ( ValidateSegmentationData_Parameters ) )]
+  public void ValidateSegmentation_Static_Parameters_NegativeOffset ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
+  {
+    _ = Capacitor.ValidateSegmentation ( 0, offset: -1, 0, out _, out ImpSegExc? e, parameters! );
+
+    string msg = "Offset must be non-negative integer, but it is '-1'.{0}";
+    string paramsStr = validParams ? " (Parameter 'IndeX')" : "";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
 
     Assert.AreEqual ( msg, e?.Message );
@@ -1761,17 +1778,21 @@ public class CapacitorTest
   [DataRow ( 1, 5 )]
   [DataRow ( 5, 1 )]
   [DataRow ( 4, 2 )]
+  [DataRow ( -1, 0 )]
+  [DataRow ( -1, 1 )]
   public void ValidateSegmentation_NegativeScenarios ( int offset, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5], 6);
     int test = capacitor.ValidateSegmentation
     (
-      (NonNegativeInt32) offset, (NonNegativeInt32) count,
+      offset, (NonNegativeInt32) count,
       out int limit, out ImpossibleSegmentationException? e,
       () => []
     );
 
-    string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing.";
+    string msg = offset < 0
+      ? "Offset must be non-negative integer, but it is '-1'."
+      : "With available '5', given offset '{0}' and count '{1}' produce out-of indexing.";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, offset, count );
 
     Assert.AreEqual ( 1, test );
@@ -1781,7 +1802,7 @@ public class CapacitorTest
 
   [TestMethod]
   [DynamicData ( nameof ( ValidateSegmentationData_Parameters ) )]
-  public void ValidateSegmentation_Parameters ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
+  public void ValidateSegmentation_Parameters_Segment ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
 
@@ -1790,9 +1811,24 @@ public class CapacitorTest
     string msg = "With available '5', given offset '0' and count '6' produce out-of indexing.{0}";
     string paramsStr = validParams
       ?  parameters.SafeGet().Count() == 1
-        ? " (Parameter 'NumbeR')"
+        ? " (Parameter 'IndeX')"
         : " (Parameters 'IndeX','NumbeR','ArraY')"
       : "";
+    msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
+
+    Assert.AreEqual ( msg, e?.Message );
+  }
+
+  [TestMethod]
+  [DynamicData ( nameof ( ValidateSegmentationData_Parameters ) )]
+  public void ValidateSegmentation_Parameters_NegativeOffset ( ParamNames<SegmentationParamNames>? parameters, bool validParams )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5]);
+
+    _ = capacitor.ValidateSegmentation ( -1, 4, out _, out ImpSegExc? e, parameters! );
+
+    string msg = "Offset must be non-negative integer, but it is '-1'.{0}";
+    string paramsStr = validParams ? " (Parameter 'IndeX')" : "";
     msg = string.Format ( CultureInfo.InvariantCulture, msg, paramsStr );
 
     Assert.AreEqual ( msg, e?.Message );
@@ -2323,6 +2359,16 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void AllMatches_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.AllMatches(x => true, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
@@ -2563,6 +2609,16 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new();
     Assert.IsLessThan ( 0, capacitor.BinarySearch ( 0, 0, 0, Comparer<int>.Default ) );
+  }
+
+  [TestMethod]
+  public void BinarySearch_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.BinarySearch(offset: -1, 0, 0, Comparer<int>.Default);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -2868,6 +2924,16 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void Clone_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.Clone ( -1, 0 );
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
@@ -2980,6 +3046,16 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new();
     Assert.IsFalse ( capacitor.Contains ( -2, 0, 0 ) );
+  }
+
+  [TestMethod]
+  public void Contains_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.Contains(0, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -3184,6 +3260,16 @@ public class CapacitorTest
     Assert.AreEqual ( true, test.LockGrowFactor );
 
     Assert.IsTrue ( ReferenceEquals ( Array.Empty<long> (), test.store ) );
+  }
+
+  [TestMethod]
+  public void Convert_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.Convert ( x => x, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -3394,6 +3480,16 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new(new int[size]);
     capacitor.CopyTo ( index, count, new int [ count ] );
+  }
+
+  [TestMethod]
+  public void CopyTo_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.CopyTo(-1, 0, new int[0]);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'fromIndex')", e.Message );
   }
 
   [TestMethod]
@@ -3638,6 +3734,26 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void CopyTo_ArrayArrayIndexFromIndexCount_NegativeArrayIndex ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.CopyTo([], arrayIndex: -1, default, default);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'arrayIndex')", e.Message );
+  }
+
+  [TestMethod]
+  public void CopyTo_ArrayArrayIndexFromIndexCount_NegativeFromIndex ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.CopyTo([], default, fromIndex: -1, default);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'fromIndex')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 0, 1 )]
   [DataRow ( 0, 1, 0 )]
   [DataRow ( 4, 0, 5 )]
@@ -3834,6 +3950,16 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void Fill_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.Fill (0, offset: -1, 0 );
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
@@ -3889,15 +4015,15 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  public void FindAllIndexes ()
+  public void FindIndexes ()
   {
     IEnumerable<int> test;
     Capacitor<int> capacitor = new(9,[ 1,2,1,2, 2,1,1,2,1,  2,1,2,1 ]);
 
-    test = capacitor.FindAllIndexes ( x => x == 1 );
+    test = capacitor.FindIndexes ( x => x == 1 );
     Assert.IsTrue ( GetResults ( "0,2,5,6,8" ).SequenceEqual ( test ) );
 
-    test = capacitor.FindAllIndexes ( x => x == 2 );
+    test = capacitor.FindIndexes ( x => x == 2 );
     Assert.IsTrue ( GetResults ( "1,3,4,7" ).SequenceEqual ( test ) );
 
     static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
@@ -3908,7 +4034,7 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new();
 
-    IEnumerable<int> test = capacitor.FindAllIndexes(x => true);
+    IEnumerable<int> test = capacitor.FindIndexes(x => true);
     Assert.IsFalse ( test.Any () );
   }
 
@@ -3919,7 +4045,7 @@ public class CapacitorTest
   public void FindAllIndexes_ShortArrays ( int size )
   {
     Capacitor<int> capacitor = new(new int [size]);
-    IEnumerable<int> test = capacitor.FindAllIndexes(x => x == 0);
+    IEnumerable<int> test = capacitor.FindIndexes(x => x == 0);
     Assert.IsTrue ( Enumerable.Range ( 0, size ).SequenceEqual ( test ) );
   }
 
@@ -3927,7 +4053,7 @@ public class CapacitorTest
   public void FindAllIndexes_NullPredicate ()
   {
     Capacitor<int> capacitor = new();
-    Action test = () => _ = capacitor.FindAllIndexes((Predicate<int>)null!);
+    Action test = () => _ = capacitor.FindIndexes((Predicate<int>)null!);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
@@ -3943,7 +4069,7 @@ public class CapacitorTest
     IEnumerable<int> test;
     Capacitor<int> capacitor = new(9,[ 1,1,2,2, 2,1,2,1,1,  2,1,2,1 ]);
 
-    test = capacitor.FindAllIndexes ( x => x == 1, offset );
+    test = capacitor.FindIndexes ( x => x == 1, offset );
     Assert.IsTrue ( GetResults ( result ).SequenceEqual ( test ) );
 
     static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
@@ -3958,7 +4084,7 @@ public class CapacitorTest
   public void FindAllIndexes_Offset_ShortArrays ( int size, int offset )
   {
     Capacitor<int> capacitor = new(new int [size]);
-    IEnumerable<int> test = capacitor.FindAllIndexes(x => x == 0, offset);
+    IEnumerable<int> test = capacitor.FindIndexes(x => x == 0, offset);
     Assert.IsTrue ( Enumerable.Range ( 0, size ).Skip ( offset ).SequenceEqual ( test ) );
   }
 
@@ -3966,7 +4092,7 @@ public class CapacitorTest
   public void FindAllIndexes_Offset_NullPredicate ()
   {
     Capacitor<int> capacitor = new([0]);
-    Action test = () => _ = capacitor.FindAllIndexes((Predicate<int>)null!, 0);
+    Action test = () => _ = capacitor.FindIndexes((Predicate<int>)null!, 0);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
@@ -3978,7 +4104,7 @@ public class CapacitorTest
   public void FindAllIndexes_Offset_IndexOutOfBounds ( int size )
   {
     Capacitor<int> capacitor = new(new int[size]);
-    Action test = () => _ = capacitor.FindAllIndexes(x => default, size);
+    Action test = () => _ = capacitor.FindIndexes(x => default, size);
 
     IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
     string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
@@ -3997,7 +4123,7 @@ public class CapacitorTest
     IEnumerable<int> test;
     Capacitor<int> capacitor = new(9,[ 1,1,2,2, 2,1,2,1,1,  2,1,2,1 ]);
 
-    test = capacitor.FindAllIndexes ( x => x == 1, index, count );
+    test = capacitor.FindIndexes ( x => x == 1, index, count );
     Assert.IsTrue ( GetResults ( result ).SequenceEqual ( test ) );
 
     static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
@@ -4017,7 +4143,7 @@ public class CapacitorTest
     int[] source = new int [size];
     Array.Fill ( source, 1, offset, count );
     Capacitor<int> capacitor = new(source);
-    IEnumerable<int> test = capacitor.FindAllIndexes(x => x == 1, offset, count);
+    IEnumerable<int> test = capacitor.FindIndexes(x => x == 1, offset, count);
     Assert.IsTrue ( Enumerable.Range ( 0, size ).Skip ( offset ).Take ( count ).SequenceEqual ( test ) );
   }
 
@@ -4025,7 +4151,7 @@ public class CapacitorTest
   public void FindAllIndexes_OffsetCount_EmptyCapacitor ()
   {
     Capacitor<int> capacitor = new();
-    _ = capacitor.FindAllIndexes ( x => default, 0, 0 );
+    _ = capacitor.FindIndexes ( x => default, 0, 0 );
   }
 
   [TestMethod]
@@ -4038,7 +4164,17 @@ public class CapacitorTest
     int[] source = [1,2,3,4,5];
     Capacitor<int> capacitor = new(source);
 
-    _ = capacitor.FindAllIndexes ( x => default, index, 0 );
+    _ = capacitor.FindIndexes ( x => default, index, 0 );
+  }
+
+  [TestMethod]
+  public void FindAllIndexes_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.FindIndexes (x => default, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -4050,7 +4186,7 @@ public class CapacitorTest
   public void FindAllIndexes_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5], 6);
-    Action test = () => _ = capacitor.FindAllIndexes (x => default, index, count );
+    Action test = () => _ = capacitor.FindIndexes (x => default, index, count );
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
     string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
@@ -4072,26 +4208,26 @@ public class CapacitorTest
   public void FindAllIndexes_OffsetCount_ValidSegment ( int size, int index, int count )
   {
     Capacitor<int> capacitor = new(new int[size]);
-    _ = capacitor.FindAllIndexes ( x => default, index, count );
+    _ = capacitor.FindIndexes ( x => default, index, count );
   }
 
   [TestMethod]
   public void FindAllIndexes_OffsetCount_NullPredicate ()
   {
     Capacitor<int> capacitor = new();
-    Action test = () => _ = capacitor.FindAllIndexes((Predicate<int>)null!, 0, 0);
+    Action test = () => _ = capacitor.FindIndexes((Predicate<int>)null!, 0, 0);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
   }
 
   [TestMethod]
-  public void FindAllItems ()
+  public void FindItems ()
   {
     Capacitor<int> capacitor = new(9, [ 1,2,3,4, 5,6,7,8, 9, 10,11]);
 
     Predicate<int> predicate = x => (x & 1) == 1;
-    IEnumerable<int> test = capacitor.FindAllItems(predicate);
+    IEnumerable<int> test = capacitor.FindItems(predicate);
 
     Assert.IsTrue ( GetResults ( "1,3,5,7,9" ).SequenceEqual ( test ) );
 
@@ -4102,7 +4238,7 @@ public class CapacitorTest
   public void FindAllItems_EmptyCapacitor ()
   {
     Capacitor<int> capacitor = new();
-    IEnumerable<int> test = capacitor.FindAllItems(x => true);
+    IEnumerable<int> test = capacitor.FindItems(x => true);
 
     Assert.IsFalse ( test.Any () );
   }
@@ -4111,7 +4247,7 @@ public class CapacitorTest
   public void FindAllItems_NullPredicate ()
   {
     Capacitor<int> capacitor = new();
-    Action test = () => _ = capacitor.FindAllItems((Predicate<int>)null!);
+    Action test = () => _ = capacitor.FindItems((Predicate<int>)null!);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
@@ -4128,7 +4264,7 @@ public class CapacitorTest
     Capacitor<int> capacitor = new(9, [ 1,1,3,4, 5,6,7,9, 9, 10,11]);
 
     Predicate<int> predicate = x => (x & 1) == 1;
-    IEnumerable<int> test = capacitor.FindAllItems(predicate, offset);
+    IEnumerable<int> test = capacitor.FindItems(predicate, offset);
 
     Assert.IsTrue ( GetResults ( result ).SequenceEqual ( test ) );
 
@@ -4141,7 +4277,7 @@ public class CapacitorTest
   public void FindAllItems_Offset_IndexOutOfBounds ( int size )
   {
     Capacitor<int> capacitor = new(new int[size]);
-    Action test = () => _ = capacitor.FindAllItems(x => default, size);
+    Action test = () => _ = capacitor.FindItems(x => default, size);
 
     IndexOutOfBoundariesException e = Assert.ThrowsExactly<IndexOutOfBoundariesException> ( test );
     string msg = $"For available '{size}' is index '{size}' out of bounds. (Parameter 'offset')";
@@ -4152,7 +4288,7 @@ public class CapacitorTest
   public void FindAllItems_Offset_NullPredicate ()
   {
     Capacitor<int> capacitor = new([0]);
-    Action test = () => _ = capacitor.FindAllItems((Predicate<int>)null!,0);
+    Action test = () => _ = capacitor.FindItems((Predicate<int>)null!,0);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
@@ -4172,7 +4308,7 @@ public class CapacitorTest
     Capacitor<int> capacitor = new(9, [ 1,-1,3,4, 5,6,7,-9,9, 10,11]);
 
     Predicate<int> predicate = x => (x & 1) == 1;
-    test = capacitor.FindAllItems ( predicate, index, count );
+    test = capacitor.FindItems ( predicate, index, count );
     Assert.IsTrue ( GetResults ( result ).SequenceEqual ( test ) );
 
     static IEnumerable<int> GetResults ( string from ) => from.Split ( ',' ).Select ( int.Parse );
@@ -4182,7 +4318,7 @@ public class CapacitorTest
   public void FindAllItems_OffsetCount_EmptyCapacitor ()
   {
     Capacitor<int> capacitor = new();
-    Assert.HasCount ( 0, capacitor.FindAllItems ( x => default, 0, 0 ) );
+    Assert.HasCount ( 0, capacitor.FindItems ( x => default, 0, 0 ) );
   }
 
   [TestMethod]
@@ -4194,7 +4330,7 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new([1,2,3,4,5]);
 
-    Assert.HasCount ( 0, capacitor.FindAllItems ( x => default, index, 0 ) );
+    Assert.HasCount ( 0, capacitor.FindItems ( x => default, index, 0 ) );
   }
 
   [TestMethod]
@@ -4206,7 +4342,7 @@ public class CapacitorTest
   public void FindAllItems_OffsetCount_InvalidSegment ( int index, int count )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5], 6);
-    Action test = () => _ = capacitor.FindAllItems (x => default, index, count );
+    Action test = () => _ = capacitor.FindItems (x => default, index, count );
 
     ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
     string msg = "With available '5', given offset '{0}' and count '{1}' produce out-of indexing. (Parameters 'offset','count')";
@@ -4228,14 +4364,14 @@ public class CapacitorTest
   public void FindAllItems_OffsetCount_ValidSegment ( int size, int index, int count )
   {
     Capacitor<int> capacitor = new(new int[size]);
-    _ = capacitor.FindAllItems ( x => default, index, count );
+    _ = capacitor.FindItems ( x => default, index, count );
   }
 
   [TestMethod]
   public void FindAllItems_OffsetCount_NullPredicate ()
   {
     Capacitor<int> capacitor = new();
-    Action test = () => _ = capacitor.FindAllItems((Predicate<int>)null!, 0, 0);
+    Action test = () => _ = capacitor.FindItems((Predicate<int>)null!, 0, 0);
 
     ArgumentNullException e = Assert.ThrowsExactly<ArgumentNullException> ( test );
     Assert.AreEqual ( "Match predicate must be provided. (Parameter 'match')", e.Message );
@@ -4362,6 +4498,16 @@ public class CapacitorTest
     Predicate<int> predicate = x => true;
     int test = capacitor.FindFirstIndex(predicate, 0, 0);
     Assert.AreEqual ( -1, test );
+  }
+
+  [TestMethod]
+  public void FindFirstIndex_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.FindFirstIndex(x => false, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -4754,6 +4900,16 @@ public class CapacitorTest
     Predicate<int> predicate = x => true;
     int test = capacitor.FindLastIndex(predicate, 0, 0);
     Assert.AreEqual ( -1, test );
+  }
+
+  [TestMethod]
+  public void FindLastIndex_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.FindLastIndex(x => false, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -5702,6 +5858,16 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void FindNthIndex_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.FindNthIndex(x => false, 1, offset: -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 5, 0, 6 )]
   [DataRow ( 5, 6, 0 )]
   [DataRow ( 5, 1, 5 )]
@@ -6047,6 +6213,16 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void FindMatch_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.FindMatch(x => false, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
@@ -6215,6 +6391,16 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void ForEach_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.ForEach(x => { }, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
@@ -6370,6 +6556,16 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new();
     Assert.AreEqual ( -1, capacitor.IndexOf ( -2, 0, 0 ) );
+  }
+
+  [TestMethod]
+  public void IndexOf_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.IndexOf(0, offset: -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -7258,6 +7454,16 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void LastIndexOf_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.LastIndexOf(0, offset: -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 6 )]
   [DataRow ( 6, 0 )]
   [DataRow ( 1, 5 )]
@@ -7593,6 +7799,17 @@ public class CapacitorTest
     Assert.AreEqual ( -1, capacitor.NthIndexOf ( -2, 1, 0, 0 ) );
   }
 
+
+  [TestMethod]
+  public void NthIndexOf_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.NthIndexOf(-2, 1, offset: -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
+  }
+
   [TestMethod]
   [DataRow ( 5, 0, 6 )]
   [DataRow ( 5, 6, 0 )]
@@ -7742,6 +7959,16 @@ public class CapacitorTest
 
     ReversiveComparer<int> comparer = new();
     capacitor.Order ( comparer, 0, 0 );
+  }
+
+  [TestMethod]
+  public void Order_ComparerOffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.Order(new ReversiveComparer<int>(), -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -7898,6 +8125,18 @@ public class CapacitorTest
 
     Comparison<int> comparer = new ReversiveComparer<int>().Compare;
     capacitor.Order ( comparer, 0, 0 );
+  }
+
+  [TestMethod]
+  public void Order_ComparisonOffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+
+    Comparison<int> comparer = new ReversiveComparer<int>().Compare;
+    Action test = () => capacitor.Order(comparer, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -8169,6 +8408,16 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new();
     capacitor.Remove ( 0, 0 );
+  }
+
+  [TestMethod]
+  public void Remove_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.Remove(-1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]
@@ -8568,6 +8817,16 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void RemoveMatches_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.RemoveMatches( x => default, -1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
+  }
+
+  [TestMethod]
   [DataRow ( 5, 0, 6 )]
   [DataRow ( 5, 6, 0 )]
   [DataRow ( 5, 1, 5 )]
@@ -8760,6 +9019,16 @@ public class CapacitorTest
   {
     Capacitor<int> capacitor = new();
     capacitor.Reverse ( 0, 0 );
+  }
+
+  [TestMethod]
+  public void Reverse_OffsetCount_NegativeOffset ()
+  {
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.Reverse(-1, 0);
+
+    ImpossibleSegmentationException e = Assert.ThrowsExactly<ImpossibleSegmentationException> ( test );
+    Assert.AreEqual ( "Offset must be non-negative integer, but it is '-1'. (Parameter 'offset')", e.Message );
   }
 
   [TestMethod]

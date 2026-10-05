@@ -21,7 +21,7 @@ static public class IndexingValidator
   /// Computes offseted index.
   /// </summary>
   [MethodImpl ( MethodImplOptions.AggressiveInlining )]
-  static public int CorrelateIndex ( NonNegativeInt32 index, NonNegativeInt32 offset ) => index + offset;
+  static public int CorrelateIndex ( int index, int offset ) => index + offset;
 
   /// <summary>
   /// Computes inclusive difference of <paramref name="from"/> and <paramref name="count"/>.
