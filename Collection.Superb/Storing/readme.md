@@ -45,4 +45,8 @@ static async IAsyncEnumerable<int> Generator ( [EnumeratorCancellation] Cancella
         yield return 99 - loopsCount + 1;
 }
 ```
+```csharp
+// flexible capacitation policy support
+Capacitor<int> capacitor = new () { CapacitationPolicy = CapacitationPolicy.GeometricJump, LockCapacitationPolicy = true, };
+```
 - [`CapacitorStoreEnumerator<T>`](./CapacitorStoreEnumerator.cs) – `Capacitor<T>` enumerator
