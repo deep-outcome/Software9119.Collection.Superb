@@ -76,7 +76,7 @@ public struct IListSegment<T> : IList<T?>, IReadOnlyList<T?>, IEquatable<IListSe
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over <paramref name="list"/>.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public IListSegment ( IList<T?> list, int offset, NonNegativeInt32 count, IEqualityComparer<T>? equalityComparer = null )

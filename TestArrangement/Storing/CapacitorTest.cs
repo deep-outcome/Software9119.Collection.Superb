@@ -318,6 +318,7 @@ public class CapacitorTest
     Assert.AreEqual ( index, capacitor.storeIndex );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -330,6 +331,7 @@ public class CapacitorTest
     Assert.AreEqual ( 0, capacitor.storeIndex );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -345,6 +347,7 @@ public class CapacitorTest
     Assert.AreEqual ( 0, capacitor.storeIndex );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -357,6 +360,7 @@ public class CapacitorTest
     Assert.AreEqual ( 0, capacitor.storeIndex );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -372,6 +376,7 @@ public class CapacitorTest
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -396,6 +401,7 @@ public class CapacitorTest
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -420,6 +426,7 @@ public class CapacitorTest
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -444,6 +451,7 @@ public class CapacitorTest
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -469,6 +477,7 @@ public class CapacitorTest
     Assert.AreEqual ( capacity == 0, ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -485,6 +494,7 @@ public class CapacitorTest
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -515,6 +525,7 @@ public class CapacitorTest
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -545,6 +556,7 @@ public class CapacitorTest
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -575,6 +587,7 @@ public class CapacitorTest
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
 
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
   }
 
@@ -600,12 +613,14 @@ public class CapacitorTest
 
     Assert.AreEqual ( 4, Capacitor<int>.defaultCapacity );
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
 
     Assert.IsFalse ( capacitor.itemShouldDefault );
     Assert.IsTrue ( new Capacitor<object> ().itemShouldDefault );
     Assert.IsTrue ( new Capacitor<NoRefList> ().itemShouldDefault );
 
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -1417,6 +1432,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     int[] store = new int[8];
@@ -1425,6 +1442,9 @@ public class CapacitorTest
     Assert.AreEqual ( count, test.Count );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
+
     Assert.IsTrue ( ReferenceEquals ( store, test.store ) );
   }
 
@@ -1923,6 +1943,61 @@ public class CapacitorTest
 
     capacitor.Capacitate ( 8 );
     Assert.AreEqual ( 8, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  public void CapacitationPolicyTest ()
+  {
+    const CapacitationPolicy policy = CapacitationPolicy.GeometricJump;
+
+    Capacitor<int> capacitor = new();
+    Assert.AreNotEqual ( policy, capacitor.CapacitationPolicy );
+    Assert.AreNotEqual ( policy, capacitor.capacitationPolicy );
+
+    capacitor.CapacitationPolicy = policy;
+    Assert.AreEqual ( policy, capacitor.CapacitationPolicy );
+    Assert.AreEqual ( policy, capacitor.capacitationPolicy );
+
+    foreach (CapacitationPolicy one in Enum.GetValues ( typeof ( CapacitationPolicy ) ))
+      capacitor.CapacitationPolicy = one;
+  }
+
+  [TestMethod]
+  public void CapacitationPolicyTest_LockedFactor ()
+  {
+    const CapacitationPolicy policy = CapacitationPolicy.GeometricJump;
+
+    Action test;
+    Capacitor<int> capacitor;
+    InvalidOperationException e;
+
+    test = () => _ = new Capacitor<int> () { LockCapacitationPolicy = true, CapacitationPolicy = policy };
+    e = Assert.ThrowsExactly<InvalidOperationException> ( test );
+    Assert.AreEqual ( "Capacitation policy is locked.", e.Message );
+
+    capacitor = new () { LockCapacitationPolicy = true };
+    test = () => capacitor.CapacitationPolicy = policy;
+    e = Assert.ThrowsExactly<InvalidOperationException> ( test );
+    Assert.AreEqual ( "Capacitation policy is locked.", e.Message );
+
+    capacitor = new () { CapacitationPolicy = policy, LockCapacitationPolicy = true };
+    Assert.AreEqual ( policy, capacitor.CapacitationPolicy );
+  }
+
+  [TestMethod]
+  [DataRow ( int.MinValue )]
+  [DataRow ( -1 )]
+  [DataRow ( 3 )]
+  [DataRow ( int.MaxValue )]
+  public void CapacitationPolicyTest_InvalidPolicy ( int value )
+  {
+    CapacitationPolicy policy = (CapacitationPolicy)value;
+
+    Capacitor<int> capacitor = new();
+    Action test = () => capacitor.CapacitationPolicy = policy;
+
+    ArgumentOutOfRangeException e = Assert.ThrowsExactly<ArgumentOutOfRangeException> ( test );
+    Assert.AreEqual ( $"Unsupported capacitation policy, '{value}'. (Parameter 'value')", e.Message );
   }
 
   [TestMethod]
@@ -2724,18 +2799,53 @@ public class CapacitorTest
     Assert.IsTrue ( source.SequenceEqual ( capacitor ) );
   }
 
-
   [TestMethod]
+  [DataRow ( 0, false )]
   [DataRow ( 2, false )]
   [DataRow ( 3, false )]
   [DataRow ( 4, true )]
   [DataRow ( 100, true )]
-  public void CapacitateForNext ( int forNext, bool result )
+  public void CapacitateForNext_StaticJump ( int forNext, bool result )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5], 8);
+    capacitor.CapacitationPolicy = CapacitationPolicy.StaticJump;
+
     bool test = capacitor.CapacitateForNext(forNext);
     Assert.AreEqual ( result, test );
     Assert.AreEqual ( result ? (5 + forNext) : 8, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, false, 8 )]
+  [DataRow ( 2, false, 8 )]
+  [DataRow ( 3, false, 8 )]
+  [DataRow ( 4, true, 36 )]
+  [DataRow ( 31, true, 36 )]
+  [DataRow ( 32, true, 162 )]
+  [DataRow ( 157, true, 162 )]
+  [DataRow ( 158, true, 729 )]
+  [DataRow ( 1000, true, 3280 )]
+  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "." )]
+  public void CapacitateForNext_GeometricJump ( int forNext, bool result, int expectedCap )
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5], 8);
+    capacitor.CapacitationPolicy = CapacitationPolicy.GeometricJump;
+    capacitor.GrowFactor = GrowFactor.FourAndHalf;
+
+    bool test = capacitor.CapacitateForNext(forNext);
+    Assert.AreEqual ( result, test );
+    Assert.AreEqual ( expectedCap, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  public void CapacitateForNext_UnknownCapacitationPolicy ()
+  {
+    Capacitor<int> capacitor = new([1,2,3,4,5], 8);
+    capacitor.capacitationPolicy = (CapacitationPolicy) 999;
+
+    Action test = () => capacitor.CapacitateForNext(10);
+    InvalidOperationException e = Assert.ThrowsExactly<InvalidOperationException> ( test );
+    Assert.AreEqual ( "Unsupported capacitation policy, '999'.", e.Message );
   }
 
   [TestMethod]
@@ -2821,6 +2931,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Capacitor<int> test = (Capacitor<int>)capacitor.Clone();
@@ -2829,6 +2941,8 @@ public class CapacitorTest
     Assert.AreEqual ( count, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
     Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
     Assert.IsTrue ( IListSeg ( capacitor, 0, count ).SequenceEqual ( test ) );
   }
@@ -2840,6 +2954,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Capacitor<int> test = (Capacitor<int>)capacitor.Clone();
@@ -2848,6 +2964,8 @@ public class CapacitorTest
     Assert.AreEqual ( 0, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
     Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.store ) );
   }
 
@@ -2861,6 +2979,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Capacitor<int> test = capacitor.Clone(offset);
@@ -2870,6 +2990,8 @@ public class CapacitorTest
     Assert.AreEqual ( count, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
     Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
     Assert.IsTrue ( IListSeg ( capacitor, offset, count ).SequenceEqual ( test ) );
   }
@@ -2900,6 +3022,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Capacitor<int> test = capacitor.Clone(index, count);
@@ -2909,6 +3033,8 @@ public class CapacitorTest
     Assert.AreEqual ( count, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
     Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
     Assert.IsTrue ( expectation.SequenceEqual ( test ) );
   }
@@ -2920,6 +3046,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Capacitor<int> test = capacitor.Clone(0, 0);
@@ -2928,6 +3056,8 @@ public class CapacitorTest
     Assert.AreEqual ( 0, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
     Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.store ) );
   }
 
@@ -2944,6 +3074,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Capacitor<int> test = capacitor.Clone(index, 0);
@@ -2952,6 +3084,8 @@ public class CapacitorTest
     Assert.AreEqual ( 0, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
     Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), test.store ) );
   }
 
@@ -3131,6 +3265,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Converter<int, long> convertor = x => x;
@@ -3140,6 +3276,8 @@ public class CapacitorTest
     Assert.AreEqual ( 6, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
     Assert.IsTrue ( capacitor.Select ( x => (long) x ).SequenceEqual ( test ) );
   }
 
@@ -3150,6 +3288,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Converter<int, long> convertor = x => x;
@@ -3159,6 +3299,8 @@ public class CapacitorTest
     Assert.AreEqual ( 0, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -3182,6 +3324,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Converter<int, long> convertor = x => x;
@@ -3192,6 +3336,8 @@ public class CapacitorTest
     Assert.AreEqual ( count, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
 
     Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
     Assert.IsTrue ( IListSeg ( capacitor, offset, count ).Select ( x => (long) x ).SequenceEqual ( test ) );
@@ -3228,12 +3374,14 @@ public class CapacitorTest
   [DataRow ( 1, 3 )]
   [DataRow ( 0, 1 )]
   [DataRow ( 4, 1 )]
-  public void Convert_OffsetCount_OffsetCount ( int index, int count )
+  public void Convert_OffsetCount ( int index, int count )
   {
     Capacitor<int> capacitor = new(5, [1,2,3,4,5, 7,8,9])
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Converter<int, long> convertor = x => x;
@@ -3243,18 +3391,22 @@ public class CapacitorTest
     Assert.AreEqual ( count, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
 
     Assert.IsFalse ( ReferenceEquals ( capacitor.store, test.store ) );
     Assert.IsTrue ( IListSeg ( capacitor, index, count ).Select ( x => (long) x ).SequenceEqual ( test ) );
   }
 
   [TestMethod]
-  public void Convert_OffsetCount_OffsetCount_EmptyCapacitor ()
+  public void Convert_OffsetCount_EmptyCapacitor ()
   {
     Capacitor<int> capacitor = new()
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Converter<int, long> convertor = x => x;
@@ -3264,6 +3416,8 @@ public class CapacitorTest
     Assert.AreEqual ( 0, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
 
     Assert.IsTrue ( ReferenceEquals ( Array.Empty<long> (), test.store ) );
   }
@@ -3281,6 +3435,8 @@ public class CapacitorTest
     {
       GrowFactor = GrowFactor.Five,
       LockGrowFactor = true,
+      CapacitationPolicy = CapacitationPolicy.GeometricJump,
+      LockCapacitationPolicy = true,
     };
 
     Converter<int, long> convertor = x => x;
@@ -3290,6 +3446,8 @@ public class CapacitorTest
     Assert.AreEqual ( 0, test.Capacity );
     Assert.AreEqual ( GrowFactor.Five, test.GrowFactor );
     Assert.AreEqual ( true, test.LockGrowFactor );
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, test.CapacitationPolicy );
+    Assert.AreEqual ( true, test.LockCapacitationPolicy );
 
     Assert.IsTrue ( ReferenceEquals ( Array.Empty<long> (), test.store ) );
   }

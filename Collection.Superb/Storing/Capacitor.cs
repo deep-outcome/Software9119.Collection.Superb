@@ -132,7 +132,7 @@ public class Capacitor
 /// Pre Capacitation – means capacity is extended via capacity room request.
 /// </item>
 /// <item>
-/// Batch Capacitation – means, if items count to be stored is obtainable, capacity is ensured exactly to suffice such count.
+/// Batch Capacitation – means, if items count to be stored is obtainable, capacity is ensured to suffice such count.
 /// </item>
 /// <item>
 /// Auto Capacitation – means auto-grow logic and it is used whenever capacity is insufficient for store operation.
@@ -141,6 +141,7 @@ public class Capacitor
 /// Exact Capacitation – on demand capacitation, not participating in storing operations.
 /// </item>
 /// </list>
+/// Pre Capacitation and Batch Capacitation are operated by capacitation policy, see <see cref="CapacitationPolicy"/>.
 /// </remarks>
 [SuppressMessage ( "Naming", "CA1710:Identifiers should have correct suffix", Justification = "No." )]
 [SuppressMessage ( "Design", "CA1051:Do not declare visible instance fields", Justification = "Inheritance design." )]
@@ -223,6 +224,11 @@ public class Capacitor<T> : Capacitor,
   /// <see cref="GrowFactor"/> backing field.
   /// </summary>
   protected internal GrowFactor growFactor = GrowFactor.Two;
+
+  /// <summary>
+  /// <see cref="CapacitationPolicy"/> backing field.
+  /// </summary>
+  protected internal CapacitationPolicy capacitationPolicy = CapacitationPolicy.StaticJump;
 
   /// <remarks>
   /// Items stored at indexes greater or equal to <see cref="Count"/> should be set to default when <see langword="true"/>.
@@ -455,6 +461,8 @@ public class Capacitor<T> : Capacitor,
     {
       growFactor = growFactor,
       LockGrowFactor = LockGrowFactor,
+      capacitationPolicy = capacitationPolicy,
+      LockCapacitationPolicy = LockCapacitationPolicy,
     };
 
     return clone;
@@ -668,6 +676,31 @@ public class Capacitor<T> : Capacitor,
   }
 
   /// <summary>
+  /// Capacitation policy used by Batch Capacitation and Pre Capacitation.
+  /// </summary>
+  /// <remarks>
+  /// Default is <see cref="CapacitationPolicy.StaticJump"/>.
+  /// </remarks>
+  /// <exception cref="ArgumentOutOfRangeException">Upon try to set invalid <see cref="Storing.CapacitationPolicy"/>.</exception>
+  /// <exception cref="InvalidOperationException">
+  /// Upon try to set value when <see cref="LockCapacitationPolicy"/> is <see langword="true"/>.
+  /// </exception>
+  public CapacitationPolicy CapacitationPolicy
+  {
+    get => capacitationPolicy;
+    set
+    {
+      if (LockCapacitationPolicy)
+        throw new InvalidOperationException ( "Capacitation policy is locked." );
+
+      if (Enum.IsDefined ( value ) == false)
+        throw new ArgumentOutOfRangeException ( paramName: nameof ( value ), $"Unsupported capacitation policy, '{value}'." );
+
+      capacitationPolicy = value;
+    }
+  }
+
+  /// <summary>
   /// Actual count of items stored.
   /// </summary>
   public int Count
@@ -720,6 +753,11 @@ public class Capacitor<T> : Capacitor,
   /// <see cref="Capacitor{T}"/> is not read-only.
   /// </summary>
   public bool IsReadOnly => false;
+
+  /// <summary>
+  /// Expresses intent to freeze initial capacitation policy value, see <see cref="CapacitationPolicy"/>.
+  /// </summary>
+  public bool LockCapacitationPolicy { get; init; }
 
   /// <summary>
   /// Expresses intent to freeze initial grow factor value, see <see cref="GrowFactor"/>.
@@ -830,7 +868,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public int AllMatches ( Predicate<T?> match, int offset, NonNegativeInt32 count )
@@ -896,7 +934,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   /// <exception cref="ArgumentNullException">When <paramref name="comparer"/> is <see langword="null"/>.</exception>
@@ -953,18 +991,39 @@ public class Capacitor<T> : Capacitor,
   /// Ensures storage capacity for <paramref name="roomRequest"/> items.
   /// </summary>
   /// <returns><see langword="true"/> when capacity is updated.</returns>
-  /// <remarks>If <paramref name="roomRequest"/> is less or equal to <see cref="FreeCapacity"/>, capacity is not updated.</remarks>
+  /// <remarks>
+  /// <list type="bullet">
+  /// <item>If <paramref name="roomRequest"/> is less or equal to <see cref="FreeCapacity"/>, capacity is not updated.</item>
+  /// <item>Operates based on <see cref="CapacitationPolicy"/> value.</item>
+  /// </list>
+  /// </remarks>
   public bool CapacitateForNext ( NonNegativeInt32 roomRequest )
   {
-    if (IsCapacitySufficient ( roomRequest, out int reserve ) == false)
-    {
-      int capacity =  Capacity - reserve;
-      Capacitate ( capacity );
+    bool sufficientCapacity = IsCapacitySufficient ( roomRequest, out int reserve );
+    if (sufficientCapacity)
+      return false;
 
-      return true;
+    CapacitationPolicy policy = CapacitationPolicy;
+    float capacity = Capacity;
+    float requirement = capacity - reserve;
+
+    switch (policy)
+    {
+      case CapacitationPolicy.StaticJump: break;
+      case CapacitationPolicy.GeometricJump:
+      {
+        _ = growFactor.ToFloat ( out float multiplier );
+        while (capacity < requirement)
+          capacity *= multiplier;
+
+        requirement = capacity;
+        break;
+      }
+      default: throw new InvalidOperationException ( $"Unsupported capacitation policy, '{policy}'." );
     }
 
-    return false;
+    Capacitate ( (int) requirement );
+    return true;
   }
 
   /// <summary>
@@ -1052,7 +1111,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   /// <remarks>Stored items are shallow-cloned to new internal store with capacity of <paramref name="count"/>.</remarks>
@@ -1099,7 +1158,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public bool Contains ( T? item, int offset, NonNegativeInt32 count )
@@ -1145,7 +1204,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public Capacitor<To> Convert<To> ( Converter<T?, To> converter, int offset, NonNegativeInt32 count )
@@ -1226,7 +1285,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="fromIndex"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="fromIndex"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="fromIndex"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public void CopyTo ( int fromIndex, NonNegativeInt32 count, T? [] array )
@@ -1328,8 +1387,8 @@ public class Capacitor<T> : Capacitor,
   /// <item>
   /// When <paramref name="arrayIndex"/> and <paramref name="count"/> create impossible segmentation over <paramref name="array"/>.
   /// </item>
-  /// <item>When <paramref name="arrayIndex"/> is less than <c>0</c>.</item>  
-  /// <item>When <paramref name="fromIndex"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="arrayIndex"/> is less than <c>0</c>.</item>
+  /// <item>When <paramref name="fromIndex"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   [SuppressMessage ( "Style", "IDE0018:Inline variable declaration", Justification = "Not this case." )]
@@ -1413,7 +1472,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
 
@@ -1472,7 +1531,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public IEnumerable<int> FindIndexes ( Predicate<T?> match, int offset, NonNegativeInt32 count )
@@ -1534,7 +1593,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public IEnumerable<T?> FindItems ( Predicate<T?> match, int offset, NonNegativeInt32 count )
@@ -1580,7 +1639,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public int FindFirstIndex ( Predicate<T?> match, int offset, NonNegativeInt32 count )
@@ -1633,7 +1692,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public bool FindFirstItem ( Predicate<T?> match, int offset, NonNegativeInt32 count, out T? item )
@@ -1778,7 +1837,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public bool FindLastItem ( Predicate<T?> match, int offset, NonNegativeInt32 count, out T? item )
@@ -1794,7 +1853,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public bool FindLastItem ( int rearSet, NonNegativeInt32 count, Predicate<T?> match, out T? item )
@@ -1903,7 +1962,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="rearSet"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="rearSet"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public bool FindMthItem ( Predicate<T?> match, PositiveInt32 mth, int rearSet, NonNegativeInt32 count, out T? item )
@@ -1939,7 +1998,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public int FindNthIndex ( Predicate<T?> match, PositiveInt32 nth, int offset, NonNegativeInt32 count )
@@ -2004,7 +2063,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public bool FindNthItem ( Predicate<T?> match, PositiveInt32 nth, int offset, NonNegativeInt32 count, out T? item )
@@ -2039,7 +2098,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public bool FindMatch ( Predicate<T?> match, int offset, NonNegativeInt32 count )
@@ -2085,7 +2144,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
 
@@ -2155,7 +2214,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public int IndexOf ( T? item, int offset, NonNegativeInt32 count )
@@ -2323,7 +2382,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public int LastIndexOf ( T? item, int offset, NonNegativeInt32 count )
@@ -2460,7 +2519,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public int NthIndexOf ( T? item, PositiveInt32 nth, int offset, NonNegativeInt32 count )
@@ -2535,7 +2594,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public void Order ( IComparer<T?> comparer, int offset, NonNegativeInt32 count )
@@ -2595,7 +2654,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public void Order ( Comparison<T?> comparison, int offset, NonNegativeInt32 count )
@@ -2651,7 +2710,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public void Remove ( int offset, NonNegativeInt32 count )
@@ -2754,7 +2813,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public int RemoveMatches ( Predicate<T?> match, int offset, NonNegativeInt32 count )
@@ -2843,7 +2902,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over store.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public void Reverse ( int offset, NonNegativeInt32 count )

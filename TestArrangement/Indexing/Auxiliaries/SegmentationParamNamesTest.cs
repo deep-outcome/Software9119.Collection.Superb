@@ -94,7 +94,7 @@ public class SegmentationParamNamesTest
   {
     SegmentationParamNames test;
 
-    test = default;    
+    test = default;
     Assert.AreEqual ( "", test [ 0 ] );
     Assert.AreEqual ( "", test [ int.MaxValue ] );
     Assert.AreEqual ( 0, test.ParamsCount );

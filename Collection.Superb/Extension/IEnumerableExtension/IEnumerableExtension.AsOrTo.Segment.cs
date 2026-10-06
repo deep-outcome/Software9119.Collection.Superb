@@ -12,7 +12,7 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts <paramref name="enumerable"/> directly into <see cref="IListSegment"/>, or casts or copies <paramref name="enumerable"/>
   /// into intermediate <see cref="IList"/> before wrapping into <see cref="IListSegment"/>.
-  /// </summary>  
+  /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="segment_type.IListSegment(int?, bool, IEqualityComparer{object}?)"/>.
@@ -35,7 +35,7 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts <paramref name="enumerable"/> directly into <see cref="IListSegment"/>, or casts or copies <paramref name="enumerable"/>
   /// into intermediate <see cref="IList"/> before wrapping into <see cref="IListSegment"/>.
-  /// </summary>  
+  /// </summary>
   /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="segment_type.IListSegment(int?, bool, IEqualityComparer{object}?)"/>.
@@ -58,7 +58,7 @@ static public partial class IEnumerableExtension
   /// <summary>
   /// Casts <paramref name="enumerable"/> directly into <see cref="IListSegment{Item}"/>, or casts or copies <paramref name="enumerable"/>
   /// into intermediate <see cref="IList{Item}"/> before wrapping into <see cref="IListSegment{Item}"/>.
-  /// </summary>  
+  /// </summary>
   /// <remarks>
   /// <list type="bullet">
   /// <item>
@@ -87,9 +87,9 @@ static public partial class IEnumerableExtension
 
   /// <summary>
   /// Casts <paramref name="enumerable"/> directly into <see cref="IReadOnlyListSegment{Item}"/>,
-  /// or casts or copies <paramref name="enumerable"/> into intermediate <see cref="IList{Item}"/> 
+  /// or casts or copies <paramref name="enumerable"/> into intermediate <see cref="IList{Item}"/>
   /// and warrants <see cref="IReadOnlyList{Item}"/> before wrapping into <see cref="IReadOnlyListSegment{Item}"/>.
-  /// </summary>  
+  /// </summary>
   /// <remarks>
   /// <list type="bullet">
   /// <item>
@@ -118,10 +118,10 @@ static public partial class IEnumerableExtension
 
   /// <summary>
   /// Casts <paramref name="enumerable"/> directly into <see cref="ArraySegment{Item}"/>,
-  /// or casts or copies <paramref name="enumerable"/> into intermediate <see cref="Array"/> 
+  /// or casts or copies <paramref name="enumerable"/> into intermediate <see cref="Array"/>
   /// before wrapping into <see cref="ArraySegment{Item}"/>.
-  /// </summary>  
-  /// <remarks>  
+  /// </summary>
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="segment_type.ArraySegment{Item}"/>.
   /// </remarks>
@@ -131,10 +131,10 @@ static public partial class IEnumerableExtension
   ) => enumerable.AsOrTo ( segment_type.ArraySegment<Item> (), behavior );
 
   /// <summary>
-  /// Casts or copies <paramref name="enumerable"/> into intermediate <see cref="Array"/> 
+  /// Casts or copies <paramref name="enumerable"/> into intermediate <see cref="Array"/>
   /// before wrapping into <see cref="Memory{Item}"/>.
-  /// </summary>  
-  /// <remarks>  
+  /// </summary>
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="segment_type.Memory{Item}"/>.
   /// </remarks>
@@ -144,10 +144,10 @@ static public partial class IEnumerableExtension
   ) => enumerable.AsOrTo ( segment_type.Memory<Item> (), behavior );
 
   /// <summary>
-  /// Casts or copies <paramref name="enumerable"/> into intermediate <see cref="Array"/> 
+  /// Casts or copies <paramref name="enumerable"/> into intermediate <see cref="Array"/>
   /// before wrapping into <see cref="ReadOnlyMemory{Item}"/>.
-  /// </summary>  
-  /// <remarks>  
+  /// </summary>
+  /// <remarks>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="segment_type.ReadOnlyMemory{Item}"/>.
   /// </remarks>

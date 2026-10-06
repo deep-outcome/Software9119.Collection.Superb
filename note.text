@@ -1,3 +1,4 @@
 capacitor
  - finish accumulator
  - add converions operator into segment types
+ - add AsOrToCapacitor and AsOrToAccumulator

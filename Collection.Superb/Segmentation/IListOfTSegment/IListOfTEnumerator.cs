@@ -25,7 +25,7 @@ public struct IListEnumerator<T> : IEnumerator<T?>
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over <paramref name="list"/>.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   public IListEnumerator ( int offset, NonNegativeInt32 count, IList<T?> list )

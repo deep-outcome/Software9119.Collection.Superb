@@ -1,15 +1,14 @@
-- add to ILIst segments extension methods (and to ArraySegment, Span, roSpan, Memory, roMemory)
-- add AsOrToCapacitor and AsOrToAccumulator
-
 - add .netstandard 2.0 support
 
 ArraySegment<T> extension methods
  - extends capabilities to System.Array level
+ - have a look for combination with span
 
-Segments 
+Segments
  - copyTo(SameType) for segments (as ArraySegment do)
 
- - IndexingValidator.ValidateSegmentation can return -2 for empty source and -1 for empty segment
+IndexingValidator
+ - ValidateSegmentation can return -2 for empty source and -1 for empty segment
 
- - capacitor
+Capacitor
 	- replace various segmented methods with internal capacitor-slice with call to simplest method possible

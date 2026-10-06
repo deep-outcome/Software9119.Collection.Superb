@@ -35,15 +35,15 @@ readonly public struct SegmentationParamNames ( string offset, string count, str
 
   /// <summary>
   /// Offset parameter name.
-  /// </summary>  
+  /// </summary>
   public string Offset => this [ 0 ];
   /// <summary>
   /// Count parameter name.
-  /// </summary>  
+  /// </summary>
   public string Count => this [ 1 ];
   /// <summary>
   /// Unit parameter name.
-  /// </summary>  
+  /// </summary>
   public string Unit => this [ 2 ];
 
   /// <summary>

@@ -33,7 +33,7 @@ static public class BinaryInsertionOrder
   /// <exception cref="ImpossibleSegmentationException">
   /// <list type="bullet">
   /// <item>When <paramref name="count"/> and <paramref name="offset"/> create impossible segmentation over <paramref name="array"/>.</item>
-  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>  
+  /// <item>When <paramref name="offset"/> is less than <c>0</c>.</item>
   /// </list>
   /// </exception>
   static public void Order<T>
