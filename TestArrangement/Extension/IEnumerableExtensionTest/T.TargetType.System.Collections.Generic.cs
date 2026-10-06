@@ -590,11 +590,13 @@ public class system_collections_generic_test
   }
 
   [TestMethod]
-  [DataRow ( 100 )]
-  [DataRow ( null )]
-  public void IList_Enumerable ( int? capacity )
+  [DataRow ( 100, true )]
+  [DataRow ( 100, false )]
+  [DataRow ( null, true )]
+  [DataRow ( null, false )]
+  public void IList_Enumerable ( int? capacity, bool trimCapacity )
   {
-    AsOrToTargetType<IList<int>> targetType = system_collections_generic.IList<int> (capacity );
+    AsOrToTargetType<IList<int>> targetType = system_collections_generic.IList<int> (capacity, trimCapacity );
 
     IList<int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
@@ -605,7 +607,9 @@ public class system_collections_generic_test
     IList<int> target = targetType.Ctor(source);
 
     Assert.HasCount ( count, target );
-    Assert.AreEqual ( capacity ?? 16, ((List<int>) target).Capacity );
+
+    int expectedCapacity = trimCapacity ? 10 : capacity ?? 16;
+    Assert.AreEqual ( expectedCapacity, ((List<int>) target).Capacity );
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
@@ -616,7 +620,7 @@ public class system_collections_generic_test
   [TestMethod]
   public void IList_IList ()
   {
-    AsOrToTargetType<IList<int>> targetType = system_collections_generic.IList<int> ( null );
+    AsOrToTargetType<IList<int>> targetType = system_collections_generic.IList<int> ( null, default );
 
     IEnumerable<int> source = Enumerable.Range(1, 10);
     IList<int> target = targetType.Ctor(source);
@@ -630,7 +634,7 @@ public class system_collections_generic_test
   [TestMethod]
   public void IList_ICollection ()
   {
-    AsOrToTargetType<IList<int>> targetType = system_collections_generic.IList<int> ( null );
+    AsOrToTargetType<IList<int>> targetType = system_collections_generic.IList<int> ( null, default );
 
     const int count = 11;
     HashSet<int> source = Enumerable.Range(1, count).AsOrToHashSet()!;

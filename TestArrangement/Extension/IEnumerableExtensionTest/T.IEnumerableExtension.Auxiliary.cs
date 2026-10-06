@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Software9119.Collection.Superb.Extension;
 using Software9119.Collection.Superb.TestArrangement.TestAide;
 
 using System;
@@ -8,24 +9,31 @@ using System.Linq;
 
 namespace Software9119.Collection.Superb.TestArrangement.Extension.IEnumerableExtensionTest;
 
-[TestClass]
-public class Software9119IEnumerableExtensionTest
+#pragma warning disable CA1724
+public partial class IEnumerableExtensionTest
+#pragma warning restore CA1724
 {
+
   [TestMethod]
   public void NullEnumerable ()
   {
-    ArgumentNullException test = Software9119IEnumerableExtension.NullEnumerable("xXx");
+    ArgumentNullException test = IEnumerableExtension.NullEnumerable("xXx");
     Assert.AreEqual ( "Enumerable must be provided. (Parameter 'xXx')", test?.Message );
   }
 
   [TestMethod]
-  public void AtLeast ()
+  [DataRow ( 0, 0, true )]
+  [DataRow ( 1, 0, true )]
+  [DataRow ( 1, 1, true )]
+  [DataRow ( 1, 2, false )]
+  [DataRow ( 2, 2, true )]
+  [DataRow ( 2, 3, false )]
+  public void AtLeast ( int count, int atLeast, bool has )
   {
-    IEnumerable<int> test = XEnumerable.RangeEnumerable(0, 2);
+    IEnumerable<int> enumerable = XEnumerable.RangeEnumerable(0, count);
+    bool test = enumerable.AtLeast(atLeast);
 
-    Assert.IsTrue ( test.AtLeast ( 1 ) );
-    Assert.IsTrue ( test.AtLeast ( 2 ) );
-    Assert.IsFalse ( test.AtLeast ( 3 ) );
+    Assert.AreEqual ( has, test );
   }
 
   [TestMethod]

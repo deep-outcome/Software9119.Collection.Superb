@@ -680,16 +680,19 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  [DataRow ( 100 )]
-  [DataRow ( null )]
-  public void AsOrToIList ( int? capacity )
+  [DataRow ( 100, true )]
+  [DataRow ( 100, false )]
+  [DataRow ( null, true )]
+  [DataRow ( null, false )]
+  public void AsOrToIList ( int? capacity, bool trimCapacity )
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
-    IList<int> test = capacity is int
-      ? source.AsOrToIList(capacity)!
+    IList<int> test = capacity is int || trimCapacity
+      ? source.AsOrToIList(capacity, trimCapacity)!
       : source.AsOrToIList()!;
 
-    Assert.AreEqual ( capacity ?? 16, ((List<int>) test).Capacity );
+    int expectedCapacity = trimCapacity ? 10 : capacity ?? 16;
+    Assert.AreEqual ( expectedCapacity, ((List<int>) test).Capacity );
     Assert.IsTrue ( source.SequenceEqual ( test ) );
   }
 

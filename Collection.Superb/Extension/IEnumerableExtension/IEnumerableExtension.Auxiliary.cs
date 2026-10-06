@@ -1,24 +1,27 @@
 ﻿using Software9119.Collection.Superb.Numerics;
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
-#pragma warning disable PNANSDIFF // Namespace does not match proxy namespace
-namespace System.Linq;
-#pragma warning restore PNANSDIFF // Namespace does not match proxy namespace
+namespace Software9119.Collection.Superb.Extension;
 
 /// <summary>
 /// Various <see cref="IEnumerable{T}"/> extension methods.
 /// </summary>
-static public class Software9119IEnumerableExtension
+static public partial class IEnumerableExtension
 {
   static internal ArgumentNullException NullEnumerable ( string enumerable ) => new ( paramName: enumerable, "Enumerable must be provided." );
 
   /// <returns><see langword="true"/> when <paramref name="enumerable"/> is at least <paramref name="atLeast"/> long.</returns>
   /// <exception cref="ArgumentNullException">When <paramref name="enumerable"/> is <see langword="null"/>.</exception>
-  static public bool AtLeast<Item> ( this IEnumerable<Item> enumerable, PositiveInt32 atLeast )
+  static public bool AtLeast<Item> ( this IEnumerable<Item?> enumerable, NonNegativeInt32 atLeast )
   {
     if (enumerable == null)
       throw NullEnumerable ( nameof ( enumerable ) );
+
+    if (atLeast == 0)
+      return true;
 
     return enumerable.Skip ( atLeast - 1 ).Any ();
   }

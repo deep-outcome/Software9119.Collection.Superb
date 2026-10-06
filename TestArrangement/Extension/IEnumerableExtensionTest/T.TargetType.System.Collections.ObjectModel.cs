@@ -17,11 +17,13 @@ public class system_collections_objectmodel_test
 {
 
   [TestMethod]
-  [DataRow ( 100 )]
-  [DataRow ( null )]
-  public void Collection ( int? capacity )
+  [DataRow ( 100, true )]
+  [DataRow ( 100, false )]
+  [DataRow ( null, true )]
+  [DataRow ( null, false )]
+  public void Collection ( int? capacity, bool trimCapacity )
   {
-    AsOrToTargetType<Collection<int>> targetType = c_objectmodel.Collection<int> (capacity );
+    AsOrToTargetType<Collection<int>> targetType = c_objectmodel.Collection<int> (capacity, trimCapacity );
 
     Collection<int> empty = targetType.Empty ();
     Assert.HasCount ( 0, empty );
@@ -32,8 +34,9 @@ public class system_collections_objectmodel_test
 
     Assert.HasCount ( count, target );
 
+    int expectedCapacity = trimCapacity ? 10 : capacity ?? 16;
     List<int> items = (List<int>) Reflection.GetNonPublicFieldValue ( target, "items" );
-    Assert.AreEqual ( capacity ?? 16, items.Capacity );
+    Assert.AreEqual ( expectedCapacity, items.Capacity );
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
@@ -67,11 +70,13 @@ public class system_collections_objectmodel_test
   }
 
   [TestMethod]
-  [DataRow ( 100 )]
-  [DataRow ( null )]
-  public void ReadOnlyCollection ( int? capacity )
+  [DataRow ( 100, true )]
+  [DataRow ( 100, false )]
+  [DataRow ( null, true )]
+  [DataRow ( null, false )]
+  public void ReadOnlyCollection ( int? capacity, bool trimCapacity )
   {
-    AsOrToTargetType<ReadOnlyCollection<int>> targetType = c_objectmodel.ReadOnlyCollection<int> (capacity );
+    AsOrToTargetType<ReadOnlyCollection<int>> targetType = c_objectmodel.ReadOnlyCollection<int> (capacity, trimCapacity );
 
     ReadOnlyCollection<int> empty = targetType.Empty ();
     Assert.IsTrue ( ReferenceEquals ( ReadOnlyCollection<int>.Empty, empty ) );
@@ -82,8 +87,9 @@ public class system_collections_objectmodel_test
 
     Assert.HasCount ( count, target );
 
+    int expectedCapacity = trimCapacity ? 10 : capacity ?? 16;
     List<int> targetList = (List<int>) Reflection.GetNonPublicFieldValue ( target, "list" );
-    Assert.AreEqual ( capacity ?? 16, targetList.Capacity );
+    Assert.AreEqual ( expectedCapacity, targetList.Capacity );
 
     Assert.IsTrue ( targetType.CanCast ( target ) );
     Assert.IsFalse ( targetType.CanCast ( null! ) );
@@ -118,11 +124,15 @@ public class system_collections_objectmodel_test
   }
 
   [TestMethod]
-  [DataRow ( 100, 107, true )]
-  [DataRow ( 100, 107, false )]
-  [DataRow ( null, 11, true )]
-  [DataRow ( null, 11, false )]
-  public void ReadOnlyDictionary ( int? capacityRequested, int capacityGotten, bool keySelectorOnly )
+  [DataRow ( 100, 11, true, true )]
+  [DataRow ( 100, 11, false, true )]
+  [DataRow ( 100, 107, true, false )]
+  [DataRow ( 100, 107, false, false )]
+  [DataRow ( null, 11, true, true )]
+  [DataRow ( null, 11, false, true )]
+  [DataRow ( null, 11, true, false )]
+  [DataRow ( null, 11, false, false )]
+  public void ReadOnlyDictionary ( int? capacityRequested, int capacityGotten, bool keySelectorOnly, bool trimCapacity )
   {
     TestComparer<int> keyComparer = new ();
     Func<int, int> keySelector = x => x *2;
@@ -130,9 +140,9 @@ public class system_collections_objectmodel_test
 
     AsOrToTargetType<ReadOnlyDictionary<int, int>> targetType = keySelectorOnly
       ? c_objectmodel.ReadOnlyDictionary
-        (keySelector, keyComparer, capacityRequested)
+        (keySelector, keyComparer, capacityRequested, trimCapacity)
       : c_objectmodel.ReadOnlyDictionary
-        (keySelector, valueSelector, keyComparer, capacityRequested);
+        (keySelector, valueSelector, keyComparer, capacityRequested, trimCapacity);
 
     ReadOnlyDictionary<int, int> empty = targetType.Empty ();
     Assert.IsTrue ( ReferenceEquals ( ReadOnlyDictionary<int, int>.Empty, empty ) );

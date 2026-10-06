@@ -17,17 +17,20 @@ public partial class IEnumerableExtensionTest
 #pragma warning restore CA1724
 {
   [TestMethod]
-  [DataRow ( 100 )]
-  [DataRow ( null )]
-  public void AsOrToCollection ( int? capacity )
+  [DataRow ( 100, true )]
+  [DataRow ( 100, false )]
+  [DataRow ( null, true )]
+  [DataRow ( null, false )]
+  public void AsOrToCollection ( int? capacity, bool trimCapacity )
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
-    Collection<int> test = capacity is int
-      ? source.AsOrToCollection(capacity)!
+    Collection<int> test = capacity is int || trimCapacity
+      ? source.AsOrToCollection(capacity, trimCapacity)!
       : source.AsOrToCollection()!;
 
+    int expectedCapacity = trimCapacity ? 10 : capacity ?? 16;
     List<int> items = (List<int>) Reflection.GetNonPublicFieldValue ( test, "items" );
-    Assert.AreEqual ( capacity ?? 16, items.Capacity );
+    Assert.AreEqual ( expectedCapacity, items.Capacity );
 
     Assert.IsTrue ( source.SequenceEqual ( test ) );
   }
@@ -70,17 +73,20 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  [DataRow ( 100 )]
-  [DataRow ( null )]
-  public void AsOrToReadOnlyCollection ( int? capacity )
+  [DataRow ( 100, true )]
+  [DataRow ( 100, false )]
+  [DataRow ( null, true )]
+  [DataRow ( null, false )]
+  public void AsOrToReadOnlyCollection ( int? capacity, bool trimCapacity )
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 10);
-    ReadOnlyCollection<int> test = capacity is int
-      ? source.AsOrToReadOnlyCollection(capacity)!
+    ReadOnlyCollection<int> test = capacity is int || trimCapacity
+      ? source.AsOrToReadOnlyCollection(capacity, trimCapacity)!
       : source.AsOrToReadOnlyCollection()!;
 
+    int expectedCapacity = trimCapacity ? 10 : capacity ?? 16;
     List<int> list = (List<int>) Reflection.GetNonPublicFieldValue ( test, "list" );
-    Assert.AreEqual ( capacity ?? 16, list.Capacity );
+    Assert.AreEqual ( expectedCapacity, list.Capacity );
 
     Assert.IsTrue ( source.SequenceEqual ( test ) );
   }

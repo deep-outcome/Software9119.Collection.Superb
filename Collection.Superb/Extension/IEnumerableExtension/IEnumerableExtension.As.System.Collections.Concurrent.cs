@@ -27,7 +27,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public OrderablePartitioner<Item>? AsOrderablePartitioner<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     bool dynamicLoadBalancing = true,
     EnumerablePartitionerOptions options = EnumerablePartitionerOptions.None,
     NullBehavior behavior = NullBehavior.ReturnEmpty

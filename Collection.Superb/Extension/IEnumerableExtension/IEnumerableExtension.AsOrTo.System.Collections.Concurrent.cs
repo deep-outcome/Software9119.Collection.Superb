@@ -18,7 +18,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public ConcurrentBag<Item>? AsOrToConcurrentBag<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
@@ -42,7 +42,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public ConcurrentDictionary<Key, Item>? IntoConcurrentDictionary<Item, Key> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     int? capacity = null,
     int? concurrencyLevel = null,
@@ -77,7 +77,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public ConcurrentDictionary<Key, Value>? IntoConcurrentDictionary<Item, Key, Value> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
     int? capacity = null,
@@ -108,7 +108,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public ConcurrentQueue<Item>? AsOrToConcurrentQueue<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
@@ -125,7 +125,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public ConcurrentStack<Item>? AsOrToConcurrentStack<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
@@ -135,7 +135,7 @@ static public partial class IEnumerableExtension
 
   /// <summary>
   /// Casts <paramref name="enumerable"/> directly into <see cref="BlockingCollection{Item}"/>, or casts or copies
-  /// <paramref name="enumerable"/> into intermediate <see cref="IProducerConsumerCollection{Item}"/> before wrapping it into
+  /// <paramref name="enumerable"/> into intermediate <see cref="IProducerConsumerCollection{Item}"/> before wrapping into
   /// <see cref="BlockingCollection{Item}"/>.
   /// </summary>
   /// <remarks>
@@ -151,7 +151,7 @@ static public partial class IEnumerableExtension
   /// <exception cref="UnsupportedBlockingCollectionTypeException">When <paramref name="type"/> is unknown.</exception>
   static public BlockingCollection<Item>? AsOrToBlockingCollection<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     int? boundedCapacity = null,
     BlockingCollectionType type = BlockingCollectionType.ConcurrentBag,
     NullBehavior behavior = NullBehavior.ReturnEmpty

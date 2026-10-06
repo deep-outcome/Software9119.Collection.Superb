@@ -407,7 +407,7 @@ static public class system_collections_generic
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1?view=net-10.0">
   /// IList&lt;Item&gt;</see>.
   /// </summary>
-  static public AsOrToTargetType<IList<Item>> IList<Item> ( int? capacity )
+  static public AsOrToTargetType<IList<Item>> IList<Item> ( int? capacity, bool trimCapacity )
   {
     Ctor<Item, IList<Item>> typedCtor = (e) =>
     {
@@ -423,6 +423,10 @@ static public class system_collections_generic
 
       List<Item> list = capacity is int cap ? new(cap) : new();
       list.AddRange ( e );
+
+      if (trimCapacity)
+        list.TrimExcess();
+
       return list;
     };
 

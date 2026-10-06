@@ -25,7 +25,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public Dictionary<Key, Item>? IntoDictionary<Item, Key> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     int? capacity = null,
     IEqualityComparer<Key>? keyComparer = null,
@@ -53,7 +53,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public Dictionary<Key, Value>? IntoDictionary<Item, Key, Value> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
     int? capacity = null,
@@ -92,7 +92,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public HashSet<Item>? AsOrToHashSet<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     int? capacity = null,
     IEqualityComparer<Item>? itemComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
@@ -113,7 +113,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public LinkedList<Item>? AsOrToLinkedList<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
@@ -131,7 +131,7 @@ static public partial class IEnumerableExtension
   [SuppressMessage ( "Design", "CA1002:Do not expose generic lists", Justification = "No help in here." )]
   static public List<Item>? AsOrToList<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
@@ -156,7 +156,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public OrderedDictionary<Key, Item>? IntoOrderedDictionary<Item, Key> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     int? capacity = null,
     IEqualityComparer<Key>? keyComparer = null,
@@ -184,7 +184,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public OrderedDictionary<Key, Value>? IntoOrderedDictionary<Item, Key, Value> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
     int? capacity = null,
@@ -239,7 +239,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public Queue<Item>? AsOrToTypedQueue<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
@@ -264,7 +264,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public SortedDictionary<Key, Item>? IntoSortedDictionary<Item, Key> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     IComparer<Key>? keyComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
@@ -291,7 +291,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public SortedDictionary<Key, Value>? IntoSortedDictionary<Item, Key, Value> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
     IComparer<Key>? keyComparer = null,
@@ -324,7 +324,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public SortedList<Key, Item>? IntoTypedSortedList<Item, Key> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     int? capacity = null,
     IComparer<Key>? keyComparer = null,
@@ -352,7 +352,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public SortedList<Key, Value>? IntoTypedSortedList<Item, Key, Value> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
     int? capacity = null,
@@ -392,7 +392,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public SortedSet<Item>? AsOrToSortedSet<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     IComparer<Item>? itemComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
@@ -413,7 +413,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public Stack<Item>? AsOrToTypedStack<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     int? capacity = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
@@ -431,7 +431,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public Item []? AsOrToArray<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     int? length = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
@@ -460,21 +460,23 @@ static public partial class IEnumerableExtension
   /// <list type="bullet">
   /// <item>
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
-  /// <see cref="collections_generic.IList{Item}(int?)"/>.
+  /// <see cref="collections_generic.IList{Item}(int?, bool)"/>.
   /// </item>
   /// <item>
   /// <paramref name="capacity"/> can be used for <see cref="List{Item}"/> pre-capacitation.
   /// </item>
+  /// <item><paramref name="trimCapacity"/> can be used for <see cref="List{Item}"/> capacity trim.</item>
   /// </list>
   /// </remarks>
   static public IList<Item>? AsOrToIList<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     int? capacity = null,
+    bool trimCapacity = false,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
-    AsOrToTargetType<IList<Item>> targetType = collections_generic.IList<Item>( capacity );
+    AsOrToTargetType<IList<Item>> targetType = collections_generic.IList<Item>( capacity, trimCapacity );
     return enumerable.AsOrTo ( targetType, behavior );
   }
 }

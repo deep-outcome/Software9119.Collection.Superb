@@ -23,13 +23,13 @@ static public class system_collections_objectmodel
   /// Collection&lt;Item&gt;</see>.
   /// </summary>
   /// <remarks>
-  /// Uses <see cref="c_generic.IList{Item}(int?)"/> for <see cref="IList{Item}"/> production.
+  /// Uses <see cref="c_generic.IList{Item}(int?,bool)"/> for <see cref="IList{Item}"/> production.
   /// </remarks>
-  static public AsOrToTargetType<Collection<Item>> Collection<Item> ( int? capacity )
+  static public AsOrToTargetType<Collection<Item>> Collection<Item> ( int? capacity, bool trimCapacity )
   {
     Ctor<Item, Collection<Item>> typedCtor = (e) =>
     {
-      IList<Item> ilist = c_generic.IList<Item>( capacity ).Ctor( e );
+      IList<Item> ilist = c_generic.IList<Item>( capacity, trimCapacity ).Ctor( e );
       return new(ilist);
     };
 
@@ -62,13 +62,13 @@ static public class system_collections_objectmodel
   /// ReadOnlyCollection&lt;Item&gt;</see>.
   /// </summary>
   /// <remarks>
-  /// Uses <see cref="c_generic.IList{Item}(int?)"/> for <see cref="IList{Item}"/> production.
+  /// Uses <see cref="c_generic.IList{Item}(int?,bool)"/> for <see cref="IList{Item}"/> production.
   /// </remarks>
-  static public AsOrToTargetType<ReadOnlyCollection<Item>> ReadOnlyCollection<Item> ( int? capacity )
+  static public AsOrToTargetType<ReadOnlyCollection<Item>> ReadOnlyCollection<Item> ( int? capacity, bool trimCapacity )
   {
     Ctor<Item, ReadOnlyCollection<Item>> typedCtor = (e) =>
     {
-      IList<Item> ilist = c_generic.IList<Item>( capacity ).Ctor( e );
+      IList<Item> ilist = c_generic.IList<Item>( capacity, trimCapacity ).Ctor( e );
       return new(ilist);
     };
 
@@ -99,15 +99,16 @@ static public class system_collections_objectmodel
   /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlydictionary-2?view=net-10.0">
   /// ReadOnlyDictionary&lt;Key, Item&gt;</see>.
   /// </summary>
-  /// <remarks>Calls to <see cref="ReadOnlyDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key}, int?)"/>.</remarks>
+  /// <remarks>Calls to <see cref="ReadOnlyDictionary{Item, Key, Value}(Func{Item, Key}, Func{Item, Value}, IEqualityComparer{Key}, int?, bool)"/>.</remarks>
   static public AsOrToTargetType<ReadOnlyDictionary<Key, Item>> ReadOnlyDictionary<Item, Key>
   (
     Func<Item, Key> keySelector,
     IEqualityComparer<Key> keyComparer,
-    int? capacity
+    int? capacity,
+    bool trimCapacity
   )
   where Key : notnull
-    => ReadOnlyDictionary ( keySelector, x => x, keyComparer, capacity );
+    => ReadOnlyDictionary ( keySelector, x => x, keyComparer, capacity, trimCapacity );
 
   /// <summary>
   /// Target type for
@@ -124,7 +125,8 @@ static public class system_collections_objectmodel
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
     IEqualityComparer<Key> keyComparer,
-    int? capacity
+    int? capacity,
+    bool trimCapacity
   )
   where Key : notnull
   {
@@ -134,6 +136,9 @@ static public class system_collections_objectmodel
       Dictionary<Key, Value> dict = c_generic
       .Dictionary(keySelector, valueSelector, keyComparer, capacity)
       .Ctor(e);
+
+      if(trimCapacity)
+        dict.TrimExcess();
 
       return new (dict);
     };

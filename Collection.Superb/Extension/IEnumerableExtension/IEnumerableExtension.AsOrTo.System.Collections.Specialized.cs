@@ -17,7 +17,7 @@ static public partial class IEnumerableExtension
   /// with <see cref="c_specialized.HybridDictionary{Item}(Func{Item, object}, int?, bool)"/>.
   /// </remarks>
   static public HybridDictionary? IntoHybridDictionary<Item> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, object> keySelector,
     int? capacity = null,
     bool caseSensitive = true,
@@ -48,7 +48,7 @@ static public partial class IEnumerableExtension
   /// <see cref="c_specialized.HybridDictionary{Item}(Func{Item, object}, Func{Item, object?}, int?, bool)"/>.
   /// </remarks>
   static public HybridDictionary? IntoHybridDictionary<Item> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, object> keySelector,
     Func<Item, object?> valueSelector,
     int? capacity = null,
@@ -89,7 +89,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public ListDictionary? IntoListDictionary<Item> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, object> keySelector,
     IComparer? keyComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
@@ -139,7 +139,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public ListDictionary? IntoListDictionary<Item> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, object> keySelector,
     Func<Item, object?> valueSelector,
     IComparer? keyComparer = null,
@@ -191,7 +191,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public NameValueCollection? IntoNameValueCollection<Item> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, string> keySelector,
     Func<Item, string?> valueSelector,
     int? capacity = null,
@@ -236,7 +236,7 @@ static public partial class IEnumerableExtension
   /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, int?, IEqualityComparer)"/>.
   /// </remarks>
   static public OrderedDictionary? IntoOrderedDictionary<Item> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, object> keySelector,
     int? capacity = null,
     IEqualityComparer? keyComparer = null,
@@ -268,7 +268,7 @@ static public partial class IEnumerableExtension
   /// with <see cref="c_specialized.OrderedDictionary{Item}(Func{Item, object}, Func{Item, object?}, int?, IEqualityComparer)"/>.
   /// </remarks>
   static public OrderedDictionary? IntoOrderedDictionary<Item> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, object> keySelector,
     Func<Item, object?> valueSelector,
     int? capacity = null,
@@ -301,7 +301,7 @@ static public partial class IEnumerableExtension
   /// with <see cref="c_specialized.StringCollection{Item}(Func{Item, string})"/>.
   /// </remarks>
   static public StringCollection? IntoStringCollection<Item> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, string?> selector,
     NullBehavior behavior = NullBehavior.ReturnEmpty )
     => enumerable.AsOrTo ( c_specialized.StringCollection ( selector ), behavior );
@@ -328,7 +328,7 @@ static public partial class IEnumerableExtension
   /// with <see cref="c_specialized.StringDictionary{Item}(Func{Item, string}, Func{Item, string?})"/>.
   /// </remarks>
   static public StringDictionary? IntoStringDictionary<Item> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, string> keySelector,
     Func<Item, string?> valueSelector,
     NullBehavior behavior = NullBehavior.ReturnEmpty )

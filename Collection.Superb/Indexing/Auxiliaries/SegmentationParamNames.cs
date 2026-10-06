@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Software9119.Collection.Superb.Extension;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

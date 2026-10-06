@@ -27,7 +27,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public ImmutableArray<Item> AsOrToImmutableArray<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     int? length = null,
     bool enforceLengthCountMatch = false,
     NullBehavior behavior = NullBehavior.ReturnEmpty
@@ -56,7 +56,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public ImmutableDictionary<Key, Item>? IntoImmutableDictionary<Item, Key> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     IEqualityComparer<Key>? keyComparer = null,
     IEqualityComparer<Item>? itemComparer = null,
@@ -94,7 +94,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public ImmutableDictionary<Key, Value>? IntoImmutableDictionary<Item, Key, Value> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
     IEqualityComparer<Key>? keyComparer = null,
@@ -135,7 +135,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public ImmutableHashSet<Item>? AsOrToImmutableHashSet<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     IEqualityComparer<Item>? itemComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
@@ -155,7 +155,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public ImmutableList<Item>? AsOrToImmutableList<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
@@ -172,7 +172,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public ImmutableQueue<Item>? AsOrToImmutableQueue<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {
@@ -200,7 +200,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public ImmutableSortedDictionary<Key, Item>? IntoImmutableSortedDictionary<Item, Key> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     IComparer<Key>? keyComparer = null,
     IEqualityComparer<Item>? itemComparer = null,
@@ -238,7 +238,7 @@ static public partial class IEnumerableExtension
   /// </list>
   /// </remarks>
   static public ImmutableSortedDictionary<Key, Value>? IntoImmutableSortedDictionary<Item, Key, Value> (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     Func<Item, Key> keySelector,
     Func<Item, Value> valueSelector,
     IComparer<Key>? keyComparer = null,
@@ -279,7 +279,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public ImmutableSortedSet<Item>? AsOrToImmutableSortedSet<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     IComparer<Item>? itemComparer = null,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
@@ -299,7 +299,7 @@ static public partial class IEnumerableExtension
   /// </remarks>
   static public ImmutableStack<Item>? AsOrToImmutableStack<Item>
   (
-    this IEnumerable<Item>? enumerable,
+    this IEnumerable<Item?>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   )
   {

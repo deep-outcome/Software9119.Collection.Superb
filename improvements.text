@@ -6,10 +6,8 @@
 ArraySegment<T> extension methods
  - extends capabilities to System.Array level
 
-Segments
- - add casts between read-only and alter-also versions
+Segments 
  - copyTo(SameType) for segments (as ArraySegment do)
-
 
  - IndexingValidator.ValidateSegmentation can return -2 for empty source and -1 for empty segment
 
