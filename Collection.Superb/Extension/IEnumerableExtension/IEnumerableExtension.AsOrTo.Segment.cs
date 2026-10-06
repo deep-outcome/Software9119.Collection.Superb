@@ -138,7 +138,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="segment_type.Memory{Item}"/>.
   /// </remarks>
-  static public Memory<Item?> ToMemory<Item> (
+  static public Memory<Item?> IntoMemory<Item> (
     this IEnumerable<Item?>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   ) => enumerable.AsOrTo ( segment_type.Memory<Item> (), behavior );
@@ -151,7 +151,7 @@ static public partial class IEnumerableExtension
   /// Calls to <see cref="AsOrTo{Target}(IEnumerable, AsOrToTargetType{Target}, NullBehavior)"/> with
   /// <see cref="segment_type.ReadOnlyMemory{Item}"/>.
   /// </remarks>
-  static public ReadOnlyMemory<Item?> ToReadOnlyMemory<Item> (
+  static public ReadOnlyMemory<Item?> IntoReadOnlyMemory<Item> (
     this IEnumerable<Item?>? enumerable,
     NullBehavior behavior = NullBehavior.ReturnEmpty
   ) => enumerable.AsOrTo ( segment_type.ReadOnlyMemory<Item> (), behavior );

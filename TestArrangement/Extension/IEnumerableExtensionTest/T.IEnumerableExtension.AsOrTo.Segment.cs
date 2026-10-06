@@ -351,20 +351,20 @@ public partial class IEnumerableExtensionTest
   }
 
   [TestMethod]
-  public void ToMemory ()
+  public void IntoMemory ()
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 12);
-    Memory<int> test = source.ToMemory();
+    Memory<int> test = source.IntoMemory();
 
     Assert.AreEqual ( 12, test.Length );
     Assert.IsTrue ( source.ToArray ().SequenceEqual ( test.Span ) );
   }
 
   [TestMethod]
-  public void ToMemory_ArrayAlready ()
+  public void IntoMemory_ArrayAlready ()
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 12).ToArray();
-    Memory<int> test = source.ToMemory();
+    Memory<int> test = source.IntoMemory();
 
     int[] store = (int[]) Reflection.GetNonPublicFieldValue ( test, "_object" );
 
@@ -375,33 +375,33 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToMemory_NullBehavior ( NullBehavior? behavior )
+  public void IntoMemory_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     Memory<int> test = returnsDefault
-      ? source.ToMemory(behavior: behavior!.Value)
-      : source.ToMemory();
+      ? source.IntoMemory(behavior: behavior!.Value)
+      : source.IntoMemory();
 
     Assert.AreEqual ( 0, test.Length );
     Assert.AreEqual ( returnsDefault, test.Equals ( default ( Memory<int> ) ) );
   }
 
   [TestMethod]
-  public void ToReadOnlyMemory ()
+  public void IntoReadOnlyMemory ()
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 12);
-    ReadOnlyMemory<int> test = source.ToReadOnlyMemory();
+    ReadOnlyMemory<int> test = source.IntoReadOnlyMemory();
 
     Assert.AreEqual ( 12, test.Length );
     Assert.IsTrue ( source.ToArray ().SequenceEqual ( test.Span ) );
   }
 
   [TestMethod]
-  public void ToReadOnlyMemory_ArrayAlready ()
+  public void IntoReadOnlyMemory_ArrayAlready ()
   {
     IEnumerable<int> source = XEnumerable.RangeEnumerable(0, 12).ToArray();
-    ReadOnlyMemory<int> test = source.ToReadOnlyMemory();
+    ReadOnlyMemory<int> test = source.IntoReadOnlyMemory();
 
     int[] store = (int[]) Reflection.GetNonPublicFieldValue ( test, "_object" );
 
@@ -412,13 +412,13 @@ public partial class IEnumerableExtensionTest
   [TestMethod]
   [DataRow ( NullBehavior.ReturnDefault )]
   [DataRow ( null )]
-  public void ToReadOnlyMemory_NullBehavior ( NullBehavior? behavior )
+  public void IntoReadOnlyMemory_NullBehavior ( NullBehavior? behavior )
   {
     IEnumerable<int> source = null!;
     bool returnsDefault = behavior is NullBehavior.ReturnDefault;
     ReadOnlyMemory<int> test = returnsDefault
-      ? source.ToReadOnlyMemory(behavior: behavior!.Value)
-      : source.ToReadOnlyMemory();
+      ? source.IntoReadOnlyMemory(behavior: behavior!.Value)
+      : source.IntoReadOnlyMemory();
 
     Assert.AreEqual ( 0, test.Length );
     Assert.AreEqual ( returnsDefault, test.Equals ( default ( ReadOnlyMemory<int> ) ) );
