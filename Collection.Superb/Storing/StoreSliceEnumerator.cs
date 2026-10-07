@@ -5,30 +5,27 @@ using System.Collections.Generic;
 namespace Software9119.Collection.Superb.Storing;
 
 /// <summary>
-/// <see cref="Capacitor{T}"/> store enumerator.
+/// <see cref="StoreSlice{T}"/> enumerator.
 /// </summary>
-/// <remarks>
-/// Changes made to store during enumeration are reflected by <see cref="CapacitorStoreEnumerator{T}"/>, however changes
-/// made to <see cref="Capacitor{T}"/> are not, specifically changes to count or store replacements.
-/// </remarks>
-public struct CapacitorStoreEnumerator<T> : IEnumerator<T?>
+public struct StoreSliceEnumerator<T> : IEnumerator<T?>
 {
   readonly internal T?[] store;
   readonly internal int limit;
 
   internal int index;
-  internal const int resetIndex = -1;
+  readonly internal int resetIndex;
 
   /// <summary>
   /// Constructor.
   /// </summary>
-  public CapacitorStoreEnumerator ( Capacitor<T?> capacitor )
+  public StoreSliceEnumerator ( in StoreSlice<T?> slice )
   {
-    if (capacitor == null)
-      throw new ArgumentNullException ( paramName: nameof ( capacitor ), "Capacitor must be provided." );
+    int index = slice.offset - 1;
 
-    store = capacitor.store;
-    limit = capacitor.Count - 1;
+    limit = index + slice.count;
+    resetIndex = index;
+
+    store = slice.SafeStore;
 
     Reset ();
   }

@@ -6,6 +6,7 @@ ArraySegment<T> extension methods
 
 Segments
  - copyTo(SameType) for segments (as ArraySegment do)
+ - allow null list for 0 index empty segments (and StoreSlice)
 
 IndexingValidator
  - ValidateSegmentation can return -2 for empty source and -1 for empty segment

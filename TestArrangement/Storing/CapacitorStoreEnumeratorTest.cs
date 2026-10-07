@@ -22,7 +22,7 @@ public class CapacitorStoreEnumeratorTest
 
     Assert.AreEqual ( resetIndex, enumerator.index );
     Assert.AreEqual ( -1, enumerator.index );
-    Assert.AreEqual ( capacitor.Count, enumerator.count );
+    Assert.AreEqual ( 2, enumerator.limit );
     Assert.IsTrue ( ReferenceEquals ( capacitor.store, enumerator.store ) );
   }
 
@@ -69,9 +69,13 @@ public class CapacitorStoreEnumeratorTest
     CapacitorStoreEnumerator<int> enumerator = new (capacitor);
     EnumerableEnumerator<int> enumerable = new (enumerator);
 
+    Assert.AreEqual ( 0, enumerator.Current );
+
     Assert.IsTrue ( source.SequenceEqual ( enumerable ) );
     enumerator.Reset ();
     Assert.IsTrue ( source.SequenceEqual ( enumerable ) );
+
+    Assert.AreEqual ( 0, enumerator.Current );
   }
 
   [TestMethod]
@@ -118,7 +122,7 @@ public class CapacitorStoreEnumeratorTest
     Assert.AreEqual ( 0, enumerator.Current );
   }
 
-  // veryfing strunct equality works as it should, not truly implemented
+  // veryfing struct equality works as it should, not truly implemented
   [TestMethod]
   public void Equals_Object ()
   {

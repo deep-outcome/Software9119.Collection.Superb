@@ -4,6 +4,7 @@ This namespace contains collection data types and types for supporting them.
 
 ### Types Available
 
+- [`Accumulator<T>`](./Accumulator.cs) – `Capacitor<T>` extension open to internal store exposition, geometric jump capacitation policy is default
 - [`GrowFactor`](./Enumeration/GrowFactor.cs) – grow factor enumeration, used by auto-grow capacitation calculation
 - [`CapacitationPolicy`](./Enumeration/CapacitationPolicy.cs) – capacitation policy used by batch and pre capacitation types
 - [`Capacitor<T>`](./Capacitor.cs) – `List<T>`-like collection type featuring all capabilities of .NET old-timers `List<T>` and `T[]` and more but w/o list versioning
@@ -50,3 +51,11 @@ static async IAsyncEnumerable<int> Generator ( [EnumeratorCancellation] Cancella
 Capacitor<int> capacitor = new () { CapacitationPolicy = CapacitationPolicy.GeometricJump, LockCapacitationPolicy = true, };
 ```
 - [`CapacitorStoreEnumerator<T>`](./CapacitorStoreEnumerator.cs) – `Capacitor<T>` enumerator
+- [`StoreSlice<T>`](./StoreSlice.cs) – general array slice type which converts implicitly to segmentive types like `Span<T>`, `ArraySegment<T>` and others
+```csharp
+StoreSlice<int> slicer = default;
+
+ReadOnlyMemory<int> myMemory = slicer;
+myMemory = slicer.ToReadOnlyMemory ();
+```
+- [`StoreSliceEnumerator<T>`](./CapacitorStoreEnumerator.cs) – `StoreSlice<T>` enumerator

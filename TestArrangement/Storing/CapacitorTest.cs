@@ -320,6 +320,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -333,6 +334,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -349,6 +351,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -362,6 +365,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
 
@@ -378,6 +382,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -388,6 +393,11 @@ public class CapacitorTest
 
     Assert.AreEqual ( 0, capacitor.storeIndex );
     Assert.IsTrue ( ReferenceEquals ( Array.Empty<int> (), capacitor.store ) );
+
+    Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
+    Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
+    Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -403,6 +413,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -428,6 +439,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -453,6 +465,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -479,6 +492,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -496,6 +510,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -527,6 +542,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -558,6 +574,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -589,6 +606,7 @@ public class CapacitorTest
     Assert.AreEqual ( GrowFactor.Two, capacitor.growFactor );
     Assert.AreEqual ( CapacitationPolicy.StaticJump, capacitor.capacitationPolicy );
     Assert.IsFalse ( capacitor.LockGrowFactor );
+    Assert.IsFalse ( capacitor.LockCapacitationPolicy );
   }
 
   [TestMethod]
@@ -2074,7 +2092,7 @@ public class CapacitorTest
   }
 
   [TestMethod]
-  public void CapacitationPolicyTest_LockedFactor ()
+  public void CapacitationPolicyTest_LockedPolicy ()
   {
     const CapacitationPolicy policy = CapacitationPolicy.GeometricJump;
 

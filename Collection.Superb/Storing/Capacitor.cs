@@ -685,7 +685,7 @@ public class Capacitor<T> : Capacitor,
   /// <exception cref="InvalidOperationException">
   /// Upon try to set value when <see cref="LockCapacitationPolicy"/> is <see langword="true"/>.
   /// </exception>
-  public CapacitationPolicy CapacitationPolicy
+  virtual public CapacitationPolicy CapacitationPolicy
   {
     get => capacitationPolicy;
     set

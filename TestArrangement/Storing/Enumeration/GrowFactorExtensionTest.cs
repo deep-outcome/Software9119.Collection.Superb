@@ -5,7 +5,7 @@ using Software9119.Collection.Superb.Storing;
 using System;
 using System.Linq;
 
-namespace Software9119.Collection.Superb.TestArrangement.Storing;
+namespace Software9119.Collection.Superb.TestArrangement.Storing.Enumeration;
 
 [TestClass]
 public class GrowFactorExtensionTest
