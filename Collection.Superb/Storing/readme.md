@@ -58,4 +58,4 @@ StoreSlice<int> slicer = default;
 ReadOnlyMemory<int> myMemory = slicer;
 myMemory = slicer.ToReadOnlyMemory ();
 ```
-- [`StoreSliceEnumerator<T>`](./CapacitorStoreEnumerator.cs) – `StoreSlice<T>` enumerator
+- [`StoreSliceEnumerator<T>`](./StoreSliceEnumerator.cs) – `StoreSlice<T>` enumerator

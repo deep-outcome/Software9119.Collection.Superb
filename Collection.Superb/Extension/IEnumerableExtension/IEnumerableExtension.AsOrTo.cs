@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Software9119.Collection.Superb.Extension;
 
 /// <summary>
 /// Extension methods for comfortable and ergonomic creating of well-known .NET collections.
 /// </summary>
+[SuppressMessage ( "Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Not excessive in core." )]
 static public partial class IEnumerableExtension
 {
   static ArgumentNullException EnumerableNull ( string paramName ) => new ( paramName: paramName, "Null source enumerable encounter." );
