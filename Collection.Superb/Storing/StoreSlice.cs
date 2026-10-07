@@ -57,7 +57,7 @@ readonly public struct StoreSlice<T> : IEnumerable<T>
   /// Slice offset.
   /// </summary>
   public int Offset => offset;
-  
+
   /// <summary>
   /// Slice length.
   /// </summary>

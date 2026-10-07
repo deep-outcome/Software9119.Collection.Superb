@@ -55,7 +55,7 @@ public class Accumulator<T> : Capacitor<T>
   /// <summary>
   /// Constructor allowing to 'start' <see cref="Accumulator{T}"/> with pre-created internal store.
   /// </summary>
-  /// <param name="count">How much of <paramref name="store"/> is considered populated.</param>  
+  /// <param name="count">How much of <paramref name="store"/> is considered populated.</param>
   /// <exception cref="ArgumentOutOfRangeException">
   /// When <paramref name="count"/> is greater than <paramref name="store"/> length or not <c>0</c> when <paramref name="store"/>
   /// is <see langword="null"/>.
@@ -108,8 +108,8 @@ public class Accumulator<T> : Capacitor<T>
 
   /// <summary>
   /// Creates store slice.
-  /// </summary>   
-  /// <remarks>    
+  /// </summary>
+  /// <remarks>
   /// <see cref="StoreSlice{T}"/> is capable of implicit conversion to many other slice types, e.g.:
   /// <list type="bullet">
   /// <item><see cref="Span{T}"/></item>
