@@ -708,6 +708,28 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void AddInsert_OffsetEnumerableRoomRequest_ArrayItems_GeometricJump ()
+  {
+    int count = 5;
+    int index = 0;
+
+    IEnumerable<int> insertion = XEnumerable.RangeEnumerable(4, count).ToArray();
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    AddInsertOffset offset = capacitor.AddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddInsert ( offset, insertion, 200 ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 5 )]
   [DataRow ( 3, 5 )]
   [DataRow ( 5, 5 )]
@@ -766,6 +788,28 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void AddInsert_OffsetEnumerableRoomRequest_CollectionItems_GeometricJump ()
+  {
+    int count = 5;
+    int index = 1;
+
+    IEnumerable<int> insertion = new XCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    AddInsertOffset offset = capacitor.AddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddInsert ( offset, insertion, 200 ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 5 )]
   [DataRow ( 3, 5 )]
   [DataRow ( 5, 5 )]
@@ -820,6 +864,28 @@ public class CapacitorTest
 
     Assert.AreEqual ( 5, capacitor.Capacity );
     Assert.AreEqual ( 5, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void AddInsert_OffsetEnumerableRoomRequest_ReadOnlyCollectionItems_GeometricJump ()
+  {
+    int count = 5;
+    int index = 2;
+
+    IEnumerable<int> insertion = new XReadOnlyCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    AddInsertOffset offset = capacitor.AddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddInsert ( offset, insertion, 200 ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
 
@@ -890,6 +956,28 @@ public class CapacitorTest
     Assert.IsTrue ( capacitor.AddInsert ( offset, insertion, roomReq ) );
 
     Assert.AreEqual ( cap, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void AddInsert_OffsetEnumerableRoomRequest_Enumerable_GeometricJump ()
+  {
+    int count = 5;
+    int index = 3;
+
+    IEnumerable<int> insertion = XEnumerable.RangeEnumerable(4, count);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    AddInsertOffset offset = capacitor.AddInsOffset(index);
+    Assert.IsTrue ( capacitor.AddInsert ( offset, insertion, 200 ) );
+
+    Assert.AreEqual ( 243, capacitor.Capacity );
     Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
@@ -995,6 +1083,29 @@ public class CapacitorTest
     Assert.IsTrue ( await capacitor.AddInsert ( offset, insertion, roomReq ) );
 
     Assert.AreEqual ( cap, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
+  async public Task AddInsert_OffsetAsyncEnumerableRoomRequest_GeometricJump ()
+  {
+    int count = 5;
+    int index = 0;
+
+    IAsyncEnumerable<int> insertion = new TestAide.AsyncEnumerable(4, count);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion.ToBlockingEnumerable ( CancellationToken.None ) );
+
+    AddInsertOffset offset = capacitor.AddInsOffset(index);
+    Assert.IsTrue ( await capacitor.AddInsert ( offset, insertion, 200 ) );
+
+    Assert.AreEqual ( 243, capacitor.Capacity );
     Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
@@ -2152,6 +2263,27 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void Add_EnumerableRoomRequest_GeometricJump ()
+  {
+    int count = 5;
+
+    IEnumerable<int> addition = XEnumerable.RangeEnumerable(4, count);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.AddRange ( addition );
+
+    Assert.IsTrue ( capacitor.Add ( addition, 200 ) );
+
+    Assert.AreEqual ( 243, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+
+  [TestMethod]
   public void Add_EnumerableRoomRequest_Array ()
   {
     int[] addition;
@@ -2171,6 +2303,25 @@ public class CapacitorTest
     Assert.AreEqual ( 10, capacitor.Capacity );
 
     Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void Add_EnumerableRoomRequest_Array_GeometricJump ()
+  {
+    int count = 5;
+    IEnumerable<int> addition = XEnumerable.RangeEnumerable(4, count).ToArray();
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.AddRange ( addition );
+
+    Assert.IsTrue ( capacitor.Add ( addition, 200 ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
@@ -2196,6 +2347,25 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void Add_EnumerableRoomRequest_Collection_GeometricJump ()
+  {
+    int count = 5;
+    IEnumerable<int> addition = new XCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.AddRange ( addition );
+
+    Assert.IsTrue ( capacitor.Add ( addition, 200 ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   public void Add_EnumerableRoomRequest_ReadOnlyCollection ()
   {
     XReadOnlyCollection<int> addition;
@@ -2216,6 +2386,26 @@ public class CapacitorTest
 
     Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
   }
+
+  [TestMethod]
+  public void Add_EnumerableRoomRequest_ReadOnlyCollection_GeometricJump ()
+  {
+    int count = 5;
+    IEnumerable<int> addition = new XReadOnlyCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.AddRange ( addition );
+
+    Assert.IsTrue ( capacitor.Add ( addition, 200 ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
 
   [TestMethod]
   [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
@@ -2253,6 +2443,26 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Likely unneeded." )]
+  async public Task Add_AsyncEnumerableRoomRequest_Enumerable_GeometricJump ()
+  {
+    int count = 5;
+    IAsyncEnumerable<int> addition = new TestAide.AsyncEnumerable(4, count);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.AddRange ( addition.ToBlockingEnumerable ( CancellationToken.None ) );
+
+    Assert.IsTrue ( await capacitor.Add ( addition, 200 ) );
+
+    Assert.AreEqual ( 243, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   public void Add_Array_NullItems ()
   {
     Capacitor<int> capacitor = new();
@@ -2281,6 +2491,25 @@ public class CapacitorTest
     Assert.AreEqual ( 10, capacitor.Capacity );
 
     Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void Add_Array_GeometricJump ()
+  {
+    int count = 5;
+    int[] addition = XEnumerable.RangeEnumerable(4, count).ToArray();
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.AddRange ( addition );
+
+    Assert.IsTrue ( capacitor.Add ( addition ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
 
   [TestMethod]
@@ -2315,6 +2544,26 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void Add_Collection_GeometricJump ()
+  {
+    int count = 5;
+
+    ICollection<int> addition = new XCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.AddRange ( addition );
+
+    Assert.IsTrue ( capacitor.Add ( addition ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   public void Add_ReadOnlyCollection_NullItems ()
   {
     Capacitor<int> capacitor = new();
@@ -2344,6 +2593,26 @@ public class CapacitorTest
 
     Assert.IsTrue ( Enumerable.Range ( 1, 10 ).SequenceEqual ( capacitor ) );
   }
+
+  [TestMethod]
+  public void Add_ReadOnlyCollection_GeometricJump ()
+  {
+    int count = 5;
+    IReadOnlyCollection<int> addition = new XReadOnlyCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.AddRange ( addition );
+
+    Assert.IsTrue ( capacitor.Add ( addition ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
 
   [TestMethod]
   public void AllMatches ()
@@ -2805,6 +3074,7 @@ public class CapacitorTest
   [DataRow ( 3, false )]
   [DataRow ( 4, true )]
   [DataRow ( 100, true )]
+  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "." )]
   public void CapacitateForNext_StaticJump ( int forNext, bool result )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5], 8);
@@ -2838,6 +3108,7 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "." )]
   public void CapacitateForNext_UnknownCapacitationPolicy ()
   {
     Capacitor<int> capacitor = new([1,2,3,4,5], 8);
@@ -6963,6 +7234,27 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void Insert_OffsetEnumerableRoomRequest_ArrayItems_GeometricJump ()
+  {
+    int count = 5;
+    int index = 0;
+
+    IEnumerable<int> insertion = XEnumerable.RangeEnumerable(4, count).ToArray();
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    Assert.IsTrue ( capacitor.Insert ( index, insertion, 200 ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 2 )]
   [DataRow ( 3, 3 )]
   public void Insert_OffsetEnumerableRoomRequest_ArrayItems_EmptyCapacitor ( int cap, int expCap )
@@ -7012,6 +7304,27 @@ public class CapacitorTest
 
     Assert.AreEqual ( 5, capacitor.Capacity );
     Assert.AreEqual ( 5, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void Insert_OffsetEnumerableRoomRequest_CollectionItems_GeometricJump ()
+  {
+    int count = 5;
+    int index = 1;
+
+    IEnumerable<int> insertion = new XCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    Assert.IsTrue ( capacitor.Insert ( index, insertion, 200 ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
 
@@ -7066,6 +7379,27 @@ public class CapacitorTest
 
     Assert.AreEqual ( 5, capacitor.Capacity );
     Assert.AreEqual ( 5, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void Insert_OffsetEnumerableRoomRequest_ReadOnlyCollectionItems_GeometricJump ()
+  {
+    int count = 5;
+    int index = 2;
+
+    IEnumerable<int> insertion = new XReadOnlyCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    Assert.IsTrue ( capacitor.Insert ( index, insertion, 200 ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
 
@@ -7131,6 +7465,27 @@ public class CapacitorTest
     Assert.IsTrue ( capacitor.Insert ( index, insertion, roomReq ) );
 
     Assert.AreEqual ( cap, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void Insert_OffsetEnumerableRoomRequest_Enumerable_GeometricJump ()
+  {
+    int count = 5;
+    int index = 3;
+
+    IEnumerable<int> insertion = XEnumerable.RangeEnumerable(4, count);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    Assert.IsTrue ( capacitor.Insert ( index, insertion, 200 ) );
+
+    Assert.AreEqual ( 243, capacitor.Capacity );
     Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
@@ -7251,6 +7606,28 @@ public class CapacitorTest
     Assert.IsTrue ( await capacitor.Insert ( index, insertion, roomReq ) );
 
     Assert.AreEqual ( cap, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  [SuppressMessage ( "Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "Readme style." )]
+  async public Task Insert_OffsetAsyncEnumerableRoomRequest_Enumerable_GeometricJump ()
+  {
+    int count = 5;
+    int index = 0;
+
+    IAsyncEnumerable<int> insertion = new TestAide.AsyncEnumerable(4, count);
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion.ToBlockingEnumerable ( CancellationToken.None ) );
+
+    Assert.IsTrue ( await capacitor.Insert ( index, insertion, 200 ) );
+
+    Assert.AreEqual ( 243, capacitor.Capacity );
     Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
@@ -7379,6 +7756,27 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  public void Insert_OffsetArray_GeometricJump ()
+  {
+    int count = 5;
+    int index = 0;
+
+    int[] insertion = XEnumerable.RangeEnumerable(4, count).ToArray();
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    Assert.IsTrue ( capacitor.Insert ( index, insertion ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
   [DataRow ( 0, 5 )]
   [DataRow ( 3, 5 )]
   [DataRow ( 5, 5 )]
@@ -7449,6 +7847,27 @@ public class CapacitorTest
     int capCount = source.Length + count;
     Assert.AreEqual ( Math.Max ( capCount, capacity ), capacitor.Capacity );
     Assert.AreEqual ( capCount, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void Insert_OffsetCollection_GeometricJump ()
+  {
+    int count = 5;
+    int index = 1;
+
+    ICollection<int> insertion = new XCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    Assert.IsTrue ( capacitor.Insert ( index, insertion ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
 
@@ -7572,6 +7991,27 @@ public class CapacitorTest
     int capCount = source.Length + insertion.Count;
     Assert.AreEqual ( Math.Max ( capCount, capacity ), capacitor.Capacity );
     Assert.AreEqual ( capCount, capacitor.Count );
+    Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
+  }
+
+  [TestMethod]
+  public void Insert_OffsetReadOnlyCollection_GeometricJump ()
+  {
+    int count = 5;
+    int index = 2;
+
+    IReadOnlyCollection<int> insertion = new XReadOnlyCollection<int>(XEnumerable.RangeEnumerable(4, count).ToList());
+    int[] source = [1,2,3];
+
+    Capacitor<int> capacitor = new (source) { CapacitationPolicy = CapacitationPolicy.GeometricJump, GrowFactor = GrowFactor.Three };
+
+    List<int> expectation = source.ToList();
+    expectation.InsertRange ( index, insertion );
+
+    Assert.IsTrue ( capacitor.Insert ( index, insertion ) );
+
+    Assert.AreEqual ( 9, capacitor.Capacity );
+    Assert.AreEqual ( source.Length + count, capacitor.Count );
     Assert.IsTrue ( expectation.SequenceEqual ( capacitor ) );
   }
 
@@ -9568,5 +10008,13 @@ public class CapacitorTest
       while (loopsCount-- > 0 && await timer.WaitForNextTickAsync ( token ))
         yield return 99 - loopsCount + 1;
     }
+  }
+
+  [TestMethod]
+  public void Capacitor_CapacitationPolicy_Sample ()
+  {
+    Capacitor<int> capacitor = new () { CapacitationPolicy = CapacitationPolicy.GeometricJump, LockCapacitationPolicy = true, };
+    Assert.AreEqual ( CapacitationPolicy.GeometricJump, capacitor.CapacitationPolicy );
+    Assert.IsTrue ( capacitor.LockCapacitationPolicy );
   }
 }
