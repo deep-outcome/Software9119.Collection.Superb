@@ -1004,17 +1004,20 @@ public class Capacitor<T> : Capacitor,
       return false;
 
     CapacitationPolicy policy = CapacitationPolicy;
-    float capacity = Capacity;
-    float requirement = capacity - reserve;
+    int capacity = Capacity;
+    int requirement = capacity - reserve;
 
     switch (policy)
     {
       case CapacitationPolicy.StaticJump: break;
       case CapacitationPolicy.GeometricJump:
       {
+        if (capacity == 0)
+          capacity = defaultCapacity;
+
         _ = growFactor.ToFloat ( out float multiplier );
         while (capacity < requirement)
-          capacity *= multiplier;
+          capacity = (int) (capacity * multiplier);
 
         requirement = capacity;
         break;
@@ -1022,7 +1025,7 @@ public class Capacitor<T> : Capacitor,
       default: throw new InvalidOperationException ( $"Unsupported capacitation policy, '{policy}'." );
     }
 
-    Capacitate ( (int) requirement );
+    Capacitate ( requirement );
     return true;
   }
 

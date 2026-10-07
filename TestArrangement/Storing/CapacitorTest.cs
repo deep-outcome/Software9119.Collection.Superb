@@ -3086,6 +3086,23 @@ public class CapacitorTest
   }
 
   [TestMethod]
+  [DataRow ( 0, false )]
+  [DataRow ( 2, true )]
+  [DataRow ( 3, true )]
+  [DataRow ( 4, true )]
+  [DataRow ( 100, true )]
+  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "." )]
+  public void CapacitateForNext_StaticJump_ZeroCapacity ( int forNext, bool result )
+  {
+    Capacitor<int> capacitor = new();
+    capacitor.CapacitationPolicy = CapacitationPolicy.StaticJump;
+
+    bool test = capacitor.CapacitateForNext(forNext);
+    Assert.AreEqual ( result, test );
+    Assert.AreEqual ( forNext, capacitor.Capacity );
+  }
+
+  [TestMethod]
   [DataRow ( 0, false, 8 )]
   [DataRow ( 2, false, 8 )]
   [DataRow ( 3, false, 8 )]
@@ -3099,6 +3116,29 @@ public class CapacitorTest
   public void CapacitateForNext_GeometricJump ( int forNext, bool result, int expectedCap )
   {
     Capacitor<int> capacitor = new([1,2,3,4,5], 8);
+    capacitor.CapacitationPolicy = CapacitationPolicy.GeometricJump;
+    capacitor.GrowFactor = GrowFactor.FourAndHalf;
+
+    bool test = capacitor.CapacitateForNext(forNext);
+    Assert.AreEqual ( result, test );
+    Assert.AreEqual ( expectedCap, capacitor.Capacity );
+  }
+
+  [TestMethod]
+  [DataRow ( 0, false, 0 )]
+  [DataRow ( 2, true, 4 )]
+  [DataRow ( 3, true, 4 )]
+  [DataRow ( 4, true, 4 )]
+  [DataRow ( 5, true, 18 )]
+  [DataRow ( 18, true, 18 )]
+  [DataRow ( 19, true, 81 )]
+  [DataRow ( 81, true, 81 )]
+  [DataRow ( 82, true, 364 )]
+  [DataRow ( 1000, true, 1638 )]
+  [SuppressMessage ( "Style", "IDE0017:Simplify object initialization", Justification = "." )]
+  public void CapacitateForNext_GeometricJump_ZeroCapacity ( int forNext, bool result, int expectedCap )
+  {
+    Capacitor<int> capacitor = new();
     capacitor.CapacitationPolicy = CapacitationPolicy.GeometricJump;
     capacitor.GrowFactor = GrowFactor.FourAndHalf;
 
