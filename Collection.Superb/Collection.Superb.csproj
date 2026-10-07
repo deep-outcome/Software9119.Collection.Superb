@@ -10,16 +10,18 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
-    <PackageVersion>16.3.0</PackageVersion>
+    <PackageVersion>16.3.1</PackageVersion>
     <PackageReadmeFile>./README.md</PackageReadmeFile>
     <Description>.NET collections enhancements going further and beyond.</Description>
     <PackageTags>Collection,Collections</PackageTags>
     <PackageProjectUrl>https://github.com/deep-outcome/Software9119.Collection.Superb</PackageProjectUrl>
+    <PackageIcon>ico.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup Label="Info">
     <None Include="./../LICENSE.md" Pack="true" PackagePath="\" />
     <None Include="./README.md" Pack="true" PackagePath="\" />
+    <None Include="./../ico.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
